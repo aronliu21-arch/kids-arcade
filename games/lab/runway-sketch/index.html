@@ -65,10 +65,32 @@ body[data-pref="land"] .rot.l{display:none}
 .theme .h{font-size:.85rem;color:var(--muted);margin-top:4px}
 .side .btn{width:100%}
 .btn.pink{background:#d6336c}
+#fig .wgt{transform-box:view-box;transform-origin:100px 372px;animation:sway 5s ease-in-out infinite}
+#fig .hd{transform-box:view-box;transform-origin:100px 74px;animation:look 7s ease-in-out infinite}
+#fig .ey{transform-box:view-box;transform-origin:100px 54px;animation:blink 4.3s infinite}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(1.2deg)}}
+@keyframes look{0%,100%{transform:rotate(0)}18%{transform:rotate(-6deg)}36%{transform:rotate(-6deg)}50%{transform:rotate(0)}68%{transform:rotate(5deg)}84%{transform:rotate(5deg)}}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.12)}}
+#fig.hop svg{animation:hop .75s ease-out}@keyframes hop{0%{transform:none}30%{transform:translateY(-6%)}55%{transform:translateY(-3%) scaleX(-1)}80%{transform:scaleX(1)}100%{transform:none}}
+#fig.posing svg{animation:posing 1.2s ease-in-out}@keyframes posing{0%,100%{transform:none}25%{transform:rotate(-5deg) translateY(-3%)}50%{transform:rotate(5deg)}75%{transform:rotate(-3deg) translateY(-2%)}}
+#fig{cursor:pointer}.spk{position:absolute;font-size:1.8rem;pointer-events:none;animation:spk .9s forwards;z-index:3}@keyframes spk{to{transform:translateY(-40px) scale(1.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){#fig .wgt,#fig .hd,#fig .ey,#fig.hop svg,#fig.posing svg{animation:none!important}}
+.it{position:relative}.pr{position:absolute;top:3px;right:4px;background:#fff3bf;border:1.5px solid #d9a520;border-radius:999px;font-size:.72rem;font-weight:800;padding:0 5px}
+.bp{margin-top:4px;display:inline-block;background:#fff3bf;border-color:#d9a520}.bp.over{background:#ffe3e3;border-color:#e03131}
+.mm{background:#fffdf8;border:4px solid #4a3426;border-radius:22px;padding:14px 16px;max-width:620px;width:100%;text-align:center;max-height:90vh;overflow:auto}
+.mm h2{margin:4px 0 10px;font-size:1.4rem}.mm p{margin:6px 0}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mode{border:3px solid #4a3426;border-radius:18px;background:#fff0f6;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:130px;box-shadow:0 4px 0 #4a3426}
+.mode:active{transform:translateY(3px);box-shadow:0 1px 0 #4a3426}.mode .e{font-size:2.4rem}.mode b{font-size:1.2rem}.mode span{font-size:.95rem}
+.mm input{font:inherit;font-size:1.2rem;padding:8px 12px;border:2px solid #c9b8a6;border-radius:12px;width:min(100%,420px);margin:6px 0}
+.mm .row,.total .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.mtag{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);background:#7048e8;color:#fff;border:2px solid #fff;border-radius:999px;padding:0 10px;font-weight:800;white-space:nowrap;font-size:.9rem}
+.runway.two .model:nth-of-type(2) .mtag,.runway.two .model[data-i="1"] .mtag{background:#e8590c}
+.jd hr{border:0;border-top:1px dashed #e3d6c7;margin:4px 0}.jd .who{font-weight:800;font-size:.9rem;color:#7048e8;margin-top:2px}
 .pics{display:flex;gap:6px;justify-content:center;margin-top:4px}.pics span{font-size:clamp(1.8rem,5vh,2.6rem);line-height:1.1;background:#fff;border:2px solid #f3c0d3;border-radius:14px;padding:2px 6px}
 @media (orientation:landscape){.pics{margin:0}.pics span{font-size:clamp(1.3rem,4vh,2rem);padding:0 4px}}
 @media (max-height:450px){.pics span{font-size:1.3rem;padding:0 2px;border-width:1px}}
-.jd .r{font-size:.95rem!important;line-height:1.75!important;text-align:left}.jd b{font-size:1rem}
+.jd .r{font-size:.95rem!important;line-height:1.5!important;text-align:left}.jd b{font-size:1rem}
 @media (max-width:600px),(orientation:portrait) and (max-width:900px){.judges{grid-template-columns:1fr!important}.cat{flex:0 0 auto!important;height:58vh!important;min-height:0!important}}
 .ib small{font-size:.7em;opacity:.75;font-weight:600}.btn .zc .z,.tab.on .zc .z,.toast .zc .z{color:inherit;opacity:.8}.nozy{outline:2px solid red}
 #walk .sm{display:none}
@@ -93,7 +115,6 @@ body[data-pref="land"] .rot.l{display:none}
 .jd{border:2px solid #e3d6c7;border-radius:14px;padding:6px;text-align:center;opacity:0;transform:translateY(10px);transition:all .4s}
 .jd.show{opacity:1;transform:none}
 .jd .f{font-size:1.8rem;line-height:1}.jd b{display:block;font-size:.9rem}.jd .s{color:#f59f00;font-size:1.15rem;letter-spacing:1px}.jd .r{font-size:.78rem;line-height:1.25;color:#4a3426}
-.fam button{font-size:1.5rem;background:none;border:0;padding:0;min-width:34px;min-height:44px}.fam #famS{display:flex;justify-content:center;flex-wrap:nowrap}
 .total{background:#fffdf8;text-align:center;padding:0 8px 8px;font-weight:800}
 @media (orientation:landscape){
  .studio{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:8px}
@@ -108,14 +129,14 @@ body[data-pref="land"] .rot.l{display:none}
  .judges{grid-template-columns:repeat(2,1fr)}.cat{min-height:46vh}.runway{position:fixed;inset:0;border-radius:0;overflow:auto}}
 </style></head><body data-pref="any">
 <div class="app">
-  <div class="top"><a href="../../#tester" aria-label="Back to arcade">←</a><div class="ttl">👗 Runway Sketchbook<span class="tag">sample</span></div><span class="pill" id="timer">⏱ 2:00</span><button class="ico" id="snd" aria-label="Sound">🔊</button></div>
+  <div class="top"><a href="../../../#tester" aria-label="Back to arcade">←</a><div class="ttl">👗 Runway Sketchbook<span class="tag">sample</span></div><span class="pill" id="timer">⏱ 2:00</span><button class="ico" id="snd" aria-label="Sound">🔊</button></div>
   <div class="main" id="main"><button class="btn pink" id="ready"></button>
 <div class="studio">
  <div class="panel closet"><div class="tabs" id="tabs"></div><div class="items" id="items"></div>
   <div class="paint"><div class="lab" id="paintLab"></div><div class="sw" id="sw"></div><div class="pats" id="pats"></div></div></div>
  <div class="stage" id="stage"><div id="sceneBox"></div><span class="badge" id="badge"></span><div id="fig"></div></div>
- <div class="panel side"><div class="theme"><div class="k" id="thK"></div><div class="t" id="thEn" hidden></div><div class="zh" id="thZh"></div><div class="pics" id="thPics" aria-hidden="true"></div><div class="h" id="thHint"></div></div>
-  <button class="btn pink" id="walk"><span class="lg" id="walkL"></span><span class="sm" id="walkS"></span></button><button class="btn ghost" id="newTheme"></button><button class="btn ghost" id="tmBtn">⏱ Timer on</button><div class="small" id="smallTip"></div></div>
+ <div class="panel side"><div class="theme"><div class="k" id="thK"></div><div class="t" id="thEn" hidden></div><div class="zh" id="thZh"></div><div class="pics" id="thPics" aria-hidden="true"></div><div class="pill bp" id="budgetPill" hidden></div><div class="h" id="thHint"></div></div>
+  <button class="btn pink" id="walk"><span class="lg" id="walkL"></span><span class="sm" id="walkS"></span></button><button class="btn ghost" id="modeBtn"></button><button class="btn ghost" id="newTheme"></button><button class="btn ghost" id="tmBtn">⏱ Timer on</button><div class="small" id="smallTip"></div></div>
 </div></div>
 </div>
 <div class="toast hide" id="toast"></div>
@@ -355,16 +376,17 @@ function figureSVG(L){const old=look;look=L||look;
   const body='<g>'+wc('M84 178L96 178L95 268L95 360L89 360L88 268Z','#f6d7c3')+wc('M104 178L116 178L112 268L111 360L105 360L105 268Z','#f6d7c3')+
    wc('M78 86L84 92L74 142L71 196L65 196L66 140Z','#f6d7c3')+wc('M122 86L116 92L126 142L129 196L135 196L134 140Z','#f6d7c3')+
    wc('M78 84Q100 78 122 84L116 150Q100 154 84 150Z','#f6d7c3')+wc('M84 150L80 178L120 178L116 150Z','#f6d7c3')+wc('M95 66L105 66L105 82L95 82Z','#f6d7c3')+
-   wc('M85 52a15 18 0 1 0 30 0a15 18 0 1 0 -30 0Z','#f8dccb')+'</g>';
+   '</g>';
+  const headSk=wc('M85 52a15 18 0 1 0 30 0a15 18 0 1 0 -30 0Z','#f8dccb');
   const face='<path d="M91 52q3-2 6 0M103 52q3-2 6 0" fill="none" stroke="'+INK+'" stroke-width="1.2" stroke-linecap="round"/><circle cx="94" cy="54" r="1.5" fill="'+INK+'"/><circle cx="106" cy="54" r="1.5" fill="'+INK+'"/>'+
    '<path d="M96 62q4 3 8 0" fill="none" stroke="#c2255c" stroke-width="1.2" stroke-linecap="round"/><ellipse cx="90" cy="59" rx="3" ry="1.6" fill="#ffa8a8" opacity=".6"/><ellipse cx="110" cy="59" rx="3" ry="1.6" fill="#ffa8a8" opacity=".6"/>';
   const feet='<ellipse cx="92" cy="364" rx="6" ry="3" fill="#f6d7c3" stroke="'+INK+'" stroke-width=".9"/><ellipse cx="108" cy="364" rx="6" ry="3" fill="#f6d7c3" stroke="'+INK+'" stroke-width=".9"/>';
   const hands='<circle cx="68" cy="200" r="4" fill="#f6d7c3" stroke="'+INK+'" stroke-width=".9"/><circle cx="132" cy="200" r="4" fill="#f6d7c3" stroke="'+INK+'" stroke-width=".9"/>';
   const L2=look,accZ=z=>L2.acc.filter(id=>find('acc',id).z===z).map(id=>piece('acc',id,'main')).join('');
   let s='<svg viewBox="0 0 200 400" width="200" height="400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fashion sketch of Nora’s outfit">'+DEFS+'<ellipse cx="100" cy="372" rx="38" ry="5" fill="#e3d6c7"/>'+
-   piece('hair',L2.hair,'back')+(L2.dress?piece('dress',L2.dress,'back'):'')+(L2.top?piece('top',L2.top,'back'):'')+accZ('back')+body+face+feet+piece('shoes',L2.shoes,'main')+
+   '<g class="wgt"><g class="hd">'+piece('hair',L2.hair,'back')+'</g>'+(L2.dress?piece('dress',L2.dress,'back'):'')+(L2.top?piece('top',L2.top,'back'):'')+accZ('back')+body+'<g class="hd">'+headSk+'<g class="ey">'+face+'</g></g>'+feet+piece('shoes',L2.shoes,'main')+
    (L2.dress?piece('dress',L2.dress,'main'):piece('bottom',L2.bottom,'main')+piece('top',L2.top,'main'))+accZ('waist')+accZ('neck')+hands+accZ('wrist')+
-   piece('hair',L2.hair,'front')+accZ('head')+accZ('face')+accZ('held')+accZ('top')+'</svg>';
+   '<g class="hd">'+piece('hair',L2.hair,'front')+accZ('head')+accZ('face')+accZ('top')+'</g>'+accZ('held')+'</g></svg>';
   look=old;return s;}
 function thumb(cat,it){const key=keyOf(cat,it.id),c=isOn(cat,it.id)?colOf(key,it):(cat==='hair'?HAIRPAL[it.col]:PAL[it.col]),d=it.draw,h=typeof d==='function'?d(c):(d.back?d.back(c):'')+(d.main?d.main(c):'')+(d.front?d.front(c):'');
   return '<svg viewBox="'+(it.vb||CAT[cat].vb)+'">'+DEFS+'<g class="tb">'+withPat(h,key,isOn(cat,it.id)?patOf(key):(it.dp||'plain'))+'</g></svg>';}
@@ -372,19 +394,22 @@ function fitThumbs(){document.querySelectorAll('.it svg').forEach(sv=>{try{const
 function sizeSvg(box,sv,frac){if(!box||!sv)return;const W=box.clientWidth,H=box.clientHeight*(frac||1);if(!W||!H)return;const h=Math.floor(Math.min(H,W*2));sv.setAttribute('width',Math.floor(h/2));sv.setAttribute('height',h);sv.style.width=Math.floor(h/2)+'px';sv.style.height=h+'px';}
 function fitFig(){sizeSvg($('fig'),$('fig').querySelector('svg'));}
 function renderFig(){$('fig').innerHTML=figureSVG();fitFig();}
-if(window.ResizeObserver)new ResizeObserver(fitFig).observe(document.getElementById('fig'));addEventListener('resize',fitFig);addEventListener('orientationchange',()=>setTimeout(fitFig,300));
+const POSE=['好看嗎？','我好漂亮！','準備好走秀了！','耶！'];
+function strike(e){audio();const fg=$('fig');fg.classList.remove('posing');void fg.offsetWidth;fg.classList.add('posing');sfx.good();say(pick(POSE));
+  for(let k=0;k<5;k++){const sp=document.createElement('div');sp.className='spk';sp.textContent=pick(['✨','💖','⭐','🌟']);const r=fg.getBoundingClientRect();sp.style.left=(r.width/2+rnd(-90,90))+'px';sp.style.top=(r.height*.25+rnd(-30,60))+'px';fg.appendChild(sp);setTimeout(()=>sp.remove(),900);}}
+if(window.ResizeObserver)new ResizeObserver(fitFig).observe(document.getElementById('fig'));document.getElementById('fig').addEventListener('click',e=>strike(e));addEventListener('resize',fitFig);addEventListener('orientationchange',()=>setTimeout(fitFig,300));
 function renderTabs(){$('tabs').innerHTML='';ORDER.forEach(c=>{const b=document.createElement('button');b.className='tab'+(c===tab?' on':'');b.dataset.c=c;b.innerHTML=RB(CAT[c].zh,CAT[c].zy);b.onclick=()=>{tab=c;renderTabs();renderItems();};$('tabs').appendChild(b);});}
 function isOn(cat,id){return cat==='acc'?look.acc.includes(id):look[cat]===id;}
 function renderItems(){const box=$('items');box.innerHTML='';CAT[tab].items.forEach(it=>{const b=document.createElement('button');b.className='it'+(isOn(tab,it.id)?' on':'');
   b.innerHTML=thumb(tab,it)+'<span class="nm">'+RB(it.zh.replace('T',''),it.zy.replace('T ',''))+(it.zh[0]==='T'?'':'')+'</span><span class="en">'+it.en+'</span>';
   if(it.zh[0]==='T')b.querySelector('.nm').innerHTML='T'+RB('恤','ㄒㄩˋ');
-  b.onclick=()=>wear(tab,it);box.appendChild(b);});fitThumbs();renderPaint();}
+  if(MODE==='budget')b.insertAdjacentHTML('beforeend','<span class="pr">🪙'+price(it)+'</span>');b.onclick=()=>wear(tab,it);box.appendChild(b);});fitThumbs();renderPaint();}
 function wear(cat,it){audio();
   if(cat==='acc'){const i=look.acc.indexOf(it.id);if(i>=0)look.acc.splice(i,1);else look.acc.push(it.id);sel='acc:'+it.id;}
   else if(cat==='dress'){const off=look.dress===it.id;look.dress=off?null:it.id;if(look.dress){look.top=null;look.bottom=null;}sel='dress';if(off)toast(zh('脫掉了')+itemBoth(it)+zh('。選一件洋裝，或上衣加下身！'),2400);}
   else if(cat==='top'||cat==='bottom'){const off=look[cat]===it.id;look[cat]=off?null:it.id;if(look[cat])look.dress=null;sel=cat;if(off)toast(zh('脫掉了')+itemBoth(it)+zh('，再點一次可以穿回來。'),2000);}
   else{look[cat]=it.id;sel=cat;}
-  tone(700+Math.random()*300,.06,'triangle',.08);renderFig();renderItems();}
+  tone(700+Math.random()*300,.06,'triangle',.08);renderFig();renderItems();updBudget();const fg=$('fig');fg.classList.remove('hop');void fg.offsetWidth;fg.classList.add('hop');}
 function selItem(){if(sel.startsWith('acc:')){const id=sel.slice(4);return look.acc.includes(id)?['acc',find('acc',id)]:null;}
   const id=look[sel];return id?[sel,find(sel,id)]:null;}
 function renderPaint(){const s=selItem();
@@ -402,7 +427,8 @@ const pad2=n=>String(n).padStart(2,'0');
 tick=setInterval(()=>{if(!timerOn||running)return;timeLeft=Math.max(0,timeLeft-1);showTime();if(timeLeft===20){tone(880,.1,'square',.05);toast('⏱ '+zh('還剩')+'20'+zh('秒！'));}
   if(timeLeft===0){toast('⏱ '+zh('時間到！走秀去！'));runway();}},1000);
 $('tmBtn').onclick=()=>{timerOn=!timerOn;$('tmBtn').innerHTML='⏱ '+zh(timerOn?'計時開':'計時關');showTime();};
-$('newTheme').onclick=()=>{audio();newTheme();};
+$('newTheme').onclick=()=>{audio();if(MODE==='vs'&&(VS.ch||VS.stage===1)){toast(zh('對決中不能換主題'));return;}startRound();};
+$('modeBtn').onclick=()=>{audio();if(!running)showModes();};
 /* ---------- judging: three judge girls, each explains her score ---------- */
 function worn(){const w=[];if(look.dress)w.push(['dress',look.dress]);else{if(look.top)w.push(['top',look.top]);if(look.bottom)w.push(['bottom',look.bottom]);}
   if(look.shoes)w.push(['shoes',look.shoes]);w.push(['hair',look.hair]);look.acc.forEach(a=>w.push(['acc',a]));return w.map(([c,id])=>[c,find(c,id)]);}
@@ -411,7 +437,7 @@ function judge(){const W=worn(),clothes=W.filter(([c])=>c!=='hair');
   const fit=W.filter(([c,it])=>it.tags.includes(theme.id)),miss=clothes.filter(([c,it])=>!it.tags.includes(theme.id));
   const m=fit.length/W.length,s1=Math.max(1,Math.min(5,1+Math.round(4*m)));
   const r1=(fit.length?fit.slice(0,2).map(([,i])=>itemBoth(i)).join(zh('和'))+zh('很適合')+RB(theme.zh,theme.zy)+zh('！'):zh('嗯，這些不太像')+RB(theme.zh,theme.zy)+zh('喔。'))+(miss.length&&s1<5?zh('不過')+itemBoth(miss[0][1])+zh('不太適合這個主題。'):'');
-  const p1=(fit.length?fit.slice(0,2).map(([,i])=>i.zh).join('和')+'很適合'+theme.zh+'！':'嗯，這些不太像'+theme.zh+'喔。')+(miss.length&&s1<5?'不過'+miss[0][1].zh+'不太適合這個主題。':'');
+  const p1=(fit.length?fit.slice(0,2).map(([,i])=>i.zh+'（'+i.en+'）').join('和')+'很適合'+theme.zh+'！':'嗯，這些不太像'+theme.zh+'喔。')+(miss.length&&s1<5?'不過'+miss[0][1].zh+'（'+miss[0][1].en+'）不太適合這個主題。':'');
   const cols=[...new Set(clothes.map(([c,it])=>nameOf(colOf(keyOf(c,it.id),it))))],hits=cols.filter(c=>theme.col.includes(c));
   let s2=2+(hits.length>=1?2:0)+(hits.length>=2?1:0)-(cols.length>4?1:0);s2=Math.max(1,Math.min(5,s2));
   const p2=hits.length?'顏色好棒！'+hits.map(c=>COLZH[c]).join('和')+'很適合'+theme.zh+'。':'試試看'+theme.col.slice(0,2).map(c=>COLZH[c]).join('或')+'吧！',r2=zh(p2);
@@ -419,22 +445,6 @@ function judge(){const W=worn(),clothes=W.filter(([c])=>c!=='hair');
   const s3=Math.max(1,Math.min(5,1+Math.min(2,pats)+(look.acc.length>=2?1:0)+(custom>=2?1:0)));
   const p3=s3>=4?'好有創意！自己的花紋和顏色讓衣服很特別。':pats?'花紋很漂亮！再加一兩個配件會更閃亮。':'試試加花紋或換顏色，做出自己的風格！',r3=zh(p3);
   return [['👩🏻‍🦰',zh('艾莉老師'),zh('主題'),s1,r1,'艾莉老師',p1],['👩🏽',zh('可可老師'),zh('顏色'),s2,r2,'可可老師',p2],['👩🏼‍🦱',zh('莉莉老師'),zh('創意'),s3,r3,'莉莉老師',p3]];}
-function runway(){if(running)return;audio();
-  const need=!look.dress&&!look.top&&!look.bottom?['top','👗','選一件洋裝，或上衣加下身！']:!look.dress&&!look.top?['top','👚','還需要上衣！（或選洋裝）']:!look.dress&&!look.bottom?['bottom','👖','還需要下身！（或選洋裝）']:!look.shoes?['shoes','👟','別忘了鞋子！']:null;
-  if(need){sfx.boing();toast(need[1]+' '+zh(need[2]),2600);say(need[2]);tab=need[0];renderTabs();renderItems();const t=document.querySelector('.tab[data-c="'+need[0]+'"]');if(t){t.classList.add('need');t.scrollIntoView({block:'center',behavior:'smooth'});}return;}
-  running=true;POP.step=0;if(POP.on)popLevel(.26,.6);const J=judge();const R=document.createElement('div');R.className='runway';
-  R.innerHTML='<div class="cat"><div class="backdrop">'+sceneSVG(theme.id)+'</div><div class="strip"></div><div class="model" id="model">'+figureSVG()+'</div></div><div class="judges" id="jd"></div><div class="total" id="tot"></div>';
-  $('main').appendChild(R);say('走秀開始！');
-  showRunway(R);
-  const jd=R.querySelector('#jd');J.forEach(([f,n,what,s,r])=>{jd.insertAdjacentHTML('beforeend','<div class="jd"><div class="f">'+f+'</div><b>'+n+' · '+what+'</b><div class="s">'+'★'.repeat(s)+'☆'.repeat(5-s)+'</div><div class="r">'+r+'</div></div>');});
-  jd.insertAdjacentHTML('beforeend','<div class="jd fam"><div class="f">👨‍👩‍👧‍👦</div><b>'+zh('家人評審')+'</b><div id="famS">'+[1,2,3,4,5].map(i=>'<button data-v="'+i+'" aria-label="'+i+' stars">☆</button>').join('')+'</div><div class="r">'+zh('把平板傳給家人，點星星！')+'</div></div>');
-  [...jd.children].forEach((c,i)=>setTimeout(()=>{c.classList.add('show');if(i<3){tone(660+i*120,.15,'triangle',.12);}},WALK*1000+i*700));
-  const base=J.reduce((a,x)=>a+x[3],0);let fam=0;
-  setTimeout(()=>{$('tot').innerHTML=zh('評審：')+base+' / 15 ⭐ — '+zh('等家人評審')+'…';say(J.map(x=>x[5]+'說：'+x[6]).join(' '));},WALK*1000+3*700);
-  jd.querySelectorAll('#famS button').forEach(b=>b.onclick=()=>{fam=+b.dataset.v;jd.querySelectorAll('#famS button').forEach(x=>x.textContent=+x.dataset.v<=fam?'★':'☆');
-    const t=base+fam,title=t>=18?'👑 '+zh('走秀超級巨星！'):t>=14?'🌟 '+zh('時尚之星！'):t>=10?'✨ '+zh('很有型！'):'💡 '+zh('繼續設計！');sfx.win();if(t>=14)confetti();
-    $('tot').innerHTML=title+' &nbsp;'+t+' / 20 ⭐<div style="display:flex;gap:8px;justify-content:center;margin-top:6px;flex-wrap:wrap"><button class="btn" id="again">'+zh('換新主題')+' ▶</button><button class="btn ghost" id="keep">'+zh('繼續打扮')+'</button></div>';
-    $('again').onclick=()=>{R.remove();running=false;POP.step=0;if(POP.on)popLevel(POP.vol,.6);fresh();newTheme();renderFig();renderItems();};$('keep').onclick=()=>{R.remove();running=false;POP.step=0;if(POP.on)popLevel(POP.vol,.6);timeLeft=Math.max(timeLeft,60);showTime();};});}
 /* ---------- runway show: strut, pose, photographers, crowd ---------- */
 const reduceMo=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
 const WALK=5.2; // seconds on the catwalk before the judges appear
@@ -447,7 +457,7 @@ function crowd(kind){if(!SOUND)return;const c=audio();if(!c||!POP.noise)return;c
   for(let i=0;i<70;i++){const d=Math.random()*1.8,s=c.createBufferSource();s.buffer=POP.noise;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=1200+Math.random()*1800;f.Q.value=1.5;const g=c.createGain();
     s.connect(f);f.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.12*(1-d/2),t+d);g.gain.exponentialRampToValueAtTime(.0001,t+d+.06);s.start(t+d,Math.random()*.5);s.stop(t+d+.08);}}
 function step(){if(!SOUND)return;tone(1500,.03,'square',.04);tone(180,.05,'sine',.08);}
-function showRunway(R){const cat=R.querySelector('.cat'),m=R.querySelector('.model');const sv=m.querySelector('svg'),fitM=()=>{const h=Math.floor(cat.clientHeight*.92);sv.setAttribute('height',h);sv.setAttribute('width',Math.floor(h/2));sv.style.height=h+'px';sv.style.width=Math.floor(h/2)+'px';m.style.width=Math.floor(h/2)+'px';};fitM();addEventListener('resize',fitM);if(window.ResizeObserver)new ResizeObserver(fitM).observe(cat);
+function showRunway(R){const cat=R.querySelector('.cat'),MS=[...R.querySelectorAll('.model')],m=MS[0];MS.forEach((x,i)=>{if(MS.length===2)x.style.left=(i?68:32)+'%';});const fitM=()=>{const h=Math.floor(cat.clientHeight*(MS.length===2?.8:.92));MS.forEach(x=>{const sv=x.querySelector('svg');sv.setAttribute('height',h);sv.setAttribute('width',Math.floor(h/2));sv.style.height=h+'px';sv.style.width=Math.floor(h/2)+'px';x.style.width=Math.floor(h/2)+'px';});};fitM();addEventListener('resize',fitM);if(window.ResizeObserver)new ResizeObserver(fitM).observe(cat);
   // photographers on both sides of the catwalk
   const cams=[];for(let i=0;i<8;i++){const left=i%2===0,d=document.createElement('div');d.className='pg';d.textContent='📸';
     const y=18+Math.floor(i/2)*20;d.style.top=y+'%';d.style[left?'left':'right']=(4+Math.floor(i/2)*3)+'%';if(!left)d.style.transform='scaleX(-1)';cat.appendChild(d);cams.push(d);}
@@ -458,10 +468,10 @@ function showRunway(R){const cat=R.querySelector('.cat'),m=R.querySelector('.mod
   const t0=performance.now();let lastStep=-1,nextFlash=.3,posed=false;
   const frame=now=>{if(!R.isConnected)return;const t=(now-t0)/1000,p=Math.min(1,t/(WALK*.72)),e=1-Math.pow(1-p,1.6);
     const sc=.36+.64*e,ty=-58*(1-e),walking=p<1&&!reduceMo,ph=t*4.2,bob=walking?Math.abs(Math.sin(ph))*-2.2:0,rot=walking?Math.sin(ph)*2.2:(posed?-4:0);
-    m.style.transform='translateX(-50%) translateY('+(ty+bob)+'%) scale('+sc+') rotate('+rot+'deg)';
+    MS.forEach((x,i)=>{const b2=i?Math.abs(Math.sin(ph+1.3))*-2.2*(walking?1:0):bob,r2=walking?Math.sin(ph+1.3*i)*2.2:(posed?(i?4:-4):0);x.style.transform='translateX(-50%) translateY('+(ty+b2)+'%) scale('+sc+') rotate('+r2+'deg)';});
     const st=Math.floor(ph/Math.PI);if(walking&&st!==lastStep){lastStep=st;step();}
     if(t>nextFlash){flash(p>=1?2:1);nextFlash=t+(p>=1?rnd(.12,.3):rnd(.35,.7));}
-    if(p>=1&&!posed){posed=true;m.classList.add('pose');crowd('ooh');for(let k=0;k<4;k++)setTimeout(()=>flash(2),k*110);}
+    if(p>=1&&!posed){posed=true;MS.forEach(x=>x.classList.add('pose'));crowd('ooh');for(let k=0;k<4;k++)setTimeout(()=>flash(2),k*110);}
     if(t>WALK-.4&&!R._clap){R._clap=1;crowd('clap');sfx.win();}
     if(t<WALK+.6)requestAnimationFrame(frame);};
   requestAnimationFrame(frame);}
@@ -569,12 +579,107 @@ THEMES.forEach(t=>{t.hz=HZ[t.id];const z=t.zy.split(' ');[...t.zh].forEach((c,i)
 const TPICS={night:'🏮🍢🧋🛍️',rain:'☔🌧️🥾🐸',space:'🚀🪐👩‍🚀🌙',newyear:'🧧🏮🐉🎆',royal:'👑🏰💎🩰',beach:'🏖️🌊🐚🕶️',sports:'🏃‍♀️⚽🏅👟',snow:'❄️⛄🧣🧤',garden:'🌸🫖🦋🌷',sea:'🐠🐙🪸🧜‍♀️'};
 const tq=t=>'「'+t.zh+'」';
 
+/* ---------- game modes: 1 theme solo · 2 face-off (computer / friend link / same device) · 3 budget ---------- */
+let MODE='solo',ME='幼晴',BUDGET=0;const VS={kind:null,stage:0,p1:null,opp:null,ch:null};
+'預ㄩˋ 算ㄙㄨㄢˋ 總ㄗㄨㄥˇ 共ㄍㄨㄥˋ 元ㄩㄢˊ 對ㄉㄨㄟˋ 決ㄐㄩㄝˊ 模ㄇㄛˊ 式ㄕˋ 挑ㄊㄧㄠ 戰ㄓㄢˋ 搭ㄉㄚ 電ㄉㄧㄢˋ 腦ㄋㄠˇ 朋ㄆㄥˊ 友ㄧㄡˇ 連ㄌㄧㄢˊ 結ㄐㄧㄝˊ 同ㄊㄨㄥˊ 台ㄊㄞˊ 輪ㄌㄨㄣˊ 流ㄌㄧㄡˊ 賽ㄙㄞˋ 邀ㄧㄠ 請ㄑㄧㄥˇ 你ㄋㄧˇ 名ㄇㄧㄥˊ 字ㄗˋ 贏ㄧㄥˊ 分ㄈㄣ 享ㄒㄧㄤˇ 複ㄈㄨˋ 製ㄓˋ 果ㄍㄨㄛˇ 第ㄉㄧˋ 二ㄦˋ 位ㄨㄟˋ 藏ㄘㄤˊ 起ㄑㄧˇ 最ㄗㄨㄟˋ 造ㄗㄠˋ 數ㄕㄨˋ 用ㄕㄨㄥˋ 買ㄇㄞˇ 寫ㄒㄧㄝˇ 小ㄒㄧㄠˇ 跟ㄍㄣ 已ㄧˇ 花ㄏㄨㄚ 錢ㄑㄧㄢˊ 誰ㄕㄟˊ 住ㄓㄨˋ 呢˙ㄋㄜ 鍵ㄐㄧㄢˋ'.split(' ').forEach(p=>{if(!ZD[p[0]])ZD[p[0]]=p.slice(1);});
+ZD['用']='ㄩㄥˋ';ZW['名字']='ㄇㄧㄥˊ ˙ㄗ';ZW['打分數']='ㄉㄚˇ ㄈㄣ ㄕㄨˋ';
+ORDER.forEach(c=>CAT[c].items.forEach(it=>it.cat=c));
+const hashStr=s=>[...s].reduce((a,ch)=>(a*31+ch.charCodeAt(0))>>>0,7);
+function price(it){if(it._p!=null)return it._p;const base={hair:3,top:8,bottom:8,dress:16,shoes:7,acc:4}[it.cat];return it._p=base+(it.tags.includes('royal')?6:0)+hashStr(it.id)%5;}
+function wornIn(L){const old=look;look=L;const w=worn();look=old;return w;}
+const spentOf=L=>wornIn(L).reduce((a,[c,it])=>a+price(it),0);
+function judgeFor(L){const old=look;look=L;const r=judge();look=old;return r;}
+const clone=o=>JSON.parse(JSON.stringify(o));
+/* budget: always enough for at least one outfit that fits the theme */
+function makeBudget(){const fit=c=>CAT[c].items.filter(i=>i.tags.includes(theme.id)).map(price).sort((a,b)=>a-b)[0]||Math.min(...CAT[c].items.map(price));
+  const min=Math.min(fit('dress'),fit('top')+fit('bottom'))+fit('shoes')+fit('hair');return Math.ceil((min+ri(10,22))/5)*5;}
+function updBudget(){const p=$('budgetPill');if(MODE!=='budget'){p.hidden=true;return;}p.hidden=false;const s=spentOf(look);p.innerHTML='🪙 '+zh('已花')+' '+s+' / '+zh('預算')+' '+BUDGET;p.classList.toggle('over',s>BUDGET);}
+/* the computer girl, 小星, dresses for the theme too */
+function genCPU(){const fits=c=>CAT[c].items.filter(i=>i.tags.includes(theme.id)),pk=c=>{const f=fits(c);return (f.length&&Math.random()<.72?pick(f):pick(CAT[c].items)).id;};
+  const L={hair:pk('hair'),top:null,bottom:null,dress:null,shoes:pk('shoes'),acc:[],col:{},pat:{}};
+  if(fits('dress').length&&Math.random()<.5)L.dress=pk('dress');else{L.top=pk('top');L.bottom=pk('bottom');}
+  const a=fits('acc');for(let k=0;k<ri(0,2);k++){const x=(a.length&&Math.random()<.7?pick(a):pick(CAT.acc.items)).id;if(!L.acc.includes(x))L.acc.push(x);}
+  ['top','bottom','dress','shoes'].forEach(k=>{if(L[k]&&Math.random()<.55)L.col[k]=PAL[pick(theme.col)];});
+  if(Math.random()<.45){const k=L.dress?'dress':'top';L.pat[k]=pick(['stripes','dots','stars','hearts','flowers']);}
+  return L;}
+/* links: everything lives in the link itself, no server */
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const dec=s=>{try{return JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/')))));}catch(e){return null;}};
+const baseURL=()=>location.href.split('#')[0];
+function setTheme(id){theme=THEMES.find(t=>t.id===id)||theme;$('thZh').innerHTML=RB(theme.zh,theme.zy);$('thPics').innerHTML=[...new Intl.Segmenter().segment(TPICS[theme.id]||'')].map(x=>'<span>'+x.segment+'</span>').join('');$('thHint').innerHTML=zh(theme.hz||'');renderScene();timeLeft=120;showTime();}
+function setBadge(n){$('badge').innerHTML=zh(n)||n;}
+function startRound(keepTheme){fresh();if(!keepTheme)newTheme();timeLeft=120;showTime();if(MODE==='budget'){BUDGET=makeBudget();toast('🪙 '+zh('預算')+' '+BUDGET+' '+zh('元'),2200);}
+  if(MODE==='vs'&&VS.kind==='cpu')VS.opp={name:'小星',look:genCPU()};renderFig();renderItems();updBudget();setBadge(ME);}
+/* ---------- mode menu ---------- */
+function modal2(html){const m=document.createElement('div');m.className='modal';m.innerHTML='<div class="mm">'+html+'</div>';document.body.appendChild(m);return m;}
+function showModes(){const m=modal2('<h2>'+zh('選擇模式')+'</h2><div class="modes">'+
+  [['solo','👗','主題穿搭','選衣服，評審打分數'],['vs','⚔️','時尚對決','跟電腦或朋友比賽'],['budget','🪙','預算挑戰','用預算買衣服，搭出最好的造型']].map(([id,e,t,d])=>'<button class="mode" data-m="'+id+'"><span class="e">'+e+'</span><b>'+zh(t)+'</b><span>'+zh(d)+'</span></button>').join('')+'</div>');
+  m.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();const id=b.dataset.m;m.remove();if(id==='vs')pickVS();else{MODE=id;VS.kind=null;ME='幼晴';startRound();say(id==='budget'?'預算挑戰！':'主題穿搭！');}});}
+function pickVS(){const m=modal2('<h2>'+zh('時尚對決')+'</h2><div class="modes">'+
+  [['cpu','🤖','跟電腦比','跟小星比賽'],['link','🔗','跟朋友比','傳連結給朋友'],['local','📱','同一台輪流','輪流穿搭再比賽']].map(([id,e,t,d])=>'<button class="mode" data-k="'+id+'"><span class="e">'+e+'</span><b>'+zh(t)+'</b><span>'+zh(d)+'</span></button>').join('')+'</div>');
+  m.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();m.remove();MODE='vs';VS.kind=b.dataset.k;VS.stage=0;VS.p1=null;VS.ch=null;ME='幼晴';startRound();
+    say(VS.kind==='cpu'?'跟小星比賽！':VS.kind==='local'?'第一位玩家先穿搭！':'穿好以後，把連結傳給朋友！');});}
+/* ---------- ready: check the outfit, then the show ---------- */
+function ready(){if(running)return;audio();
+  const need=!look.dress&&!look.top&&!look.bottom?['top','👗','選一件洋裝，或上衣加下身！']:!look.dress&&!look.top?['top','👚','還需要上衣！（或選洋裝）']:!look.dress&&!look.bottom?['bottom','👖','還需要下身！（或選洋裝）']:!look.shoes?['shoes','👟','別忘了鞋子！']:null;
+  if(need){sfx.boing();toast(need[1]+' '+zh(need[2]),2600);say(need[2]);tab=need[0];renderTabs();renderItems();const t=document.querySelector('.tab[data-c="'+need[0]+'"]');if(t){t.classList.add('need');t.scrollIntoView({block:'center',behavior:'smooth'});}return;}
+  if(MODE==='budget'&&spentOf(look)>BUDGET){sfx.boing();const m='超過預算了！先脫掉一些衣服。';toast('🪙 '+zh(m),2600);say(m);return;}
+  const me={name:ME,look:clone(look)};
+  if(MODE==='vs'&&VS.kind==='cpu')return show([me,VS.opp]);
+  if(MODE==='vs'&&VS.kind==='local'){if(VS.stage===0){VS.p1=me;VS.stage=1;const m=modal2('<h2>📱 '+zh('換第二位玩家！')+'</h2><p>'+zh(ME+'的衣服先藏起來。')+'</p><p>'+zh('寫下你的名字：')+'</p><input id="p2n" maxlength="8" placeholder="朋友" autocomplete="off"><div class="row"><button class="btn pink" id="p2go">'+zh('開始')+' ▶</button></div>');
+      m.querySelector('#p2go').onclick=()=>{ME=(m.querySelector('#p2n').value.trim()||'朋友').slice(0,8);m.remove();startRound(true);say('輪到'+ME+'！');};return;}
+    return show([VS.p1,me]);}
+  if(MODE==='vs'&&VS.kind==='link'&&VS.ch)return show([VS.ch,me]);
+  if(MODE==='vs'&&VS.kind==='link'){const url=baseURL()+'#c='+enc({t:theme.id,n:ME,l:me.look});
+    const m=modal2('<h2>🔗 '+zh('把這個連結傳給朋友，一起比賽！')+'</h2><input id="lnk" readonly value="'+url+'"><div class="row"><button class="btn pink" id="shr">'+zh('分享')+'</button><button class="btn ghost" id="cpy">'+zh('複製')+'</button><button class="btn" id="solo">'+zh('我先走秀')+' ▶</button></div>');
+    m.querySelector('#shr').onclick=async()=>{try{await navigator.share({title:'時尚素描本',text:ME+'邀請你來比賽！',url:url});}catch(e){m.querySelector('#cpy').click();}};
+    m.querySelector('#cpy').onclick=async()=>{try{await navigator.clipboard.writeText(url);toast('✅ '+zh('已複製'));}catch(e){const i=m.querySelector('#lnk');i.select();document.execCommand&&document.execCommand('copy');toast('✅ '+zh('已複製'));}};
+    m.querySelector('#solo').onclick=()=>{m.remove();show([me]);};return;}
+  show([me]);}
+function runway(){ready();}
+/* ---------- the show: 1 or 2 girls on the catwalk, judges score each ---------- */
+const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function show(E){running=true;POP.step=0;if(POP.on)popLevel(.26,.6);
+  const budgetJ=MODE==='budget',two=E.length===2;
+  const JS=E.map(e=>{const j=judgeFor(e.look);if(budgetJ){const s=spentOf(e.look),left=BUDGET-s,st=Math.max(1,Math.min(5,4+(left>=BUDGET*.2?1:0)));
+      j.push(['🧮',zh('金金老師'),zh('預算'),st,'','金金老師','總共花了'+s+'元，預算'+BUDGET+'元，還剩'+left+'元！']);}return j;});
+  const R=document.createElement('div');R.className='runway'+(two?' two':'');
+  R.innerHTML='<div class="cat"><div class="backdrop">'+sceneSVG(theme.id)+'</div><div class="strip"></div>'+E.map((e,i)=>'<div class="model" data-i="'+i+'">'+figureSVG(e.look)+'<span class="mtag">'+zh(e.name)+'</span></div>').join('')+'</div><div class="judges" id="jd"></div><div class="total" id="tot"></div>';
+  $('main').appendChild(R);say(two?'對決開始！':'走秀開始！');showRunway(R);
+  const jd=R.querySelector('#jd'),nJ=JS[0].length;
+  for(let k=0;k<nJ;k++){const j=JS[0][k];jd.insertAdjacentHTML('beforeend','<div class="jd"><div class="f">'+j[0]+'</div><b>'+j[1]+' · '+j[2]+'</b>'+
+    E.map((e,i)=>{const x=JS[i][k];return (two?'<div class="who">'+zh(e.name)+'</div>':'')+'<div class="s">'+'★'.repeat(x[3])+'☆'.repeat(5-x[3])+'</div><div class="r plain">'+esc(x[6])+'</div>';}).join('<hr>')+'</div>');}
+  [...jd.children].forEach((c,i)=>setTimeout(()=>{c.classList.add('show');tone(660+i*120,.15,'triangle',.12);},WALK*1000+i*700));
+  const tot=JS.map(j=>j.reduce((a,x)=>a+x[3],0)),max=nJ*5;
+  setTimeout(()=>{let head='';
+    if(two){const w=tot[0]===tot[1]?null:(tot[0]>tot[1]?0:1);head=(w===null?'🤝 '+zh('平手！'):'🏆 '+zh(E[w].name+'贏了！'))+' &nbsp;'+E.map((e,i)=>zh(e.name)+' '+tot[i]).join(' : ')+' / '+max+' ⭐';
+      sfx.win();confetti();say(w===null?'平手！':E[w].name+'贏了！');}
+    else{const t=tot[0],r=t/max,title=r>=.93?'👑 '+zh('走秀超級巨星！'):r>=.73?'🌟 '+zh('時尚之星！'):r>=.53?'✨ '+zh('很有型！'):'💡 '+zh('繼續設計！');head=title+' &nbsp;'+t+' / '+max+' ⭐';sfx.win();if(r>=.73)confetti();
+      say(JS[0].map(x=>x[5]+'說：'+x[6].replace(/（[^）]*）/g,'')).join(' '));}
+    let extra='';if(MODE==='vs'&&VS.kind==='link'&&VS.ch&&two){const url=baseURL()+'#r='+enc({t:theme.id,a:{n:E[0].name,l:E[0].look},b:{n:E[1].name,l:E[1].look}});
+      extra='<button class="btn pink" id="back2">🔗 '+zh('把結果傳回給'+E[0].name)+'</button>';R._url=url;}
+    $('tot').innerHTML=head+'<div class="row">'+extra+'<button class="btn" id="again">'+zh('再玩一次')+' ▶</button>'+(two?'':'<button class="btn ghost" id="keep">'+zh('繼續打扮')+'</button>')+'<button class="btn ghost" id="modeB">🏠 '+zh('換模式')+'</button></div>';
+    const close=()=>{R.remove();running=false;POP.step=0;if(POP.on)popLevel(POP.vol,.6);};
+    if($('back2'))$('back2').onclick=async()=>{try{await navigator.share({title:'時尚素描本',url:R._url});}catch(e){try{await navigator.clipboard.writeText(R._url);toast('✅ '+zh('已複製'));}catch(e2){prompt('',R._url);}}};
+    $('again').onclick=()=>{close();if(MODE==='vs'&&VS.kind==='link'&&VS.ch){VS.ch=null;history.replaceState(null,'',baseURL());ME='幼晴';}VS.stage=0;VS.p1=null;if(MODE==='vs'&&VS.kind==='local')ME='幼晴';startRound();};
+    if($('keep'))$('keep').onclick=()=>{close();timeLeft=Math.max(timeLeft,60);showTime();};
+    $('modeB').onclick=()=>{close();history.replaceState(null,'',baseURL());showModes();};},WALK*1000+nJ*700);}
+/* ---------- opening a friend's link ---------- */
+function bootLinks(){const h=location.hash;
+  if(h.startsWith('#c=')){const d=dec(h.slice(3));if(!d||!d.l)return false;MODE='vs';VS.kind='link';VS.ch={name:String(d.n||'朋友').slice(0,8),look:d.l};setTheme(d.t);fresh();renderFig();renderItems();
+    const m=modal2('<h2>⚔️ '+zh(VS.ch.name+'邀請你來比賽！')+'</h2><p>'+zh('主題是')+' '+RB(theme.zh,theme.zy)+' '+[...new Intl.Segmenter().segment(TPICS[theme.id])].map(x=>x.segment).join('')+'</p><p>'+zh('寫下你的名字：')+'</p><input id="fn" maxlength="8" placeholder="朋友" autocomplete="off"><div class="row"><button class="btn pink" id="fgo">'+zh('開始')+' ▶</button></div>');
+    m.querySelector('#fgo').onclick=()=>{ME=(m.querySelector('#fn').value.trim()||'朋友').slice(0,8);m.remove();setBadge(ME);timeLeft=120;showTime();say(VS.ch.name+'邀請你來比賽！主題是'+theme.zh);};return true;}
+  if(h.startsWith('#r=')){const d=dec(h.slice(3));if(!d||!d.a||!d.b)return false;MODE='vs';VS.kind='result';setTheme(d.t);ME=d.a.n;setBadge(ME);fresh();renderFig();renderItems();
+    setTimeout(()=>show([{name:String(d.a.n).slice(0,8),look:d.a.l},{name:String(d.b.n).slice(0,8),look:d.b.l}]),400);return true;}
+  return false;}
+
 $('walk').onclick=runway;$('ready').onclick=runway;
 document.querySelector('.ttl').innerHTML='👗 '+zh('時尚素描本')+'<span class="tag">'+zh('試玩')+'</span>';document.documentElement.lang='zh-Hant';document.title='時尚素描本';
 $('badge').innerHTML=RB('幼晴','ㄧㄡˋ ㄑㄧㄥˊ');$('thK').innerHTML=zh('今天的主題');$('walkL').innerHTML='✨ '+zh('我準備好了！走秀去');$('walkS').innerHTML='✨ '+zh('準備好了');$('ready').innerHTML='✨ '+zh('準備好了');
-$('newTheme').innerHTML='🎲 '+zh('換主題');$('tmBtn').innerHTML='⏱ '+zh('計時開');$('smallTip').innerHTML=zh('點衣服試穿看看！');
+$('newTheme').innerHTML='🎲 '+zh('換主題');$('modeBtn').innerHTML='🏠 '+zh('模式');$('tmBtn').innerHTML='⏱ '+zh('計時開');$('smallTip').innerHTML=zh('點衣服試穿看看！');
 document.querySelector('.rot.l').innerHTML=zh('把手機橫過來')+' ↻';document.querySelector('.rot.p').innerHTML=zh('手機直放比較好')+' ↻';
 fresh();renderTabs();renderItems();renderFig();newTheme();
+setTimeout(()=>{if(!bootLinks())showModes();},50);
 window.__test={pop:()=>({on:POP.on,step:POP.step}),themes:()=>THEMES.length,tagCount:th=>ORDER.reduce((a,c)=>a+CAT[c].items.filter(i=>i.tags.includes(th)).length,0),state:()=>({look:JSON.parse(JSON.stringify(look)),theme:theme.id,running:running}),judge:()=>judge().map(x=>[x[2],x[3],x[4]]),runway:runway,wear:(c,id)=>wear(c,find(c,id)),tab:t=>{tab=t;renderTabs();renderItems();}};
 
 </script></body></html>
