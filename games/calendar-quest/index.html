@@ -1,0 +1,1220 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Calendar Quest</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one screen tall, like a wall calendar. Night-sky hero up top, paper cards below. */
+:root{
+  --bg:#e9f0fa; --card:#ffffff; --ink:#152238; --muted:#56657e; --line:#cfd9ea;
+  --accent:#1f5fbf; --accent-ink:#ffffff; --gold:#f59f00; --lantern:#e03131; --bad:#d6336c; --ok:#2b8a3e;
+  --night:#18204a; --paper:#fffaf0;
+  --nora:#7048e8; --lucas:#f76707; --milo:#2b8a3e; --blue:#1c7ed6;
+  --shadow:0 4px 0 rgba(21,34,56,.16);
+  --font:"Fredoka",ui-rounded,"Arial Rounded MT Bold","PingFang TC","Hiragino Maru Gothic ProN",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1426; --card:#18213a; --ink:#e9eefb; --muted:#9ba8c4; --line:#2a3657;
+    --accent:#5c9cff; --accent-ink:#08132b; --gold:#ffd43b; --lantern:#ff6b6b; --bad:#ff6b9d; --ok:#69db7c;
+    --night:#0b1030; --paper:#1f2a46; --shadow:0 4px 0 rgba(0,0,0,.45); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1426; --card:#18213a; --ink:#e9eefb; --muted:#9ba8c4; --line:#2a3657;
+  --accent:#5c9cff; --accent-ink:#08132b; --gold:#ffd43b; --lantern:#ff6b6b; --bad:#ff6b9d; --ok:#69db7c;
+  --night:#0b1030; --paper:#1f2a46; --shadow:0 4px 0 rgba(0,0,0,.45); color-scheme:dark;
+}
+html,body{height:100%}
+html{background:var(--bg);font-size:18px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:20px;line-height:1.3;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;height:100%;display:flex;flex-direction:column;
+  padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap>section{flex:1;min-height:0;display:flex;flex-direction:column}
+[hidden]{display:none!important}
+.zy{display:inline-flex;gap:.12em;vertical-align:middle;line-height:1}.zc{display:inline-flex;align-items:center}.zc .z{writing-mode:vertical-rl;text-orientation:upright;font-size:.36em;line-height:1.05;margin-left:.06em;color:var(--muted);font-weight:500;letter-spacing:-.05em}
+.top{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex:0 0 auto}
+.brand{font-weight:700;font-size:1.3rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ico{width:48px;height:48px;flex:0 0 48px;border-radius:14px;border:2px solid var(--line);background:var(--card);font-size:1.3rem;cursor:pointer;display:grid;place-items:center;padding:0}
+.ico[aria-pressed="false"]{opacity:.45}
+.pill{display:inline-block;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:2px 12px;font-size:.95rem;font-weight:600;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.btn{border:0;border-radius:16px;padding:10px 22px;min-height:52px;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:1.15rem;box-shadow:var(--shadow);cursor:pointer}
+.btn:active{transform:translateY(3px);box-shadow:none}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn.big{font-size:1.35rem;min-height:60px;padding:10px 28px}
+.btn.small{min-height:48px;font-size:1rem;padding:8px 16px}
+.btn.danger{background:var(--bad);color:#fff}
+/* home */
+.hero{flex:1;min-height:0;border-radius:24px;padding:12px 14px 14px;color:#fff;text-align:center;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:var(--night);box-shadow:var(--shadow)}
+.hero h1{margin:0;font-size:clamp(1.8rem,5.5vh,3rem);line-height:1;font-weight:700;letter-spacing:.5px;text-wrap:balance}
+.hero p{margin:0 auto 4px;max-width:46ch;font-size:1.02rem;font-weight:500;opacity:.92}
+#intro{display:block;border-radius:14px;cursor:pointer;touch-action:manipulation;flex:0 1 auto;max-width:100%}
+.kits{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.kit{width:min(190px,29vw);border:0;border-radius:20px;padding:8px;background:var(--card);color:var(--ink);cursor:pointer;box-shadow:var(--shadow);text-align:center}
+.kit:active{transform:translateY(3px)}
+.kit .num{width:clamp(48px,8vh,70px);height:clamp(48px,8vh,70px);margin:0 auto 4px;border-radius:50%;display:grid;place-items:center;font-size:clamp(1.5rem,4.2vh,2.2rem);font-weight:700;color:#fff;border:4px solid #fff;outline:3px solid currentColor}
+.kit.nora{color:var(--nora)}.kit.nora .num{background:var(--nora)}
+.kit.lucas{color:var(--lucas)}.kit.lucas .num{background:var(--lucas)}
+.kit.milo{color:var(--milo)}.kit.milo .num{background:var(--milo)}
+.kit .nm{font-size:1.35rem;font-weight:700;color:var(--ink)}
+.kit .st{font-size:.9rem;color:var(--muted)}
+.homefoot{display:flex;justify-content:center;gap:10px;margin-top:8px;flex:0 0 auto;flex-wrap:wrap}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:grid;place-items:center;z-index:20;padding:16px}
+.modal .tipcard{margin:0;max-width:520px;width:100%}
+/* mission map */
+.maphead{display:flex;align-items:center;gap:10px;margin:0 0 8px;flex-wrap:wrap}
+.who{font-weight:700;font-size:1.25rem;flex:1;min-width:0}
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(0,1fr);gap:10px}
+.grid.two{grid-template-columns:repeat(2,1fr)}
+.mcard{text-align:left;border:2px solid var(--line);border-radius:18px;background:var(--card);padding:8px 12px;cursor:pointer;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;min-height:0;overflow:hidden;position:relative}
+.mcard:active{transform:translateY(3px)}
+.mcard .em{font-size:clamp(1.4rem,4vh,2.1rem);line-height:1}
+.mcard .tt{font-weight:700;font-size:1.1rem}
+.mcard .bl{font-size:.88rem;color:var(--muted);flex:1;min-height:0;overflow:hidden}
+.mcard .stars{font-size:1.2rem;letter-spacing:2px;color:var(--gold)}
+.grid.two .mcard{align-items:center;text-align:center;justify-content:center}
+.grid.two .mcard .em{font-size:clamp(2.4rem,9vh,4.5rem)}
+.grid.two .mcard .tt{font-size:1.4rem}
+.mix{margin-top:10px;flex:0 0 auto;display:flex;align-items:center;gap:14px;text-align:left;border:0;border-radius:18px;background:var(--accent);color:var(--accent-ink);padding:8px 16px;cursor:pointer;box-shadow:var(--shadow);min-height:58px}
+.mix .em{font-size:1.8rem}.mix .tt{font-weight:700;font-size:1.15rem}.mix .bl{font-size:.9rem;opacity:.9;flex:1}
+.mix .stars{font-size:1.2rem;letter-spacing:2px}
+/* play */
+.promptrow{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex:0 0 auto}
+#prompt{flex:1;min-width:0;font-size:clamp(1.12rem,3vh,1.55rem);font-weight:600;line-height:1.22;text-wrap:balance}
+#stage{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:10px}
+#stage.flow{grid-template-rows:auto auto;align-content:center}
+#stage.flow>#visual,#stage.flow>#opts{min-height:min-content}
+#buddy{grid-row:1/3;width:clamp(84px,15vw,170px);height:100%;min-height:0;display:block}
+#visual{min-height:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px}
+#clock{display:block;touch-action:none}
+#opts{padding:4px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:10px}
+.opt{text-align:left;border:3px solid var(--line);border-radius:16px;background:var(--card);padding:10px 14px;font-size:clamp(1rem,2.5vh,1.2rem);font-weight:500;cursor:pointer;box-shadow:var(--shadow);min-height:58px;display:flex;flex-direction:column;justify-content:center}
+.opt:active{transform:translateY(3px)}
+.opt .big{font-size:1.5em;font-weight:700;font-variant-numeric:tabular-nums}
+.opt .sm{font-size:.85em;color:var(--muted)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 22%,var(--card))}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,var(--card));opacity:.75}
+.opt.hint{border-color:var(--gold);animation:wig .6s ease-in-out 3}
+@keyframes wig{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+.opt.pic{text-align:center;align-items:center;min-height:clamp(110px,24vh,200px)}
+.opt.pic .e{font-size:clamp(3rem,11vh,5.5rem);line-height:1.05}
+.opt.pic .sm{font-size:1.1rem;color:var(--ink);font-weight:600}
+.setrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.vis-emoji{font-size:clamp(3rem,min(20vh,30vw),9rem);line-height:1}
+.vis-cap{font-size:1.2rem;font-weight:700;text-align:center}
+.vis-zh{font-size:clamp(1.8rem,min(11vh,13vw),5rem);max-width:100%;font-weight:600;background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:6px 22px}
+.week{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.week span{border:2px solid var(--line);background:var(--card);border-radius:10px;padding:4px 8px;font-size:.95rem;font-weight:600}
+.week span.on{background:var(--gold);color:#1a1a1a;border-color:transparent}
+.calpage{background:var(--paper);border:3px solid var(--line);border-radius:16px;overflow:hidden;width:min(100%,380px);box-shadow:var(--shadow)}
+.calpage .ch{background:var(--lantern);color:#fff;text-align:center;font-weight:700;padding:4px 8px;font-size:1.15rem}
+.calpage table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;table-layout:fixed}
+.calpage th{font-size:.8rem;color:var(--muted);font-weight:600;padding:3px 0}
+.calpage td{text-align:center;font-size:clamp(.85rem,2.2vh,1.05rem);padding:clamp(1px,.5vh,4px) 0;font-weight:500}
+.calpage td.today{outline:3px solid var(--accent);outline-offset:-3px;border-radius:10px;font-weight:700}
+.calpage td.mark{background:var(--gold);color:#1a1a1a;border-radius:10px;font-weight:700}
+.tear{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.leaf{background:var(--paper);border:3px solid var(--line);border-radius:14px;min-width:120px;text-align:center;overflow:hidden;box-shadow:var(--shadow)}
+.leaf .lm{background:var(--lantern);color:#fff;font-weight:700;font-size:.9rem;padding:2px 8px}
+.leaf .ld{font-size:2.4rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.leaf .lw{font-size:.85rem;color:var(--muted);padding-bottom:4px}
+#foot{flex:0 0 auto;min-height:70px;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+#coach{flex:1 1 320px;border:3px solid var(--line);border-left-width:10px;border-radius:16px;background:var(--card);padding:6px 12px;display:flex;gap:10px;align-items:center;min-height:64px}
+#coach.ok{border-color:var(--ok)}#coach.bad{border-color:var(--bad)}
+#coach .face{font-size:1.8rem}
+#coach .tx{flex:1;min-width:0;font-size:clamp(.95rem,2.2vh,1.08rem);font-weight:500;line-height:1.3}
+#rot{display:none;margin-top:4px;text-align:center;color:var(--muted);font-size:.9rem}
+@media (orientation:portrait) and (max-width:700px){#play:not([hidden]) #rot{display:block}}
+/* result */
+.result{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;gap:6px;padding:4px;overflow:auto}
+.result>:first-child{margin-top:auto}.result>:last-child{margin-bottom:auto}
+.result .big-stars{font-size:clamp(2.6rem,10vh,4.6rem);letter-spacing:6px;color:var(--gold);line-height:1.1}
+.result h2{margin:0;font-size:clamp(1.5rem,4.5vh,2rem)}
+.result .sub{color:var(--muted);margin:0}
+.tipcard{margin:6px auto;max-width:600px;text-align:left;background:var(--card);border:3px solid var(--line);border-radius:18px;padding:10px 16px;font-weight:500}
+.tipcard b{display:block;margin-bottom:2px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.gate{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.gate input[type=text]{font:inherit;font-size:1.3rem;width:9ch;min-height:52px;padding:8px 12px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.pickk{display:flex;align-items:center;gap:8px;font-size:1.2rem;font-weight:600;min-height:48px;padding:0 14px;border:2px solid var(--line);border-radius:14px;cursor:pointer}
+.pickk input{width:22px;height:22px}
+.note{color:var(--muted);font-size:.95rem;margin:10px 0 0}
+.err{color:var(--bad);font-size:.95rem;min-height:1.3em;margin-top:6px}
+/* holiday calendar */
+#cal{overflow:auto}
+.calhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.today{font-weight:700;font-size:1.15rem;flex:1;min-width:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{min-height:44px;border-radius:999px;border:2px solid var(--line);background:var(--card);padding:4px 14px;font-weight:600;cursor:pointer;font-size:1rem}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.soon{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.soon button{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:6px 12px;cursor:pointer;font-size:1rem;font-weight:600;min-height:48px}
+.soon b{color:var(--lantern);font-variant-numeric:tabular-nums}
+.months{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.mon{background:var(--paper);border:2px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.mon.now{border-color:var(--accent);border-width:3px}
+.mon .mh{background:var(--lantern);color:#fff;font-weight:700;padding:3px 8px;font-size:1rem;display:flex;justify-content:space-between;gap:4px}
+.mon .mh .zc .z{color:#ffe3e3}
+.mon .hs{display:flex;flex-wrap:wrap;gap:4px;padding:6px}
+.hb{font-size:1.5rem;width:48px;height:48px;border-radius:12px;border:2px solid transparent;background:var(--card);cursor:pointer;padding:0;display:grid;place-items:center}
+.hb[aria-pressed="true"]{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 25%,var(--card))}
+#detail{margin-bottom:10px}
+.dcard{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:3px solid var(--gold);border-radius:18px;padding:10px 14px}
+.dcard .de{font-size:3.4rem;line-height:1}
+.dcard .dt{font-size:1.3rem;font-weight:700}
+.dcard .dw{color:var(--lantern);font-weight:600}
+.dcard p{margin:4px 0 0;max-width:65ch}
+@media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.months{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){#stage{grid-template-columns:minmax(0,1fr)}#buddy{display:none}.brand{font-size:1.1rem}body.playing .brand .bt{display:none}#coach .tx{font-size:.92rem}#coach{padding:4px 8px}#coach .face{font-size:1.4rem}}
+@media (max-height:500px){body.playing .brand .bt{display:none}#coach .tx{font-size:.9rem}#foot{min-height:0}.vis-zh{font-size:clamp(1.6rem,12vh,3rem)}}
+@media (max-height:560px){.grid:not(.two) .mcard{flex-direction:row;align-items:center;gap:8px;padding:4px 10px}.grid:not(.two) .mcard .tt{flex:1;min-width:0;font-size:.95rem;line-height:1.1}.grid:not(.two) .mcard .em{font-size:1.4rem}.grid:not(.two) .mcard .stars{font-size:.95rem;letter-spacing:0}.mix{min-height:48px;padding:4px 14px}.hero p{display:none}.kit .st{display:none}.mcard .bl,.mix .bl{display:none}body{font-size:17px}}
+@media (max-height:500px) and (min-width:600px){
+  #stage,#stage.flow{grid-template-columns:auto minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);align-content:stretch}
+  #buddy{grid-row:1}#opts{grid-template-columns:1fr!important;align-content:center;gap:6px}
+  .opt{min-height:44px;padding:6px 12px}.opt.pic{min-height:0}.opt.pic .e{font-size:2.6rem}
+  .calpage td{padding:0;font-size:.85rem}.calpage .ch{font-size:.95rem;padding:2px 6px}.calpage th{padding:0;font-size:.7rem}
+  .leaf{min-width:96px}.leaf .ld{font-size:1.8rem}.week span{font-size:.8rem;padding:2px 5px}
+  .vis-emoji{font-size:clamp(2.5rem,22vh,5rem)}.promptrow{margin-bottom:2px}#foot{margin-top:4px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <button class="ico" id="back" aria-label="Back" hidden>←</button>
+    <div class="brand" id="brand"><span class="be">🕰️</span> <span class="bt">Calendar Quest</span></div>
+    <span class="pill" id="roundInfo" hidden></span><span class="pill" id="ptsInfo" hidden></span>
+    <button class="ico" id="voiceBtn" aria-label="Read aloud" aria-pressed="false" hidden>🗣️</button>
+    <button class="ico" id="soundBtn" aria-label="Sound" aria-pressed="true">🔊</button>
+  </div>
+
+  <section id="home">
+    <div class="hero">
+      <canvas id="intro" aria-label="Nora and Lucas race to a giant clock. Milo the dinosaur pops up. Tap to start."></canvas>
+      <h1>Calendar Quest</h1>
+      <p>Clocks, days, months and holidays from the US, Taiwan and around the world.</p>
+      <div class="kits" id="kits"></div>
+    </div>
+    <div class="homefoot"><button class="btn ghost small" id="calBtn">📅 Holiday calendar</button><button class="btn ghost small" id="resetBtn">Reset records</button></div>
+    <div class="modal" id="resetBox" hidden>
+     <div class="tipcard">
+      <div id="resetStep1">
+        <b>Grown-ups only</b><span id="gateQ"></span>
+        <div class="gate"><input id="gateA" type="text" inputmode="numeric" autocomplete="off" aria-label="Answer"><button class="btn" id="gateGo">Check</button><button class="btn ghost" id="gateCancel">Cancel</button></div>
+        <div class="err" id="gateErr"></div>
+      </div>
+      <div id="resetStep2" hidden>
+        <b>Whose records should be cleared?</b>
+        <div class="gate"><label class="pickk"><input type="checkbox" id="rs-nora"> Nora</label><label class="pickk"><input type="checkbox" id="rs-lucas"> Lucas</label><label class="pickk"><input type="checkbox" id="rs-milo"> Milo</label></div>
+        <p class="note">Clears stars, the list of questions already seen, and read-aloud settings on this device. This can’t be undone.</p>
+        <div class="gate"><button class="btn danger" id="rsGo">Reset</button><button class="btn ghost" id="rsCancel">Cancel</button></div>
+        <div class="err" id="rsErr"></div>
+      </div>
+     </div>
+    </div>
+  </section>
+
+  <section id="map" hidden>
+    <div class="maphead"><div class="who" id="who"></div><button class="btn ghost small" id="calBtn2">📅 Holiday calendar</button><span class="pill" id="mapStars"></span></div>
+    <div class="grid" id="missions"></div>
+    <button class="mix" id="mix"></button>
+  </section>
+
+  <section id="play" hidden>
+    <div class="promptrow"><div id="prompt"></div><button class="ico" id="again" aria-label="Read the question again">🔈</button></div>
+    <div id="stage">
+      <canvas id="buddy" aria-hidden="true"></canvas>
+      <div id="visual"></div>
+      <div id="opts"></div>
+    </div>
+    <div id="foot">
+      <div id="coach" hidden><div class="face" id="face">🦉</div><div class="tx" id="coachText"></div><button class="btn" id="next">Next ▶</button></div>
+    </div>
+    <div id="rot">Turn your phone sideways ↻ for a bigger view</div>
+  </section>
+
+  <section id="result" hidden>
+    <div class="result">
+      <div class="big-stars" id="rStars"></div>
+      <h2 id="rTitle"></h2>
+      <p class="sub" id="rSub"></p>
+      <div class="tipcard"><b>Try it today</b><span id="rTip"></span></div>
+      <div class="tipcard" id="breakCard" hidden><b>Great practice! Time for a break 🧃</b><span>That’s three missions in a row. Go look at a real clock or calendar, then come back later.</span></div>
+      <div class="row" id="goRow"><button class="btn big" id="nextMission">Next ▶</button></div>
+      <div class="row" id="moreRow"><button class="btn ghost" id="replay">Play again</button><button class="btn ghost" id="toMap">All missions</button></div>
+      <div class="row" id="breakRow" hidden><button class="btn big" id="endBreak">Finish for now</button></div>
+    </div>
+  </section>
+
+  <section id="cal" hidden>
+    <div class="calhead"><div class="today" id="todayTx"></div><div class="chips" id="calChips"></div></div>
+    <div class="soon" id="soon"></div>
+    <div id="detail"></div>
+    <div class="months" id="months"></div>
+  </section>
+</div>
+<script>
+// ==LOGIC-START (no DOM in this block)
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const rint=(a,b)=>Math.floor(rnd(a,b+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=r[i];r[i]=r[j];r[j]=t;}return r;};
+const pad=n=>String(n).padStart(2,'0');
+const MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const ZHNUM=[['日','ㄖˋ'],['一','ㄧ'],['二','ㄦˋ'],['三','ㄙㄢ'],['四','ㄙˋ'],['五','ㄨˇ'],['六','ㄌㄧㄡˋ'],['七','ㄑㄧ'],['八','ㄅㄚ'],['九','ㄐㄧㄡˇ'],['十','ㄕˊ']];
+/* Chinese text with vertical zhuyin beside each character. zy is space-separated, one syllable per character. */
+function RB(ch,zy){const z=zy.split(' '),c=Array.from(ch);return '<span class="zy">'+c.map((x,i)=>'<span class="zc"><span class="c">'+x+'</span><span class="z">'+(z[i]||'')+'</span></span>').join('')+'</span>';}
+function zhMonth(m){ // m 1..12
+  if(m<=10)return RB(ZHNUM[m][0]+'月',ZHNUM[m][1]+' ㄩㄝˋ');
+  return RB('十'+ZHNUM[m-10][0]+'月','ㄕˊ '+ZHNUM[m-10][1]+' ㄩㄝˋ');
+}
+function zhDay(d){return RB('星期'+ZHNUM[d][0],'ㄒㄧㄥ ㄑㄧˊ '+ZHNUM[d][1]);}
+const ord=n=>n+((n%100>=11&&n%100<=13)?'th':(['th','st','nd','rd'][n%10]||'th'));
+
+/* Holidays. r: fix (month/day), nth (nth weekday of month), last (last weekday), lunar (lunar date; exact dates from a table),
+   text (no exact rule here), easter. mo = month answer for Lucas. */
+const H=[
+ // ---- US ----
+ {id:'newyear',g:'us',n:"New Year's Day",e:'🎉',r:{t:'fix',m:1,d:1},s:'Starting a brand-new year',f:'People count down 10, 9, 8… and cheer at midnight. Many people pick a goal for the new year.'},
+ {id:'mlk',g:'us',n:'Martin Luther King Jr. Day',e:'✊',r:{t:'nth',m:1,wd:1,n:3},s:'Honoring Dr. King, who worked for fair treatment of all people',f:'Dr. King believed in peaceful protest. In 1963 he gave his famous “I Have a Dream” speech.'},
+ {id:'groundhog',g:'us',n:'Groundhog Day',e:'🌤️',r:{t:'fix',m:2,d:2},s:'A groundhog “guesses” when spring will come',f:'Legend says if the groundhog sees its shadow, winter lasts six more weeks.'},
+ {id:'valentine',g:'us',n:"Valentine's Day",e:'❤️',r:{t:'fix',m:2,d:14},s:'Showing love to family and friends',f:'Kids often trade cards and candy hearts with classmates.',milo:['❤️','heart']},
+ {id:'presidents',g:'us',n:"Presidents' Day",e:'🎩',r:{t:'nth',m:2,wd:1,n:3},s:'Honoring US presidents',f:'It started as George Washington’s birthday. He was born on February 22, 1732.'},
+ {id:'stpat',g:'us',n:"St. Patrick's Day",e:'☘️',r:{t:'fix',m:3,d:17},s:'Celebrating Ireland and Irish culture',f:'People wear green. The shamrock, a three-leaf clover, is its symbol.',milo:['☘️','clover']},
+ {id:'mothers',g:'us',n:"Mother's Day",e:'💐',r:{t:'nth',m:5,wd:0,n:2},s:'Thanking moms',f:'Taiwan and the US both celebrate Mother’s Day on the second Sunday of May.'},
+ {id:'memorial',g:'us',n:'Memorial Day',e:'🌺',r:{t:'last',m:5,wd:1},s:'Remembering soldiers who died serving the country',f:'It also marks the start of summer for many families.'},
+ {id:'juneteenth',g:'us',n:'Juneteenth',e:'🕊️',r:{t:'fix',m:6,d:19},s:'Celebrating the end of slavery in the United States',f:'On June 19, 1865, news of freedom reached enslaved people in Texas. It became a national holiday in 2021.'},
+ {id:'fathersus',g:'us',n:"Father's Day (US)",e:'👔',r:{t:'nth',m:6,wd:0,n:3},s:'Thanking dads',f:'In the US it’s the third Sunday of June. Taiwan’s Father’s Day is on August 8!'},
+ {id:'july4',g:'us',n:'Independence Day',e:'🎆',r:{t:'fix',m:7,d:4},s:'America’s birthday',f:'On July 4, 1776, the Declaration of Independence was adopted. Families watch fireworks and have picnics.',milo:['🎆','fireworks'],
+  x:[{q:'How old is the United States on July 4, 2026?',o:['250 years','100 years','76 years'],why:'2026 − 1776 = 250. A big birthday!',lv:'n'}]},
+ {id:'labor',g:'us',n:'Labor Day',e:'🛠️',r:{t:'nth',m:9,wd:1,n:1},s:'Honoring workers',f:'It’s the first Monday of September, and lots of kids start school around then.'},
+ {id:'halloween',g:'us',n:'Halloween',e:'🎃',r:{t:'fix',m:10,d:31},s:'Costumes and trick-or-treating',f:'Jack-o’-lanterns started as carved turnips in Ireland. Pumpkins came later, in America.',milo:['🎃','pumpkin'],
+  x:[{q:'What do kids say at the door on Halloween?',o:['“Trick or treat!”','“Happy birthday!”','“Gong xi fa cai!”'],lv:'l'}]},
+ {id:'veterans',g:'us',n:'Veterans Day',e:'🎖️',r:{t:'fix',m:11,d:11},s:'Thanking everyone who served in the military',f:'It’s November 11 because World War I ended on the 11th hour of the 11th day of the 11th month, in 1918.'},
+ {id:'thanksgiving',g:'us',n:'Thanksgiving',e:'🦃',r:{t:'nth',m:11,wd:4,n:4},s:'Giving thanks with a big family meal',f:'Many families eat turkey, mashed potatoes and pumpkin pie.',milo:['🦃','turkey'],
+  x:[{q:'What food do many families eat at Thanksgiving?',o:['Turkey','Mooncakes','Zongzi'],lv:'l'}]},
+ {id:'christmas',g:'us',n:'Christmas',e:'🎄',r:{t:'fix',m:12,d:25},s:'Christians celebrate Jesus’s birth, and families give gifts',f:'Many families decorate a tree, and kids hang stockings.',milo:['🎄','tree']},
+ // ---- Taiwan / Chinese ----
+ {id:'lny',g:'tw',n:'Lunar New Year',zh:['春節','ㄔㄨㄣ ㄐㄧㄝˊ'],e:'🧧',r:{t:'lunar',lm:1,ld:1,mo:'January or February'},s:'The Chinese New Year: family dinner and red envelopes',
+  f:'Kids get red envelopes ('+RB('紅包','ㄏㄨㄥˊ ㄅㄠ')+') with money inside. 2026 was the Year of the Horse. 2027 is the Year of the Goat.',milo:['🧧','red envelope'],
+  x:[{q:'What do kids get at Lunar New Year?',o:['Red envelopes with money','Pumpkins','Easter eggs'],lv:'l'},{q:'Which animal is 2027?',o:['Goat','Horse','Dragon','Tiger'],why:'2026 was the Horse, so 2027 is the Goat. The 12 animals take turns.',lv:'n'}]},
+ {id:'lantern',g:'tw',n:'Lantern Festival',zh:['元宵節','ㄩㄢˊ ㄒㄧㄠ ㄐㄧㄝˊ'],e:'🏮',r:{t:'lunar',lm:1,ld:15,mo:'February or March'},s:'Lanterns, riddles and sweet rice balls',
+  f:'It ends the New Year fun. People eat sweet rice balls ('+RB('湯圓','ㄊㄤ ㄩㄢˊ')+') and guess riddles on lanterns. In Pingxi, Taiwan, sky lanterns float up.',milo:['🏮','lantern'],
+  x:[{q:'Lantern Festival is how many days after Lunar New Year’s Day?',o:['14 days','7 days','30 days'],why:'New Year is the 1st day of the 1st month. Lantern Festival is the 15th day. 15 − 1 = 14.',lv:'n'}]},
+ {id:'qingming',g:'tw',n:'Tomb Sweeping Day',zh:['清明節','ㄑㄧㄥ ㄇㄧㄥˊ ㄐㄧㄝˊ'],e:'🌿',r:{t:'text',w:'April 4 or 5',mo:'April'},s:'Cleaning family graves to remember ancestors',
+  f:'Families visit and clean the graves of grandparents and great-grandparents. Some eat spring rolls ('+RB('潤餅','ㄖㄨㄣˋ ㄅㄧㄥˇ')+').'},
+ {id:'children',g:'tw',n:"Children's Day (Taiwan)",zh:['兒童節','ㄦˊ ㄊㄨㄥˊ ㄐㄧㄝˊ'],e:'🧒',r:{t:'fix',m:4,d:4},s:'A special day for kids in Taiwan',f:'It’s the same day as National Ramen Day!'},
+ {id:'dragon',g:'tw',n:'Dragon Boat Festival',zh:['端午節','ㄉㄨㄢ ㄨˇ ㄐㄧㄝˊ'],e:'🐉',r:{t:'lunar',lm:5,ld:5,mo:'May or June'},s:'Dragon boat races and sticky rice dumplings',
+  f:'People eat zongzi ('+RB('粽子','ㄗㄨㄥˋ ˙ㄗ')+'), rice wrapped in bamboo leaves. Some try to stand an egg on its end at noon!',milo:['🐉','dragon boat'],
+  x:[{q:'What food do people eat at Dragon Boat Festival?',o:['Zongzi (sticky rice in leaves)','Turkey','Candy canes'],lv:'l'},{q:'The festival remembers someone from long ago. Who?',o:['Qu Yuan, a poet','George Washington','Santa Claus'],why:'Qu Yuan was a poet in ancient China. People raced boats to look for him.',lv:'n'}]},
+ {id:'qixi',g:'tw',n:'Qixi (Chinese Valentine’s Day)',zh:['七夕','ㄑㄧ ㄒㄧˋ'],e:'🌌',r:{t:'lunar',lm:7,ld:7,mo:'August'},s:'A love story: the weaver girl and the cowherd meet once a year',f:'Magpie birds make a bridge across the Milky Way so the two can meet.'},
+ {id:'fatherstw',g:'tw',n:"Father's Day (Taiwan)",zh:['父親節','ㄈㄨˋ ㄑㄧㄣ ㄐㄧㄝˊ'],e:'👨',r:{t:'fix',m:8,d:8},s:'Thanking dads in Taiwan',
+  f:'8/8 is '+RB('八八','ㄅㄚ ㄅㄚ')+', which sounds like '+RB('爸爸','ㄅㄚˋ ˙ㄅㄚ')+', dad!',
+  x:[{q:'Why is Taiwan’s Father’s Day on August 8?',o:['“Eight eight” sounds like “baba,” dad','Dads like the number 8','It is the hottest day'],lv:'n'}]},
+ {id:'midautumn',g:'tw',n:'Mid-Autumn Festival',zh:['中秋節','ㄓㄨㄥ ㄑㄧㄡ ㄐㄧㄝˊ'],e:'🥮',r:{t:'lunar',lm:8,ld:15,mo:'September or October'},s:'The moon festival: mooncakes and family',
+  f:'The moon is full and bright. In Taiwan, families barbecue outside and eat mooncakes ('+RB('月餅','ㄩㄝˋ ㄅㄧㄥˇ')+') and pomelos. The story says Chang’e ('+RB('嫦娥','ㄔㄤˊ ㄜˊ')+') lives on the moon with a jade rabbit.',milo:['🥮','mooncake'],
+  x:[{q:'What do people look at during Mid-Autumn Festival?',o:['The full moon','The sunrise','A rainbow'],lv:'l'},{q:'What do many Taiwan families do outside on Mid-Autumn night?',o:['Have a barbecue','Go trick-or-treating','Hunt for eggs'],lv:'b'}]},
+ {id:'teachers',g:'tw',n:"Teachers' Day",zh:['教師節','ㄐㄧㄠˋ ㄕ ㄐㄧㄝˊ'],e:'🍎',r:{t:'fix',m:9,d:28},s:'Thanking teachers',f:'It’s the birthday of Confucius ('+RB('孔子','ㄎㄨㄥˇ ㄗˇ')+'), a famous teacher who lived about 2,500 years ago.'},
+ {id:'doubleten',g:'tw',n:'Double Ten Day',zh:['雙十節','ㄕㄨㄤ ㄕˊ ㄐㄧㄝˊ'],e:'🎇',r:{t:'fix',m:10,d:10},s:'Taiwan’s National Day',f:'Double Ten means the 10th day of the 10th month. There are parades and fireworks.'},
+ {id:'doublenine',g:'tw',n:'Double Ninth Festival',zh:['重陽節','ㄔㄨㄥˊ ㄧㄤˊ ㄐㄧㄝˊ'],e:'⛰️',r:{t:'lunar',lm:9,ld:9,mo:'October'},s:'Honoring grandparents and older people',f:'Some families climb mountains together on this day.'},
+ {id:'dongzhi',g:'tw',n:'Winter Solstice Festival',zh:['冬至','ㄉㄨㄥ ㄓˋ'],e:'🍡',r:{t:'text',w:'December 21 or 22',mo:'December'},s:'The shortest day and longest night of the year',
+  f:'Families eat '+RB('湯圓','ㄊㄤ ㄩㄢˊ')+' rice balls. Some grandparents say eating them makes you one year older!'},
+ // ---- World ----
+ {id:'holi',g:'world',n:'Holi',e:'🎨',r:{t:'text',w:'The full moon in March (sometimes late February)',mo:'March'},s:'Hindu festival of colors that welcomes spring',f:'People throw bright colored powder and water at each other.'},
+ {id:'easter',g:'world',n:'Easter',e:'🐣',r:{t:'easter',w:'A Sunday in spring (March or April)',mo:'March or April'},s:'Christians celebrate Jesus rising again, and kids hunt for eggs',f:'Easter moves every year. It is the first Sunday after the first full moon of spring.',milo:['🐣','egg']},
+ {id:'eid',g:'world',n:'Eid al-Fitr',e:'🌙',r:{t:'text',w:'It moves about 11 days earlier every year',mo:'It moves every year'},s:'Muslims celebrate the end of Ramadan with feasts and gifts',f:'During Ramadan, many Muslims don’t eat or drink from sunrise to sunset for a month. Eid starts when the new moon is seen.'},
+ {id:'diwali',g:'world',n:'Diwali',e:'🪔',r:{t:'text',w:'October or November (on a new moon)',mo:'October or November'},s:'Hindu festival of lights',f:'Families light little oil lamps called diyas, share sweets and set off fireworks.'},
+ {id:'dia',g:'world',n:'Día de los Muertos',e:'🌼',r:{t:'fix',m:11,d:1},w:'November 1 and 2',s:'Mexican families remember loved ones who have died',f:'Families build colorful altars with photos, orange marigold flowers and sugar skulls.'},
+ {id:'hanukkah',g:'world',n:'Hanukkah',e:'🕎',r:{t:'text',w:'8 nights, usually in December',mo:'December'},s:'Jewish festival of lights that lasts 8 nights',f:'Each night, one more candle is lit on the menorah. Kids spin a top called a dreidel.',milo:['🕎','candles']},
+ {id:'kwanzaa',g:'world',n:'Kwanzaa',e:'🕯️',r:{t:'fix',m:12,d:26},w:'December 26 to January 1',s:'Celebrating African American culture and family',f:'It lasts 7 days, one for each of its 7 principles, like unity and creativity.'},
+ // ---- Fun days ----
+ {id:'popcorn',g:'fun',n:'National Popcorn Day',e:'🍿',r:{t:'fix',m:1,d:19},s:'Munching popcorn',f:'Popcorn pops because the water inside each kernel turns to steam.'},
+ {id:'puzzle',g:'fun',n:'National Puzzle Day',e:'🧩',r:{t:'fix',m:1,d:29},s:'Solving puzzles',f:'The first jigsaw puzzles were maps, made in the 1760s to teach geography.'},
+ {id:'pizza',g:'fun',n:'National Pizza Day',e:'🍕',r:{t:'fix',m:2,d:9},s:'Eating pizza',f:'Pizza Margherita is red, white and green, like the flag of Italy.',milo:['🍕','pizza']},
+ {id:'pi',g:'fun',n:'Pi Day',e:'🥧',r:{t:'fix',m:3,d:14},s:'Math fans celebrate the number pi',f:'Pi is about 3.14, so Pi Day is 3/14! Pi tells how far around a circle is compared to how far across.',
+  x:[{q:'Why is Pi Day on March 14?',o:['March 14 is 3/14, like pi ≈ 3.14','Pies are ripe in March','It is the 14th holiday'],lv:'b'},{q:'A circle is 10 cm across. About how far is it around?',o:['About 31 cm','About 10 cm','About 14 cm'],why:'Around = pi × across ≈ 3.14 × 10 ≈ 31.4 cm.',lv:'n'}]},
+ {id:'ramen',g:'fun',n:'National Ramen Day',e:'🍜',r:{t:'fix',m:4,d:4},s:'Slurping ramen noodles',f:'Instant ramen was invented in Japan in 1958 by Momofuku Ando.',
+  x:[{q:'Which Taiwan holiday is on the same day as National Ramen Day?',o:["Children's Day","Teachers' Day",'Double Ten Day'],why:'Both are on April 4.',lv:'b'}]},
+ {id:'boba',g:'fun',n:'National Bubble Tea Day',e:'🧋',r:{t:'fix',m:4,d:30},s:'Drinking boba',f:'Bubble tea ('+RB('珍珠奶茶','ㄓㄣ ㄓㄨ ㄋㄞˇ ㄔㄚˊ')+') was invented in Taiwan in the 1980s. The chewy balls are tapioca pearls.',milo:['🧋','boba'],
+  x:[{q:'Where was bubble tea invented?',o:['Taiwan','Italy','Mexico'],lv:'b'}]},
+ {id:'dino',g:'fun',n:'National Dinosaur Day',e:'🦖',r:{t:'fix',m:6,d:1},s:'Celebrating dinosaurs',f:'Tyrannosaurus rex was about as long as a school bus!',milo:['🦖','dinosaur']},
+ {id:'donut',g:'fun',n:'National Donut Day',e:'🍩',r:{t:'nth',m:6,wd:5,n:1},s:'Eating donuts',f:'It started in 1938 to thank volunteers who served donuts to soldiers in World War I.'},
+ {id:'sushi',g:'fun',n:'International Sushi Day',e:'🍣',r:{t:'fix',m:6,d:18},s:'Eating sushi',f:'Sushi means rice with vinegar. It doesn’t have to have fish!'},
+ {id:'emoji',g:'fun',n:'World Emoji Day',e:'😀',r:{t:'fix',m:7,d:17},s:'Celebrating emoji',f:'July 17 is the date shown on the 📅 calendar emoji!'},
+ {id:'icecream',g:'fun',n:'National Ice Cream Day',e:'🍦',r:{t:'nth',m:7,wd:0,n:3},s:'Eating ice cream',f:'In 1984, President Reagan made July National Ice Cream Month.',milo:['🍦','ice cream']},
+ {id:'pirate',g:'fun',n:'Talk Like a Pirate Day',e:'🏴‍☠️',r:{t:'fix',m:9,d:19},s:'Talking like a pirate. Arrr!',f:'Pirates say “Ahoy, matey!” to say hello.'},
+ {id:'dumpling',g:'fun',n:'National Dumpling Day',e:'🥟',r:{t:'fix',m:9,d:26},s:'Eating dumplings',f:'In Taiwan, lots of people love boiled dumplings ('+RB('水餃','ㄕㄨㄟˇ ㄐㄧㄠˇ')+').'},
+ {id:'taco',g:'fun',n:'National Taco Day',e:'🌮',r:{t:'fix',m:10,d:4},s:'Eating tacos',f:'Tacos come from Mexico, where people have eaten them for hundreds of years.'},
+ {id:'cookie',g:'fun',n:'National Cookie Day',e:'🍪',r:{t:'fix',m:12,d:4},s:'Baking and eating cookies',f:'The chocolate chip cookie was invented in 1938 in Massachusetts.'}
+];
+const HID={};H.forEach(h=>HID[h.id]=h);
+/* Exact dates for lunar holidays (month-day). Checked against published 2026–2028 calendars. */
+const LUNAR={lny:{2026:[2,17],2027:[2,6],2028:[1,26]},lantern:{2026:[3,3],2027:[2,20],2028:[2,9]},dragon:{2026:[6,19],2027:[6,9],2028:[5,28]},midautumn:{2026:[9,25],2027:[9,15],2028:[10,3]}};
+function nthWd(y,m,wd,n){const d=new Date(y,m-1,1);return new Date(y,m-1,1+(wd-d.getDay()+7)%7+7*(n-1));}
+function lastWd(y,m,wd){const d=new Date(y,m,0);return new Date(y,m-1,d.getDate()-(d.getDay()-wd+7)%7);}
+function easterDate(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;return new Date(y,mo-1,da);}
+function dateIn(h,y){
+  const r=h.r;
+  if(r.t==='fix')return new Date(y,r.m-1,r.d);
+  if(r.t==='nth')return nthWd(y,r.m,r.wd,r.n);
+  if(r.t==='last')return lastWd(y,r.m,r.wd);
+  if(r.t==='easter')return easterDate(y);
+  if(r.t==='lunar'&&LUNAR[h.id]&&LUNAR[h.id][y])return new Date(y,LUNAR[h.id][y][0]-1,LUNAR[h.id][y][1]);
+  return null;
+}
+function day0(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+function daysBetween(a,b){return Math.round((day0(b)-day0(a))/864e5);}
+function nextDate(h,today){for(const y of [today.getFullYear(),today.getFullYear()+1]){const d=dateIn(h,y);if(d&&daysBetween(today,d)>=0)return d;}return null;}
+function whenTxt(h){
+  const r=h.r;if(h.w)return h.w;
+  if(r.t==='fix')return MON[r.m-1]+' '+r.d;
+  if(r.t==='nth')return 'The '+ord(r.n)+' '+DAYS[r.wd]+' of '+MON[r.m-1];
+  if(r.t==='last')return 'The last '+DAYS[r.wd]+' of '+MON[r.m-1];
+  if(r.t==='lunar')return 'The '+ord(r.ld)+' day of the '+ord(r.lm)+' lunar month';
+  return r.w;
+}
+function moTxt(h){const r=h.r;if(r.mo)return r.mo;if(r.m)return MON[r.m-1];return r.w;}
+function holMonth(h){const r=h.r;if(r.m)return r.m;const t=moTxt(h);for(let i=0;i<12;i++)if(t.indexOf(MON[i])===0)return i+1;return 0;}
+const fmtDate=d=>MON[d.getMonth()]+' '+d.getDate();
+const fmtLong=d=>DAYS[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+</script>
+<script>
+/* Each question: {id, q, vis, o:[correct, ...wrong], why, hint}. Options are {t, s (small line), e (picture)}. */
+const O=(t,s,e)=>({t:String(t),s:s,e:e});
+function uniqOpts(correct,pool,n){
+  const out=[correct],seen={};seen[correct.t]=1;
+  for(const p of shuffle(pool)){if(out.length>=n)break;if(!seen[p.t]){seen[p.t]=1;out.push(p);}}
+  return out;
+}
+const dig=(h,m)=>h+':'+pad(m);
+function tWords(h,m){
+  const nx=h%12+1;
+  if(m===0)return h+" o'clock";
+  if(m===30)return 'half past '+h;
+  if(m===15)return 'quarter past '+h;
+  if(m===45)return 'quarter to '+nx;
+  return m<30?m+' minutes past '+h:(60-m)+' minutes to '+nx;
+}
+const addMin=(h,m,k)=>{let t=((h%12)*60+m+k)%720;if(t<0)t+=720;let hh=Math.floor(t/60);return [hh===0?12:hh,t%60];};
+
+/* ---------- clock reading ---------- */
+function clockBank(kid){
+  const out=[];
+  if(kid.id==='milo'){
+    for(let h=1;h<=12;h++){let w=h;while(w===h)w=rint(1,12);
+      out.push({id:'mc:'+h,q:"What time is it? Look at the short hand.",vis:{k:'clock',h:h,m:0,big:true},o:[O(h+" o'clock"),O(w+" o'clock")],why:"The short hand points to "+h+". It's "+h+" o'clock!"});}
+    return out;
+  }
+  if(kid.id==='lucas'){
+    for(let h=1;h<=12;h++)for(const m of [0,30,0,30,15,45]){
+      const [h2]=addMin(h,0,60),pool=[O(dig(h2,m),tWords(h2,m))];
+      if(m>=30){const[hb]=addMin(h,0,-60);pool.push(O(dig(hb,m),tWords(hb,m)));} // hour-hand mix-up
+      pool.push(O(dig(h,(m+30)%60),tWords(h,(m+30)%60)));
+      if(m!==0)pool.push(O(dig(h,0),tWords(h,0)));
+      const mh=m/5||12;if(mh!==h)pool.push(O(dig(mh,h*5%60),tWords(mh,h*5%60)));
+      out.push({id:'lc:'+h+':'+m,q:'What time does the clock show?',vis:{k:'clock',h:h,m:m},o:uniqOpts(O(dig(h,m),tWords(h,m)),pool,3),
+        why:'The short hand shows the hour and the long hand shows the minutes. It’s '+tWords(h,m)+'.',
+        hint:m===0?'The long hand is on the 12. That means o’clock.':m===30?'The long hand is on the 6. That means half past.':'Long hand on the 3 is quarter past. On the 9 is quarter to.'});
+    }
+    return out;
+  }
+  // Nora
+  for(let h=1;h<=12;h++)for(let m=5;m<60;m+=5){
+    const pool=[O(dig(h,(m+5)%60)),O(dig(h,(m+55)%60)),O(dig(h,m/5))];
+    const [h2]=addMin(h,0,m>=30?60:-60);pool.push(O(dig(h2,m)));
+    out.push({id:'nc:'+h+':'+m,q:'What time does the clock show?',vis:{k:'clock',h:h,m:m,ticks:true},o:uniqOpts(O(dig(h,m),tWords(h,m)),pool,4),
+      why:'Count by 5s from the 12 to the long hand: '+m+' minutes. The short hand is past the '+h+'. It’s '+dig(h,m)+'.'});
+  }
+  for(let i=0;i<40;i++){
+    const h=rint(1,12),m=rint(1,59);if(m%5===0)continue;
+    out.push({id:'nx:'+h+':'+m,q:'Exact time! What does the clock show?',vis:{k:'clock',h:h,m:m,ticks:true},
+      o:uniqOpts(O(dig(h,m)),[O(dig(h,(m+1)%60)),O(dig(h,(m+59)%60)),O(dig(h,(m+5)%60)),O(dig(addMin(h,0,60)[0],m))],4),
+      why:'Count the little ticks from the last 5. It’s '+dig(h,m)+'.'});
+  }
+  const events=[['Soccer practice',45],['The movie',90],['Piano lessons',30],['The car ride to Grandma’s',75],['The math contest',60],['Swim class',40]];
+  for(const [ev,len] of events)for(let k=0;k<6;k++){
+    const h=rint(1,11),m=pick([0,10,15,20,30,40,45,50]),[eh,em]=addMin(h,m,len);
+    out.push({id:'ne:'+ev.slice(0,4)+':'+h+':'+m+':'+len,q:ev+' starts at the time on the clock and lasts '+len+' minutes. When does it end?',vis:{k:'clock',h:h,m:m,ticks:true},
+      o:uniqOpts(O(dig(eh,em)),[O(dig(...addMin(eh,em,10))),O(dig(...addMin(eh,em,-10))),O(dig(...addMin(eh,em,60))),O(dig(...addMin(h,m,len-60>0?len-60:len+60)))],4),
+      why:'Start at '+dig(h,m)+' and add '+len+' minutes: '+dig(eh,em)+'.'});
+  }
+  return out;
+}
+
+/* ---------- set the clock ---------- */
+function setBank(kid){
+  const out=[];
+  if(kid.id==='lucas'){
+    for(let h=1;h<=12;h++)for(const m of [0,30,15,45])
+      out.push({id:'ls:'+h+':'+m,set:{h:h,m:m},q:'Set the clock to '+tWords(h,m)+'.',why:tWords(h,m)+' is '+dig(h,m)+'.',
+        hint:'Drag the long blue hand for minutes and the short red hand for hours.'});
+    return out;
+  }
+  for(let h=1;h<=12;h++)for(let m=5;m<60;m+=5){
+    const style=pick(['dig','words']);
+    out.push({id:'ns:'+h+':'+m,set:{h:h,m:m},q:'Set the clock to '+(style==='dig'?dig(h,m):tWords(h,m))+'.',why:tWords(h,m)+' is '+dig(h,m)+'.'});
+  }
+  for(let i=0;i<30;i++){
+    const h=rint(1,12),m=pick([0,10,20,30,40,50,55,45]),k=pick([15,25,35,40,50,70,85]),[th,tm]=addMin(h,m,k);
+    out.push({id:'nk:'+h+':'+m+':'+k,set:{h:th,m:tm},q:'It’s '+dig(h,m)+' now. Set the clock to '+k+' minutes later.',why:dig(h,m)+' + '+k+' minutes = '+dig(th,tm)+'.'});
+  }
+  return out;
+}
+
+/* ---------- days of the week ---------- */
+const wk=i=>DAYS[(i+70)%7];
+function daysBank(kid){
+  const out=[],L=kid.id==='lucas',strip=on=>({k:'week',on:on});
+  if(L){
+    for(let i=0;i<7;i++){
+      out.push({id:'da:'+i,q:'What day comes after '+wk(i)+'?',vis:{k:'emoji',e:'📆'},o:[O(wk(i+1)),O(wk(i-1)),O(wk(i+2))],why:'After '+wk(i)+' comes '+wk(i+1)+'.',hintVis:strip(i)});
+      out.push({id:'db:'+i,q:'What day comes before '+wk(i)+'?',vis:{k:'emoji',e:'📆'},o:[O(wk(i-1)),O(wk(i+1)),O(wk(i-2))],why:'Before '+wk(i)+' comes '+wk(i-1)+'.',hintVis:strip(i)});
+      out.push({id:'dy:'+i,q:'Today is '+wk(i)+'. What day was yesterday?',vis:{k:'emoji',e:'⬅️'},o:[O(wk(i-1)),O(wk(i+1)),O(wk(i))],why:'Yesterday is one day back: '+wk(i-1)+'.',hintVis:strip(i)});
+      out.push({id:'dt:'+i,q:'Today is '+wk(i)+'. What day is tomorrow?',vis:{k:'emoji',e:'➡️'},o:[O(wk(i+1)),O(wk(i-1)),O(wk(i+3))],why:'Tomorrow is one day ahead: '+wk(i+1)+'.',hintVis:strip(i)});
+      out.push({id:'dz:'+i,q:'Read the zhuyin. Which day is this?',vis:{k:'zh',h:zhDay(i)},o:[O(wk(i)),O(wk(i+1)),O(wk(i+3))],why:zhDay(i)+' is '+wk(i)+'. 星期 means week. '+(i===0?'日 means sun!':'The number tells which day after Sunday.')});
+    }
+    out.push({id:'dwk',q:'Which two days are the weekend?',vis:{k:'emoji',e:'🛝'},o:[O('Saturday and Sunday'),O('Monday and Tuesday'),O('Friday and Monday')],why:'Saturday and Sunday are the weekend. No school!',hintVis:strip(6)});
+    out.push({id:'dn',q:'How many days are in a week?',vis:{k:'emoji',e:'7️⃣'},o:[O('7'),O('5'),O('10')],why:'Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday: 7 days.',hintVis:strip(-1)});
+    out.push({id:'dsch',q:'Which day is usually a school day?',vis:{k:'emoji',e:'🎒'},o:[O('Wednesday'),O('Saturday'),O('Sunday')],why:'School days are Monday to Friday.'});
+    out.push({id:'dfirst',q:'On most US calendars, which day is first in the week?',vis:{k:'emoji',e:'🗓️'},o:[O('Sunday'),O('Wednesday'),O('Friday')],why:'US calendars start the week on Sunday. Many Taiwan calendars start on Monday!',hintVis:strip(0)});
+    return out;
+  }
+  for(let i=0;i<7;i++){
+    for(const n of [3,8,10,12,15,20,30,100]){const a=(i+n)%7;
+      out.push({id:'dp:'+i+':'+n,q:'Today is '+wk(i)+'. What day will it be in '+n+' days?',vis:{k:'emoji',e:'🔮'},o:uniqOpts(O(wk(a)),[O(wk(a+1)),O(wk(a-1)),O(wk(i+n%7+2)),O(wk(i))],4),
+        why:n+' days = '+Math.floor(n/7)+' weeks and '+(n%7)+' days. Whole weeks land on '+wk(i)+' again, then count '+(n%7)+' more: '+wk(a)+'.'});}
+    for(const n of [5,9,14,16]){const a=i-n;
+      out.push({id:'dm:'+i+':'+n,q:'Today is '+wk(i)+'. What day was it '+n+' days ago?',vis:{k:'emoji',e:'⏪'},o:uniqOpts(O(wk(a)),[O(wk(a+1)),O(wk(a-1)),O(wk(i+n))],4),
+        why:n+' days = '+Math.floor(n/7)+' weeks and '+(n%7)+' days back: '+wk(a)+'.'});}
+    for(const t of [8,10,15,20,22,25,29,31]){const a=i+t-1;
+      out.push({id:'d1:'+i+':'+t,q:'The 1st of the month is a '+wk(i)+'. What day is the '+ord(t)+'?',vis:{k:'emoji',e:'🗓️'},o:uniqOpts(O(wk(a)),[O(wk(a+1)),O(wk(a-1)),O(wk(i+t))],4),
+        why:'The 1st, 8th, 15th, 22nd and 29th are all '+wk(i)+'s. Count on from there: the '+ord(t)+' is a '+wk(a)+'.'});}
+    out.push({id:'dz:'+i,q:'Read it! Which day is this?',vis:{k:'zh',h:zhDay(i)},o:uniqOpts(O(wk(i)),[O(wk(i+1)),O(wk(i-1)),O(wk(i+2))],4),why:zhDay(i)+' is '+wk(i)+'.'});
+  }
+  const y=TODAY.getFullYear();
+  for(const id of ['halloween','christmas','july4','valentine','children','doubleten','pi','boba','newyear','fatherstw'])
+    for(const yy of [y,y+1]){const h=HID[id],d=dateIn(h,yy),w=d.getDay();
+      out.push({id:'dw:'+id+':'+yy,q:'What day of the week is '+h.n+' ('+fmtDate(d)+') in '+yy+'?',vis:{k:'emoji',e:h.e},o:uniqOpts(O(DAYS[w]),[O(wk(w+1)),O(wk(w-1)),O(wk(w+3))],4),
+        why:'Use a calendar or count from today: '+fmtDate(d)+', '+yy+' is a '+DAYS[w]+'.',calHint:{y:yy,m:d.getMonth()+1}});}
+  [['dh','How many hours are in one day?','24',['12','60','100'],'A day has 24 hours: 12 in the morning half and 12 in the afternoon half.'],
+   ['dmin','How many minutes are in one hour?','60',['100','24','30'],'60 minutes make one hour.'],
+   ['dsec','How many seconds are in one minute?','60',['100','10','24'],'60 seconds make one minute.'],
+   ['dyr','How many days are in a regular year?','365',['366','360','300'],'A regular year has 365 days. A leap year has 366.'],
+   ['dwkyr','About how many weeks are in a year?','52',['12','100','30'],'365 ÷ 7 is about 52 weeks.'],
+   ['dfort','How many days are in 3 weeks?','21',['14','18','30'],'3 × 7 = 21 days.'],
+   ['dleap','Which year is a leap year?','2028',['2026','2027','2030'],'Leap years come every 4 years: 2024, 2028, 2032…'],
+   ['dhalf','How many minutes are in half an hour?','30',['15','50','45'],'Half of 60 is 30.'],
+   ['dday2','How many hours are in 2 days?','48',['24','36','72'],'2 × 24 = 48 hours.']
+  ].forEach(([id,q,a,w,why])=>out.push({id:id,q:q,vis:{k:'emoji',e:'🧮'},o:[O(a)].concat(w.map(x=>O(x))),why:why}));
+  return out;
+}
+
+/* ---------- months and seasons ---------- */
+const mo=i=>MON[(i+120)%12];
+const SEASON=m=>['winter','winter','spring','spring','spring','summer','summer','summer','fall','fall','fall','winter'][m];
+const SE={winter:'⛄',spring:'🌷',summer:'☀️',fall:'🍂'};
+const DIM=[31,28,31,30,31,30,31,31,30,31,30,31];
+function monthsBank(kid){
+  const out=[],L=kid.id==='lucas';
+  for(let i=0;i<12;i++){
+    const s=SEASON(i);
+    if(L){
+      out.push({id:'ma:'+i,q:'What month comes after '+mo(i)+'?',vis:{k:'emoji',e:'🗓️'},o:[O(mo(i+1)),O(mo(i-1)),O(mo(i+2))],why:'After '+mo(i)+' comes '+mo(i+1)+'.',hint:'Say the months in order: January, February, March…'});
+      if(i%2===0)out.push({id:'mb:'+i,q:'What month comes before '+mo(i)+'?',vis:{k:'emoji',e:'🗓️'},o:[O(mo(i-1)),O(mo(i+1)),O(mo(i+3))],why:'Before '+mo(i)+' comes '+mo(i-1)+'.'});
+      out.push({id:'ms:'+i,q:'In Taiwan and most of the US, what season is '+mo(i)+'?',vis:{k:'emoji',e:SE[s]},o:uniqOpts(O(s),['winter','spring','summer','fall'].map(x=>O(x)),3),why:mo(i)+' is in '+s+'.'});
+      if(i<6)out.push({id:'mz:'+i,q:'Read the zhuyin. Which month is this?',vis:{k:'zh',h:zhMonth(i+1)},o:[O(mo(i)),O(mo(i+1)),O(mo(i+5))],why:zhMonth(i+1)+' means month number '+(i+1)+': '+mo(i)+'.'});
+    }else{
+      out.push({id:'md:'+i,q:'How many days are in '+mo(i)+'?',vis:{k:'emoji',e:'✊'},o:i===1?[O('28, or 29 in a leap year'),O('30'),O('31')]:[O(DIM[i]),O(DIM[i]===31?30:31),O(28)],
+        why:'Knuckle trick: make two fists. Knuckles are 31 days, the gaps between are 30 (or February). '+mo(i)+' has '+(i===1?'28, or 29 in a leap year':DIM[i])+' days.'});
+      for(const n of [3,5,7,10]){out.push({id:'mp:'+i+':'+n,q:'What month is '+n+' months after '+mo(i)+'?',vis:{k:'emoji',e:'⏩'},o:uniqOpts(O(mo(i+n)),[O(mo(i+n+1)),O(mo(i+n-1)),O(mo(i-n))],4),why:'Count forward '+n+' months from '+mo(i)+': '+mo(i+n)+'.'});}
+      out.push({id:'mo:'+i,q:mo(i)+' is which month of the year?',vis:{k:'emoji',e:'🔢'},o:uniqOpts(O('The '+ord(i+1)),[O('The '+ord(i+2)),O('The '+ord(i===0?3:i)),O('The '+ord((i+6)%12+1))],4),why:mo(i)+' is month number '+(i+1)+', so we write it as '+(i+1)+'/1, '+(i+1)+'/2 and so on.'});
+      out.push({id:'mz:'+i,q:'Read it! Which month is this?',vis:{k:'zh',h:zhMonth(i+1)},o:uniqOpts(O(mo(i)),[O(mo(i+1)),O(mo(i-1)),O(mo(i+2))],4),why:zhMonth(i+1)+' means month number '+(i+1)+': '+mo(i)+'.'});
+      const so=SEASON((i+6)%12);
+      out.push({id:'mau:'+i,q:'In Australia, south of the equator, what season is '+mo(i)+'?',vis:{k:'emoji',e:'🦘'},o:uniqOpts(O(so),['winter','spring','summer','fall'].map(x=>O(x)),4),why:'South of the equator the seasons are flipped. '+mo(i)+' is '+s+' in Taiwan but '+so+' in Australia.'});
+    }
+  }
+  if(L){
+    [['m1','Which month is first in the year?','January',['December','March']],['mn','How many months are in a year?','12',['7','10']],['mshort','Which month is the shortest?','February',['July','October']],
+     ['mlast','Which month is last in the year?','December',['January','June']],['mhallo','Which month has Halloween?','October',['December','April']],['mxmas','Which month has Christmas?','December',['July','March']]
+    ].forEach(([id,q,a,w])=>out.push({id:id,q:q,vis:{k:'emoji',e:'🗓️'},o:[O(a)].concat(w.map(x=>O(x))),why:'The answer is '+a+'.'}));
+  }else{
+    const t=TODAY,iso=t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate();
+    for(const n of [10,14,21,30]){const d=new Date(t.getFullYear(),t.getMonth(),t.getDate()+n);
+      const opt=k=>O(fmtDate(new Date(t.getFullYear(),t.getMonth(),t.getDate()+k)));
+      out.push({id:'mlater:'+iso+':'+n,q:'Today is '+fmtDate(t)+'. What is the date '+(n%7===0?(n/7)+' weeks':n+' days')+' from today?',vis:{k:'cal',y:t.getFullYear(),m:t.getMonth()+1,today:t.getDate()},
+        o:uniqOpts(O(fmtDate(d)),[opt(n+1),opt(n-1),opt(n+7),opt(n-7)],4),why:fmtDate(t)+' + '+n+' days = '+fmtDate(d)+'. When you pass the end of a month, keep counting from the 1st.'});}
+    out.push({id:'mseason',q:'Which season comes right after winter?',vis:{k:'emoji',e:'🌷'},o:[O('spring'),O('summer'),O('fall'),O('winter again')],why:'Winter → spring → summer → fall.'});
+    out.push({id:'mquarter',q:'How many months are in a quarter of a year?',vis:{k:'emoji',e:'🍕'},o:[O('3'),O('4'),O('6'),O('25')],why:'12 ÷ 4 = 3 months.'});
+  }
+  return out;
+}
+
+/* ---------- holidays ---------- */
+function holBank(kid,groups){
+  const L=kid.id==='lucas',n=L?3:4,list=H.filter(h=>groups.indexOf(h.g)>=0),all=H;
+  const out=[];
+  for(const h of list){
+    const vis={k:'emoji',e:h.e,cap:h.n,zh:h.zh};
+    if(L){
+      const right=moTxt(h),pool=MON.filter(m=>right.indexOf(m)<0).map(x=>O(x));
+      out.push({id:'w:'+h.id,q:'In which month is '+h.n+'?',vis:vis,o:uniqOpts(O(right),pool,n),why:h.n+' is '+whenTxt(h).replace(/^The /,'the ')+'. '+h.f,
+        hint:holMonth(h)?SEASON(holMonth(h)-1)==='winter'?'It’s in a cold month.':'It’s in '+SEASON(holMonth(h)-1)+'.':''});
+    }else{
+      const right=whenTxt(h),pool=all.filter(o=>o.id!==h.id&&whenTxt(o)!==right).map(o=>O(whenTxt(o)));
+      out.push({id:'w:'+h.id,q:'When is '+h.n+'?',vis:vis,o:uniqOpts(O(right),pool,n),why:h.n+' is '+right.replace(/^The /,'the ')+'. '+h.f});
+    }
+    out.push({id:'m:'+h.id,q:'What is '+h.n+' about?',vis:vis,o:uniqOpts(O(h.s),all.filter(o=>o.id!==h.id).map(o=>O(o.s)),n),why:h.f});
+    const same=list.filter(o=>o.id!==h.id);
+    out.push({id:'e:'+h.id,q:'Which day goes with this picture?',vis:{k:'emoji',e:h.e},o:uniqOpts(O(h.n),(same.length>=n?same:all.filter(o=>o.id!==h.id)).map(o=>O(o.n)),n),why:h.e+' goes with '+h.n+'. '+h.f});
+    if(h.zh)out.push({id:'z:'+h.id,q:'Read the zhuyin. Which holiday is this?',vis:{k:'zh',h:RB(h.zh[0],h.zh[1])},o:uniqOpts(O(h.n),H.filter(o=>o.zh&&o.id!==h.id).map(o=>O(o.n)),n),why:RB(h.zh[0],h.zh[1])+' is '+h.n+'. '+h.f});
+    (h.x||[]).forEach((x,i)=>{if(x.lv==='b'||x.lv===(L?'l':'n'))out.push({id:'x:'+h.id+i,q:x.q,vis:vis,o:x.o.map(t=>O(t)),why:(x.why?x.why+' ':'')+h.f});});
+    if(!L&&(h.r.t==='nth'||h.r.t==='last')){
+      const d=nextDate(h,TODAY);if(d){const y=d.getFullYear(),m=d.getMonth(),dd=d.getDate();
+        const near=[dd-7,dd+7,dd-1,dd+1].filter(x=>x>=1&&x<=new Date(y,m+1,0).getDate()).map(x=>O(MON[m]+' '+x));
+        out.push({id:'d:'+h.id+':'+y,q:h.n+' is on '+whenTxt(h).replace(/^The /,'the ')+'. Use the calendar: what date is it in '+y+'?',vis:{k:'cal',y:y,m:m+1},o:uniqOpts(O(fmtDate(d)),near,4),
+          why:'Find the '+DAYS[h.r.wd]+' column and count down. In '+y+' it’s '+fmtDate(d)+'.'});}
+    }
+  }
+  return out;
+}
+
+/* ---------- countdown ---------- */
+function upcoming(today,maxDays){
+  return H.map(h=>({h:h,d:nextDate(h,today)})).filter(x=>x.d&&daysBetween(today,x.d)<=maxDays).sort((a,b)=>a.d-b.d);
+}
+function countBank(kid){
+  const out=[],t=TODAY,iso=t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate(),todayVis={k:'leaf',a:t};
+  const up=upcoming(t,366).filter(x=>daysBetween(t,x.d)>0);
+  if(kid.id==='lucas'){
+    for(let i=0;i<Math.min(8,up.length-2);i++){
+      const a=up[i],later=up.filter(x=>daysBetween(a.d,x.d)>20);
+      if(later.length<2)continue;
+      const w=shuffle(later).slice(0,2);
+      out.push({id:'nxt:'+iso+':'+a.h.id,q:'Today is '+fmtLong(t)+'. Which of these comes first?',vis:todayVis,o:[O(a.h.n,fmtDate(a.d),a.h.e)].concat(w.map(x=>O(x.h.n,fmtDate(x.d),x.h.e))),
+        why:a.h.n+' is on '+fmtDate(a.d)+', the soonest one.',hint:'Find the month that comes soonest after '+MON[t.getMonth()]+'.'});
+    }
+    const fixed=H.filter(h=>h.r.t==='fix'&&h.g!=='fun');
+    for(let k=0;k<20;k++){
+      const a=pick(fixed),b=pick(fixed);if(a.r.m===b.r.m)continue;
+      const [f,s]=a.r.m<b.r.m?[a,b]:[b,a];
+      out.push({id:'fy:'+f.id+':'+s.id,q:'Starting from January, which comes first in the year?',vis:{k:'emoji',e:'🗓️'},o:[O(f.n,MON[f.r.m-1],f.e),O(s.n,MON[s.r.m-1],s.e)],why:f.n+' is in '+MON[f.r.m-1]+', and '+s.n+' is in '+MON[s.r.m-1]+'.'});
+    }
+    for(const x of up.filter(x=>daysBetween(t,x.d)<=12).slice(0,3)){const n=daysBetween(t,x.d);
+      out.push({id:'cdl:'+iso+':'+x.h.id,q:'Today is '+fmtDate(t)+'. '+x.h.n+' is on '+fmtDate(x.d)+'. How many more days?',vis:{k:'leaf',a:t,b:x.d,e:x.h.e},o:uniqOpts(O(n),[O(n+1),O(n-1),O(n+2),O(n+10)].filter(o=>+o.t>0),3),why:'Count the sleeps: '+n+' more days until '+x.h.n+'.'});}
+    return out;
+  }
+  for(const x of up.filter(x=>daysBetween(t,x.d)<=200)){
+    const n=daysBetween(t,x.d),m1=t.getMonth(),y1=t.getFullYear();
+    let why;
+    if(x.d.getMonth()===m1&&x.d.getFullYear()===y1)why=x.d.getDate()+' − '+t.getDate()+' = '+n+' days.';
+    else{const left=new Date(y1,m1+1,0).getDate()-t.getDate();const parts=[left+' left in '+MON[m1]];
+      let c=new Date(y1,m1+1,1);while(c.getFullYear()<x.d.getFullYear()||c.getMonth()<x.d.getMonth()){parts.push(new Date(c.getFullYear(),c.getMonth()+1,0).getDate()+' in '+MON[c.getMonth()]);c=new Date(c.getFullYear(),c.getMonth()+1,1);}
+      parts.push(x.d.getDate()+' in '+MON[x.d.getMonth()]);why=parts.join(' + ')+' = '+n+' days.';}
+    out.push({id:'cd:'+iso+':'+x.h.id,q:'Today is '+fmtDate(t)+'. How many days until '+x.h.n+' on '+fmtDate(x.d)+'?',vis:{k:'leaf',a:t,b:x.d,e:x.h.e},
+      o:uniqOpts(O(n),[O(n+1),O(n-1),O(n+7),O(n-7),O(n+30)].filter(o=>+o.t>0),4),why:why});
+    if(n>=14)out.push({id:'cw:'+iso+':'+x.h.id,q:x.h.n+' is '+n+' days away. How many weeks and days is that?',vis:{k:'leaf',a:t,b:x.d,e:x.h.e},
+      o:uniqOpts(O(Math.floor(n/7)+' weeks and '+(n%7)+' days'),[O(Math.floor(n/7)+1+' weeks and '+(n%7)+' days'),O(Math.floor(n/7)+' weeks and '+((n%7)+1)+' days'),O(Math.floor(n/10)+' weeks and '+(n%10)+' days')],4),
+      why:n+' ÷ 7 = '+Math.floor(n/7)+' remainder '+(n%7)+'.'});
+  }
+  return out;
+}
+
+/* ---------- Milo ---------- */
+function dayNightBank(){
+  const D=O('Day','','☀️'),N=O('Night','','🌙');
+  return [['sleep','When do we sleep?',N],['sun','When can we see the sun?',D],['stars','When can we see the stars?',N],['park','When do we go to the playground?',D],
+   ['owl','When do owls wake up?',N],['moon','When is the moon in the dark sky?',N],['lunch','When do we eat lunch?',D],['pj','When do we wear pajamas?',N],['school','When do we go to school?',D]]
+   .map(([id,q,a])=>({id:'dn:'+id,q:q,vis:{k:'emoji',e:'🦖'},o:[a,a===D?N:D],why:a===D?'In the day the sun is up!':'At night it’s dark and the moon comes out.'}));
+}
+function seasonsBank(){
+  const S={winter:O('Winter','','⛄'),summer:O('Summer','','🏖️'),fall:O('Fall','','🍂'),spring:O('Spring','','🌷')};
+  return [['w','Which one is winter?','winter','summer'],['s','Which one is summer?','summer','winter'],['f','Which one is fall?','fall','spring'],['sp','Which one is spring?','spring','fall'],
+   ['snow','When does it snow?','winter','summer'],['swim','When do we swim at the beach?','summer','winter'],['leaves','When do leaves fall down?','fall','spring'],['flowers','When do flowers grow?','spring','fall']]
+   .map(([id,q,a,b])=>({id:'se:'+id,q:q,vis:{k:'emoji',e:'🦕'},o:[S[a],S[b]],why:S[a].t+'!'}));
+}
+function picsBank(){
+  const L=H.filter(h=>h.milo),out=[];
+  for(const h of L){let w=h;while(w===h)w=pick(L);
+    out.push({id:'pc:'+h.id,q:'It’s '+h.n+'! Which one goes with '+h.n+'?',vis:{k:'none'},o:[O(h.milo[1],'',h.milo[0]),O(w.milo[1],'',w.milo[0])],why:'Yes! The '+h.milo[1]+' goes with '+h.n+'.'});}
+  return out;
+}
+</script>
+<script>
+let TODAY=day0(new Date());
+const KID={
+  nora:{id:'nora',name:'Nora',num:9,color:'#7048e8',rounds:6,hints:false,nOpt:4},
+  lucas:{id:'lucas',name:'Lucas',num:6,color:'#f76707',rounds:6,hints:true,nOpt:3},
+  milo:{id:'milo',name:'Milo',num:3,color:'#2b8a3e',rounds:5,hints:true,nOpt:2}
+};
+const MISSIONS={
+  big:[
+    {id:'clock',e:'🕒',t:'What Time Is It?',b:'Read the clock hands',bank:clockBank,tip:'At dinner time, look at a clock and tell a grown-up what time it is.'},
+    {id:'set',e:'⏰',t:'Set the Clock',b:'Drag the hands to the right time',bank:setBank,tip:'Ask a grown-up what time bedtime is, then find it on a real clock.'},
+    {id:'days',e:'📆',t:'Days of the Week',b:'Yesterday, today, tomorrow',bank:daysBank,tip:'Every morning, say what day it is today and what day tomorrow will be.'},
+    {id:'months',e:'🍂',t:'Months & Seasons',b:'12 months, 4 seasons',bank:monthsBank,tip:'Find your birthday month on a calendar and count how many months away it is.'},
+    {id:'us',e:'🎆',t:'US Holidays',b:'Fireworks, turkey and more',bank:k=>holBank(k,['us']),tip:'Find the next US holiday on a calendar at home.'},
+    {id:'tw',e:'🏮',t:'Taiwan Holidays',b:'Lanterns, mooncakes, zongzi',bank:k=>holBank(k,['tw']),tip:'Ask a grown-up which Taiwan holiday they loved most as a kid, and why.'},
+    {id:'world',e:'🌍',t:'World Festivals',b:'Lights, colors and candles',bank:k=>holBank(k,['world']),tip:'Ask a friend which holidays their family celebrates.'},
+    {id:'fun',e:'🧋',t:'Fun Food Days',b:'Boba, ramen, pizza, pi',bank:k=>holBank(k,['fun']),tip:'Pick a fun food day and plan a treat with your family.'},
+    {id:'count',e:'⏳',t:'Countdown',b:'How long until the next holiday?',bank:countBank,tip:'Pick a day you are excited about and cross off each day on a calendar.'}
+  ],
+  milo:[
+    {id:'mclock',e:'🕒',t:'Clock Time',b:'',bank:clockBank,tip:'Look at a clock with a grown-up. Where is the short hand?'},
+    {id:'daynight',e:'🌙',t:'Day or Night',b:'',bank:dayNightBank,tip:'Look out the window. Is it day or night?'},
+    {id:'pics',e:'🎃',t:'Holiday Pictures',b:'',bank:picsBank,tip:'Find a pumpkin, a lantern or a heart in a book.'},
+    {id:'seasons',e:'⛄',t:'Seasons',b:'',bank:seasonsBank,tip:'Is it hot or cold outside today?'}
+  ]
+};
+const MIX={id:'mix',e:'🎲',t:'Holiday Mix',b:'A bit of everything',tip:'Tell someone one new thing you learned about time or holidays today.'};
+const listFor=id=>id==='milo'?MISSIONS.milo:MISSIONS.big;
+
+/* ---------- saved data ---------- */
+const KEY='calendarQuest.v1';
+let DB={p:{},sound:true,introN:0};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.p)DB=Object.assign(DB,s);}catch(e){}
+function prof(id){if(!DB.p[id])DB.p[id]={stars:{},seen:[],voice:id!=='nora',rev:0};return DB.p[id];}
+const store={save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}cloudSave();}};
+const streaks={nora:0,lucas:0,milo:0};
+
+const $=id=>document.getElementById(id);
+let cur=null,mission=null,qs=[],qi=0,pts=0,tries=0,answered=false,screen='home',lastResult=null;
+
+/* ---------- audio: effects + speech ---------- */
+let ac=null;
+function audio(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){ac=null;}}if(ac&&ac.state==='suspended'){try{ac.resume();}catch(e){}}return ac;}
+function tone(f,d,type,vol,delay){
+  if(!DB.sound)return;const c=audio();if(!c)return;
+  try{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+(delay||0);o.type=type||'sine';o.frequency.value=f;o.connect(g);g.connect(c.destination);
+    g.gain.setValueAtTime(vol||.15,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d+.03);}catch(e){}
+}
+const sfx={good(){[523,659,784,1047].forEach((f,i)=>tone(f,.2,'triangle',.18,i*.08));},bad(){tone(220,.25,'sawtooth',.08);tone(165,.3,'sawtooth',.07,.12);},
+  tick(){tone(1400,.03,'square',.05);},star(){[660,880,1320].forEach((f,i)=>tone(f,.25,'triangle',.16,i*.12));},chime(){[784,988,1175].forEach((f,i)=>tone(f,.6,'sine',.12,i*.18));}};
+function speakable(html){
+  return String(html).replace(/<span class="z">.*?<\/span>/g,'').replace(/<[^>]+>/g,'').replace(/[㄀-ㄯˊˇˋ˙㐀-鿿]+/g,'')
+    .replace(/\(\s*\)/g,'').replace(/\s+([,.!?])/g,'$1').replace(/\s{2,}/g,' ').trim();
+}
+function say(t){
+  if(!cur||!prof(cur.id).voice||!('speechSynthesis' in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(speakable(t));u.rate=cur.id==='milo'?.85:.95;u.pitch=1.1;u.lang='en-US';speechSynthesis.speak(u);}catch(e){}
+}
+const pr=t=>String(t).replace(/\{name\}/g,cur?cur.name:'');
+
+/* ---------- screens ---------- */
+function show(id){
+  screen=id;['home','map','play','result','cal'].forEach(s=>$(s).hidden=s!==id);
+  $('back').hidden=id==='home';
+  $('roundInfo').hidden=$('ptsInfo').hidden=id!=='play';
+  $('voiceBtn').hidden=!(cur&&(id==='play'||id==='map'));
+  if(cur){$('voiceBtn').setAttribute('aria-pressed',String(!!prof(cur.id).voice));}
+  const bt=id==='cal'?['📅','Holiday Calendar']:id==='play'&&mission?[mission.e,mission.id==='mix'&&cur&&cur.id==='milo'?'Dino Mix':mission.t]:['🕰️','Calendar Quest'];
+  $('brand').innerHTML='<span class="be">'+bt[0]+'</span> <span class="bt">'+bt[1]+'</span>';document.body.classList.toggle('playing',id==='play');
+  if(id!=='play'&&'speechSynthesis' in window)try{speechSynthesis.cancel();}catch(e){}
+  musicSync();
+}
+const starStr=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+const totalStars=id=>listFor(id).concat([MIX]).reduce((a,m)=>a+(prof(id).stars[m.id]||0),0);
+function renderHome(){
+  $('kits').innerHTML='';
+  ['nora','lucas','milo'].forEach(id=>{const k=KID[id],b=document.createElement('button');b.className='kit '+id;
+    b.innerHTML='<div class="num">'+k.num+'</div><div class="nm">'+k.name+'</div><div class="st">★ '+totalStars(id)+' / '+(listFor(id).length+1)*3+'</div>';
+    b.onclick=()=>{cur=k;renderMap();show('map');};$('kits').appendChild(b);});
+}
+function renderMap(){
+  const p=prof(cur.id),L=listFor(cur.id);
+  $('who').innerHTML='<span style="color:'+cur.color+'">'+cur.name+'</span>’s missions';
+  $('mapStars').textContent='★ '+totalStars(cur.id)+' / '+(L.length+1)*3;
+  const g=$('missions');g.className='grid'+(cur.id==='milo'?' two':'');g.innerHTML='';
+  L.forEach(m=>{const b=document.createElement('button');b.className='mcard';
+    b.innerHTML='<div class="em">'+m.e+'</div><div class="tt">'+m.t+'</div>'+(m.b?'<div class="bl">'+m.b+'</div>':'')+'<div class="stars">'+starStr(p.stars[m.id]||0)+'</div>';
+    b.onclick=()=>startMission(m);g.appendChild(b);});
+  $('mix').innerHTML='<span class="em">'+(cur.id==='milo'?'🦖':MIX.e)+'</span><span class="tt">'+(cur.id==='milo'?'Dino Mix':MIX.t)+'</span><span class="bl">'+MIX.b+'</span><span class="stars">'+starStr(p.stars.mix||0)+'</span>';
+  $('mix').onclick=()=>startMission(MIX);
+}
+
+/* ---------- choosing questions: Nora never sees a question twice until a bank runs out ---------- */
+function bankOf(m){
+  if(m.id!=='mix')return m.bank(cur);
+  let all=[];listFor(cur.id).forEach(x=>{if(x.id!=='set')all=all.concat(x.bank(cur).map(q=>Object.assign({},q,{from:x.id})));});return all;
+}
+function chooseQs(m){
+  const bank=bankOf(m),n=cur.rounds,p=prof(cur.id),seen=new Set(p.seen),byId={};
+  bank.forEach(q=>{byId[q.id]=q;});let ids=Object.keys(byId);
+  let fresh=cur.id==='nora'?ids.filter(id=>!seen.has(id)):ids;
+  if(cur.id==='nora'&&fresh.length<n){ // bank ran out: allow repeats again for this bank
+    const set=new Set(ids);p.seen=p.seen.filter(id=>!set.has(id));fresh=ids;
+  }
+  let picked;
+  if(m.id==='mix'){const groups={};shuffle(fresh).forEach(id=>{const f=byId[id].from;(groups[f]=groups[f]||[]).push(id);});
+    const keys=shuffle(Object.keys(groups));picked=[];let i=0;while(picked.length<n&&keys.some(k=>groups[k].length)){const k=keys[i++%keys.length];if(groups[k].length)picked.push(groups[k].pop());}}
+  else picked=shuffle(fresh).slice(0,n);
+  return picked.map(id=>byId[id]);
+}
+function startMission(m){
+  mission=m;TODAY=day0(new Date());qs=chooseQs(m);qi=0;pts=0;
+  show('play');startBuddy();showQ();
+}
+function setPrompt(t){$('prompt').innerHTML=pr(t);say(pr(t));}
+function showQ(){
+  const q=qs[qi];tries=0;answered=false;
+  if(cur.id==='nora'){const p=prof(cur.id);if(p.seen.indexOf(q.id)<0)p.seen.push(q.id);p.rev=Date.now();store.save();}
+  $('roundInfo').textContent=(qi+1)+' / '+qs.length;$('ptsInfo').textContent='⭐ '+pts;
+  $('coach').hidden=true;buddyMood('idle');
+  renderVis(q.vis||{k:'none'},q);
+  const box=$('opts');box.innerHTML='';
+  if(q.set){
+    clockState={t:0,drag:null,on:true,ticks:cur.id==='nora'};drawClock();
+    const done=document.createElement('button');done.className='btn big';done.textContent='Done ✓';done.onclick=()=>checkSet();
+    box.style.gridTemplateColumns='1fr';const row=document.createElement('div');row.className='setrow';
+    [['− hour',-60],['+ hour',60],['− 5 min',-5],['+ 5 min',5]].forEach(([l,d])=>{const b=document.createElement('button');b.className='btn ghost small';b.textContent=l;b.onclick=()=>{nudge(d);};row.appendChild(b);});
+    row.appendChild(done);box.appendChild(row);
+  }else{
+    box.style.gridTemplateColumns=cur.id==='milo'?'repeat(2,minmax(0,1fr))':'';
+    shuffle(q.o.map((o,i)=>({o:o,ok:i===0}))).forEach(x=>{
+      const b=document.createElement('button');b.className='opt'+(x.o.e?' pic':'');b.dataset.ok=x.ok?'1':'';
+      b.innerHTML=(x.o.e?'<span class="e">'+x.o.e+'</span>':'')+(x.o.e?'<span class="sm">'+x.o.t+'</span>'+(x.o.s?'<span class="sm">'+x.o.s+'</span>':''):(/^\d+:\d\d$|^\d+$/.test(x.o.t)?'<span class="big">'+x.o.t+'</span>':'<span>'+x.o.t+'</span>')+(x.o.s?'<span class="sm">'+x.o.s+'</span>':''));
+      b.onclick=()=>choose(b,x.ok);box.appendChild(b);});
+  }
+  setPrompt(q.q);
+}
+function revealView(){const st=$('stage'),ok=document.querySelector('.opt.ok');if(ok&&st.scrollHeight>st.clientHeight)ok.scrollIntoView({block:'nearest'});}
+function coach(html,kind,face){
+  $('coach').hidden=false;$('coach').className=kind||'';$('face').textContent=face||'🦉';$('coachText').innerHTML=pr(html);
+  $('next').hidden=!answered;$('next').textContent=qi+1<qs.length?'Next ▶':'Finish ▶';
+  if(answered)requestAnimationFrame(revealView);
+}
+const PRAISE=['Yes!','Great job!','You got it!','Super!','Nailed it!'];
+function win(){
+  answered=true;pts+=tries===0?2:1;$('ptsInfo').textContent='⭐ '+pts;sfx.good();buddyMood('cheer');
+  const q=qs[qi];coach('<b>'+pick(PRAISE)+'</b> '+(q.why||''),'ok','🎉');say(pick(PRAISE)+' '+(cur.id==='milo'?(q.why||''):''));
+}
+function miss(reveal){
+  sfx.bad();buddyMood('oops');tries++;const q=qs[qi];
+  if(tries>=2){answered=true;reveal();coach('The answer is <b>'+answerText(q)+'</b>. '+(q.why||''),'bad','💡');say('The answer is '+speakable(answerText(q)));return;}
+  let h='Not quite. Try again!';
+  if(cur.hints){if(q.hint)h+=' '+q.hint;if(q.hintVis)renderVis(q.hintVis,q,true);if(q.calHint)renderVis({k:'cal',y:q.calHint.y,m:q.calHint.m},q,true);
+    if(cur.id==='milo')document.querySelectorAll('.opt').forEach(b=>{if(b.dataset.ok)b.classList.add('hint');});}
+  coach(h,'bad','🤔');say(h);
+}
+const answerText=q=>q.set?tWords(q.set.h,q.set.m)+' ('+dig(q.set.h,q.set.m)+')':q.o[0].t+(q.o[0].s&&!/^\d/.test(q.o[0].s)?'':'');
+function choose(b,ok){
+  if(answered||b.classList.contains('bad'))return;
+  if(ok){b.classList.add('ok');win();}
+  else{b.classList.add('bad');miss(()=>document.querySelectorAll('.opt').forEach(x=>{if(x.dataset.ok)x.classList.add('ok');}));}
+}
+$('next').onclick=()=>{qi++;if(qi<qs.length)showQ();else finish();};
+$('again').onclick=()=>{const q=qs[qi];if(q){const was=prof(cur.id).voice;prof(cur.id).voice=true;say(pr(q.q));prof(cur.id).voice=was;}};
+
+function finish(){
+  const max=qs.length*2,pct=pts/max,stars=pct>=.85?3:pct>=.6?2:1,p=prof(cur.id);
+  p.stars[mission.id]=Math.max(p.stars[mission.id]||0,stars);p.rev=Date.now();store.save();
+  streaks[cur.id]++;
+  $('rStars').textContent=starStr(stars);$('rTitle').textContent=stars===3?'Amazing, '+cur.name+'!':stars===2?'Nice work, '+cur.name+'!':'Good try, '+cur.name+'!';
+  $('rSub').textContent=pts+' of '+max+' points';$('rTip').textContent=mission.tip;
+  const brk=streaks[cur.id]>=3,L=listFor(cur.id).concat([MIX]),nx=L[(L.indexOf(mission)+1)%L.length];
+  $('breakCard').hidden=$('breakRow').hidden=!brk;$('goRow').hidden=$('moreRow').hidden=brk;
+  $('nextMission').textContent='Next: '+(nx===MIX&&cur.id==='milo'?'Dino Mix':nx.t)+' ▶';$('nextMission').onclick=()=>startMission(nx);
+  show('result');sfx.star();stopBuddy();
+}
+$('replay').onclick=()=>startMission(mission);
+$('toMap').onclick=()=>{renderMap();show('map');};
+$('endBreak').onclick=()=>{streaks[cur.id]=0;renderHome();show('home');};
+$('back').onclick=()=>{stopBuddy();if(screen==='play'||screen==='result'){renderMap();show('map');}else if(screen==='cal'&&calFrom==='map'&&cur){renderMap();show('map');}else{renderHome();show('home');}};
+$('soundBtn').onclick=()=>{DB.sound=!DB.sound;$('soundBtn').setAttribute('aria-pressed',String(DB.sound));$('soundBtn').textContent=DB.sound?'🔊':'🔇';store.save();musicSync();};
+$('voiceBtn').onclick=()=>{const p=prof(cur.id);p.voice=!p.voice;p.rev=Date.now();$('voiceBtn').setAttribute('aria-pressed',String(p.voice));store.save();if(!p.voice&&'speechSynthesis' in window)try{speechSynthesis.cancel();}catch(e){}};
+
+/* ---------- visuals: clock, calendar page, tear-off leaves, week strip ---------- */
+function renderVis(v,q,isHint){
+  const box=$('visual');
+  if(!isHint)$('stage').classList.toggle('flow',!(v.k==='clock'||q.set));
+  if(v.k==='clock'||q.set){box.innerHTML='<canvas id="clock"></canvas>';clockState=q.set?clockState:{t:((v.h%12)*60+v.m),on:false,ticks:!!v.ticks||cur.id!=='milo',big:v.big};bindClock();fitClock();return;}
+  if(isHint&&box.querySelector('.hintbox'))return;
+  let html='';
+  if(v.k==='emoji')html='<div class="vis-emoji">'+v.e+'</div>'+(v.cap?'<div class="vis-cap">'+v.cap+(v.zh?'<br>'+RB(v.zh[0],v.zh[1]):'')+'</div>':'');
+  else if(v.k==='zh')html='<div class="vis-zh">'+v.h+'</div>';
+  else if(v.k==='week')html='<div class="week">'+DAYS.map((d,i)=>'<span class="'+(i===v.on?'on':'')+'">'+d+'</span>').join('')+'</div>';
+  else if(v.k==='cal')html=calPage(v.y,v.m,v.today,v.marks||[]);
+  else if(v.k==='leaf')html='<div class="tear">'+leaf(v.a,'Today')+(v.b?'<div class="vis-emoji" style="font-size:2.6rem">'+(v.e||'➡️')+'</div>'+leaf(v.b,''):'')+'</div>';
+  if(isHint)box.insertAdjacentHTML('beforeend','<div class="hintbox">'+html+'</div>');else box.innerHTML=html;
+}
+function leaf(d,label){return '<div class="leaf"><div class="lm">'+MON[d.getMonth()]+' '+d.getFullYear()+'</div><div class="ld">'+d.getDate()+'</div><div class="lw">'+(label?label+' · ':'')+DAYS[d.getDay()]+'</div></div>';}
+function calPage(y,m,today,marks){
+  const first=new Date(y,m-1,1).getDay(),n=new Date(y,m,0).getDate();let h='<div class="calpage"><div class="ch">'+MON[m-1]+' '+y+' · '+zhMonth(m)+'</div><table><tr>'+['S','M','T','W','T','F','S'].map(x=>'<th>'+x+'</th>').join('')+'</tr><tr>';
+  for(let i=0;i<first;i++)h+='<td></td>';
+  for(let d=1;d<=n;d++){if((first+d-1)%7===0&&d>1)h+='</tr><tr>';h+='<td class="'+(d===today?'today ':'')+(marks.indexOf(d)>=0?'mark':'')+'">'+d+'</td>';}
+  return h+'</tr></table></div>';
+}
+let clockState={t:0,on:false};
+function fitClock(){
+  const cv=$('clock');if(!cv)return;const box=$('visual'),r=box.getBoundingClientRect();
+  const s=Math.max(120,Math.min(r.width,r.height-4,520)),dpr=window.devicePixelRatio||1;
+  cv.style.width=s+'px';cv.style.height=s+'px';cv.width=s*dpr;cv.height=s*dpr;drawClock();
+}
+function drawClock(){
+  const cv=$('clock');if(!cv)return;const c=cv.getContext('2d'),S=cv.width,R=S/2-6,cx=S/2,cy=S/2,O='#1a1a1a';
+  c.clearRect(0,0,S,S);
+  c.fillStyle='#fffaf0';c.strokeStyle=O;c.lineWidth=R*.06;c.beginPath();c.arc(cx,cy,R*.95,0,6.283);c.fill();c.stroke();
+  if(clockState.ticks)for(let i=0;i<60;i++){const a=i/60*6.283,l=i%5?R*.05:R*.1;c.strokeStyle=O;c.lineWidth=i%5?R*.012:R*.025;c.beginPath();c.moveTo(cx+Math.sin(a)*(R*.88),cy-Math.cos(a)*(R*.88));c.lineTo(cx+Math.sin(a)*(R*.88-l),cy-Math.cos(a)*(R*.88-l));c.stroke();}
+  c.textAlign='center';c.textBaseline='middle';c.fillStyle=O;
+  for(let i=1;i<=12;i++){const a=i/12*6.283,rr=R*(clockState.big?.66:.7);c.font='700 '+Math.round(R*(clockState.big?.2:.16))+'px Fredoka,system-ui,sans-serif';c.fillText(i,cx+Math.sin(a)*rr,cy-Math.cos(a)*rr+R*.01);}
+  if(cur&&cur.id==='nora'&&clockState.ticks)for(let i=1;i<=12;i++){const a=i/12*6.283;c.font='500 '+Math.round(R*.065)+'px Fredoka,system-ui,sans-serif';c.fillStyle='#8a94a8';c.fillText(i*5%60,cx+Math.sin(a)*R*1.0*.98,cy-Math.cos(a)*R*.98);}
+  const t=clockState.t,ma=(t%60)/60*6.283,ha=(t%720)/720*6.283;
+  const hand=(a,len,w,col)=>{c.lineCap='round';c.strokeStyle=O;c.lineWidth=w+R*.03;c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+Math.sin(a)*len,cy-Math.cos(a)*len);c.stroke();c.strokeStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+Math.sin(a)*len,cy-Math.cos(a)*len);c.stroke();};
+  hand(ha,R*.48,R*.075,'#e03131');hand(ma,R*.78,R*.045,'#1c7ed6');
+  c.fillStyle=O;c.beginPath();c.arc(cx,cy,R*.06,0,6.283);c.fill();
+  if(clockState.on&&!answered){c.font='600 '+Math.round(R*.07)+'px Fredoka,system-ui,sans-serif';c.fillStyle='#56657e';c.fillText('drag the hands',cx,cy+R*.3);}
+}
+function bindClock(){
+  const cv=$('clock');if(!cv)return;
+  const ang=e=>{const r=cv.getBoundingClientRect();return Math.atan2(e.clientX-r.left-r.width/2,-(e.clientY-r.top-r.height/2));};
+  cv.onpointerdown=e=>{if(!clockState.on||answered)return;cv.setPointerCapture(e.pointerId);const a=ang(e),r=cv.getBoundingClientRect(),
+      dist=Math.hypot(e.clientX-r.left-r.width/2,e.clientY-r.top-r.height/2)/(r.width/2);
+    const t=clockState.t,ma=(t%60)/60*6.283,ha=(t%720)/720*6.283,df=(x,y)=>Math.abs(Math.atan2(Math.sin(x-y),Math.cos(x-y)));
+    clockState.drag={hand:(df(a,ha)+.25<df(a,ma)||(dist<.55&&df(a,ha)<.6))?'h':'m',last:a};};
+  cv.onpointermove=e=>{const d=clockState.drag;if(!d)return;const a=ang(e);
+    if(d.hand==='m'){let da=a-d.last;da=Math.atan2(Math.sin(da),Math.cos(da));clockState.t+=da/6.283*60;}
+    else{let target=((a+6.283)%6.283)/6.283*720,cur0=clockState.t%720;let diff=target-cur0;if(diff>360)diff-=720;if(diff<-360)diff+=720;clockState.t+=diff;}
+    d.last=a;clockState.t=(clockState.t%720+720)%720;drawClock();};
+  cv.onpointerup=cv.onpointercancel=()=>{if(!clockState.drag)return;clockState.drag=null;clockState.t=(Math.round(clockState.t/5)*5+720)%720;sfx.tick();drawClock();};
+}
+function nudge(d){if(answered)return;clockState.t=((Math.round(clockState.t/5)*5+d)%720+720)%720;sfx.tick();drawClock();}
+function checkSet(){
+  if(answered)return;const q=qs[qi],want=((q.set.h%12)*60+q.set.m),got=Math.round(clockState.t)%720;
+  if(got===want){win();drawClock();}
+  else{const gh=Math.floor(got/60)||12,gm=got%60;
+    miss(()=>{clockState.t=want;clockState.on=false;drawClock();});
+    if(!answered)$('coachText').innerHTML='Your clock says <b>'+dig(gh,gm)+'</b>. '+$('coachText').innerHTML;}
+}
+window.addEventListener('resize',()=>{fitClock();fitIntro();fitBuddy();});
+</script>
+<script>
+/* ---------- the kid's own character (front view, same look as Pitch Smarts) ---------- */
+function rrect(c,x,y,w,h,r){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h);}
+function drawKid(c,who,x,y,R,now,mood,num){
+  const girl=who==='nora',O='#1a1a1a',lw=Math.max(2,R*.12),SK='#f6cfae',HR='#1b120c';
+  const K=girl?{shirt:'#1c7ed6',trim:'#ffc61a'}:{shirt:'#1c7ed6',trim:'#ffffff'};
+  const cap=(a,b,w,col)=>{c.lineCap='round';c.strokeStyle=O;c.lineWidth=w+lw*1.6;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();c.strokeStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();};
+  const poly=(cc,pts,r,fill)=>{c.beginPath();pts.forEach((q,i)=>{const px=cc.x+q[0]*r,py=cc.y+q[1]*r;if(i)c.lineTo(px,py);else c.moveTo(px,py);});c.closePath();c.fillStyle=fill;c.fill();c.strokeStyle=O;c.lineWidth=lw;c.lineJoin='round';c.stroke();};
+  const hr=R*.8,hc={x:x,y:y-R*1.18},cheer=mood==='cheer';
+  if(girl){
+    const sw=cheer?Math.sin(now/180)*hr*.1:0,bx=hc.x+hr*.55,by=hc.y-hr*.82;
+    c.fillStyle=HR;c.strokeStyle=O;c.lineWidth=lw;c.lineJoin='round';c.beginPath();
+    c.moveTo(bx-hr*.2,by-hr*.05);c.bezierCurveTo(bx+hr*.9,by-hr*.75,bx+hr*1.8,by-hr*.1+sw,bx+hr*1.55,by+hr*1.25+sw);
+    c.quadraticCurveTo(bx+hr*1.45,by+hr*1.45+sw,bx+hr*1.3,by+hr*1.3+sw);c.bezierCurveTo(bx+hr*1.4,by+hr*.55+sw,bx+hr*.9,by+hr*.05,bx+hr*.25,by+hr*.3);
+    c.closePath();c.fill();c.stroke();
+    c.strokeStyle='rgba(255,255,255,.22)';c.lineWidth=lw*.6;c.lineCap='round';c.beginPath();c.moveTo(bx+hr*.4,by-hr*.12);c.quadraticCurveTo(bx+hr*1.3,by-hr*.1+sw,bx+hr*1.4,by+hr*.9+sw);c.stroke();
+  }
+  for(const s of [-1,1]){
+    cap([x+s*R*.3,y+R*.45],[x+s*R*.33,y+R*.95],R*.3,SK);cap([x+s*R*.33,y+R*.95],[x+s*R*.34,y+R*1.18],R*.32,K.shirt);
+    c.fillStyle='#2a2a2a';c.strokeStyle=O;c.lineWidth=lw;c.beginPath();c.ellipse(x+s*R*.4,y+R*1.32,R*.3,R*.15,0,0,6.283);c.fill();c.stroke();
+  }
+  c.fillStyle='#fff';c.strokeStyle=O;c.lineWidth=lw;rrect(c,x-R*.7,y+R*.28,R*1.4,R*.5,R*.14);c.fill();c.stroke();
+  for(const s of [-1,1]){ // arms: up when cheering
+    const hx=cheer?x+s*R*1.25:x+s*R*1.1,hy=cheer?y-R*1.35:y+R*.2;
+    cap([x+s*R*.8,y-R*.38],[hx,hy],R*.27,SK);c.fillStyle=SK;c.strokeStyle=O;c.lineWidth=lw;c.beginPath();c.arc(hx,hy,R*.17,0,6.283);c.fill();c.stroke();
+  }
+  c.fillStyle=K.shirt;c.strokeStyle=O;c.lineWidth=lw;c.lineJoin='round';c.beginPath();
+  c.moveTo(x-R*.45,y-R*.68);c.lineTo(x-R*1.07,y-R*.42);c.lineTo(x-R*.9,y-R*.02);c.lineTo(x-R*.66,y-R*.12);c.lineTo(x-R*.66,y+R*.42);c.lineTo(x+R*.66,y+R*.42);c.lineTo(x+R*.66,y-R*.12);c.lineTo(x+R*.9,y-R*.02);
+  c.lineTo(x+R*1.07,y-R*.42);c.lineTo(x+R*.45,y-R*.68);c.quadraticCurveTo(x,y-R*.45,x-R*.45,y-R*.68);c.closePath();c.fill();c.stroke();
+  c.strokeStyle=K.trim;c.lineWidth=R*.12;c.lineCap='round';c.beginPath();c.moveTo(x-R*.38,y-R*.6);c.lineTo(x,y-R*.36);c.lineTo(x+R*.38,y-R*.6);c.stroke();
+  c.font='700 '+Math.round(R*.7)+'px Fredoka,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';
+  c.lineWidth=lw*1.4;c.strokeStyle=O;c.strokeText(String(num),x,y+R*.04);c.fillStyle='#fff';c.fillText(String(num),x,y+R*.04);c.textBaseline='alphabetic';
+  for(const s of [-1,1]){c.fillStyle=SK;c.strokeStyle=O;c.lineWidth=lw;c.beginPath();c.ellipse(hc.x+s*hr*.98,hc.y+hr*.18,hr*.17,hr*.24,0,0,6.283);c.fill();c.stroke();}
+  c.fillStyle=SK;c.strokeStyle=O;c.lineWidth=lw;c.beginPath();c.ellipse(hc.x,hc.y,hr,hr*1.02,0,0,6.283);c.fill();c.stroke();
+  if(girl){
+    const hx=hc.x,hy=hc.y,r=hr;c.fillStyle=HR;c.strokeStyle=O;c.lineWidth=lw;c.lineJoin='round';c.beginPath();
+    c.moveTo(hx-r*.92,hy+r*.55);c.bezierCurveTo(hx-r*1.18,hy-r*.1,hx-r*1.05,hy-r*1.05,hx,hy-r*1.15);c.bezierCurveTo(hx+r*1.05,hy-r*1.05,hx+r*1.18,hy-r*.1,hx+r*.92,hy+r*.55);
+    c.quadraticCurveTo(hx+r*.8,hy+r*.05,hx+r*.78,hy-r*.3);c.quadraticCurveTo(hx+r*.58,hy-r*.32,hx+r*.44,hy-r*.2);c.quadraticCurveTo(hx+r*.3,hy-r*.52,hx+r*.05,hy-r*.56);
+    c.quadraticCurveTo(hx-r*.12,hy-r*.38,hx-r*.3,hy-r*.26);c.quadraticCurveTo(hx-r*.45,hy-r*.46,hx-r*.78,hy-r*.3);c.quadraticCurveTo(hx-r*.8,hy+r*.05,hx-r*.92,hy+r*.55);
+    c.closePath();c.fill();c.stroke();
+    c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=lw*1.1;c.lineCap='round';
+    c.beginPath();c.arc(hx-r*.05,hy-r*.35,r*.62,Math.PI*1.18,Math.PI*1.42);c.stroke();c.beginPath();c.arc(hx-r*.05,hy-r*.35,r*.62,Math.PI*1.5,Math.PI*1.6);c.stroke();
+    c.fillStyle='#ff6b9d';c.strokeStyle=O;c.lineWidth=lw*.8;c.beginPath();c.ellipse(hx+r*.6,hy-r*.86,r*.21,r*.15,-.5,0,6.283);c.fill();c.stroke();
+    const sx=hx-r*.52,sy=hy-r*.72,sr=r*.25;c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,q=i%2?sr*.45:sr;c.lineTo(sx+Math.cos(a)*q,sy+Math.sin(a)*q);}
+    c.closePath();c.fillStyle='#ffc61a';c.fill();c.strokeStyle=O;c.lineWidth=lw*.6;c.stroke();
+  }else poly(hc,[[1.02,0],[1.3,-.45],[.86,-.55],[1.02,-1.08],[.46,-.9],[.36,-1.55],[0,-.98],[-.36,-1.55],[-.46,-.9],[-1.02,-1.08],[-.86,-.55],[-1.3,-.45],[-1.02,0],[-.78,-.32],[-.56,-.12],[-.36,-.46],[-.12,-.18],[.1,-.48],[.34,-.16],[.56,-.46],[.78,-.32]],hr,HR);
+  const gx=0,gy=.25;
+  for(const s of [-1,1]){
+    const ex=hc.x+s*hr*.36,ey=hc.y+hr*.14,ew=girl?.23:.21,eh=girl?.31:.29;
+    c.fillStyle='#fff';c.strokeStyle=O;c.lineWidth=lw*.9;c.beginPath();c.ellipse(ex,ey,hr*ew,hr*eh,0,0,6.283);c.fill();c.stroke();
+    const px=ex+gx*hr*.07,py=ey+gy*hr*.09;
+    if(girl){c.fillStyle='#7a4a24';c.beginPath();c.ellipse(px,py,hr*.15,hr*.21,0,0,6.283);c.fill();}
+    c.fillStyle=O;c.beginPath();c.ellipse(px,py,hr*(girl?.08:.11),hr*(girl?.12:.17),0,0,6.283);c.fill();
+    c.fillStyle='#fff';c.beginPath();c.arc(px-hr*.05,py-hr*.08,hr*(girl?.06:.045),0,6.283);c.fill();
+    if(girl){c.beginPath();c.arc(px+hr*.05,py+hr*.07,hr*.03,0,6.283);c.fill();
+      c.strokeStyle=O;c.lineWidth=lw*1.5;c.lineCap='round';c.beginPath();c.ellipse(ex,ey,hr*ew,hr*eh,0,Math.PI*1.1,Math.PI*1.9);c.stroke();
+      c.lineWidth=lw*.9;c.beginPath();c.moveTo(ex+s*hr*.2,ey-hr*.2);c.lineTo(ex+s*hr*.36,ey-hr*.3);c.stroke();}
+    const oy=girl?-.38:-.3,iy=girl?-.3:-.05,th=girl?.07:.1;
+    c.fillStyle=O;c.beginPath();c.moveTo(hc.x+s*hr*.62,hc.y+hr*oy);c.lineTo(hc.x+s*hr*.14,hc.y+hr*iy);c.lineTo(hc.x+s*hr*.14,hc.y+hr*(iy+th));c.lineTo(hc.x+s*hr*.6,hc.y+hr*(oy+th+.01));c.closePath();c.fill();
+  }
+  if(girl){c.strokeStyle='rgba(255,90,120,.8)';c.lineWidth=Math.max(1.2,lw*.6);for(const s of [-1,1])for(let j=0;j<3;j++){c.beginPath();c.moveTo(hc.x+s*hr*(.5+j*.1),hc.y+hr*.46);c.lineTo(hc.x+s*hr*(.45+j*.1),hc.y+hr*.58);c.stroke();}}
+  c.fillStyle='#8a1f1f';c.strokeStyle=O;c.lineWidth=lw*.8;c.beginPath();
+  if(girl){c.moveTo(hc.x-hr*.2,hc.y+hr*.5);c.lineTo(hc.x+hr*.2,hc.y+hr*.5);c.quadraticCurveTo(hc.x+hr*.17,hc.y+hr*.76,hc.x,hc.y+hr*.76);c.quadraticCurveTo(hc.x-hr*.17,hc.y+hr*.76,hc.x-hr*.2,hc.y+hr*.5);
+    c.closePath();c.fill();c.stroke();c.fillStyle='#ff8fa3';c.beginPath();c.ellipse(hc.x,hc.y+hr*.68,hr*.1,hr*.055,0,0,6.283);c.fill();c.fillStyle='#fff';c.fillRect(hc.x-hr*.17,hc.y+hr*.52,hr*.34,hr*.05);}
+  else{c.moveTo(hc.x-hr*.24,hc.y+hr*.5);c.lineTo(hc.x+hr*.24,hc.y+hr*.5);c.lineTo(hc.x+hr*.14,hc.y+hr*.68);c.lineTo(hc.x-hr*.14,hc.y+hr*.68);c.closePath();c.fill();c.stroke();c.fillStyle='#fff';c.fillRect(hc.x-hr*.21,hc.y+hr*.52,hr*.42,hr*.06);}
+  if(mood==='oops')sweat(c,hc.x+hr*1.1,hc.y-hr*.55,hr,lw);
+}
+function sweat(c,dx,dy,hr,lw){c.fillStyle='#bfe3ff';c.strokeStyle='#1a1a1a';c.lineWidth=lw*.7;c.beginPath();c.moveTo(dx,dy-hr*.32);c.quadraticCurveTo(dx+hr*.2,dy,dx,dy+hr*.12);c.quadraticCurveTo(dx-hr*.2,dy,dx,dy-hr*.32);c.fill();c.stroke();}
+/* Milo: a friendly dinosaur in the blue team shirt, #3 */
+function drawDino(c,x,y,R,now,mood){
+  const O='#1a1a1a',G='#51cf66',lw=Math.max(2,R*.12);
+  c.lineJoin='round';c.lineCap='round';
+  c.fillStyle=G;c.strokeStyle=O;c.lineWidth=lw;c.beginPath();c.moveTo(x+R*.6,y-R*.2);c.quadraticCurveTo(x+R*1.9,y-R*.1,x+R*2.1,y-R*.9);c.quadraticCurveTo(x+R*1.6,y+R*.35,x+R*.5,y+R*.4);c.closePath();c.fill();c.stroke();
+  for(const s of [-1,1]){c.fillStyle=G;c.beginPath();c.ellipse(x+s*R*.42,y+R*.95,R*.3,R*.42,0,0,6.283);c.fill();c.stroke();}
+  c.fillStyle=G;c.beginPath();c.ellipse(x,y+R*.15,R*.85,R*.95,0,0,6.283);c.fill();c.stroke();
+  c.fillStyle='#1c7ed6';c.beginPath();c.moveTo(x-R*.8,y-R*.25);c.quadraticCurveTo(x,y-R*.55,x+R*.8,y-R*.25);c.lineTo(x+R*.72,y+R*.55);c.quadraticCurveTo(x,y+R*.8,x-R*.72,y+R*.55);c.closePath();c.fill();c.stroke();
+  c.font='700 '+Math.round(R*.6)+'px Fredoka,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=lw*1.2;c.strokeText('3',x,y+R*.15);c.fillStyle='#fff';c.fillText('3',x,y+R*.15);c.textBaseline='alphabetic';
+  const up=mood==='cheer';for(const s of [-1,1]){c.strokeStyle=O;c.lineWidth=R*.22+lw*1.4;c.beginPath();c.moveTo(x+s*R*.6,y-R*.05);c.lineTo(x+s*R*.95,up?y-R*.75:y+R*.2);c.stroke();c.strokeStyle=G;c.lineWidth=R*.22;c.stroke();}
+  const hc={x:x,y:y-R*1.25},hr=R*.85;
+  c.fillStyle='#ff922b';c.strokeStyle=O;c.lineWidth=lw;for(let i=-2;i<=2;i++){const a=-Math.PI/2+i*.42,bx=hc.x+Math.cos(a)*hr*.92,by=hc.y+Math.sin(a)*hr*.92;c.beginPath();c.moveTo(bx-Math.sin(a)*hr*.2,by+Math.cos(a)*hr*.2);c.lineTo(hc.x+Math.cos(a)*hr*1.3,hc.y+Math.sin(a)*hr*1.3);c.lineTo(bx+Math.sin(a)*hr*.2,by-Math.cos(a)*hr*.2);c.closePath();c.fill();c.stroke();}
+  c.fillStyle=G;c.beginPath();c.ellipse(hc.x,hc.y,hr,hr*.9,0,0,6.283);c.fill();c.stroke();
+  for(const s of [-1,1]){const ex=hc.x+s*hr*.38,ey=hc.y-hr*.08;c.fillStyle='#fff';c.lineWidth=lw*.8;c.beginPath();c.ellipse(ex,ey,hr*.22,hr*.27,0,0,6.283);c.fill();c.stroke();
+    c.fillStyle=O;c.beginPath();c.ellipse(ex,ey+hr*.04,hr*.12,hr*.16,0,0,6.283);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(ex-hr*.04,ey-hr*.04,hr*.05,0,6.283);c.fill();}
+  c.fillStyle='rgba(255,120,150,.6)';for(const s of [-1,1]){c.beginPath();c.ellipse(hc.x+s*hr*.62,hc.y+hr*.28,hr*.13,hr*.08,0,0,6.283);c.fill();}
+  c.strokeStyle=O;c.lineWidth=lw;c.beginPath();if(up){c.fillStyle='#8a1f1f';c.moveTo(hc.x-hr*.3,hc.y+hr*.3);c.quadraticCurveTo(hc.x,hc.y+hr*.75,hc.x+hr*.3,hc.y+hr*.3);c.closePath();c.fill();c.stroke();}
+  else{c.arc(hc.x,hc.y+hr*.25,hr*.3,.2,Math.PI-.2);c.stroke();}
+  if(mood==='oops')sweat(c,hc.x+hr*1.05,hc.y-hr*.5,hr,lw);
+}
+/* buddy panel during play: the kid stands out with a gold glow and a name badge */
+const bc=$('buddy'),bx=bc.getContext('2d');let bMood='idle',bSince=0,bRaf=0;
+function fitBuddy(){const r=bc.getBoundingClientRect(),d=window.devicePixelRatio||1;if(!r.width)return;bc.width=r.width*d;bc.height=r.height*d;}
+function buddyMood(m){bMood=m;bSince=performance.now();}
+function startBuddy(){fitBuddy();cancelAnimationFrame(bRaf);const loop=now=>{drawBuddy(now);bRaf=requestAnimationFrame(loop);};bRaf=requestAnimationFrame(loop);}
+function stopBuddy(){cancelAnimationFrame(bRaf);}
+function drawBuddy(now){
+  const W=bc.width,Hh=bc.height;if(!W||!cur)return;bx.clearRect(0,0,W,Hh);
+  const R=Math.min(W/3.1,Hh/5.4),t=(now-bSince)/1000;let mood=bMood;if(mood!=='idle'&&t>2.2)mood='idle';
+  const jump=mood==='cheer'&&!reduceMo?Math.abs(Math.sin(t*7))*R*.5*Math.max(0,1-t/2):0;
+  const x=W/2,y=Hh*.72-jump,cy=y-R*.8;
+  const g=bx.createRadialGradient(x,cy,R*.3,x,cy,R*2.6);g.addColorStop(0,'rgba(255,212,59,.55)');g.addColorStop(1,'rgba(255,212,59,0)');bx.fillStyle=g;bx.fillRect(0,0,W,Hh);
+  bx.fillStyle='rgba(0,0,0,.18)';bx.beginPath();bx.ellipse(x,Hh*.72+R*1.4,R*.9,R*.18,0,0,6.283);bx.fill();
+  if(cur.id==='milo')drawDino(bx,x,y,R,now,mood);else drawKid(bx,cur.id,x,y,R,now,mood,cur.num);
+  if(mood==='cheer')for(let i=0;i<5;i++){const a=t*3+i*1.256,rr=R*(1.8+.2*Math.sin(t*5+i));bx.font=Math.round(R*.5)+'px system-ui';bx.textAlign='center';bx.fillText('⭐',x+Math.cos(a)*rr,cy+Math.sin(a)*rr*.8);}
+  const by=y-R*(cur.id==='milo'?2.7:3.25);bx.font='700 '+Math.round(R*.5)+'px Fredoka,system-ui,sans-serif';bx.textAlign='center';bx.textBaseline='middle';
+  const tw=bx.measureText(cur.name).width+R*.6;bx.fillStyle=cur.color;bx.strokeStyle='#fff';bx.lineWidth=R*.08;rrect(bx,x-tw/2,by-R*.36,tw,R*.72,R*.36);bx.fill();bx.stroke();
+  bx.fillStyle='#fff';bx.fillText(cur.name,x,by+R*.02);bx.textBaseline='alphabetic';
+}
+
+/* ---------- holiday calendar explorer ---------- */
+let calFilter='all',calSel=null,calFrom='home';
+function openCal(from){calFrom=from;TODAY=day0(new Date());renderCal();show('cal');}
+$('calBtn').onclick=()=>openCal('home');$('calBtn2').onclick=()=>openCal('map');
+function renderCal(){
+  $('todayTx').textContent='Today is '+fmtLong(TODAY);
+  const F=[['all','All'],['us','US'],['tw','Taiwan'],['world','World'],['fun','Fun days']];
+  $('calChips').innerHTML='';F.forEach(([id,l])=>{const b=document.createElement('button');b.className='chip';b.textContent=l;b.setAttribute('aria-pressed',String(calFilter===id));b.onclick=()=>{calFilter=id;renderCal();};$('calChips').appendChild(b);});
+  const vis=H.filter(h=>calFilter==='all'||h.g===calFilter);
+  const up=upcoming(TODAY,400).filter(x=>vis.indexOf(x.h)>=0).slice(0,4);
+  $('soon').innerHTML='';up.forEach(x=>{const n=daysBetween(TODAY,x.d),b=document.createElement('button');
+    b.innerHTML=x.h.e+' '+x.h.n+' · <b>'+(n===0?'today!':n===1?'tomorrow':'in '+n+' days')+'</b>';b.onclick=()=>{calSel=x.h.id;renderCal();};$('soon').appendChild(b);});
+  const det=calSel&&HID[calSel];
+  if(det){const nd=nextDate(det,TODAY),n=nd?daysBetween(TODAY,nd):null;
+    $('detail').innerHTML='<div class="dcard"><div class="de">'+det.e+'</div><div style="min-width:0;flex:1"><div class="dt">'+det.n+(det.zh?' '+RB(det.zh[0],det.zh[1]):'')+'</div>'+
+      '<div class="dw">'+whenTxt(det)+(nd?' · next: '+fmtLong(nd)+(n===0?' (today!)':' ('+n+' days)'):'')+'</div><p><b>'+det.s+'.</b> '+det.f+'</p></div><button class="ico" id="calSay" aria-label="Read aloud">🔈</button></div>';
+    $('calSay').onclick=()=>{const was=cur;cur=cur||KID.lucas;const p=prof(cur.id),v=p.voice;p.voice=true;say(det.n+'. '+whenTxt(det)+'. '+det.s+'. '+det.f);p.voice=v;cur=was;};
+  }else $('detail').innerHTML='<p class="note" style="margin:0 0 6px">Tap a picture to learn about that day.</p>';
+  $('months').innerHTML='';
+  for(let m=1;m<=12;m++){const d=document.createElement('div');d.className='mon'+(m===TODAY.getMonth()+1?' now':'');
+    d.innerHTML='<div class="mh"><span>'+MON[m-1]+'</span><span>'+zhMonth(m)+'</span></div><div class="hs"></div>';
+    vis.filter(h=>holMonth(h)===m).forEach(h=>{const b=document.createElement('button');b.className='hb';b.textContent=h.e;b.title=h.n;b.setAttribute('aria-label',h.n);b.setAttribute('aria-pressed',String(calSel===h.id));
+      b.onclick=()=>{calSel=h.id;renderCal();window.scrollTo&&$('detail').scrollIntoView({block:'nearest',behavior:'smooth'});};d.querySelector('.hs').appendChild(b);});
+    $('months').appendChild(d);}
+}
+
+/* ---------- parent gate + reset ---------- */
+let gateAns=0;
+function newGate(){const a=rint(102,989),b=rint(12,98);gateAns=a*b;$('gateQ').textContent=' What is '+a+' × '+b+'?';$('gateA').value='';}
+$('resetBtn').onclick=()=>{newGate();$('resetStep1').hidden=false;$('resetStep2').hidden=true;$('gateErr').textContent='';$('resetBox').hidden=false;$('gateA').focus();};
+$('gateCancel').onclick=$('rsCancel').onclick=()=>{$('resetBox').hidden=true;};
+$('gateGo').onclick=()=>{if(parseInt($('gateA').value.replace(/[^0-9]/g,''),10)===gateAns){$('resetStep1').hidden=true;$('resetStep2').hidden=false;['nora','lucas','milo'].forEach(id=>$('rs-'+id).checked=false);$('rsErr').textContent='';}
+  else{$('gateErr').textContent='That’s not right. Here’s a new one.';newGate();}};
+$('gateA').onkeydown=e=>{if(e.key==='Enter')$('gateGo').click();};
+$('rsGo').onclick=()=>{const ids=['nora','lucas','milo'].filter(id=>$('rs-'+id).checked);if(!ids.length){$('rsErr').textContent='Pick at least one kid.';return;}
+  ids.forEach(id=>{DB.p[id]={stars:{},seen:[],voice:id!=='nora',rev:Date.now()};streaks[id]=0;});store.save();$('resetBox').hidden=true;renderHome();};
+</script>
+<script>
+/* ---------- opening scene: Nora and Lucas race to a giant clock, the hands land on the real time, Milo pops up ---------- */
+const ic=$('intro'),ix=ic.getContext('2d'),IW=800,IH=300,OUT='#1a1a1a';
+const reduceMo=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const IT={state:'wait',t0:0,parts:[],stars:Array.from({length:40},()=>({x:Math.random()*IW,y:Math.random()*200,r:Math.random()*1.6+.4}))};
+const RUNNERS=[
+  {name:'Nora',num:9,s:.9,gy:282,x0:-120,x1:215,flip:false,girl:true,look:{skin:'#f6cfae',hair:'#1b120c',style:'pony'},kit:{shirt:'#ffc61a',trim:'#1c4fd6',shorts:'#1c4fd6',socks:'#ffc61a',num:'#1c4fd6'}},
+  {name:'Lucas',num:6,s:.82,gy:282,x0:920,x1:585,flip:true,girl:false,look:{skin:'#f6cfae',hair:'#1b120c',style:'spiky'},kit:{shirt:'#1c7ed6',trim:'#ffffff',shorts:'#ffffff',socks:'#1c7ed6',num:'#ffffff'}}
+];
+function runA(ph){const sa=Math.sin(ph),sb=Math.sin(ph+Math.PI);return{tA:sa*.9,kA:.2+Math.max(0,Math.cos(ph))*1.5,tB:sb*.9,kB:.2+Math.max(0,Math.cos(ph+Math.PI))*1.5,aA:-sa*1.0,aB:-sb*1.0,lean:.24,bob:Math.abs(Math.sin(ph))*5};}
+const CHEER={tA:.15,kA:.1,tB:-.15,kB:.1,aA:2.7,aB:-2.5,lean:-.05,bob:0};
+function lerpA(a,b,u){const o={};for(const k in a)o[k]=a[k]+(b[k]-a[k])*u;return o;}
+function limb(a,b,w,c){ix.strokeStyle=c;ix.lineWidth=w;ix.lineCap='round';ix.beginPath();ix.moveTo(a.x,a.y);ix.lineTo(b.x,b.y);ix.stroke();}
+function limbO(a,b,w,c,s){limb(a,b,w+3.6*s,OUT);limb(a,b,w,c);}
+function polyR(c,pts,r){ix.beginPath();pts.forEach((q,i)=>{const x=c.x+q[0]*r,y=c.y+q[1]*r;if(i)ix.lineTo(x,y);else ix.moveTo(x,y);});ix.closePath();}
+const HAIR_SPIKY=[[.95,-.08],[.7,-.42],[1.18,-.72],[.45,-.82],[.6,-1.55],[-.05,-1.02],[-.55,-1.62],[-.6,-.9],[-1.4,-1.12],[-1.0,-.42],[-1.6,-.25],[-.98,.12],[-.72,.55],[-.22,-.22],[.35,-.38]];
+const HAIR_GIRL=[[.95,-.02],[.66,-.36],[.9,-.5],[.38,-.56],[.58,-.78],[.2,-.68],[.38,-1.02],[0,-1.12],[-.5,-1.05],[-.92,-.76],[-1.12,-.3],[-1.02,.25],[-.76,.6],[-.24,-.2],[.3,-.36]];
+function drawRunner(k,x,A,ph,yell,run){
+  const s=k.s,gy=k.gy,L=k.look,K=k.kit;
+  ix.save();ix.translate(x,0);if(k.flip)ix.scale(-1,1);
+  ix.fillStyle='rgba(0,0,0,.3)';ix.beginPath();ix.ellipse(0,gy+2*s,32*s,7*s,0,0,6.283);ix.fill();
+  if(run){ix.strokeStyle='rgba(255,255,255,.6)';ix.lineCap='round';for(let j=0;j<4;j++){const yy=gy-(28+j*20)*s;ix.lineWidth=3;ix.beginPath();ix.moveTo(-(38+j*5)*s,yy);ix.lineTo(-(96+j*16)*s,yy);ix.stroke();}}
+  const hip={x:0,y:gy-46*s-A.bob*s},u={x:Math.sin(A.lean),y:-Math.cos(A.lean)},pp={x:Math.cos(A.lean),y:Math.sin(A.lean)},sh={x:hip.x+u.x*30*s,y:hip.y+u.y*30*s};
+  const leg=(t,kk)=>{const kn={x:hip.x+Math.sin(t)*23*s,y:hip.y+Math.cos(t)*23*s},sa=t-kk,ft={x:kn.x+Math.sin(sa)*22*s,y:kn.y+Math.cos(sa)*22*s};
+    limbO(hip,kn,11*s,L.skin,s);limbO(kn,ft,9.5*s,L.skin,s);limbO({x:(kn.x+ft.x)/2,y:(kn.y+ft.y)/2},ft,10.5*s,K.socks,s);
+    const fw={x:Math.cos(sa),y:-Math.sin(sa)};ix.fillStyle='#2a2a2a';ix.strokeStyle=OUT;ix.lineWidth=2.5*s;ix.beginPath();ix.ellipse(ft.x+fw.x*6*s,ft.y+fw.y*6*s,10*s,5.5*s,Math.atan2(fw.y,fw.x),0,6.283);ix.fill();ix.stroke();};
+  const arm=a=>{const el={x:sh.x+Math.sin(a)*15*s,y:sh.y+Math.cos(a)*15*s},fa=a+.9,hd={x:el.x+Math.sin(fa)*13*s,y:el.y+Math.cos(fa)*13*s};
+    limbO(sh,el,8*s,L.skin,s);limbO(el,hd,7.5*s,L.skin,s);limbO(sh,{x:sh.x+(el.x-sh.x)*.55,y:sh.y+(el.y-sh.y)*.55},11*s,K.trim,s);
+    ix.fillStyle=L.skin;ix.strokeStyle=OUT;ix.lineWidth=2.5*s;ix.beginPath();ix.arc(hd.x,hd.y,5.2*s,0,6.283);ix.fill();ix.stroke();};
+  arm(A.aB);leg(A.tB,A.kB);leg(A.tA,A.kA);
+  ix.fillStyle=K.shorts;ix.strokeStyle=OUT;ix.lineWidth=2.8*s;rrect(ix,hip.x-14*s,hip.y-8*s,28*s,18*s,5*s);ix.fill();ix.stroke();
+  const r=20*s,hc={x:sh.x+u.x*20*s,y:sh.y+u.y*20*s};limbO(sh,hc,8*s,L.skin,s);
+  ix.fillStyle=K.shirt;ix.strokeStyle=OUT;ix.lineWidth=3*s;ix.lineJoin='round';ix.beginPath();
+  ix.moveTo(hip.x-pp.x*13*s,hip.y-pp.y*13*s);ix.lineTo(hip.x+pp.x*13*s,hip.y+pp.y*13*s);ix.lineTo(sh.x+pp.x*14*s,sh.y+pp.y*14*s);ix.lineTo(sh.x-pp.x*14*s,sh.y-pp.y*14*s);ix.closePath();ix.fill();ix.stroke();
+  limb({x:sh.x-pp.x*6*s,y:sh.y-pp.y*6*s},{x:sh.x+pp.x*6*s,y:sh.y+pp.y*6*s},4*s,K.trim);
+  ix.save();ix.translate((hip.x+sh.x)/2,(hip.y+sh.y)/2+2*s);if(k.flip)ix.scale(-1,1);ix.font='700 '+Math.round(17*s)+'px Fredoka,system-ui,sans-serif';ix.textAlign='center';ix.textBaseline='middle';
+  ix.lineWidth=3*s;ix.strokeStyle=OUT;ix.strokeText(String(k.num),0,0);ix.fillStyle=K.num;ix.fillText(String(k.num),0,0);ix.restore();ix.textBaseline='alphabetic';
+  arm(A.aA);
+  ix.strokeStyle=OUT;ix.lineWidth=2.8*s;ix.lineJoin='round';
+  if(L.style==='pony'){const w=run?Math.sin(ph*2)*.25:0;ix.fillStyle=L.hair;ix.beginPath();ix.moveTo(hc.x-r*.55,hc.y-r*.8);ix.quadraticCurveTo(hc.x-r*1.9,hc.y-r*(1.0+w),hc.x-r*2.25,hc.y+r*(.15+w));ix.quadraticCurveTo(hc.x-r*1.55,hc.y-r*.05,hc.x-r*.9,hc.y-r*.05);ix.closePath();ix.fill();ix.stroke();}
+  ix.fillStyle=L.skin;ix.beginPath();ix.ellipse(hc.x,hc.y,r,r*1.04,0,0,6.283);ix.fill();ix.stroke();
+  ix.fillStyle=L.hair;polyR(hc,L.style==='spiky'?HAIR_SPIKY:HAIR_GIRL,r);ix.fill();ix.stroke();
+  if(L.style==='pony'){ix.fillStyle='#ff6b9d';ix.beginPath();ix.arc(hc.x-r*.78,hc.y-r*.5,r*.18,0,6.283);ix.fill();ix.stroke();}
+  ix.fillStyle=L.skin;ix.lineWidth=2*s;ix.beginPath();ix.ellipse(hc.x-r*.18,hc.y+r*.16,r*.17,r*.22,0,0,6.283);ix.fill();ix.stroke();
+  ix.beginPath();ix.moveTo(hc.x+r*.93,hc.y+r*.02);ix.lineTo(hc.x+r*1.08,hc.y+r*.22);ix.lineTo(hc.x+r*.9,hc.y+r*.27);ix.fill();ix.stroke();
+  ix.fillStyle='#fff';ix.lineWidth=2.2*s;ix.beginPath();ix.ellipse(hc.x+r*.5,hc.y-r*.03,r*.2,r*.27,0,0,6.283);ix.fill();ix.stroke();
+  ix.fillStyle='#1a1a1a';ix.beginPath();ix.ellipse(hc.x+r*.6,hc.y+r*.02,r*.09,r*.15,0,0,6.283);ix.fill();ix.fillStyle='#fff';ix.beginPath();ix.arc(hc.x+r*.57,hc.y-r*.06,r*.035,0,6.283);ix.fill();
+  if(k.girl){limb({x:hc.x+r*.62,y:hc.y-r*.27},{x:hc.x+r*.8,y:hc.y-r*.4},r*.08,OUT);limb({x:hc.x+r*.68,y:hc.y-r*.18},{x:hc.x+r*.86,y:hc.y-r*.27},r*.07,OUT);}
+  const bt=k.girl?.12:.2;ix.fillStyle=OUT;ix.beginPath();ix.moveTo(hc.x+r*.22,hc.y-r*(.45-bt*.2));ix.lineTo(hc.x+r*.8,hc.y-r*(.3-bt));ix.lineTo(hc.x+r*.8,hc.y-r*(.2-bt));ix.lineTo(hc.x+r*.24,hc.y-r*.33);ix.closePath();ix.fill();
+  if(k.girl){ix.strokeStyle='rgba(255,90,120,.75)';ix.lineWidth=1.6*s;for(let j=0;j<3;j++){ix.beginPath();ix.moveTo(hc.x+r*(.28+j*.12),hc.y+r*.36);ix.lineTo(hc.x+r*(.22+j*.12),hc.y+r*.48);ix.stroke();}}
+  ix.strokeStyle=OUT;ix.lineWidth=2.2*s;const mo=.08+.3*yell;ix.fillStyle='#8a1f1f';ix.beginPath();
+  ix.moveTo(hc.x+r*.48,hc.y+r*.5);ix.lineTo(hc.x+r*.88,hc.y+r*.44);ix.lineTo(hc.x+r*.86,hc.y+r*(.46+mo));ix.lineTo(hc.x+r*.56,hc.y+r*(.52+mo*.8));ix.closePath();ix.fill();ix.stroke();
+  ix.fillStyle='#fff';ix.beginPath();ix.moveTo(hc.x+r*.5,hc.y+r*.51);ix.lineTo(hc.x+r*.87,hc.y+r*.45);ix.lineTo(hc.x+r*.87,hc.y+r*(.45+mo*.35));ix.lineTo(hc.x+r*.53,hc.y+r*(.51+mo*.3));ix.closePath();ix.fill();
+  if(run){const dx=hc.x-r*1.05,dy=hc.y-r*.85+Math.sin(ph)*2;ix.fillStyle='#bfe3ff';ix.lineWidth=2*s;ix.beginPath();ix.moveTo(dx,dy-r*.32);ix.quadraticCurveTo(dx+r*.2,dy,dx,dy+r*.12);ix.quadraticCurveTo(dx-r*.2,dy,dx,dy-r*.32);ix.fill();ix.stroke();}
+  ix.restore();
+}
+function fitIntro(){
+  const hero=ic.parentElement,w=Math.min(hero.clientWidth-8,880),maxH=Math.max(120,window.innerHeight*.36),s=Math.min(w/IW,maxH/IH),d=window.devicePixelRatio||1;
+  ic.style.width=IW*s+'px';ic.style.height=IH*s+'px';ic.width=IW*s*d;ic.height=IH*s*d;
+}
+function introClock(now,t,landT,bigT){
+  const cx=400,cy=128,R=92;
+  ix.fillStyle='#fffaf0';ix.strokeStyle=OUT;ix.lineWidth=7;ix.beginPath();ix.arc(cx,cy,R,0,6.283);ix.fill();ix.stroke();
+  ix.fillStyle='#e03131';ix.beginPath();ix.arc(cx,cy-R-10,14,0,6.283);ix.fill();ix.stroke(); // bell
+  ix.textAlign='center';ix.textBaseline='middle';ix.fillStyle=OUT;ix.font='700 19px Fredoka,system-ui,sans-serif';
+  for(let i=1;i<=12;i++){const a=i/12*6.283;ix.fillText(i,cx+Math.sin(a)*R*.76,cy-Math.cos(a)*R*.76);}ix.textBaseline='alphabetic';
+  const real=new Date(),target=(real.getHours()%12)*60+real.getMinutes();
+  let tm=target;if(t<landT){const u=t/landT,e=1-Math.pow(1-u,3);tm=target-(1-e)*720*3;}
+  const ma=(tm%60)/60*6.283,ha=(tm%720)/720*6.283;
+  const hand=(a,len,w,col)=>{ix.lineCap='round';ix.strokeStyle=OUT;ix.lineWidth=w+5;ix.beginPath();ix.moveTo(cx,cy);ix.lineTo(cx+Math.sin(a)*len,cy-Math.cos(a)*len);ix.stroke();ix.strokeStyle=col;ix.lineWidth=w;ix.stroke();};
+  hand(ha,R*.48,9,'#e03131');hand(ma,R*.74,6,'#1c7ed6');ix.fillStyle=OUT;ix.beginPath();ix.arc(cx,cy,7,0,6.283);ix.fill();
+  if(t>=landT){const h=real.getHours()%12||12;introPill("It's "+h+':'+pad(real.getMinutes())+'!',cx-110,cy+R+30,'#ffd43b','#1a1a1a',22);}
+}
+function introPill(t,x,y,bg,fg,size){ix.font='700 '+size+'px Fredoka,system-ui,sans-serif';ix.textAlign='center';ix.textBaseline='middle';const w=ix.measureText(t).width+size*1.2;
+  ix.fillStyle=bg;ix.strokeStyle=OUT;ix.lineWidth=3;rrect(ix,x-w/2,y-size*.8,w,size*1.6,size*.8);ix.fill();ix.stroke();ix.fillStyle=fg;ix.fillText(t,x,y+1);ix.textBaseline='alphabetic';}
+function introFrame(now){
+  requestAnimationFrame(introFrame);
+  if($('home').hidden)return;
+  const sc=ic.width/IW;ix.setTransform(sc,0,0,sc,0,0);
+  const RUN=1.7,LAND=2.4;let t=IT.state==='wait'?0:(now-IT.t0)/1000;if(IT.state==='done')t=99;
+  const g=ix.createLinearGradient(0,0,0,IH);g.addColorStop(0,'#141a45');g.addColorStop(1,'#2b2f7a');ix.fillStyle=g;ix.fillRect(0,0,IW,IH);
+  const burst=t>=LAND?Math.min(1,(t-LAND)*2):0;
+  if(burst>0){ix.save();ix.translate(400,128);ix.rotate(reduceMo?0:now/5000);ix.fillStyle='rgba(255,236,150,'+(.2*burst)+')';for(let i=0;i<18;i++){ix.beginPath();ix.moveTo(0,0);ix.arc(0,0,700,i*Math.PI/9,i*Math.PI/9+Math.PI/18);ix.closePath();ix.fill();}ix.restore();}
+  ix.fillStyle='#fff';IT.stars.forEach((s,i)=>{ix.globalAlpha=.5+.5*Math.sin(now/600+i);ix.beginPath();ix.arc(s.x,s.y,s.r,0,6.283);ix.fill();});ix.globalAlpha=1;
+  ix.fillStyle='#fff3bf';ix.beginPath();ix.arc(700,52,26,0,6.283);ix.fill();ix.fillStyle='#141a45';ix.beginPath();ix.arc(712,46,22,0,6.283);ix.fill();
+  // lantern string
+  ix.strokeStyle='rgba(255,255,255,.5)';ix.lineWidth=2;ix.beginPath();ix.moveTo(0,20);ix.quadraticCurveTo(160,60,300,24);ix.moveTo(500,24);ix.quadraticCurveTo(640,62,800,20);ix.stroke();
+  [[60,32],[130,44],[200,40],[600,40],[670,44],[740,32]].forEach(([x,y],i)=>{const sw=reduceMo?0:Math.sin(now/700+i)*3;ix.fillStyle='#e03131';ix.strokeStyle=OUT;ix.lineWidth=2;ix.beginPath();ix.ellipse(x+sw,y+12,11,14,0,0,6.283);ix.fill();ix.stroke();ix.fillStyle='#ffd43b';ix.fillRect(x+sw-6,y-3,12,4);ix.fillRect(x+sw-6,y+25,12,4);});
+  ix.fillStyle='#0d1130';ix.fillRect(0,284,IW,16);ix.strokeStyle='rgba(255,255,255,.5)';ix.lineWidth=2;ix.beginPath();ix.moveTo(0,284);ix.lineTo(IW,284);ix.stroke();
+  introClock(now,t,LAND,burst);
+  RUNNERS.forEach((k,i)=>{const u=Math.min(1,t/RUN),e=1-Math.pow(1-u,2),x=k.x0+(k.x1-k.x0)*e,ph=now/1000*2*Math.PI*2.4+i*1.4;
+    const running=IT.state==='run'&&u<1;const A=running?runA(ph):lerpA(runA(1),CHEER,Math.min(1,(t-RUN)*3));
+    if(IT.state==='wait')drawRunner(k,k.x1,lerpA(runA(1),CHEER,0),0,0,false);else drawRunner(k,x,A,ph,t>=LAND?1:running?.4:0,running);});
+  // Milo pops up
+  if(t>=LAND){const u=Math.min(1,(t-LAND)*2.5),y=330-u*70+(reduceMo?0:Math.sin(now/300)*3);ix.save();ix.beginPath();ix.rect(0,0,IW,284);ix.clip();drawDino(ix,470,y,24,now,'cheer');ix.restore();
+    if(u>=1&&!IT.fanfare){IT.fanfare=1;musicFanfare();for(let j=0;j<60;j++)IT.parts.push({x:400,y:128,vx:rnd(-4,4),vy:rnd(-5,1),c:pick(['#ffd43b','#ff6b6b','#74c0fc','#b197fc','#69db7c']),life:1});}}
+  IT.parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.life-=.012;ix.globalAlpha=Math.max(0,p.life);ix.fillStyle=p.c;ix.fillRect(p.x,p.y,5,5);});ix.globalAlpha=1;IT.parts=IT.parts.filter(p=>p.life>0);
+  if(t>=LAND+.8){introPill('TIME TO PLAY!',400,24,'#e03131','#fff',20);if(IT.state==='run')IT.state='done';}
+  if(IT.state==='wait')introPill('▶ Tap to start',400,250,'#ffd43b','#1a1a1a',24);
+}
+ic.addEventListener('click',()=>{
+  if(IT.state==='wait'){MUS.armed=true;audio();musicSync();if(reduceMo){IT.state='done';IT.fanfare=0;}else{IT.state='run';IT.t0=performance.now();IT.fanfare=0;}musicHit();}
+  else if(IT.state==='run'){IT.state='done';}
+  else{IT.state='run';IT.t0=performance.now();IT.fanfare=0;}
+});
+
+/* ---------- music: synthesized anthem on start and menu screens only ---------- */
+const MUS={armed:false,playing:false,timer:null,next:0,step:0,bpm:118,master:null,bus:null,noise:null};
+const mhz=m=>440*Math.pow(2,(m-69)/12);
+function musGraph(){const c=audio();if(!c)return null;
+  if(!MUS.master){MUS.master=c.createGain();MUS.master.gain.value=0;MUS.master.connect(c.destination);MUS.bus=c.createGain();MUS.bus.connect(MUS.master);
+    const d=c.createDelay(1);d.delayTime.value=.25;const fb=c.createGain();fb.gain.value=.26;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2200;
+    MUS.bus.connect(d);d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(MUS.master);
+    const n=c.createBuffer(1,c.sampleRate,c.sampleRate),ch=n.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;MUS.noise=n;}
+  return c;}
+function mOsc(c,t,f,dur,type,vol,cut,att){const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);let node=o;
+  if(cut){const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.setValueAtTime(cut,t);o.connect(lp);node=lp;}node.connect(g);g.connect(MUS.bus);const a=att||.015;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+a);g.gain.setValueAtTime(vol,t+Math.max(a,dur*.6));g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.start(t);o.stop(t+dur+.05);return o;}
+function mNoise(c,t,dur,type,freq,vol){const s=c.createBufferSource();s.buffer=MUS.noise;const f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;const g=c.createGain();s.connect(f);f.connect(g);g.connect(MUS.bus);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.start(t);s.stop(t+dur+.05);}
+function mKick(c,t,v){const o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(42,t+.14);g.gain.setValueAtTime(v||.9,t);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g);g.connect(MUS.bus);o.start(t);o.stop(t+.32);}
+function mSnare(c,t){mNoise(c,t,.18,'bandpass',1800,.4);mOsc(c,t,185,.1,'triangle',.16);}
+function mCrash(c,t){mNoise(c,t,1.6,'highpass',4500,.25);}
+function mBrass(c,t,notes,dur,vol){notes.forEach(m=>{[-7,7].forEach(dt=>{const o=mOsc(c,t,mhz(m),dur,'sawtooth',vol,1900,.03);o.detune.value=dt;});});}
+function mBell(c,t,m){mOsc(c,t,mhz(m),.9,'sine',.06);mOsc(c,t,mhz(m+19),.5,'sine',.02);}
+// Pentatonic anthem in D: a nod to lantern-festival melodies, with a marching beat.
+const MCH=[[62,66,69],[59,62,66],[55,59,62],[57,61,64]],MBASS=[38,35,31,33];
+const MMEL=[[74,null,76,78,null,81,78,null],[76,null,74,null,71,null,74,null],[69,null,71,74,null,76,74,71],[69,null,null,null,76,null,74,null]];
+function musStep(c,t,s){
+  const bar=(s>>3)&7,b=s&7,ci=bar&3,full=bar>=4,st=60/MUS.bpm/2;
+  if(b===0)mBrass(c,t,MCH[ci],full?st*1.6:st*7.6,full?.03:.02);
+  if(full&&(b===3||b===6))mBrass(c,t,MCH[ci],st*1.3,.028);
+  if(bar>=1)mOsc(c,t,mhz(MBASS[ci]),st*.9,'sawtooth',.14,420);
+  if(bar>=2)mNoise(c,t,.04,'highpass',7000,b%2?.05:.09);
+  if(!full){if(b%4===0)mKick(c,t,.6);if(b===0)mBell(c,t,74+ci*0);}
+  else{if(b===0||b===4)mKick(c,t);if(b===2||b===6)mSnare(c,t);if(b===0&&bar===4)mCrash(c,t);
+    const m=MMEL[ci][b];if(m){let len=1;while(b+len<8&&MMEL[ci][b+len]===null)len++;mOsc(c,t,mhz(m),st*len*.92,'square',.06,2600,.02);mOsc(c,t,mhz(m+12),st*len*.92,'triangle',.025,4000,.02);}}
+}
+function musTick(){const c=audio();if(!c)return;while(MUS.next<c.currentTime+.15){musStep(c,MUS.next,MUS.step);MUS.next+=60/MUS.bpm/2;MUS.step=(MUS.step+1)%64;}}
+function musicStart(){if(MUS.playing)return;const c=musGraph();if(!c)return;MUS.playing=true;MUS.step=0;MUS.next=c.currentTime+.08;
+  const g=MUS.master.gain;g.cancelScheduledValues(c.currentTime);g.setValueAtTime(g.value,c.currentTime);g.linearRampToValueAtTime(.22,c.currentTime+.4);MUS.timer=setInterval(()=>{try{musTick();}catch(e){}},25);}
+function musicStop(){if(!MUS.playing)return;MUS.playing=false;clearInterval(MUS.timer);const c=audio();
+  if(c&&MUS.master){const g=MUS.master.gain;g.cancelScheduledValues(c.currentTime);g.setValueAtTime(g.value,c.currentTime);g.linearRampToValueAtTime(0,c.currentTime+.5);}}
+function musicSync(){const want=DB.sound&&MUS.armed&&(screen==='home'||screen==='map'||screen==='cal');if(want)musicStart();else musicStop();}
+function musicHit(){if(!MUS.playing)return;const c=audio();if(!c)return;const t=c.currentTime+.01;mCrash(c,t);mKick(c,t,1);mBrass(c,t,[50,62,66,69],1.2,.035);}
+function musicFanfare(){if(!MUS.playing)return;const c=audio();if(!c)return;const t=c.currentTime+.02;mCrash(c,t);[74,78,81,86].forEach((m,i)=>mBrass(c,t+i*.12,[m],.5,.045));mBrass(c,t+.5,[62,66,69,74],1.6,.035);mKick(c,t+.5,1);}
+document.addEventListener('pointerdown',()=>{if(!MUS.armed){MUS.armed=true;audio();musicSync();}},true);
+
+/* ---------- cloud save: progress follows the signed-in account across the MacBook, iPhone and iPad ---------- */
+var CLOUD={doc:null,busy:false,again:false,timer:null};
+function cloudSave(){if(!CLOUD.doc)return;clearTimeout(CLOUD.timer);CLOUD.timer=setTimeout(cloudPush,600);}
+async function cloudPush(){if(!CLOUD.doc)return;if(CLOUD.busy){CLOUD.again=true;return;}CLOUD.busy=true;
+  try{await CLOUD.doc.set({v:1,data:JSON.stringify(DB),at:Date.now()});}catch(e){}CLOUD.busy=false;if(CLOUD.again){CLOUD.again=false;cloudPush();}}
+function mergeKid(a,b){if(!a)return b;if(!b)return a;const ra=a.rev||0,rb=b.rev||0;if(rb>ra)return b;if(ra>rb)return a;
+  const out=Object.assign({},a,{stars:Object.assign({},a.stars||{}),seen:(a.seen||[]).slice()});const bs=b.stars||{};for(const k in bs)out.stars[k]=Math.max(out.stars[k]||0,bs[k]||0);
+  (b.seen||[]).forEach(id=>{if(out.seen.indexOf(id)<0)out.seen.push(id);});return out;}
+async function cloudInit(){
+  try{if(!window.claude||typeof window.claude.use!=='function')return;
+    const res=await Promise.all([window.claude.use('db'),window.claude.use('user')]);const db=res[0],user=res[1];if(!db||!user)return;
+    const uid=await user.id();if(!uid)return;const doc=db.doc('data/users/'+uid+'/progress');const snap=await doc.get();
+    if(snap.exists){let remote={};try{remote=JSON.parse((snap.data()||{}).data||'{}')||{};}catch(e){}const rp=remote.p||{};
+      Object.keys(Object.assign({},DB.p,rp)).forEach(id=>{const m=mergeKid(DB.p[id],rp[id]);if(m)DB.p[id]=m;});}
+    CLOUD.doc=doc;try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}cloudPush();
+    if(screen==='home')renderHome();else if(screen==='map'&&cur)renderMap();
+  }catch(e){}
+}
+
+/* ---------- automated playtest hook. Harmless for players. ---------- */
+window.__test={
+  state:()=>({screen:screen,round:qi+1,done:screen==='result',q:qs[qi]&&qs[qi].id}),
+  solve:()=>{if(screen!=='play')return;const q=qs[qi];if(answered){$('next').click();return;}
+    if(q.set){clockState.t=(q.set.h%12)*60+q.set.m;checkSet();}else{const b=[...document.querySelectorAll('.opt')].find(x=>x.dataset.ok);b&&b.click();}},
+  miss:()=>{const b=[...document.querySelectorAll('.opt')].find(x=>!x.dataset.ok&&!x.classList.contains('bad'));b&&b.click();},
+  setToday:d=>{TODAY=day0(new Date(d));}
+};
+
+/* ---------- boot ---------- */
+$('soundBtn').setAttribute('aria-pressed',String(DB.sound));$('soundBtn').textContent=DB.sound?'🔊':'🔇';
+fitIntro();renderHome();show('home');requestAnimationFrame(introFrame);cloudInit();
+</script>
+
+</body></html>

@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lucas’s Sports Stars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#262A6B;--panel:#343A8C;--ink:#FFFFFF;--soft:#C7CBF5;--sun:#FFD23F;--leaf:#3DDC97;--rose:#FF6B6B;--sky:#56C2FF;--card:#FFFDF5;--cardink:#1E2150;
+  color-scheme:dark;
+  font-family:"Avenir Next","PingFang TC","Heiti TC",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){--bg:#E9ECFF;--panel:#FFFFFF;--ink:#1E2150;--soft:#4D5390;--card:#FFFDF5;--cardink:#1E2150;color-scheme:light}
+}
+:root[data-theme="light"]{--bg:#E9ECFF;--panel:#FFFFFF;--ink:#1E2150;--soft:#4D5390;--card:#FFFDF5;--cardink:#1E2150;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-size:20px;line-height:1.5}
+#app{max-width:760px;margin:0 auto;padding:18px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
+h1,h2,h3{margin:0;line-height:1.15}
+.name{font-size:30px;font-weight:800;margin:6px 0 0;line-height:1.9}
+.name rt{font-size:13px;font-weight:600;opacity:.8}
+.spk{display:inline-grid;place-items:center;width:34px;height:34px;margin-left:8px;border-radius:50%;background:rgba(127,127,127,.2);font-size:16px;line-height:1;vertical-align:middle;text-indent:0;letter-spacing:0}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55;
+background-image:radial-gradient(2px 2px at 12% 18%,var(--sun),transparent),radial-gradient(2px 2px at 82% 12%,#fff,transparent),radial-gradient(1.5px 1.5px at 40% 70%,#fff,transparent),radial-gradient(2px 2px at 66% 46%,var(--sun),transparent),radial-gradient(1.5px 1.5px at 24% 88%,#fff,transparent),radial-gradient(2px 2px at 90% 80%,var(--leaf),transparent),radial-gradient(1.5px 1.5px at 55% 25%,#fff,transparent);
+animation:tw 3s ease-in-out infinite alternate}
+@keyframes tw{to{opacity:.2}}
+#app{position:relative;z-index:1}
+.owlwrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
+.owlwrap svg{width:118px;flex:none;animation:bob 3s ease-in-out infinite}
+.bubble{background:var(--card);color:var(--cardink);border-radius:18px 18px 18px 4px;padding:10px 14px;font-size:18px;max-width:250px;text-align:left;margin:0}
+.eyes{transform-box:fill-box;transform-origin:center;animation:blink 4.5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.scene{position:relative;border-radius:16px;min-height:130px;margin:0 0 14px;display:flex;align-items:center;justify-content:space-around;font-size:52px;overflow:hidden;padding:0 76px 0 8px}
+.scene span{display:inline-block;animation:bob 3s ease-in-out infinite}
+.owl-s{position:absolute;right:4px;bottom:-4px;width:72px}
+.owl-s svg{width:72px;display:block}
+.scene .silh{margin:0;animation:jit 1.1s ease-in-out infinite}
+@keyframes jit{25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+.card.flash::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.8) 50%,transparent 70%);transform:translateX(-130%);animation:shine 1.3s .55s ease-out forwards}
+@keyframes shine{to{transform:translateX(130%)}}
+.sparkle{position:fixed;inset:0;pointer-events:none;z-index:30}
+.sparkle i{position:absolute;left:50%;top:40%;font-size:28px;font-style:normal;animation:spk 1.4s ease-out forwards}
+@keyframes spk{to{transform:translate(var(--x),var(--y)) scale(.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){body::before,.owlwrap svg,.eyes,.scene span,.scene .silh{animation:none}.card.flash::after{display:none}}
+.mus{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:40;width:50px;height:50px;border-radius:50%;font-size:22px;background:rgba(127,127,127,.28);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.go{background:var(--sun);color:#1E2150;font-weight:800;font-size:24px;border-radius:16px;padding:14px 24px;width:100%;margin-top:12px;box-shadow:0 5px 0 #C99A00}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 #C99A00}
+.alt{background:var(--panel);border:3px solid var(--soft);font-weight:700;font-size:20px;border-radius:16px;padding:12px 20px;width:100%;margin-top:12px}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:17px;color:var(--soft);margin-bottom:10px}
+.top button{background:var(--panel);border-radius:12px;padding:6px 12px}
+.hero{text-align:center;padding-top:16px}
+.hero h1{font-size:44px;font-weight:900;letter-spacing:-.01em}
+.hero p{color:var(--soft);margin:8px 0 18px}
+.fan{display:flex;justify-content:center;margin:18px 0 22px;height:150px}
+.fan .mini{width:96px;height:136px;margin:0 -14px;border-radius:12px;background:var(--card);color:var(--cardink);display:grid;place-items:center;font-size:52px;border:5px solid var(--sun)}
+.fan .mini:nth-child(1){transform:rotate(-14deg) translateY(10px);border-color:var(--leaf)}
+.fan .mini:nth-child(3){transform:rotate(14deg) translateY(10px);border-color:var(--rose)}
+.fan .mini.q{color:#AAB0E0}
+.meter{background:var(--panel);border-radius:999px;height:18px;overflow:hidden;margin:8px auto 4px;max-width:360px}
+.meter i{display:block;height:100%;background:var(--leaf)}
+.panel{background:var(--panel);border-radius:22px;padding:20px 18px}
+.story{color:var(--sun);font-weight:700;font-size:19px;margin:0 0 10px}
+.q{font-size:24px;line-height:1.5;margin:0}
+.read{background:var(--bg);border-radius:999px;padding:6px 14px;font-size:16px;margin-top:12px}
+.vis{display:flex;justify-content:center;margin:12px 0 0;font-size:34px;letter-spacing:4px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:18px}
+.opt{background:var(--card);color:var(--cardink);border-radius:16px;padding:16px 10px;font-size:24px;font-weight:800;border:4px solid transparent}
+.opt:hover:not(:disabled){border-color:var(--sky)}
+.opt:disabled{opacity:.3}
+.msg{min-height:34px;margin-top:14px;font-size:20px;font-weight:600}
+.msg.hint{color:var(--leaf)}
+.msg.oops{color:var(--rose)}
+.catch{text-align:center}
+.silh{font-size:90px;filter:brightness(0) opacity(.55);margin:6px 0}
+.sym{display:inline-block;font-size:96px;font-weight:700;background:var(--card);color:var(--cardink);border-radius:22px;padding:0 34px;margin:6px 0 4px;line-height:1.4}
+.pics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.pic{background:var(--card);border-radius:18px;padding:12px 4px;font-size:58px;border:4px solid transparent;line-height:1.2}
+.pic small{display:block;font-size:20px;color:var(--cardink);font-weight:700}
+.pic:disabled{opacity:.3}
+.card{width:min(300px,100%);margin:10px auto;background:var(--card);color:var(--cardink);border-radius:18px;border:8px solid var(--r);padding:12px 14px 14px;position:relative;overflow:hidden}
+.card.flash{animation:pop .6s ease-out}
+@keyframes pop{0%{transform:scale(.4) rotate(-10deg);opacity:0}70%{transform:scale(1.06) rotate(2deg)}100%{transform:scale(1)}}
+.card .rar{position:absolute;top:10px;right:12px;font-size:13px;font-weight:800;background:var(--r);color:#1E2150;padding:2px 10px;border-radius:999px}
+.card .face{font-size:96px;text-align:center;background:linear-gradient(160deg,color-mix(in srgb,var(--r) 35%,#fff),#fff);border-radius:12px;margin:26px 0 8px;line-height:1.4}
+.card h3{font-size:26px}
+.card .zh{font-size:18px;color:#555B8C}
+.card .stats{display:flex;justify-content:space-between;font-weight:800;font-size:16px;margin:8px 0;border-top:2px dashed #D9DBEE;border-bottom:2px dashed #D9DBEE;padding:6px 0}
+.card .fact{font-size:17px;margin:6px 0 0;line-height:1.45}
+.binder{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.slot{background:var(--card);color:var(--cardink);border-radius:14px;padding:10px;text-align:center;border:5px solid var(--r,#9AA0D6);min-height:150px}
+.slot .e{font-size:54px;line-height:1.3}
+.slot b{display:block;font-size:17px}
+.slot.empty{background:transparent;border:4px dashed var(--soft);color:var(--soft)}
+.modal{position:fixed;inset:0;background:rgba(10,12,40,.7);display:grid;place-items:center;padding:20px;z-index:10}
+@media (prefers-reduced-motion:reduce){.card.flash{animation:none}.go:active{transform:none}}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .story{color:#8A5F00}:root:not([data-theme="dark"]) .msg.hint{color:#127046}:root:not([data-theme="dark"]) .opt,:root:not([data-theme="dark"]) .pic{background:#EEF0FF;border-color:#CDD2FF}}
+@media (max-width:520px){
+  body{font-size:18px}
+  #app{padding:8px 10px 12px}
+  .hero{padding-top:0}
+  .owlwrap{margin-bottom:0}.owlwrap svg{width:72px}.bubble{font-size:14px;padding:6px 10px}
+  .name{font-size:24px;line-height:1.8}
+  .hero h1{font-size:32px}.hero p{margin:4px 0 8px;font-size:16px}
+  .fan{height:104px;margin:8px 0 10px}.fan .mini{width:66px;height:94px;font-size:36px;border-width:4px}
+  .meter{height:12px}
+  .go{font-size:20px;padding:11px 18px;margin-top:8px}
+  .alt{font-size:17px;padding:9px 16px;margin-top:8px}
+  .top{margin-bottom:6px;font-size:15px}
+  .panel{padding:12px 12px}
+  .scene{min-height:74px;font-size:34px;margin-bottom:8px;padding-right:56px}
+  .owl-s{width:50px}.owl-s svg{width:50px}
+  .story{font-size:15px;margin-bottom:6px}
+  .q{font-size:20px;line-height:1.45}
+  .read{font-size:14px;padding:4px 10px;margin-top:8px}
+  .vis svg{width:90px;height:90px}
+  .opts{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+  .opt{font-size:19px;padding:10px 4px;border-width:3px}
+  .msg{min-height:0;margin-top:8px;font-size:16px}
+  .silh{font-size:56px}.scene .silh{font-size:56px}
+  .sym{font-size:68px;padding:0 24px;margin:2px 0}
+  .pics{gap:8px;margin-top:10px}.pic{font-size:44px;padding:8px 2px}.pic small{font-size:16px}
+  .card{border-width:6px;padding:10px 12px 12px}.card .face{font-size:64px;margin:22px 0 6px}.card h3{font-size:22px}.card .fact{font-size:15px}
+  .binder{grid-template-columns:repeat(4,1fr);gap:6px}
+  .slot{min-height:0;padding:4px 2px;border-width:3px;border-radius:10px}
+  .slot .e{font-size:30px}.slot b{font-size:10px;line-height:1.2}.slot span{display:none}
+  .slot.empty{border-width:2px}
+}
+.cloudnote{font-size:13px;opacity:.7;margin:10px 0 0}
+:root{--font-display:"Fredoka","Noto Sans TC","PingFang TC","Heiti TC",system-ui,sans-serif;--font-body:"Noto Sans TC","PingFang TC","Heiti TC","Fredoka",system-ui,sans-serif}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+@keyframes enter{from{opacity:0;transform:translateY(12px)}}
+.studio{max-width:640px;margin:0 auto;text-align:left}
+.tips{background:var(--panel,var(--paper));color:var(--ink);border-radius:16px;padding:10px 14px;font-size:15px;line-height:1.55;margin-bottom:8px}
+.tips p{margin:4px 0}
+.vgroup{margin:14px 4px 6px;font-weight:700;font-size:17px}
+.vrow{display:grid;grid-template-columns:50px 1fr repeat(4,44px);gap:6px;align-items:center;background:var(--panel,var(--paper));color:var(--ink);border-radius:14px;padding:6px 8px;margin-bottom:6px;border:2px solid transparent}
+.vrow.has{border-color:#3DAA4A}
+.vsym{font-size:28px;font-weight:700;text-align:center;font-family:var(--font-display)}
+.vsay{font-size:15px;line-height:1.3}
+.vrow button,.vup{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:18px;background:rgba(127,127,127,.16);cursor:pointer}
+.vrow button:disabled{opacity:.3}
+.vrec{color:#E8423F;font-size:22px}
+.vrec.on{background:#E8423F;color:#fff;animation:recpulse 1s ease-in-out infinite}
+@keyframes recpulse{50%{transform:scale(1.08)}}
+.vmsg{color:#E8423F;font-weight:700;min-height:20px}
+.vbtns{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}.vbtn{display:inline-block;background:rgba(127,127,127,.16);border-radius:12px;padding:8px 12px;font-weight:700;font-size:15px;cursor:pointer}
+.plink{display:block;margin:10px auto 0;font-size:15px;text-decoration:underline;opacity:.75}
+@media (prefers-reduced-motion:reduce){.vrec.on{animation:none}}
+body{font-family:var(--font-display)}
+.hero h1{font-weight:700;letter-spacing:.01em;text-shadow:0 3px 0 var(--sun),0 10px 24px rgba(0,0,0,.25)}
+.panel,.card,.slot,.bubble{box-shadow:0 14px 30px -18px rgba(0,0,0,.6)}
+.opt{border-radius:18px;box-shadow:0 4px 0 rgba(30,33,80,.2);font-weight:700;transition:transform .12s,box-shadow .12s}
+.opt:active:not(:disabled),.pic:active:not(:disabled),.alt:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(30,33,80,.2)}
+.pic,.alt{box-shadow:0 4px 0 rgba(30,33,80,.2);transition:transform .12s,box-shadow .12s}
+.card .rar{letter-spacing:.06em;text-transform:uppercase}
+.card h3{font-weight:700}.q{font-weight:500}.story{font-weight:600}
+.hero,.catch,.binder{animation:enter .35s cubic-bezier(.2,.8,.2,1) both}
+@media (prefers-reduced-motion:reduce){.hero,.catch,.binder{animation:none}}
+.go.train{background:linear-gradient(135deg,#FF6B6B,#FF9F43);color:#fff;box-shadow:0 5px 0 #B84A3A}
+.rpt h3{font-size:17px;margin:14px 0 6px}.rpt .small{font-size:14px;line-height:1.5}
+.rsum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.rsum div{background:var(--bg);border-radius:14px;padding:8px;text-align:center}.rsum b{display:block;font-size:24px}.rsum small{font-size:12px;opacity:.75}
+.rrow{display:grid;grid-template-columns:150px 1fr 48px;gap:8px;align-items:center;margin-bottom:6px;font-size:14px}.rl{font-weight:600}
+.rbar{height:12px;background:rgba(127,127,127,.25);border-radius:999px;overflow:hidden}.rbar i{display:block;height:100%}.rn{text-align:right;font-size:13px;opacity:.8}
+@media (max-width:520px){.withtrain .fan{display:none}.withtrain .owlwrap svg{width:60px}.withtrain .bubble{font-size:13px}.rrow{grid-template-columns:118px 1fr 44px}}
+@media (max-width:520px) and (max-height:700px){.hero .fan{height:76px;margin:4px 0 6px}.hero .fan .mini{width:52px;height:72px;font-size:28px}.hero h1{font-size:28px}.plink{margin-top:4px}}
+.lbar{display:flex;align-items:center;gap:6px;background:var(--panel);border-radius:16px;padding:6px 10px;margin-bottom:8px;box-shadow:0 10px 24px -16px rgba(0,0,0,.6)}
+.lbf,.lbr{font-size:30px;line-height:1}.vs{font-weight:900;font-size:12px;color:var(--rose)}.lbmid{flex:1;min-width:0}.lbmid b{font-size:13px}
+.lbhp{height:10px;background:rgba(127,127,127,.3);border-radius:999px;overflow:hidden;margin-top:2px}.lbhp i{display:block;height:100%;background:linear-gradient(90deg,var(--rose),var(--sun))}
+.lbch{display:flex;gap:3px;margin-top:3px}.lbch i{width:12px;height:6px;border-radius:3px;background:rgba(127,127,127,.3)}.lbch i.on{background:var(--leaf)}
+.lbnx{text-align:right;line-height:1.1}.lbnx small{display:block;font-size:10px;opacity:.7}.lbnx b{font-size:13px}
+.lintro{padding-top:4px}.lalert{display:table;margin:0 auto 6px;background:var(--rose);color:#fff;font-weight:800;border-radius:999px;padding:3px 14px}
+.lrival{font-size:80px;line-height:1.1;animation:pop .6s ease-out}.lname{font-size:30px!important;margin:2px 0}
+.lstory{margin:4px auto;max-width:28em}.lweak{display:inline-block;background:var(--panel);border:2px solid var(--sun);border-radius:12px;padding:4px 10px;font-weight:700;margin:4px 0}.lweak small{font-weight:500;opacity:.8}
+.lslots{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 4px}
+.lslot{background:var(--card);color:var(--cardink);border:3px solid transparent;border-radius:16px;padding:6px;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.lslot.on{border-color:var(--sun);box-shadow:0 0 0 3px rgba(255,210,63,.35)}.lslot span{font-size:34px}.lslot b{font-size:14px}.lslot small{font-size:11px;opacity:.75}
+.lpick{font-size:14px;margin:6px 0 4px;opacity:.85}
+.lgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-width:420px;margin:0 auto 4px}
+.lcard{background:var(--card);border-radius:10px;font-size:24px;padding:3px 0;border:2px solid transparent}.lcard.f{border-color:var(--sun)}.lcard.b{border-color:var(--leaf)}
+.lpickov,.latk{position:fixed;inset:0;display:grid;place-items:center;background:rgba(10,12,40,.6);z-index:20;padding:14px}
+.lpickbox,.latkbox{background:var(--card);color:var(--cardink);border-radius:22px;padding:14px;width:min(360px,92vw);text-align:center;border:3px solid var(--sun)}
+.lpickbox h3{margin:0;font-size:24px}.lpickbox p{margin:4px 0 8px}.lhint{font-size:13px;opacity:.75}
+.lmoves{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lmove{border:3px solid var(--c);border-radius:16px;padding:8px 4px;background:color-mix(in srgb,var(--c) 18%,#fff);color:#1E2150;display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 0 color-mix(in srgb,var(--c) 60%,#000)}
+.lmove span{font-size:36px}.lmove b{font-size:16px}
+.latkbox{border-color:var(--mc)}.lan{font-size:21px;font-weight:800}.lan small{display:block;font-size:14px;color:#C99A00}
+.lstage{position:relative;height:130px;display:grid;place-items:center;overflow:hidden;border-radius:16px;background:radial-gradient(circle at 60% 55%,#E9ECFF,transparent 70%);margin:6px 0}
+.lsr{font-size:76px;animation:lhit .6s .5s both}.lsr.beat{animation:lhit .6s .5s both,lpoof .6s 1.1s both}
+.lsf{position:absolute;left:8%;bottom:8px;font-size:40px}.lsb{position:absolute;right:8%;bottom:8px;font-size:32px;animation:pop .5s .5s both}
+.lfx{position:absolute;line-height:1;pointer-events:none}
+.l1{left:18%;bottom:20px;font-size:36px;animation:lshoot .6s ease-in both}
+.l2{left:18%;bottom:20px;font-size:32px;animation:lshoot .6s ease-in both;animation-delay:calc(var(--i)*.13s)}
+.l3{left:var(--x);top:-30px;font-size:22px;animation:lrain .9s ease-in both;animation-delay:calc(var(--i)*.06s)}
+.l4{left:50%;top:-10px;font-size:60px;animation:ldrop .5s .35s both}.l4.b2{left:30%;animation-delay:.5s}
+.l5{left:50%;top:50%;width:130px;height:130px;margin:-65px 0 0 -65px;border-radius:50%;-webkit-mask:radial-gradient(circle,transparent 52%,#000 54%);mask:radial-gradient(circle,transparent 52%,#000 54%);animation:lspin 1.1s linear both}
+.l6{left:50%;top:50%;font-size:70px;transform:translate(-50%,-50%);animation:pop .6s .4s both}
+.lb{left:50%;top:50%;font-size:20px;animation:lburst .8s .8s both}
+.lflash{position:absolute;inset:0;background:#fff;opacity:0;animation:lfl .5s .4s both}
+.ldmg{font-size:30px;font-weight:900;color:#E8423F}.lbhp2{height:12px;background:#E3E5F5;border-radius:999px;overflow:hidden;margin:4px 0}.lbhp2 i{display:block;height:100%;background:linear-gradient(90deg,#FF6B6B,#FFD23F)}
+.lsuper{font-weight:900;color:#E8423F;margin:4px 0}.lnote,.lnext{font-size:13px;opacity:.75;margin:3px 0}.lsay{font-size:14px;margin:3px 0}.lassist{font-weight:800;color:#2E9B6A;margin:3px 0}
+.latk.t6 .latkbox{box-shadow:0 0 0 6px rgba(255,210,63,.4),0 0 40px rgba(255,210,63,.6)}
+@keyframes lshoot{from{transform:translate(0,0) scale(.6);opacity:0}30%{opacity:1}to{transform:translate(170px,-50px) scale(1.3);opacity:0}}
+@keyframes lrain{from{transform:translateY(0);opacity:0}20%{opacity:1}to{transform:translateY(150px) rotate(200deg);opacity:0}}
+@keyframes ldrop{from{transform:translate(-50%,-60px) scale(.4);opacity:0}50%{opacity:1;transform:translate(-50%,30px) scale(1.2)}to{opacity:0}}
+@keyframes lspin{from{transform:rotate(0) scale(.3);opacity:0}30%{opacity:1}to{transform:rotate(720deg) scale(1.1);opacity:0}}
+@keyframes lburst{from{transform:translate(-50%,-50%) rotate(var(--a)) translateY(0);opacity:1}to{transform:translate(-50%,-50%) rotate(var(--a)) translateY(-80px);opacity:0}}
+@keyframes lfl{50%{opacity:.85}to{opacity:0}}
+@keyframes lhit{0%,100%{transform:none}25%{transform:translateX(-12px) rotate(-10deg)}50%{transform:translateX(12px) rotate(10deg)}75%{transform:translateX(-6px)}}
+@keyframes lpoof{to{transform:scale(.6) rotate(-10deg);opacity:.5}}
+@media (max-width:520px){.panel .scene{min-height:56px;font-size:28px}.lrival{font-size:64px}.lstory{font-size:15px}.lgrid{grid-template-columns:repeat(8,1fr)}.lcard{font-size:20px}}
+@media (max-width:520px) and (max-height:700px){.lstory{display:none}.lrival{font-size:52px}.panel .scene{display:none}}
+@media (prefers-reduced-motion:reduce){.lfx,.lflash{display:none}.lsr,.lrival{animation:none!important}}
+/* ---- extra attack animation ---- */
+.lunge{animation:lunge .45s ease-out both}
+.speedlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 14px,rgba(255,210,63,.55) 14px 16px);animation:speed .6s linear both;opacity:.0}
+.ghost{position:absolute;left:18%;bottom:20px;font-size:30px;opacity:0;animation:zig .75s ease-in-out both;animation-delay:calc(var(--i)*.08s)}
+.lshock{position:absolute;left:60%;top:50%;width:90px;height:90px;margin:-45px;border-radius:50%;border:5px solid var(--mc);opacity:0;animation:lshk .55s .55s ease-out both}
+.lcrack{position:absolute;left:60%;top:50%;font-size:64px;transform:translate(-50%,-50%);opacity:0;animation:crack .6s .58s both}
+.lsparks{position:absolute;left:60%;top:50%;width:0;height:0}.lsparks i{position:absolute;width:6px;height:16px;margin:-8px -3px;border-radius:3px;background:var(--mc);opacity:0;animation:lspk .5s .6s ease-out both}
+.lcb{position:absolute;right:8px;top:6px;font-weight:900;font-size:30px;color:var(--mc);text-shadow:0 2px 0 #fff,0 0 12px var(--mc);animation:lslam .45s .15s both}
+.lcrit{position:absolute;left:60%;top:50%;width:260px;height:260px;margin:-130px;border-radius:50%;background:repeating-conic-gradient(rgba(255,210,63,.55) 0 10deg,transparent 10deg 24deg);animation:lrays 1.4s .6s ease-out both}
+.crowd{position:absolute;left:0;right:0;bottom:-4px;display:flex;justify-content:space-around;font-size:20px}
+.crowd span{opacity:0;animation:cheer .9s ease-out both;animation-delay:calc(.8s + var(--i)*.08s)}
+.mv-power .lsr{animation:lhit .6s .5s both,squash .5s .6s both}.mv-speed .lsr{animation:lhit .6s .5s both,blur .5s .55s both}.mv-trick .lsr{animation:lhit .6s .5s both,dizzy .9s .6s both}
+.latk.t2 .latkbox{animation:lbox .35s .58s}.latk.t3 .latkbox,.latk.t4 .latkbox{animation:lbox .45s .58s}.latk.t5 .latkbox,.latk.t6 .latkbox{animation:lbig .55s .58s}
+.ldmg{animation:ldmg .6s .6s both}.lsuper{animation:lslam .45s .75s both}
+.lbhp2{position:relative}.lbhp2 i{width:var(--to);animation:lhpd .35s .6s both}.lbhp2 .lag{position:absolute;left:0;top:0;bottom:0;background:#fff;opacity:.8;width:var(--to);animation:lhpd .5s 1.05s both}
+@keyframes lunge{0%{transform:translateX(0)}40%{transform:translateX(-10px) rotate(-10deg) scale(1.1)}70%{transform:translateX(40px) rotate(6deg)}100%{transform:translateX(0)}}
+@keyframes speed{0%{opacity:0;transform:translateX(-30%)}30%{opacity:1}100%{opacity:0;transform:translateX(30%)}}
+@keyframes zig{0%{transform:translate(0,0) scale(.6);opacity:0}25%{transform:translate(50px,-40px);opacity:.7}50%{transform:translate(90px,10px);opacity:.6}75%{transform:translate(130px,-30px);opacity:.5}100%{transform:translate(170px,-10px) scale(1.2);opacity:0}}
+@keyframes lshk{0%{transform:scale(.2);opacity:1}100%{transform:scale(2.1);opacity:0}}
+@keyframes crack{0%{transform:translate(-50%,-50%) scale(.2);opacity:0}40%{transform:translate(-50%,-50%) scale(1.4);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
+@keyframes lspk{0%{transform:rotate(var(--a)) translateY(0) scaleY(.4);opacity:1}100%{transform:rotate(var(--a)) translateY(-70px) scaleY(1);opacity:0}}
+@keyframes lslam{0%{transform:scale(2.6);opacity:0}60%{transform:scale(.9);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes lrays{0%{transform:scale(.2) rotate(0);opacity:0}30%{opacity:1}100%{transform:scale(1.1) rotate(90deg);opacity:0}}
+@keyframes cheer{0%{transform:translateY(20px);opacity:0}50%{transform:translateY(-10px);opacity:1}100%{transform:translateY(0);opacity:1}}
+@keyframes squash{0%,100%{transform:none}40%{transform:scale(1.25,.7)}70%{transform:scale(.9,1.1)}}
+@keyframes blur{0%,100%{filter:none}40%{filter:blur(3px)}}
+@keyframes dizzy{0%{transform:rotate(0)}50%{transform:rotate(200deg) scale(.9)}100%{transform:rotate(360deg)}}
+@keyframes lbox{0%,100%{transform:none}25%{transform:translate(-5px,2px)}50%{transform:translate(5px,-2px)}75%{transform:translate(-3px,1px)}}
+@keyframes lbig{0%,100%{transform:none}15%{transform:translate(-10px,4px) rotate(-1deg)}35%{transform:translate(10px,-4px) rotate(1deg)}55%{transform:translate(-6px,2px)}75%{transform:translate(4px,-1px)}}
+@keyframes ldmg{0%{transform:scale(.3);opacity:0}50%{transform:scale(1.35);opacity:1}70%{transform:scale(.95)}100%{transform:scale(1);opacity:1}}
+@keyframes lhpd{from{width:var(--from)}to{width:var(--to)}}
+@media (prefers-reduced-motion:reduce){.lunge,.speedlines,.ghost,.lshock,.lcrack,.lsparks,.lcb,.lcrit,.crowd{display:none}.latkbox,.ldmg,.lsuper,.lbhp2 i,.lbhp2 .lag,.lsr{animation:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const RAR={Rookie:'#3DDC97',Pro:'#56C2FF','All-Star':'#C77DFF',MVP:'#FFD23F'};
+const MON=[
+{e:'🦊',n:'Striker Fox',zh:'射門狐',t:'Soccer',r:'Rookie',hp:40,fact:'Soccer is the most popular sport in the whole world.'},
+{e:'🦒',n:'Hoops Giraffe',zh:'投籃長頸鹿',t:'Basketball',r:'Rookie',hp:50,fact:'Basketball was invented in 1891 by a teacher. The first hoops were peach baskets!'},
+{e:'🐻',n:'Slugger Bear',zh:'全壘打熊',t:'Baseball',r:'Rookie',hp:60,fact:'A baseball is held together by 108 double stitches.'},
+{e:'🦦',n:'Splash Otter',zh:'游泳水獺',t:'Swimming',r:'Rookie',hp:40,fact:'Sea otters hold hands while they sleep so they don’t float apart!'},
+{e:'🐰',n:'Ace Rabbit',zh:'發球兔',t:'Tennis',r:'Rookie',hp:40,fact:'Top tennis players can serve the ball faster than 200 kilometers per hour.'},
+{e:'🐆',n:'Sprint Cheetah',zh:'閃電豹',t:'Track',r:'Rookie',hp:50,fact:'Cheetahs are the fastest land animals. They can run about 110 kilometers per hour!'},
+{e:'🐒',n:'Flip Monkey',zh:'翻滾猴',t:'Gymnastics',r:'Rookie',hp:40,fact:'Gymnastics was a sport at the very first modern Olympics, in 1896.'},
+{e:'🐧',n:'Strike Penguin',zh:'保齡企鵝',t:'Bowling',r:'Rookie',hp:50,fact:'In bowling, 10 pins stand in a triangle shape.'},
+{e:'🐺',n:'Ice Wolf',zh:'冰球狼',t:'Hockey',r:'Rookie',hp:60,fact:'Hockey pucks are frozen before games so they slide fast and don’t bounce.'},
+{e:'🦘',n:'Spike Kangaroo',zh:'扣球袋鼠',t:'Volleyball',r:'Rookie',hp:60,fact:'Volleyball was invented in 1895, just four years after basketball.'},
+{e:'🐼',n:'Pedal Panda',zh:'單車熊貓',t:'Cycling',r:'Pro',hp:70,fact:'The Tour de France bike race is more than 3,000 kilometers long.'},
+{e:'🦩',n:'Birdie Flamingo',zh:'高爾夫紅鶴',t:'Golf',r:'Pro',hp:60,fact:'An astronaut once hit golf balls on the Moon!'},
+{e:'🐻‍❄️',n:'Slope Bear',zh:'滑雪北極熊',t:'Skiing',r:'Pro',hp:80,fact:'People in snowy countries were skiing thousands of years ago, to travel over snow.'},
+{e:'🦓',n:'Kick Zebra',zh:'踢球斑馬',t:'Soccer',r:'Pro',hp:70,fact:'A soccer field can be about 100 meters long — as long as a sprint race!'},
+{e:'🐘',n:'Dunk Elephant',zh:'灌籃大象',t:'Basketball',r:'Pro',hp:90,fact:'A basketball hoop is 10 feet high — about 3 meters.'},
+{e:'🐎',n:'Relay Horse',zh:'接力馬',t:'Track',r:'Pro',hp:80,fact:'In a relay race, runners pass a stick called a baton to the next runner.'},
+{e:'🦍',n:'Goalie Gorilla',zh:'守門猩猩',t:'Soccer',r:'Pro',hp:90,fact:'The goalkeeper is the only soccer player who may use their hands — inside their own box.'},
+{e:'🐯',n:'Karate Tiger',zh:'空手道虎',t:'Karate',r:'All-Star',hp:100,fact:'Karate comes from Okinawa, an island in Japan.'},
+{e:'🦆',n:'Polo Duck',zh:'水球鴨',t:'Water Polo',r:'All-Star',hp:90,fact:'Ducks stay dry because they spread a special oil on their feathers.'},
+{e:'🦅',n:'Medal Eagle',zh:'金牌鷹',t:'Olympics',r:'All-Star',hp:100,fact:'Olympic gold medals are mostly silver, covered with a layer of real gold.'},
+{e:'🦁',n:'Ring Lion',zh:'五環獅',t:'Olympics',r:'All-Star',hp:110,fact:'The five Olympic rings stand for the parts of the world coming together.'},
+{e:'🦏',n:'Tug Rhino',zh:'拔河犀牛',t:'Tug-of-war',r:'All-Star',hp:120,fact:'Tug-of-war used to be an Olympic sport!'},
+{e:'🐕',n:'Captain Dog',zh:'隊長狗',t:'Soccer',r:'All-Star',hp:110,fact:'A soccer team has 11 players on the field at a time.'},
+{e:'🐉',n:'Champion Dragon',zh:'冠軍龍',t:'All sports',r:'MVP',hp:150,fact:'The first Olympic Games were held in ancient Greece more than 2,700 years ago.'}
+];
+const SQ='<svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="a big square split into 4 small squares"><rect x="6" y="6" width="108" height="108" fill="none" stroke="currentColor" stroke-width="6"/><line x1="60" y1="6" x2="60" y2="114" stroke="currentColor" stroke-width="6"/><line x1="6" y1="60" x2="114" y2="60" stroke="currentColor" stroke-width="6"/></svg>';
+const PZ=[
+{s:'Kick-off! The soccer match is starting…',q:'Our team scored 2 goals in the first half and 3 goals in the second half. The other team scored 4 goals. Who won, and by how much?',o:['We won by 1','We won by 2','They won by 1','It’s a tie'],a:0,h:'First add our goals: 2 + 3. Then compare with 4.'},
+{s:'Swish! The basketball game is on!',q:'Each basket is worth 2 points. Lucas makes 6 baskets. How many points does he score?',o:['8','10','12','14','16'],a:2,h:'Count by 2s six times: 2, 4, 6…'},
+{s:'Crack! A ball flies across the baseball field!',q:'A baseball team has 9 players on the field. How many players are on the field for 2 teams?',o:['11','16','18','19','20'],a:2,h:'That’s 9 + 9.'},
+{s:'Splash! The swimmers dive into the pool!',q:'The pool is 25 meters long. Sam swims to the end and back, 2 times. How far does he swim?',o:['50','75','100','125'],a:2,h:'To the end and back is 2 lengths. He does that 2 times — so how many lengths?'},
+{s:'Pop! Pop! Tennis balls are flying everywhere!',q:'Tennis balls come 3 in a can. The coach needs 20 balls. How many cans must she buy?',o:['5','6','7','8'],a:2,h:'6 cans give 18 balls. Is that enough?'},
+{s:'On your marks… get set… go!',q:'Ana finishes ahead of Bo. Cy finishes behind Bo. Di finishes ahead of Ana. Who came in 3rd?',o:['Ana','Bo','Cy','Di'],a:1,h:'Line them up from first to last. Who is ahead of everyone?'},
+{s:'The gymnast steps onto the mat…',q:'Her routine goes: flip, flip, flip, cartwheel, cartwheel — then it starts again. What is her 12th move?',o:['Flip','Cartwheel'],a:0,h:'One full routine is 5 moves. Where does move 11 start?'},
+{s:'Crash! The bowling ball rolls down the lane!',q:'There are 10 pins. Max knocks down 6. On his next roll he knocks down half of the pins that are left. How many pins are still standing?',o:['0','2','3','4','6'],a:1,h:'First find how many are left after 6 fall. Then take half away.'},
+{s:'The ice is shiny — hockey time!',q:'A hockey game has 3 periods. Each period is 20 minutes. How long is the whole game?',o:['23 minutes','40 minutes','50 minutes','60 minutes'],a:3,h:'That’s 20 + 20 + 20.'},
+{s:'Bump, set, spike! Volleyball on the beach!',q:'Each team has 6 players on the court, and 3 more players on its bench. There are 2 teams. How many players in all?',o:['12','15','16','18','20'],a:3,h:'One team has 6 + 3 players. Now double it.'},
+{s:'Ring ring! The bike race is starting!',q:'In the race there are 4 bikes and 2 tricycles. A bike has 2 wheels and a tricycle has 3. How many wheels in all?',o:['10','12','13','14','16'],a:3,h:'Bikes: 2 + 2 + 2 + 2. Tricycles: 3 + 3.'},
+{s:'Shhh… quiet on the golf course!',q:'In golf, the LOWEST score wins! Mia scored 42, Leo scored 39, and Zoe scored 45. Who won?',o:['Mia','Leo','Zoe'],a:1,h:'Read the rule again: lowest wins, not highest.'},
+{s:'Whoosh! Skiers zoom down the snowy hill!',q:'Each chair on the ski lift holds 4 people. 3 chairs go up full, and 1 more chair has 2 people. How many people went up?',o:['9','12','14','16'],a:2,h:'3 full chairs is 4 + 4 + 4. Then add the 2.'},
+{s:'The players are putting on their jerseys…',q:'My jersey number is between 10 and 20. Its two digits add up to 5. What is my number?',o:['11','13','14','15','23'],a:2,h:'Try each one: 1 + 4 = ? And is 23 between 10 and 20?'},
+{s:'The big game is about to begin!',q:'The game starts at 3 o’clock and lasts 2 hours. What time does it end?',o:['1 o’clock','2 o’clock','4 o’clock','5 o’clock','6 o’clock'],a:3,h:'Count 2 hours forward from 3.'},
+{s:'Grab the baton — it’s relay time!',q:'A relay team has 4 runners. Each one runs 100 meters. How far does the team run in all?',o:['104','200','300','400'],a:3,h:'That’s 100 + 100 + 100 + 100.'},
+{s:'The coach is counting the soccer balls…',q:'The coach has 15 balls. 7 are white and the rest are orange. Which color has more, and by how many?',o:['1 more white','1 more orange','The same','8 more orange'],a:1,h:'First find the orange balls: 15 − 7.'},
+{s:'Hi-yah! Karate class is starting!',q:'Karate belts go in order: white, yellow, orange, green. Kai’s belt is 2 belts after white. What color is it?',o:['Yellow','Orange','Green'],a:1,h:'Start at white and count 2 steps forward.'},
+{s:'Splash! The water polo match is wild!',q:'In this game, every goal is worth 3 points. Our score is 15. How many goals did we score?',o:['3','5','12','18','45'],a:1,h:'Count by 3s until you reach 15: 3, 6, 9…'},
+{s:'The swimmers line up for the final race…',q:'8 swimmers race. Medals go to 1st, 2nd and 3rd place. How many swimmers do NOT get a medal?',o:['3','5','6','8'],a:1,h:'3 swimmers get medals. Take them away from 8.'},
+{s:'The stadium is full of flags!',q:'Each Olympic flag has 5 rings. Lucas counts 20 rings on all the flags. How many flags are there?',o:['4','5','15','25'],a:0,h:'Count by 5s until you reach 20. How many 5s?'},
+{s:'Heave! Ho! Tug-of-war time!',q:'2 bears pull as hard as 4 dogs. How many dogs pull as hard as 3 bears?',o:['5','6','7','8','12'],a:1,h:'If 2 bears = 4 dogs, then 1 bear = how many dogs?'},
+{s:'Everyone wants to play!',q:'16 kids want to play a game. Each team needs 4 kids. How many teams can they make?',o:['2','4','8','12','20'],a:1,h:'Count by 4s until you reach 16.'},
+{s:'The championship final — the MVP is watching!',q:'The scoreboard shows a pattern: 2, 5, 8, 11, __. What comes next?',o:['12','13','14','15','16'],a:2,h:'How much does it jump each time?'}
+];
+const ZY=[['ㄅ','🥟','包子'],['ㄆ','🍇','葡萄'],['ㄇ','🐱','貓'],['ㄈ','✈️','飛機'],['ㄉ','🥚','蛋'],['ㄊ','🐰','兔子'],['ㄋ','🐮','牛'],['ㄌ','🐯','老虎'],['ㄍ','🐶','狗'],['ㄎ','🦕','恐龍'],['ㄏ','🌸','花'],['ㄐ','🐔','雞'],['ㄑ','⚽','球'],['ㄒ','🍉','西瓜'],['ㄓ','🐷','豬'],['ㄔ','🚗','車'],['ㄕ','📖','書'],['ㄖ','🍖','肉'],['ㄗ','👄','嘴巴'],['ㄘ','🌱','草'],['ㄙ','☂️','傘']];
+
+const KEY='lucas-sports-v1';
+let S={got:[]};
+try{if(!localStorage.getItem(KEY)){const o=JSON.parse(localStorage.getItem('lucas-monsters-v1')||'null');if(o){S.zl=o.zl;S.miss=o.miss;}}}catch(e){}
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S=Object.assign(S,s);}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}cloudPush();}
+
+let voices=[];
+function lv(){try{voices=speechSynthesis.getVoices()||[];}catch(e){}}
+if('speechSynthesis' in window){lv();speechSynthesis.onvoiceschanged=lv;}
+function pick(lang){const pref=lang==='zh'?['zh-tw','zh-hk','zh-cn','zh']:['en-us','en-gb','en'];
+  for(const p of pref){const v=voices.find(v=>(v.lang||'').replace('_','-').toLowerCase().startsWith(p));if(v)return v;}return null;}
+function norm(t,lang){if(lang==='zh')return t.replace(/[（(]/g,'，').replace(/[）)]/g,'，').replace(/\s*×\s*/g,'乘以').replace(/\s*÷\s*/g,'除以').replace(/\s*−\s*/g,'減').replace(/\s*\+\s*/g,'加').replace(/\s*=\s*/g,'等於').replace(/，+/g,'，').replace(/，([。？！])/g,'$1');
+  return t.replace(/\s*×\s*/g,' times ').replace(/\s*÷\s*/g,' divided by ').replace(/\s*−\s*/g,' minus ').replace(/\s*\+\s*/g,' plus ').replace(/\s*=\s*/g,' equals ');}
+function speak(text,lang){if(lang==='zh'&&typeof VOICE!=='undefined'&&VOICE.byText[text]){try{speechSynthesis.cancel();}catch(e){}playClip(VOICE.byText[text]);return;}
+  if(typeof VOICE!=='undefined'&&VOICE.cur){try{VOICE.cur.pause();}catch(e){}VOICE.cur=null;}
+  if(!('speechSynthesis' in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(norm(text,lang));const v=pick(lang);if(v)u.voice=v;
+  u.lang=lang==='zh'?'zh-TW':'en-US';u.rate=lang==='zh'?.8:.95;speechSynthesis.speak(u);}catch(e){}}
+
+const ZYS={'ㄅ':'玻','ㄆ':'坡','ㄇ':'摸','ㄈ':'佛','ㄉ':'德','ㄊ':'特','ㄋ':'訥','ㄌ':'勒','ㄍ':'哥','ㄎ':'科','ㄏ':'喝','ㄐ':'基','ㄑ':'七','ㄒ':'西','ㄓ':'知','ㄔ':'吃','ㄕ':'詩','ㄖ':'日','ㄗ':'資','ㄘ':'疵','ㄙ':'思'};
+const clean=t=>t.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'').replace(/¢/g,' cents').replace(/\s+/g,' ').trim();
+function speakers(root){root.querySelectorAll('[data-say]').forEach(el=>{if(el.querySelector(':scope > .spk'))return;const b=document.createElement('button');b.className='spk';b.type='button';b.textContent='🔊';b.setAttribute('aria-label','Read aloud');b.onclick=e=>{e.stopPropagation();let t=el.dataset.text;if(!t){const c=el.cloneNode(true);c.querySelectorAll('rt,.spk').forEach(x=>x.remove());t=c.textContent;}speak(clean(t),el.dataset.say);};el.appendChild(b);});}
+new MutationObserver(()=>speakers(document.body)).observe(document.body,{childList:true,subtree:true});
+const OWL=`<svg viewBox="0 0 160 176" role="img" aria-label="Coach Hoot the owl">
+<path d="M30 120 Q12 112 18 94 M130 120 Q148 112 142 94" stroke="#7458D6" stroke-width="12" fill="none" stroke-linecap="round"/>
+<ellipse cx="80" cy="106" rx="56" ry="60" fill="#8E6CF0"/><ellipse cx="80" cy="122" rx="36" ry="40" fill="#C9B8FF"/>
+<path d="M30 62 L38 30 L58 52Z M130 62 L122 30 L102 52Z" fill="#8E6CF0"/>
+<path d="M30 52 Q80 8 130 52 Q80 40 30 52Z" fill="#FFD23F"/><circle cx="80" cy="24" r="6" fill="#FFD23F"/>
+<circle cx="58" cy="80" r="22" fill="#fff"/><circle cx="102" cy="80" r="22" fill="#fff"/>
+<g class="eyes"><circle cx="60" cy="82" r="10" fill="#1E2150"/><circle cx="100" cy="82" r="10" fill="#1E2150"/><circle cx="63" cy="78" r="3.5" fill="#fff"/><circle cx="103" cy="78" r="3.5" fill="#fff"/></g>
+<path d="M72 100 L80 112 L88 100Z" fill="#FFB547"/>
+<circle cx="102" cy="80" r="26" fill="none" stroke="#FFD23F" stroke-width="5"/>
+<line x1="120" y1="99" x2="142" y2="130" stroke="#FFD23F" stroke-width="8" stroke-linecap="round"/>
+<path d="M64 164 L64 174 M96 164 L96 174" stroke="#FFB547" stroke-width="6" stroke-linecap="round"/>
+<path d="M58 106 Q80 146 102 106" stroke="#FF6B6B" stroke-width="3" fill="none"/><rect x="72" y="122" width="16" height="10" rx="5" fill="#D8DCEB" stroke="#9AA0C0" stroke-width="2"/>
+</svg>`;
+const SCN=[
+['linear-gradient(#9BE58A,#3E9B3A)','⚽ 🥅 🏟️'],['linear-gradient(#FFC48A,#C8692E)','🏀 🏀 🏀'],['linear-gradient(#B9E89C,#C9A06A)','⚾ 🧢 ⚾'],
+['linear-gradient(#9FE5FF,#2B8FD0)','🏊 🌊 🏊'],['linear-gradient(#C9F0A8,#4F9F5A)','🎾 🎾 🎾'],['linear-gradient(#FFB3A0,#C8503E)','🏃 🏁 🏃'],
+['linear-gradient(#E8D8FF,#8E6CF0)','🤸 ⭐ 🤸'],['linear-gradient(#F5DEB3,#B9874E)','🎳 🎳 🎳'],['linear-gradient(#E8F7FF,#9CCBE6)','🏒 🧊 🥅'],
+['linear-gradient(#FFF1C4,#7FD3F0)','🏐 🏖️ 🏐'],['linear-gradient(#D7E3EE,#7A8CA0)','🚴 🛣️ 🚴'],['linear-gradient(#C9F0A8,#5FAE45)','⛳ 🏌️ ⛳'],
+['linear-gradient(#F2FAFF,#A7C8E8)','⛷️ 🏔️ ❄️'],['linear-gradient(#FFD3E0,#E86A8E)','👕 🔢 👕'],['linear-gradient(#2B2F6E,#151845)','🏀 ⏰ 🏟️'],
+['linear-gradient(#FFB3A0,#B8442E)','🏃 🏃 🏃'],['linear-gradient(#9BE58A,#3E9B3A)','⚽ ⚽ ⚽'],['linear-gradient(#F5E6C8,#A57C4E)','🥋 🥋 🥋'],
+['linear-gradient(#7FD8F5,#1E6FA8)','🤽 💦 🤽'],['linear-gradient(#FFF0B8,#E0B040)','🥇 🥈 🥉'],['linear-gradient(#3A3F8C,#151845)','🏟️ 🔥 🏟️'],
+['linear-gradient(#D9F0B0,#7FAE4A)','💪 🪢 💪'],['linear-gradient(#BFE8FF,#6CC4F0)','👟 ⚽ 👟'],['linear-gradient(#2B1F5E,#0F0B2E)','🏆 ✨ 🏆']];
+function sceneHTML(i,inner){return `<div class="scene" style="background:${SCN[i][0]}">${inner||SCN[i][1].split(' ').map((e,k)=>`<span style="animation-delay:${k*.7}s">${e}</span>`).join('')}<div class="owl-s">${OWL}</div></div>`;}
+function sparkle(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const w=document.createElement('div');w.className='sparkle';w.setAttribute('aria-hidden','true');
+const em=['✨','⭐','💫','🌟'];for(let i=0;i<22;i++){const s=document.createElement('i');s.textContent=em[i%4];const a=Math.random()*Math.PI*2,d=140+Math.random()*180;
+s.style.setProperty('--x',Math.cos(a)*d+'px');s.style.setProperty('--y',Math.sin(a)*d+'px');w.appendChild(s);}document.body.appendChild(w);setTimeout(()=>w.remove(),1500);}
+const SND=(()=>{
+  const CFG={id:'lucas',music:true,bar:3.6,steps:8,arp:.45,ring:1.2,oct:0,wave:'triangle',vol:.5,cut:2200};
+  let ctx=null,master=null,mg=null,on=CFG.music,nextBar=0,bar=0;
+  try{const v=localStorage.getItem('music-'+CFG.id);if(v!==null)on=v==='1';}catch(e){}
+  const N=m=>440*Math.pow(2,(m-69)/12);
+  function init(){
+    if(ctx)return true;
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+    try{ctx=new AC();}catch(e){return false;}
+    master=ctx.createGain();master.gain.value=.8;master.connect(ctx.destination);
+    const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=CFG.cut;lp.connect(master);
+    mg=ctx.createGain();mg.gain.value=0;mg.connect(lp);
+    setInterval(tick,200);return true;
+  }
+  function tone(f,t,d,o){o=o||{};const os=ctx.createOscillator(),g=ctx.createGain();os.type=o.type||'sine';os.frequency.setValueAtTime(f,t);
+    if(o.glide)os.frequency.exponentialRampToValueAtTime(o.glide,t+d);
+    const a=o.a||.015,v=o.v||.15;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    os.connect(g);g.connect(o.dest||master);os.start(t);os.stop(t+d+.05);}
+  const PROG=[[48,[60,64,67,71]],[45,[57,60,64,67]],[41,[57,60,64,65]],[43,[59,62,67,64]]];
+  const PENT=[72,74,76,79,81,84,86,88];
+  function playBar(t){
+    const [root,ch]=PROG[bar%PROG.length];bar++;const L=CFG.bar;
+    tone(N(root),t,L*.95,{v:.09,a:.3,dest:mg});
+    ch.forEach(m=>tone(N(m),t,L*1.05,{v:.035,a:L*.35,type:'triangle',dest:mg}));
+    const dt=L/CFG.steps;
+    for(let i=0;i<CFG.steps;i++)if(Math.random()<CFG.arp)tone(N(PENT[Math.floor(Math.random()*PENT.length)]+CFG.oct),t+i*dt,CFG.ring,{v:.05,dest:mg,type:CFG.wave});
+  }
+  function tick(){
+    const speaking=(('speechSynthesis' in window)&&speechSynthesis.speaking)||!!(window.VOICE_PLAYING&&window.VOICE_PLAYING());
+    const target=on&&!document.hidden?(speaking?CFG.vol*.25:CFG.vol):0;
+    mg.gain.setTargetAtTime(target,ctx.currentTime,.4);
+    if(!on)return;
+    if(nextBar<ctx.currentTime)nextBar=ctx.currentTime+.1;
+    while(nextBar<ctx.currentTime+.6){playBar(nextBar);nextBar+=CFG.bar;}
+  }
+  function unlock(){if(init()&&ctx.state!=='running')ctx.resume();}
+  document.addEventListener('pointerdown',unlock,true);document.addEventListener('keydown',unlock,true);
+  const btn=document.createElement('button');btn.className='mus';btn.type='button';
+  function label(){btn.textContent=on?'🎵':'🔇';btn.setAttribute('aria-label',on?'Music on':'Music off');btn.setAttribute('aria-pressed',String(on));}
+  label();
+  btn.onclick=e=>{e.stopPropagation();unlock();on=!on;try{localStorage.setItem('music-'+CFG.id,on?'1':'0');}catch(err){}label();};
+  document.body.appendChild(btn);
+  function fx(fn){if(!init())return;if(ctx.state!=='running')ctx.resume();fn(ctx.currentTime+.02);}
+  return{
+    correct:()=>fx(t=>[72,76,79,84].forEach((m,i)=>tone(N(m),t+i*.09,.5,{type:'triangle',v:.16}))),
+    wrong:()=>fx(t=>{tone(N(64),t,.25,{v:.09});tone(N(60),t+.16,.35,{v:.09});}),
+    win:()=>fx(t=>{[72,74,76,79,81,84,88].forEach((m,i)=>tone(N(m),t+i*.06,.4,{type:'triangle',v:.12}));[72,76,79].forEach(m=>tone(N(m),t+.5,1.2,{v:.08}));}),
+    pop:()=>fx(t=>tone(N(67),t,.18,{v:.15,glide:N(79)})),
+    thump:()=>fx(t=>tone(110,t,.3,{v:.25,glide:55})),
+    bell:()=>fx(t=>{tone(N(69),t,2.5,{v:.07});tone(N(76),t,2.5,{v:.035});})
+  };
+})();
+const uni=(a,b)=>[...new Set([...(a||[]),...(b||[])])];
+const MERGE=(a,b)=>{const tot=l=>Object.values(l||{}).reduce((s,e)=>s+(e[0]||0),0);return{...a,got:uni(a.got,b.got),zl:Math.max(a.zl||4,b.zl||4),miss:uni(a.miss,b.miss),log:tot(b.log)>tot(a.log)?b.log:(a.log||{}),medals:Math.max(a.medals||0,b.medals||0),trophies:Math.max(a.trophies||0,b.trophies||0),rnext:Math.max(a.rnext||0,b.rnext||0),lb:(b.rnext||0)>(a.rnext||0)?b.lb:a.lb,fighter:a.fighter!==undefined?a.fighter:b.fighter,buddy:a.buddy!==undefined?a.buddy:b.buddy};};
+const ON_HOME=()=>!!(document.querySelector('.hero'));
+
+/* ---------- CLOUD SAVE (Claude account) ---------- */
+const CLOUD={ref:null,timer:null,ready:false};
+async function cloudInit(){
+  try{
+    if(!window.claude||typeof claude.use!=='function')return;
+    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(!db||!user)return;
+    const id=await user.id();if(!id)return;CLOUD.db=db;CLOUD.uid=id;
+    CLOUD.ref=db.collection('data/users/'+id).doc(KEY);
+    const snap=await CLOUD.ref.get();
+    if(snap.exists){const d=snap.data();if(d&&typeof d.state==='string'){try{S=MERGE(S,JSON.parse(d.state));}catch(e){}}}
+    CLOUD.ready=true;
+    if(typeof voiceLoad==='function')voiceLoad();
+    try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+    cloudPush(true);
+    if(ON_HOME())home();
+  }catch(e){}
+}
+function cloudPush(now){
+  if(!CLOUD.ref||!CLOUD.ready)return;
+  clearTimeout(CLOUD.timer);
+  const go=()=>CLOUD.ref.set({state:JSON.stringify(S),at:Date.now()}).catch(()=>{});
+  if(now)go();else CLOUD.timer=setTimeout(go,700);
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&CLOUD.timer){clearTimeout(CLOUD.timer);cloudPush(true);}});
+const cloudNote=()=>`<p class="cloudnote">${CLOUD.ready?'☁️ Progress saves to your Claude account':'📱 Progress saves on this device only'}</p>`;
+const VKEYS=ZY.map((z,i)=>['voice-zy-'+i,z[0],ZYS[z[0]],'ㄅㄆㄇ Sounds']);
+
+/* ---------- VOICE (parent recordings) ---------- */
+const VOICE={byText:{},clips:{},cur:null};
+window.VOICE_PLAYING=()=>!!(VOICE.cur&&!VOICE.cur.paused&&!VOICE.cur.ended);
+function b64ToUrl(b64,type){const bin=atob(b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return URL.createObjectURL(new Blob([u],{type}));}
+function blobToB64(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(blob);});}
+function applyClip(key,rec){const k=VKEYS.find(x=>x[0]===key);if(!k)return;const old=VOICE.clips[key];if(old&&old.url)URL.revokeObjectURL(old.url);
+  if(!rec||!rec.b64){delete VOICE.clips[key];if(VOICE.byText[k[2]]===(old&&old.url))delete VOICE.byText[k[2]];return;}
+  try{const url=b64ToUrl(rec.b64,rec.type||'audio/webm');VOICE.clips[key]={type:rec.type,url};VOICE.byText[k[2]]=url;}catch(e){}}
+const VDB={db:null};
+function idb(){return new Promise(res=>{if(VDB.db)return res(VDB.db);try{const rq=indexedDB.open('voice-'+KEY,1);rq.onupgradeneeded=()=>rq.result.createObjectStore('clips');rq.onsuccess=()=>{VDB.db=rq.result;res(VDB.db);};rq.onerror=()=>res(null);}catch(e){res(null);}});}
+async function localAll(){const d=await idb();if(!d)return{};return new Promise(res=>{const out={};try{const rq=d.transaction('clips').objectStore('clips').openCursor();rq.onsuccess=()=>{const c=rq.result;if(c){out[c.key]=c.value;c.continue();}else res(out);};rq.onerror=()=>res(out);}catch(e){res(out);}});}
+async function localPut(key,val){const d=await idb();if(!d)return;try{const st=d.transaction('clips','readwrite').objectStore('clips');if(val)st.put(val,key);else st.delete(key);}catch(e){}}
+async function voiceLoad(){
+  const loc=await localAll();Object.entries(loc).forEach(([k,v])=>applyClip(k,v));
+  if(CLOUD.db&&CLOUD.uid){try{const q=await CLOUD.db.collection('data/users/'+CLOUD.uid).get();q.docs.forEach(d=>{if(d.id.startsWith('voice-')){const v=d.data();if(v&&v.b64){applyClip(d.id,v);localPut(d.id,{b64:v.b64,type:v.type});}}});}catch(e){}}
+  if(document.querySelector('.studio'))studio();
+}
+async function voiceSave(key,rec){applyClip(key,rec);await localPut(key,rec);
+  if(CLOUD.db&&CLOUD.uid){try{const ref=CLOUD.db.collection('data/users/'+CLOUD.uid).doc(key);if(rec)await ref.set(rec);else await ref.delete();return true;}catch(e){return false;}}return true;}
+function playClip(url,done){if(VOICE.cur){try{VOICE.cur.pause();}catch(e){}}const a=new Audio(url);VOICE.cur=a;let fin=false;const end=()=>{if(fin)return;fin=true;if(VOICE.cur===a)VOICE.cur=null;if(done)done();};a.onended=end;a.onerror=end;a.play().catch(end);}
+let REC=null,MIC=null;
+function micOff(){if(MIC){try{MIC.getTracks().forEach(t=>t.stop());}catch(e){}MIC=null;}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){stopRec();micOff();}});
+function studioMsg(t){const m=document.getElementById('vmsg');if(m)m.textContent=t;}
+async function recordKey(key,btn){
+  if(REC){if(REC.mr)stopRec();return;}
+  REC={starting:true};
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){REC=null;studioMsg(window.claude?'The microphone is blocked inside the Claude viewer. Record on the Mac in the downloaded game file, tap Export, then tap Import here.':'The microphone isn’t available here. Use 📁 to upload a recording instead.');return;}
+  let stream=(MIC&&MIC.getAudioTracks().some(t=>t.readyState==='live'))?MIC:null;
+  if(!stream)try{stream=MIC=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){REC=null;studioMsg(window.claude?'The microphone is blocked inside the Claude viewer. Record on the Mac in the downloaded game file, tap Export, then tap Import here.':'The microphone was blocked. Allow it in your browser, or use 📁 to upload a recording.');return;}
+  const type=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||'';
+  let mr;try{mr=new MediaRecorder(stream,type?{mimeType:type,audioBitsPerSecond:48000}:undefined);}catch(e){micOff();REC=null;studioMsg('Recording isn’t supported here. Use 📁 to upload instead.');return;}
+  const chunks=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
+  const me={mr,timer:null};
+  mr.onstop=async()=>{clearTimeout(me.timer);if(REC===me)REC=null;btn.classList.remove('on');btn.textContent='●';
+    const blob=new Blob(chunks,{type:(mr.mimeType||type||'audio/webm').split(';')[0]});
+    await storeBlob(key,blob);};
+  REC=me;me.timer=setTimeout(stopRec,3000);btn.classList.add('on');btn.textContent='■';studioMsg('Recording… say it now');mr.start();
+}
+function stopRec(){if(!REC||!REC.mr)return;clearTimeout(REC.timer);try{REC.mr.stop();}catch(e){}}
+async function storeBlob(key,blob){
+  if(blob.size<400){studioMsg('That was too short — try again.');return;}
+  if(blob.size>170000){studioMsg('That was too long — keep it under 3 seconds.');return;}
+  const b64=await blobToB64(blob);const ok=await voiceSave(key,{b64,type:blob.type||'audio/webm',at:Date.now()});
+  studioMsg(ok?'Saved! Playing it back…':'Saved on this device only.');updateRow(key);if(VOICE.clips[key])playClip(VOICE.clips[key].url);
+}
+function rowHTML(k){const has=!!VOICE.clips[k[0]];return `<div class="vrow${has?' has':''}" data-k="${k[0]}"><span class="vsym">${k[1]}</span><span class="vsay">Say: <b>${k[2]}</b></span>
+  <button class="vrec" aria-label="Record ${k[1]}">●</button><button class="vplay" aria-label="Play"${has?'':' disabled'}>▶</button><button class="vdel" aria-label="Delete"${has?'':' disabled'}>🗑</button>
+  <label class="vup" aria-label="Upload a recording">📁<input type="file" accept="audio/*" hidden></label></div>`;}
+function bindRow(row){const key=row.dataset.k;
+  row.querySelector('.vrec').onclick=e=>recordKey(key,e.currentTarget);
+  row.querySelector('.vplay').onclick=()=>{if(VOICE.clips[key])playClip(VOICE.clips[key].url);};
+  row.querySelector('.vdel').onclick=async()=>{await voiceSave(key,null);updateRow(key);studioMsg('Deleted — the computer voice will be used.');};
+  row.querySelector('input').onchange=async e=>{const f=e.target.files[0];if(f)await storeBlob(key,f);};}
+function updateRow(key){const row=document.querySelector(`.vrow[data-k="${key}"]`);const k=VKEYS.find(x=>x[0]===key);if(!row||!k)return;row.outerHTML=rowHTML(k);bindRow(document.querySelector(`.vrow[data-k="${key}"]`));
+  const c=document.getElementById('vcount');if(c)c.textContent=`${VKEYS.filter(x=>VOICE.clips[x[0]]).length} / ${VKEYS.length}`;}
+
+async function voiceExport(){
+  const all=await localAll();const clips={};VKEYS.forEach(k=>{if(all[k[0]]&&all[k[0]].b64)clips[k[0]]={b64:all[k[0]].b64,type:all[k[0]].type};});
+  const n=Object.keys(clips).length;if(!n){studioMsg('Nothing to export yet — record some sounds first.');return;}
+  const blob=new Blob([JSON.stringify({kind:'voice-pack',version:1,clips})],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='voice-pack.json';document.body.appendChild(a);a.click();a.remove();
+  studioMsg(`Exported ${n} recording${n===1?'':'s'} to voice-pack.json (check your Downloads folder).`);
+}
+async function voiceImport(file){
+  try{const data=JSON.parse(await file.text());const clips=(data&&data.clips)||{};let n=0;
+    studioMsg('Importing…');
+    for(const k of VKEYS){const c=clips[k[0]];if(c&&c.b64){await voiceSave(k[0],{b64:c.b64,type:c.type||'audio/webm',at:Date.now()});n++;}}
+    studio();studioMsg(n?`Imported ${n} recording${n===1?'':'s'}. ${CLOUD.ready?'☁️ Saved to your account.':'📱 Saved on this device.'}`:'That file had no recordings this game uses.');
+  }catch(e){studioMsg('That file isn’t a voice pack. Choose the voice-pack.json you exported.');}
+}
+function studio(){
+  if(typeof closeOv==='function')closeOv();
+  const groups=[...new Set(VKEYS.map(k=>k[3]))];
+  app.innerHTML=`<section class="studio"><div class="top"><button id="h" aria-label="Home">🏠</button><b>🎙️ Voice Studio</b><span id="vcount">${VKEYS.filter(x=>VOICE.clips[x[0]]).length} / ${VKEYS.length}</span></div>
+  <div class="tips"><p><b>How it works:</b> tap <b style="color:#E8423F">●</b>, say the sound once, then tap <b>■</b> (it also stops by itself after 3 seconds). It plays back so you can check. Tap ● again to redo it.</p>
+  <p>Say each ㄅㄆㄇ sound the way you teach it (ㄅ as “ㄅㄛ”).${VKEYS.some(k=>k[3]==='數字 Numbers')?' Say the numbers in Chinese: 一、二、三…':''}</p>
+  <p>Anything you haven’t recorded still uses the computer voice. ${CLOUD.ready?'☁️ Recordings save to your Claude account, so they work on your phone and Mac.':'📱 Recordings save on this device only.'}</p>
+  <p class="vbtns">${window.claude?'':'<button class="vbtn" id="vexport">⬇️ Export voice pack</button>'}<label class="vbtn">⬆️ Import voice pack<input type="file" id="vimport" accept=".json,application/json" hidden></label></p>
+  <p class="vmsg" id="vmsg" aria-live="polite"></p></div>
+  ${groups.map(g=>`<div class="vgroup">${g}</div>${VKEYS.filter(k=>k[3]===g).map(rowHTML).join('')}`).join('')}
+  </section>`;
+  document.getElementById('h').onclick=()=>{stopRec();micOff();home();};
+  document.querySelectorAll('.vrow').forEach(bindRow);
+  const ex=document.getElementById('vexport');if(ex)ex.onclick=voiceExport;
+  document.getElementById('vimport').onchange=e=>{const f=e.target.files[0];if(f)voiceImport(f);};
+}
+const app=document.getElementById('app');
+const $=s=>app.querySelector(s);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let cur=0,wrong=[],tries=0,msg='',cls='';
+
+function nextIdx(){for(let i=0;i<MON.length;i++)if(!S.got.includes(i))return i;return -1;}
+function cardHTML(i,flash){const m=MON[i];
+  return `<div class="card${flash?' flash':''}" style="--r:${RAR[m.r]}"><span class="rar">${m.r}</span>
+  <div class="face">${m.e}</div><h3 data-say="en">${m.n}</h3><div class="zh" data-say="zh">${m.zh}</div>
+  <div class="stats"><span>🏅 ${m.t}</span><span>💪 PWR ${m.hp}</span></div>
+  <p class="fact" data-say="en">🔎 ${m.fact}</p></div>`;}
+
+/* ---------- LEARNING: tracking + Training Camp ---------- */
+const LSK={add:'Adding',sub:'Take away & compare',groups:'Groups (times & sharing)',pattern:'Patterns',logic:'Logic & careful reading',time:'Telling time',multi:'Multi-step'};
+const PZ_SKILL=['sub','groups','add','groups','groups','logic','pattern','multi','groups','multi','groups','logic','groups','logic','time','groups','sub','logic','groups','sub','groups','multi','groups','pattern'];
+const TR={on:false,items:[],i:0,right:0,skill:null};
+const CP=()=>TR.on?TR.items[TR.i]:PZ[cur];
+function logL(key,first,hint){S.log=S.log||{};const e=S.log[key]||[0,0,0];e[0]++;if(first)e[1]++;if(hint)e[2]++;S.log[key]=e;}
+function recPuzzle(first,hint){logL('sk:'+(TR.on?CP().skill:PZ_SKILL[cur]),first,hint);if(!TR.on)logL('pz:'+cur,first,hint);else if(first)TR.right++;save();}
+function weakL(){const L=S.log||{};return Object.keys(LSK).map(k=>{const e=L['sk:'+k]||[0,0,0];return{k,seen:e[0],rate:e[0]?e[1]/e[0]:1};}).filter(x=>x.seen>=2&&x.rate<0.75).sort((a,b)=>a.rate-b.rate||b.seen-a.seen);}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function nopts(ans,c){const set=[ans];for(const x of c){if(x>0&&!set.includes(x)&&set.length<4)set.push(x);}let k=1;while(set.length<4){const v=ans+(k%2?k:-k);k++;if(v>0&&!set.includes(v))set.push(v);}const o=shuffle(set);return{o:o.map(String),a:o.indexOf(ans)};}
+function sopts(ans,c){const o=shuffle([...new Set([ans,...c])].slice(0,4));return{o,a:o.indexOf(ans)};}
+const TEAMS=['Tigers','Sharks','Eagles','Bears','Rockets','Comets'];
+const GENL={
+  add(){const a=R(4,19),b=R(4,19),t=shuffle(TEAMS);const x=nopts(a+b,[a+b+1,a+b-1,a+b+10,Math.abs(a-b)]);return{skill:'add',s:'Scoreboard time!',q:`The ${t[0]} scored ${a} points and the ${t[1]} scored ${b} points. How many points did they score in all?`,...x,h:`Start at ${Math.max(a,b)} and count on ${Math.min(a,b)} more.`};},
+  sub(){if(Math.random()<.5){const n=R(10,20),m=R(3,n-2);const x=nopts(n-m,[n+m,n-m+1,n-m-1,m]);return{skill:'sub',s:'Oops! The ball bag tipped over!',q:`There were ${n} balls in the bag. ${m} rolled away. How many are still in the bag?`,...x,h:`Start at ${n} and count back ${m}.`};}
+    const a=R(8,20),b=R(3,a-2),t=shuffle(TEAMS);const x=nopts(a-b,[a+b,a-b+1,a-b-1,b]);return{skill:'sub',s:'Who has more trophies?',q:`The ${t[0]} have ${a} trophies. The ${t[1]} have ${b}. How many more trophies do the ${t[0]} have?`,...x,h:`Take ${b} away from ${a}.`};},
+  groups(){const r=Math.random();if(r<.4){const k=R(2,5),p=R(2,6);const x=nopts(k*p,[k+p,k*p+p,k*p-p,k*p+1]);return{skill:'groups',s:'Team photo day!',q:`There are ${k} teams with ${p} players on each team. How many players in all?`,...x,h:`Count by ${p}s, ${k} times.`};}
+    if(r<.7){const k=R(2,5),e=R(2,5),n=k*e;const x=nopts(e,[n-k,e+1,e-1,k]);return{skill:'groups',s:'Sharing the balls!',q:`The coach shares ${n} balls equally into ${k} bags. How many balls go in each bag?`,...x,h:`What times ${k} makes ${n}?`};}
+    const k=R(3,5),n=k*R(2,4)+R(1,k-1),a=Math.ceil(n/k);const x=nopts(a,[a-1,a+1,n]);return{skill:'groups',s:'Everybody needs a car!',q:`Each car can carry ${k} players. ${n} players need a ride. How many cars do they need?`,...x,h:`${a-1} cars carry ${(a-1)*k} players. Is everyone in?`};},
+  pattern(){const a=R(1,10),d=R(2,5);const seq=[a,a+d,a+2*d,a+3*d];const ans=a+4*d;const x=nopts(ans,[ans+d,ans-1,ans+1,a+3*d+1]);return{skill:'pattern',s:'Look at the scoreboard pattern!',q:`What comes next? ${seq.join(', ')}, __`,...x,h:`How much does it jump each time?`};},
+  logic(){const N=shuffle(['Max','Ava','Leo']);const ask=R(0,1);const clues=shuffle([`${N[0]} finished before ${N[1]}.`,`${N[2]} finished after ${N[1]}.`]);const ans=ask?N[0]:N[2];const x=sopts(ans,N);return{skill:'logic',s:'The race is over!',q:`${clues.join(' ')} Who finished ${ask?'first':'last'}?`,...x,h:'Line them up from first to last, one clue at a time.'};},
+  time(){const h=R(1,10),d=R(1,3),e=((h+d-1)%12)+1,hr=v=>`${((v-1+120)%12)+1} o’clock`;const x=sopts(hr(e),[hr(e+1),hr(e-1),hr(h),hr(e+2),hr(e-2)]);return{skill:'time',s:'Game day!',q:`The game starts at ${h} o’clock and lasts ${d} hour${d>1?'s':''}. What time does it end?`,...x,h:`Count ${d} hour${d>1?'s':''} forward from ${h}.`};},
+  multi(){const a=R(6,14),b=R(1,a-2),c=R(1,6),ans=a-b+c;const x=nopts(ans,[a+b+c,a-b-c>0?a-b-c:ans+2,ans+1,ans-1]);return{skill:'multi',s:'All aboard the team bus!',q:`${a} players are on the bus. ${b} ${b===1?'gets':'get'} off and ${c} ${c===1?'gets':'get'} on. How many are on the bus now?`,...x,h:`First do ${a} − ${b}. Then add ${c}.`};}
+};
+function startTraining(){const w=weakL();if(!w.length)return;TR.on=true;TR.skill=w[0].k;TR.i=0;TR.right=0;TR.items=Array.from({length:5},()=>GENL[TR.skill]());trainOpen();}
+function trainOpen(){wrong=[];tries=0;msg='';cls='';renderCase();const p=CP();speak(p.s+' '+p.q,'en');}
+function trainNext(){msg='✅ Nice!';cls='hint';renderCase();setTimeout(()=>{TR.i++;if(TR.i>=TR.items.length)trainDone();else trainOpen();},600);}
+function trainDone(){const r=TR.right,sk=LSK[TR.skill];TR.on=false;if(r>=4)S.medals=(S.medals||0)+1;save();
+  app.innerHTML=`<section class="hero"><div class="owlwrap">${OWL}<p class="bubble" data-say="en">${r>=4?'Awesome training! You earned a gold medal! 🥇':r>=2?'Good work! Practice again soon and you’ll get even stronger!':'That was tough. We’ll train on it again!'}</p></div>
+  <h1 style="font-size:30px">Training done!</h1><p data-say="en">${sk}: ${r} of 5 right the first time</p>
+  <p style="font-size:40px;margin:6px 0">${'🥇'.repeat(Math.min(S.medals||0,10))||'🏅'}</p>
+  <button class="go" id="hm">🏠 Back to the team</button></section>`;
+  if(r>=4){sparkle();SND.win();}
+  $('#hm').onclick=home;}
+function report(){
+  const L=S.log||{},pct=e=>e[0]?Math.round(e[1]/e[0]*100):0;
+  const sk=Object.keys(LSK).map(k=>({k,e:L['sk:'+k]||[0,0,0]})).filter(x=>x.e[0]).sort((a,b)=>pct(a.e)-pct(b.e));
+  const tot=sk.reduce((a,x)=>a+x.e[0],0),first=sk.reduce((a,x)=>a+x.e[1],0),hints=sk.reduce((a,x)=>a+x.e[2],0);
+  const missed=Object.entries(L).filter(([k,e])=>k.startsWith('pz:')&&e[1]<e[0]).map(([k])=>+k.slice(3)).filter(i=>PZ[i]);
+  const zy=Object.entries(L).filter(([k])=>k.startsWith('zy:')).sort((a,b)=>pct(a[1])-pct(b[1]));
+  const bar=(lab,e)=>`<div class="rrow"><span class="rl">${lab}</span><span class="rbar"><i style="width:${pct(e)}%;background:${pct(e)>=75?'#3DDC97':pct(e)>=50?'#FFD23F':'#FF6B6B'}"></i></span><span class="rn">${e[1]}/${e[0]}</span></div>`;
+  app.innerHTML=`<div class="top"><button id="h" aria-label="Home">🏠</button><span>📊 Lucas’s progress</span></div>
+  <section class="panel rpt">
+  ${tot?`<div class="rsum"><div><b>${tot}</b><small>answers</small></div><div><b>${pct([tot,first])}%</b><small>right first try</small></div><div><b>${S.medals||0}</b><small>training medals</small></div></div>`:'<p>No answers recorded yet. Tracking starts with his next game.</p>'}
+  ${sk.length?`<h3>Math skills (weakest first)</h3>${sk.map(x=>bar(LSK[x.k],x.e)).join('')}`:''}
+  ${missed.length?`<h3>Games he missed the first time</h3><p class="small">${missed.map(i=>`Game ${i+1}: ${PZ[i].q.split(/[.?]/)[0]}…`).join('<br>')}</p>`:''}
+  <h3>注音</h3><p class="small">Unlocked: ${ZY.slice(0,S.zl||4).map(z=>z[0]).join(' ')} (${S.zl||4} of 21)${(S.miss||[]).length?`<br>Keeps missing: <b>${S.miss.join(' ')}</b>`:''}</p>
+  ${zy.slice(0,12).map(([k,e])=>bar(k.slice(3),e)).join('')}
+  <p class="small">“Right first try” = picked the right answer with no wrong taps. 🏋️ Training Camp practices his weakest math skill with 5 new questions each time.</p></section>`;
+  $('#h').onclick=home;}
+
+function home(){
+  const n=S.got.length;
+  const fan=[0,1,2].map(k=>{const g=S.got[S.got.length-3+k];return g!==undefined?`<div class="mini">${MON[g].e}</div>`:'<div class="mini q">?</div>';}).join('');
+  app.innerHTML=`<section class="hero${weakL().length?' withtrain':''}">
+  <div class="owlwrap">${OWL}<p class="bubble" data-say="en">I’m Coach Hoot! Solve puzzles to build your all-star team!</p></div>
+  <p class="name" data-say="zh"><ruby>陸<rt>ㄌㄨˋ</rt></ruby><ruby>晨<rt>ㄔㄣˊ</rt></ruby></p><h1>Sports Stars</h1>
+  <p data-say="en">Win the game. Read the sound. Sign the player!</p>
+  <div class="fan">${fan}</div>
+  <div class="meter"><i style="width:${n/MON.length*100}%"></i></div>
+  <p data-say="en">${n} of ${MON.length} players on your team</p>
+  ${n<MON.length?'<button class="go" id="go">🏁 Play the next game'+(S.trophies?' · 🏆'+S.trophies:'')+'</button>':'<p style="font-size:26px;font-weight:800" data-say="en">Your team is complete — champions! 🏆</p><button class="go" id="again">Play again</button>'}
+  ${(()=>{const w=weakL();return w.length?`<button class="go train" id="train">🏋️ Training Camp: ${LSK[w[0].k]}</button>`:'';})()}<button class="alt" id="bind">📒 My team cards</button><button class="plink" id="rpt">📊 Parent: progress report</button><button class="plink" id="studio">🎙️ Parent: record your voice</button>${cloudNote()}</section>`;
+  if($('#go'))$('#go').onclick=()=>openCase(nextIdx());
+  if($('#again'))$('#again').onclick=()=>{S.got=[];save();home();};
+  $('#bind').onclick=binder;
+  if($('#train'))$('#train').onclick=startTraining;
+  $('#rpt').onclick=report;
+  $('#studio').onclick=studio;
+}
+
+/* ---------- SPORTS SHOWDOWN: battle with his own athletes ---------- */
+const RIVALS=[
+ ['Robo Ref','🤖','He blows his whistle at all the wrong times and stops every game!','trick','Tricky moves confuse his robot brain!'],
+ ['Pixel Gremlin','👾','He glitches the scoreboard so nobody knows the score!','speed','He’s too slow to follow fast moves!'],
+ ['Squid Keeper','🦑','Eight arms guard the goal — nothing gets past him!','power','A super-strong shot slips past all eight arms!'],
+ ['Croc Captain','🐊','He chomps every ball that comes near his team!','speed','He can’t chomp what he can’t catch!'],
+ ['Sting Striker','🦂','He zaps the ball so it bounces all over the field!','power','Big power knocks his zaps away!'],
+ ['Shark Sprinter','🦈','He zooms around the pool faster than anyone!','trick','A sneaky trick makes him spin in circles!']];
+const MOVES=[{k:'speed',n:'Speed',e:'⚡',c:'#FFD23F',say:'Whoa, too fast!'},{k:'power',n:'Power',e:'💥',c:'#FF6B6B',say:'Oof! What a hit!'},{k:'trick',n:'Trick',e:'🌀',c:'#56C2FF',say:'Huh? Where did it go?'}];
+const SPORT={Soccer:['Power Kick','⚽'],Basketball:['Slam Dunk','🏀'],Baseball:['Home Run Swing','⚾'],Swimming:['Tidal Splash','🌊'],Tennis:['Ace Serve','🎾'],Track:['Sonic Sprint','💨'],
+ Gymnastics:['Triple Flip','🤸'],Bowling:['Strike Roll','🎳'],Hockey:['Slap Shot','🏒'],Volleyball:['Super Spike','🏐'],Cycling:['Turbo Pedal','🚴'],Golf:['Hole in One','⛳'],Skiing:['Avalanche Run','⛷️'],
+ Karate:['Power Chop','🥋'],'Water Polo':['Splash Shot','💦'],Olympics:['Gold Rush','🥇'],'Tug-of-war':['Mighty Pull','💪'],'All sports':['Champion Blast','🏆']};
+const LT=[{p:'',m:1.0,fx:'one'},{p:'Double ',m:1.3,fx:'three'},{p:'Super ',m:1.6,fx:'rain'},{p:'Mega ',m:2.0,fx:'flash'},{p:'Ultra ',m:2.5,fx:'ring'},{p:'Legendary ',m:3.0,fx:'trophy'}];
+const ASSIST={Rookie:4,Pro:6,'All-Star':8,MVP:12};
+const COACH={e:'🦉',n:'Coach Hoot',zh:'貓頭鷹教練',t:'Soccer',r:'Rookie',hp:40};
+const lti=c=>Math.min(LT.length,Math.max(1,c))-1;
+const fighter=()=>S.got.includes(S.fighter)?MON[S.fighter]:(S.got.length?MON[S.got[0]]:COACH);
+const buddy=()=>(S.got.includes(S.buddy)&&S.buddy!==S.fighter)?MON[S.buddy]:null;
+function newRival(){const n=S.rnext||0;S.lb={ri:n%RIVALS.length,hp:100,turns:0,first:0,intro:false,shown:false};S.rnext=n+1;save();}
+function lbat(){if(!S.lb||(S.lb.hp<=0&&S.lb.shown))newRival();return S.lb;}
+function lbBar(){const b=lbat(),r=RIVALS[b.ri],c=S.lch||0,F=fighter();
+  return `<div class="lbar"><span class="lbf">${F.e}</span><span class="vs">VS</span><span class="lbr">${r[1]}</span>
+  <div class="lbmid"><b>${r[0]}</b><div class="lbhp"><i style="width:${b.hp}%"></i></div><div class="lbch">${LT.map((t,k)=>`<i class="${k<c?'on':''}"></i>`).join('')}</div></div>
+  <div class="lbnx"><small>Next</small><b>${(LT[lti(c+1)].p||'Basic ').trim()}</b></div></div>`;}
+function lbIntro(go){
+  const b=lbat();if(b.intro){go();return;}
+  const r=RIVALS[b.ri],W=MOVES.find(m=>m.k===r[3]);let slot='f';
+  if(!S.got.includes(S.fighter)&&S.got.length)S.fighter=S.got[0];
+  const draw=()=>{const F=fighter(),B=buddy();
+    app.innerHTML=`<section class="hero lintro">
+    <p class="lalert">🚨 A rival team appeared!</p>
+    <div class="lrival">${r[1]}</div><h1 class="lname">${r[0]}</h1>
+    <p class="lstory" data-say="en">${r[2]}</p>
+    <p class="lweak" data-say="en">Weak to: ${W.e} ${W.n} — <small>${r[4]}</small></p>
+    <div class="lslots"><button class="lslot${slot==='f'?' on':''}" data-s="f"><small>Fighter</small><span>${F.e}</span><b>${F.n}</b><small>${SPORT[F.t][1]} ${SPORT[F.t][0]} · PWR ${F.hp}</small></button>
+    <button class="lslot${slot==='b'?' on':''}" data-s="b"${S.got.length<2?' disabled':''}><small>Teammate</small><span>${B?B.e:'➕'}</span><b>${B?B.n:(S.got.length<2?'Catch more players!':'Pick one')}</b><small>${B?`Assist +${ASSIST[B.r]}`:''}</small></button></div>
+    ${S.got.length?`<p class="lpick">Tap a card for your ${slot==='f'?'fighter':'teammate'}:</p><div class="lgrid">${S.got.map(i=>`<button class="lcard${i===S.fighter?' f':''}${i===S.buddy?' b':''}" data-i="${i}" aria-label="${MON[i].n}">${MON[i].e}</button>`).join('')}</div>`:'<p class="lpick">Coach Hoot will play until you sign your first player!</p>'}
+    <button class="go" id="fight">⚔️ Start the match!</button></section>`;
+    app.querySelectorAll('.lslot').forEach(x=>x.onclick=()=>{slot=x.dataset.s;draw();});
+    app.querySelectorAll('.lcard').forEach(x=>x.onclick=()=>{const i=+x.dataset.i;SND.pop();
+      if(slot==='f'){S.fighter=i;if(S.buddy===i)S.buddy=null;if(S.got.length>1)slot='b';}else{if(i!==S.fighter)S.buddy=i;}save();draw();});
+    $('#fight').onclick=()=>{b.intro=true;save();go();};
+  };
+  draw();SND.thump();
+}
+function pickMove(kind,cb){
+  const F=fighter(),ti=kind==='first'?lti((S.lch||0)+1):0,mv=SPORT[F.t];
+  const o=document.createElement('div');o.className='lpickov';
+  o.innerHTML=`<div class="lpickbox"><h3>Pick your move!</h3><p>${F.e} ${LT[ti].p}${mv[0]}</p>
+  <div class="lmoves">${MOVES.map(m=>`<button class="lmove" data-m="${m.k}" style="--c:${m.c}"><span>${m.e}</span><b>${m.n}</b></button>`).join('')}</div>
+  <p class="lhint">Remember what ${RIVALS[lbat().ri][0]} is weak to?</p></div>`;
+  document.body.appendChild(o);SND.pop();
+  o.querySelectorAll('.lmove').forEach(x=>x.onclick=()=>{o.remove();cb(x.dataset.m);});
+}
+function lbAttack(kind,cb){
+  pickMove(kind,mk=>{
+    const b=lbat(),r=RIVALS[b.ri],F=fighter(),B=buddy(),M=MOVES.find(m=>m.k===mk);
+    if(kind==='first'){S.lch=(S.lch||0)+1;b.first++;}else S.lch=0;
+    b.turns++;const ti=kind==='first'?lti(S.lch):0,t=LT[ti],weak=r[3]===mk;
+    let dmg=(10+Math.round(F.hp/10))*(kind==='first'?t.m*1.2:0.8);if(weak)dmg*=1.5;
+    const ast=B?ASSIST[B.r]:0;dmg=Math.round(dmg)+ast;
+    let fin=false;if(b.turns>=5&&b.hp-dmg>0){dmg=b.hp;fin=true;}
+    const hp0=b.hp;b.hp=Math.max(0,b.hp-dmg);save();
+    const mv=SPORT[F.t],tier=ti+1,rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fx={one:`<span class="lfx l1">${mv[1]}</span>`,three:[0,1,2].map(k=>`<span class="lfx l2" style="--i:${k}">${mv[1]}</span>`).join(''),
+      rain:Array.from({length:9},(_,k)=>`<span class="lfx l3" style="--x:${8+k*10}%;--i:${k}">${mv[1]}</span>`).join(''),
+      flash:`<div class="lflash"></div><span class="lfx l4">${mv[1]}</span><span class="lfx l4 b2">${M.e}</span>`,
+      ring:`<div class="lfx l5" style="background:conic-gradient(${M.c},#fff,${M.c},#fff,${M.c})"></div><span class="lfx l1">${mv[1]}</span>`,
+      trophy:`<div class="lflash"></div><span class="lfx l6">🏆</span>`+Array.from({length:10},(_,k)=>`<span class="lfx lb" style="--a:${k*36}deg">${mv[1]}</span>`).join('')}[t.fx];
+    const el=document.createElement('div');el.className=`latk t${tier}`;el.style.setProperty('--mc',M.c);
+    el.innerHTML=`<div class="latkbox"><div class="lan">${M.e} ${t.p}${mv[0]}${S.lch>=2?`<small>${S.lch} in a row!</small>`:''}</div>
+    <div class="lstage mv-${M.k}${weak?' lweakhit':''}">${M.k==='speed'?'<div class="speedlines"></div>':''}${weak?'<div class="lcrit"></div>':''}
+    <span class="lsf lunge">${F.e}</span><div class="lsr${b.hp<=0?' beat':''}">${r[1]}</div>
+    ${M.k==='trick'?[0,1,2].map(k=>`<span class="ghost" style="--i:${k}">${mv[1]}</span>`).join(''):''}${fx}
+    <div class="lshock"></div>${M.k==='power'?'<span class="lcrack">💥</span>':''}<div class="lsparks">${Array.from({length:10},(_,k)=>`<i style="--a:${k*36}deg"></i>`).join('')}</div>
+    ${B?`<span class="lsb">${B.e}</span>`:''}${S.lch>=2?`<div class="lcb">×${S.lch}</div>`:''}<div class="crowd">${['👏','🙌','📣','🎉','👏'].map((c,k)=>`<span style="--i:${k}">${c}</span>`).join('')}</div></div>
+    <div class="ldmg">−${dmg}${fin?' Final Whistle Shot!':''}</div><div class="lbhp2" style="--from:${hp0}%;--to:${b.hp}%"><b class="lag"></b><i></i></div>
+    ${weak?'<p class="lsuper">💥 Super effective! ×1.5</p>':'<p class="lnote">Not his weak spot — try another move type!</p>'}
+    <p class="lsay">${r[0]}: “${b.hp<=0?'Good game… you win!':M.say}”</p>
+    ${B?`<p class="lassist">${B.e} ${B.n} assist +${ast}!</p>`:''}
+    ${kind==='first'&&ti<LT.length-1?`<p class="lnext">Next right answer → ${LT[ti+1].p.trim()} ${mv[0]}</p>`:''}</div>`;
+    document.body.appendChild(el);
+    setTimeout(()=>{if(tier>=4)SND.win();else SND.correct();},300);
+    let done=false;const end=()=>{if(done)return;done=true;el.remove();if(b.hp<=0&&!b.shown)lbVictory(cb);else cb();};
+    el.onclick=end;setTimeout(end,rm?1000:1700+tier*250);
+  });
+}
+function lbVictory(cb){
+  const b=S.lb,r=RIVALS[b.ri];b.shown=true;S.trophies=(S.trophies||0)+1;save();
+  const stars=b.first>=4?3:b.first>=2?2:1;
+  app.innerHTML=`<section class="hero"><p class="lalert">🏆 YOU WIN!</p><div class="lrival">${r[1]}🤝${fighter().e}</div>
+  <h1 class="lname">You beat ${r[0]}!</h1><p data-say="en">${r[0]} says: “Good game! You’re a real champion.”</p>
+  <p style="font-size:36px;margin:4px 0">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</p><p>Trophies: ${'🏆'.repeat(Math.min(S.trophies,10))} (${S.trophies})</p>
+  <button class="go" id="vgo">Keep playing ➜</button></section>`;
+  sparkle();SND.win();speak(`You beat ${r[0]}! Good game!`,'en');$('#vgo').onclick=()=>{newRival();cb();};
+}
+
+function openCase(i){cur=i;wrong=[];tries=0;msg='';cls='';lbIntro(()=>{renderCase();const p=PZ[i];speak(p.s+' '+p.q,'en');});}
+function renderCase(){
+  const p=CP();
+  app.innerHTML=`<div class="top"><button id="h" aria-label="Home">🏠</button><span>${TR.on?`🏋️ Training: ${LSK[TR.skill]} · ${TR.i+1} of ${TR.items.length}`:`Game ${cur+1} of ${PZ.length}`}</span></div>
+  ${TR.on?'':lbBar()}<section class="panel">${TR.on?`<div class="scene" style="background:linear-gradient(#FFE29A,#F08A4B)"><span>🏋️</span><span>⏱️</span><span>🥇</span><div class="owl-s">${OWL}</div></div>`:sceneHTML(cur)}<p class="story">${p.s}</p><p class="q">${p.q}</p>
+  ${p.vis?`<div class="vis">${p.vis}</div>`:''}
+  <button class="read" id="rd">🔊 Read it to me</button> <button class="read" id="rc">🔊 Read the choices</button>
+  <div class="opts">${p.o.map((o,k)=>`<button class="opt" data-k="${k}"${wrong.includes(k)?' disabled':''}>${o}</button>`).join('')}</div>
+  <div class="msg ${cls}"${msg?' data-say="en"':''} aria-live="polite">${msg}</div></section>`;
+  $('#h').onclick=home;
+  $('#rd').onclick=()=>speak(p.s+' '+p.q,'en');
+  $('#rc').onclick=()=>speak(p.o.map(clean).join('. '),'en');
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const k=+b.dataset.k;
+    if(k===p.a){SND.correct();recPuzzle(tries===0,tries>=2);if(TR.on){trainNext();return;}lbAttack(tries===0?'first':'retry',catchRound);return;}
+    SND.wrong();if(!TR.on){S.lch=0;save();}tries++;wrong.push(k);
+    if(tries===1){msg='Not quite, champ. Try again!';cls='oops';}
+    else{msg='💡 Clue: '+p.h;cls='hint';speak(p.h,'en');}
+    renderCase();
+  });
+}
+
+let target,choices,cWrong;
+function catchRound(){
+  S.zl=S.zl||4;S.miss=S.miss||[];
+  const pool=ZY.slice(0,S.zl);
+  target=(S.miss.length&&Math.random()<.5)?ZY.find(z=>z[0]===S.miss[Math.floor(Math.random()*S.miss.length)]):pool[Math.floor(Math.random()*pool.length)];
+  choices=shuffle([target,...shuffle(pool.filter(z=>z!==target)).slice(0,2)]);
+  cWrong=[];renderCatch('');
+}
+function renderCatch(m){
+  const mon=MON[cur];
+  app.innerHTML=`<div class="top"><button id="h" aria-label="Home">🏠</button><span>Sign the player!</span></div>
+  <section class="panel catch"><p class="story" data-say="en">You won! A new player wants to join your team!</p>
+  ${sceneHTML(cur,`<div class="silh">${mon.e}</div>`)}
+  <p class="q" data-say="en">To sign them, read this sound. Which picture starts with it?</p>
+  <div class="sym">${target[0]}</div>${cWrong.length?'<br><button class="read" id="hs">🔊 Hear the sound</button>':''}
+  <div class="pics">${choices.map((c,k)=>`<button class="pic" data-k="${k}"${cWrong.includes(k)?' disabled':''} aria-label="${c[2]}">${c[1]}<small>${c[2]}</small></button>`).join('')}</div>
+  <div class="msg oops" aria-live="polite">${m}</div></section>`;
+  $('#h').onclick=home;
+  if($('#hs'))$('#hs').onclick=()=>speak(ZYS[target[0]],'zh');
+  app.querySelectorAll('.pic').forEach(b=>b.onclick=()=>{
+    const k=+b.dataset.k,c=choices[k];speak(c[2],'zh');
+    if(c===target){SND.correct();logL('zy:'+target[0],!cWrong.length,false);if(!cWrong.length){S.miss=S.miss.filter(x=>x!==target[0]);S.zl=Math.min(ZY.length,S.zl+1);}else if(!S.miss.includes(target[0]))S.miss.push(target[0]);save();setTimeout(reveal,900);}
+    else{SND.wrong();cWrong.push(k);setTimeout(()=>renderCatch(`Hmm, ${c[2]} doesn’t start with ${target[0]}. Say the sound out loud and try again!`),700);}
+  });
+}
+
+function reveal(){
+  if(!S.got.includes(cur))S.got.push(cur);save();
+  const m=MON[cur];
+  app.innerHTML=`<section class="catch" style="text-align:center"><h2 style="font-size:32px;margin-top:8px" data-say="en">Welcome to the team! 🎉</h2>
+  ${cardHTML(cur,true)}
+  <button class="alt" id="rf">🔊 Hear the fact</button>
+  ${nextIdx()>=0?'<button class="go" id="nx">Next game</button>':'<button class="go" id="hm">See my whole team 🏆</button>'}
+  <button class="alt" id="hh">🏠 Home</button></section>`;
+  sparkle();SND.win();
+  $('#rf').onclick=()=>speak(m.n+'. '+m.fact,'en');
+  if($('#nx'))$('#nx').onclick=()=>openCase(nextIdx());
+  if($('#hm'))$('#hm').onclick=binder;
+  $('#hh').onclick=home;
+}
+
+function binder(){
+  app.innerHTML=`<div class="top"><button id="h" aria-label="Home">🏠</button><span>${S.got.length} / ${MON.length} players</span></div>
+  <div class="binder">${MON.map((m,i)=>S.got.includes(i)?`<button class="slot" style="--r:${RAR[m.r]}" data-i="${i}"><div class="e">${m.e}</div><b>${m.n}</b><span>${m.zh}</span></button>`:`<div class="slot empty"><div class="e">?</div><b>Not signed yet</b></div>`).join('')}</div>`;
+  $('#h').onclick=home;
+  app.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;const o=document.createElement('div');o.className='modal';
+    o.innerHTML=`<div style="width:100%;max-width:320px">${cardHTML(i,false)}<button class="go" style="margin-top:4px">Close</button></div>`;
+    document.body.appendChild(o);speak(MON[i].n+'. '+MON[i].fact,'en');
+    o.querySelector('button').onclick=()=>o.remove();
+    o.onclick=e=>{if(e.target===o)o.remove();};
+  });
+}
+
+home();
+cloudInit();
+voiceLoad();
+</script>
+</body>
+</html>

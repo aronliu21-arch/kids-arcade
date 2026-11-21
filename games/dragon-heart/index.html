@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>龍心冒險</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#efe3c8;--ink:#2a2140;--panel:#fff8e6;--edge:#2a2140;--btn:#ffffff;--accent:#e4572e;--good:#2e9e5b;--bad:#d64550;
+  --hud:#2a2140;--hudink:#fff8e6;--seg:#d8cdb4;--gold:#f2b705;
+  --px:"Press Start 2P","Courier New",monospace;color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#120e26;--ink:#f4eeff;--panel:#221a42;--edge:#a99cff;--btn:#32285a;--accent:#ff7a45;--good:#35b36a;--bad:#e85a66;--hud:#0c0a1c;--hudink:#f4eeff;--seg:#3a3068;--gold:#ffd84a;color-scheme:dark;}
+}
+:root[data-theme="dark"]{--bg:#120e26;--ink:#f4eeff;--panel:#221a42;--edge:#a99cff;--btn:#32285a;--accent:#ff7a45;--good:#35b36a;--bad:#e85a66;--hud:#0c0a1c;--hudink:#f4eeff;--seg:#3a3068;--gold:#ffd84a;color-scheme:dark;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hud);z-index:10}
+#app{max-width:640px;margin:0 auto;padding:10px}
+#hud{display:flex;align-items:center;gap:8px;background:var(--hud);color:var(--hudink);padding:6px 8px;border:4px solid var(--edge);margin-bottom:8px;min-height:36px}
+#hud button{background:transparent;border:0;color:inherit;font-size:1.3rem;min-width:44px;min-height:44px;cursor:pointer}
+#hearts{font-size:1rem;letter-spacing:2px;white-space:nowrap}
+#party{display:flex;gap:2px;flex:1;justify-content:center}
+#party img{width:30px;height:30px;image-rendering:pixelated}
+canvas#stage{display:block;width:100%;height:auto;aspect-ratio:208/112;image-rendering:pixelated;border:4px solid var(--edge);background:#000}
+#bhud{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px;padding:8px 10px;background:var(--panel);border:4px solid var(--edge);font-size:.95rem}
+#bhud[hidden]{display:none}
+.seg,.pip{display:inline-block;width:16px;height:12px;background:var(--seg);border:2px solid var(--edge);margin-right:2px}
+.seg.on{background:var(--accent)}
+.pip{width:12px}
+.pip.on{background:var(--gold)}
+#panel{margin-top:8px;background:var(--panel);border:4px solid var(--edge);box-shadow:5px 5px 0 var(--edge);padding:16px;min-height:200px}
+h1.logo{font-family:var(--px);font-size:1.15rem;line-height:1.6;margin:0 0 6px}
+h2.ct{font-family:var(--px);font-size:1rem;line-height:1.6;margin:6px 0 16px}
+.sub{margin:0 0 14px;font-size:1.05rem}
+.btn{font-family:var(--px);font-size:.75rem;padding:14px 16px;min-height:48px;background:var(--accent);color:#fff;border:3px solid var(--edge);box-shadow:0 4px 0 var(--edge);cursor:pointer;line-height:1.4}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge)}
+.btn.alt{background:var(--btn);color:var(--ink)}
+.spk{font-size:1.2rem;min-width:48px;min-height:48px;background:var(--btn);border:3px solid var(--edge);box-shadow:0 4px 0 var(--edge);cursor:pointer;color:var(--ink)}
+.row{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:14px}
+.who{font-family:var(--px);font-size:.8rem;margin-bottom:8px}
+.say{font-size:1.3rem;line-height:1.55;margin:0;min-height:5.2em}
+.say.nar{font-style:italic}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;background:var(--btn);color:var(--ink);border:3px solid var(--edge);box-shadow:0 4px 0 var(--edge);cursor:pointer;font:inherit}
+.card img{width:72px;height:72px;object-fit:contain;image-rendering:pixelated}
+.card b{font-family:var(--px);font-size:.8rem}
+.card span{font-size:.9rem}
+.stack{display:flex;flex-direction:column;gap:10px}
+.qtag{font-family:var(--px);font-size:.62rem;margin-bottom:10px;color:var(--accent)}
+.qbig{font-size:1.35rem;line-height:1.5;margin-bottom:8px;text-align:center}
+.qbig .emo{font-size:3.4rem;line-height:1.1}
+.qbig .word{font-size:2rem}
+.qbig .zy{font-size:2.4rem;letter-spacing:4px}
+.qbig .zhbig{font-size:3.2rem}
+.qbig .sent{display:block;text-align:left;font-size:1.25rem}
+.qbig u{display:inline-block;min-width:3.2em;border-bottom:4px solid var(--accent);text-decoration:none}
+.qtext{font-size:1.15rem;font-weight:600;text-align:center;margin-bottom:12px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.opts.col{grid-template-columns:1fr}
+.opt{font:inherit;font-size:1.2rem;min-height:56px;padding:10px 8px;background:var(--btn);color:var(--ink);border:3px solid var(--edge);box-shadow:0 4px 0 var(--edge);cursor:pointer}
+.opt.zh{font-size:2rem}
+.opt.emo{font-size:2.4rem}
+.opt.zy{font-size:1.45rem;letter-spacing:2px}
+.opt.left{text-align:left;font-size:1.1rem;line-height:1.4}
+.opt.ok{background:var(--good);color:#fff}
+.opt.no{background:var(--bad);color:#fff;opacity:.55}
+.opt:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--edge)}
+.qfoot{display:flex;align-items:center;gap:12px;margin-top:14px}
+.hint{margin:0;font-size:1rem;flex:1}
+.zc{display:inline-flex;align-items:center;gap:.05em;vertical-align:middle;margin:0 .05em;line-height:1.1}
+.z{display:inline-flex;align-items:center;gap:.04em;font-style:normal;font-size:.42em;font-weight:600;line-height:1}
+.zs{display:flex;flex-direction:column;align-items:center}
+.zn{line-height:.7}
+.say .z{font-size:.5em}
+.who .z{font-size:.6em}
+.opt.zh .z{font-size:.45em}
+.qbig .zhbig .z{font-size:.36em}
+.fine{margin-top:14px;font-size:.85rem;display:flex;gap:10px;flex-wrap:wrap}
+.fine button{font:inherit;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;min-height:36px;padding:0}
+button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){.btn:active,.opt:active{transform:none}}
+.say{font-size:1.35rem;line-height:2.1}.qtext{line-height:2}.hint{line-height:1.9}.qbig .sent{line-height:2.2}.opt.zhm{font-size:1.5rem}.opt.zhl{font-size:1.2rem;text-align:left;line-height:2}
+
+/* ---- big screens (MacBook, desktop, full screen): stage left, story/questions right, no page scrolling ---- */
+@media (min-width:900px) and (min-aspect-ratio:4/3){
+  html,body{height:100%;overflow:hidden}
+  #app{max-width:none;height:100%;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) clamp(340px,28vw,460px);grid-template-rows:auto minmax(0,1fr);gap:12px 16px;padding:12px 16px}
+  #hud{grid-column:1 / -1;margin:0}
+  canvas#stage{grid-column:1;grid-row:2;align-self:center;justify-self:center;width:min(100%,calc((100vh - 120px) * 208 / 112));height:auto}
+  #side{grid-column:2;grid-row:2;display:flex;flex-direction:column;gap:10px;min-height:0}
+  #bhud{margin:0}
+  #panel{margin:0;flex:1;min-height:0;overflow:auto}
+}
+#fsBtn svg{width:22px;height:22px;vertical-align:middle}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--hud);color:var(--hudink);border:3px solid var(--edge);padding:10px 14px;font-size:1rem;z-index:20;max-width:90vw;text-align:center}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hud">
+    <button id="menuBtn" aria-label="Menu">☰</button>
+    <div id="hearts" aria-label="Hearts" hidden></div>
+    <div id="party" aria-label="Your dragons"></div>
+    <button id="voiceBtn" aria-label="自動朗讀開關" title="自動朗讀">🗣️</button>
+    <button id="fsBtn" aria-label="全螢幕" title="全螢幕"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6"/></svg></button>
+    <button id="muteBtn" aria-label="Sound on or off">🔊</button>
+  </div>
+  <canvas id="stage" width="208" height="112" aria-hidden="true"></canvas>
+  <div id="side">
+  <div id="bhud" hidden></div>
+  <main id="panel"></main>
+  </div>
+</div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const W=208,H=112;
+const cv=$("#stage"),cx=cv.getContext("2d");
+const panel=$("#panel");
+const Store={
+  get(k,d){try{const v=localStorage.getItem("dhqzh:"+k);return v?JSON.parse(v):d;}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem("dhqzh:"+k,JSON.stringify(v));}catch(e){}}
+};
+let muted=Store.get("muted",false);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let runId=0;
+const sleep=ms=>{const id=runId;return new Promise(r=>setTimeout(()=>{if(id===runId)r();},ms));};
+const strip=h=>h.replace(/<i class="z">.*?<\/i>/g,"").replace(/<[^>]+>/g,"");
+const TONES="ˊˇˋ˙";
+function zy(z){
+  const all=[...z],tone=all.find(c=>TONES.includes(c))||"",sym=all.filter(c=>!TONES.includes(c)),neu=tone==="˙";
+  return `<i class="z"><span class="zs">${neu?'<span class="zn">˙</span>':""}${sym.map(c=>`<span>${c}</span>`).join("")}</span>${tone&&!neu?`<span class="zt">${tone}</span>`:""}</i>`;
+}
+const ruby=(c,z)=>{const zs=z.split(" ");return [...c].map((ch,i)=>`<span class="zc"><span class="c">${ch}</span>${zy(zs[i]||"")}</span>`).join("");};
+
+/* ================= AUDIO (soft, Ghibli-style: piano, flute, koto, bells, taiko) ================= */
+let AC=null,G=null;
+const MOODMAP={meadow:"meadow",forest:"forest",cave:"cave",sky:"sky",castle:"castle",home:"home"};
+function impulse(a,sec){const n=Math.floor(a.sampleRate*sec),b=a.createBuffer(2,n,a.sampleRate);for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.6);}return b;}
+function buildGraph(){
+  const a=AC,master=a.createGain(),comp=a.createDynamicsCompressor(),rev=a.createConvolver(),send=a.createGain(),mus=a.createGain(),sfx=a.createGain();
+  rev.buffer=impulse(a,2.4);send.gain.value=.38;mus.gain.value=.5;sfx.gain.value=.7;master.gain.value=muted?0:1;
+  mus.connect(master);sfx.connect(master);mus.connect(send);sfx.connect(send);send.connect(rev);rev.connect(master);master.connect(comp);comp.connect(a.destination);
+  G={master,mus,sfx};
+}
+function ac(){
+  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();buildGraph();}catch(e){AC=null;G=null;}}
+  if(AC&&AC.state==="suspended")AC.resume();
+  return AC;
+}
+const mtof=n=>440*Math.pow(2,(n-69)/12);
+function osc(type,f,t,dur,dest,peak,atk,filt){
+  const a=AC,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+atk);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  if(filt){const lp=a.createBiquadFilter();lp.type="lowpass";lp.frequency.value=filt;o.connect(lp);lp.connect(g);}else o.connect(g);
+  g.connect(dest);o.start(t);o.stop(t+dur+.05);return o;
+}
+const I={
+  piano(n,t,d,v,dest){const f=mtof(n);osc("triangle",f,t,d,dest,.5*v,.006,2600);osc("sine",f*2,t,d*.6,dest,.12*v,.004);osc("sine",f*.5,t,d*.8,dest,.1*v,.01);},
+  koto(n,t,d,v,dest){const f=mtof(n),o=osc("triangle",f*1.012,t,d,dest,.45*v,.002,3200);o.frequency.exponentialRampToValueAtTime(f,t+.06);osc("sine",f*3,t,Math.min(d,.25),dest,.08*v,.002);},
+  flute(n,t,d,v,dest){
+    const f=mtof(n),a=AC,o=a.createOscillator(),o2=a.createOscillator(),g=a.createGain(),g2=a.createGain(),lfo=a.createOscillator(),lg=a.createGain();
+    o.type="sine";o2.type="sine";o.frequency.value=f;o2.frequency.value=f*2;
+    lfo.frequency.value=5.2;lg.gain.value=f*.006;lfo.connect(lg);lg.connect(o.frequency);lg.connect(o2.frequency);
+    g2.gain.value=.12;o2.connect(g2);g2.connect(g);o.connect(g);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3*v,t+.09);g.gain.setValueAtTime(.3*v,t+Math.max(.1,d-.25));g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    g.connect(dest);[o,o2,lfo].forEach(x=>{x.start(t);x.stop(t+d+.05);});
+  },
+  pad(ns,t,d,v,dest){ns.forEach(n=>{const a=AC,o=a.createOscillator(),g=a.createGain();o.type="sine";o.frequency.value=mtof(n);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.09*v,t+d*.4);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest);o.start(t);o.stop(t+d+.05);});},
+  bell(n,t,d,v,dest){const f=mtof(n);osc("sine",f,t,d,dest,.3*v,.003);osc("sine",f*2.76,t,d*.5,dest,.08*v,.003);osc("sine",f*5.4,t,d*.25,dest,.03*v,.003);},
+  taiko(t,v,dest){const a=AC,o=a.createOscillator(),g=a.createGain();o.type="sine";o.frequency.setValueAtTime(130,t);o.frequency.exponentialRampToValueAtTime(48,t+.25);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.9*v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.6);o.connect(g);g.connect(dest);o.start(t);o.stop(t+.7);}
+};
+const sfx=fn=>()=>{if(muted||!ac()||!G)return;try{fn(AC.currentTime,G.sfx);}catch(e){}};
+const SFX={
+  ok:sfx((t,d)=>[74,78,81].forEach((n,i)=>I.koto(n,t+i*.08,.6,.7,d))),
+  no:sfx((t,d)=>{I.koto(60,t,.45,.6,d);I.koto(57,t+.14,.55,.6,d);}),
+  hit:sfx((t,d)=>{I.taiko(t,.7,d);I.bell(86,t+.02,.5,.4,d);}),
+  team:sfx((t,d)=>[62,66,69,74,78,81,86].forEach((n,i)=>I.koto(n,t+i*.06,.9,.7,d))),
+  win:sfx((t,d)=>[74,78,81,86,81,86].forEach((n,i)=>I.bell(n,t+i*.14,.8,.7,d))),
+  click:sfx((t,d)=>I.koto(81,t,.2,.35,d)),
+  gain:sfx((t,d)=>[74,78,81,86,90].forEach((n,i)=>I.bell(n,t+i*.09,1,.6,d)))
+};
+/* original loops: 6/8 time, 8 bars each. Chords are MIDI notes low to high. */
+const CHORDS_D=[[50,57,62,66],[47,54,62,66],[43,50,59,62],[45,52,57,61],[50,57,62,66],[42,49,57,61],[43,50,59,62],[45,52,57,61]];
+const MEL_D=[[[0,78,3],[3,81,2],[5,78,1]],[[0,76,3],[3,78,3]],[[0,83,3],[3,81,2],[5,78,1]],[[0,81,6]],[[0,78,2],[2,81,2],[4,86,2]],[[0,83,3],[3,81,3]],[[0,78,2],[2,76,2],[4,74,2]],[[0,76,4],[4,74,2]]];
+const CHORDS_F=[[45,52,57,60],[41,48,57,60],[48,55,60,64],[43,50,59,62],[45,52,57,60],[41,48,57,60],[40,47,55,59],[45,52,57,60]];
+const MEL_F=[[[0,76,2],[2,77,1],[3,76,1],[4,72,2]],[[0,77,3],[3,81,3]],[[0,84,2],[2,81,2],[4,76,2]],[[0,76,3],[3,71,3]],[[0,72,2],[2,76,2],[4,81,2]],[[0,84,3],[3,81,1],[4,77,2]],[[0,76,3],[3,72,3]],[[0,69,6]]];
+const CHORDS_M=[[50,57,62,65],[46,53,58,62],[43,50,58,62],[45,52,57,61],[50,57,62,65],[46,53,58,62],[45,52,57,61],[50,57,62,65]];
+const MEL_M=[[[0,74,3],[3,77,3]],[[0,82,3],[3,81,2],[5,79,1]],[[0,79,3],[3,77,3]],[[0,81,3],[3,85,3]],[[0,86,3],[3,84,3]],[[0,82,2],[2,81,2],[4,79,2]],[[0,77,3],[3,81,3]],[[0,74,6]]];
+const SONGS={
+  meadow:{bpm:84,acc:"piano",melo:"flute",pad:1,chords:CHORDS_D,mel:MEL_D},
+  home:{bpm:62,acc:"piano",melo:"piano",pad:1,chords:CHORDS_D,mel:MEL_D,melv:.7,accv:.55},
+  sky:{bpm:96,acc:"piano",melo:"flute",pad:1,tr:5,chords:CHORDS_D,mel:MEL_D},
+  forest:{bpm:70,acc:"koto",melo:"flute",pad:1,chords:CHORDS_F,mel:MEL_F,melv:.8},
+  cave:{bpm:58,cave:1,scale:[62,63,67,69,72,74,75,79]},
+  castle:{bpm:74,acc:"piano",melo:"flute",pad:1,chords:CHORDS_M,mel:MEL_M,accv:.6,melv:.6},
+  boss:{bpm:104,acc:"piano",melo:"flute",pad:1,taiko:1,chords:CHORDS_M,mel:MEL_M,accv:.8}
+};
+const M={mood:null,want:"home",timer:null,next:0,bar:0,e:0,fade:false};
+function setMood(m){M.want=m;}
+function playE(S,bar,e,t,ed){
+  const dest=G.mus,tr=S.tr||0;
+  if(S.cave){if(e===0&&bar%2===0)I.pad([38,45,50,57],t,ed*12,1,dest);if(Math.random()<.35)I.bell(S.scale[Math.floor(Math.random()*S.scale.length)],t,ed*6,.6,dest);return;}
+  const c=S.chords[bar];
+  I[S.acc](c[[0,1,2,3,2,1][e]]+tr,t,ed*(S.acc==="koto"?5:4),S.accv||.8,dest);
+  if(S.pad&&e===0)I.pad(c.slice(1).map(n=>n+tr),t,ed*6,.7,dest);
+  S.mel[bar].forEach(([p,n,l])=>{if(p===e)I[S.melo](n+tr,t,ed*l*.97,S.melv||.9,dest);});
+  if(S.taiko){if(e===0)I.taiko(t,1,dest);if(e===3)I.taiko(t,.6,dest);}
+}
+function sched(){
+  M.timer=setTimeout(sched,120);
+  if(!AC||!G||muted||AC.state!=="running")return;
+  if(M.mood===null){M.mood=M.want;M.bar=0;M.e=0;M.next=0;}
+  else if(M.want!==M.mood&&!M.fade){
+    M.fade=true;const n=AC.currentTime;G.mus.gain.cancelScheduledValues(n);G.mus.gain.setValueAtTime(G.mus.gain.value,n);G.mus.gain.linearRampToValueAtTime(.0001,n+.35);
+    setTimeout(()=>{M.mood=M.want;M.bar=0;M.e=0;M.next=0;const k=AC.currentTime;G.mus.gain.cancelScheduledValues(k);G.mus.gain.setValueAtTime(.0001,k);G.mus.gain.linearRampToValueAtTime(.5,k+.5);M.fade=false;},400);
+  }
+  const S=SONGS[M.mood],ed=60/(S.bpm*3);
+  if(M.next<AC.currentTime)M.next=AC.currentTime+.05;
+  while(M.next<AC.currentTime+.4){playE(S,M.bar,M.e,M.next,ed);M.next+=ed;if(++M.e>=6){M.e=0;M.bar=(M.bar+1)%8;}}
+}
+function startMusic(){if(!M.timer)sched();}
+const canSpeak="speechSynthesis" in window;
+let autoVoice=Store.get("autoVoice",true);
+function chooseTaiwanVoice(key){
+  if(!canSpeak)return null;
+  const vs=speechSynthesis.getVoices();
+  const tw=vs.filter(x=>/^zh[-_](TW|Hant)/i.test(x.lang)||(/taiwan|臺灣|台灣/i.test(x.name)&&/^zh/i.test(x.lang)));
+  const pool=tw.length?tw:vs.filter(x=>/^zh/i.test(x.lang));
+  if(!pool.length)return null;
+  /* prefer the natural-sounding neural / premium voices when the device has them */
+  const score=x=>(/natural|neural|online/i.test(x.name)?4:0)+(/premium/i.test(x.name)?3:0)+(/enhanced|siri/i.test(x.name)?2:0)+(/google/i.test(x.name)?1:0);
+  const male=x=>/yunjhe|zhiwei|\bmale\b|男/i.test(x.name);
+  const ranked=pool.slice().sort((a,b)=>score(b)-score(a));
+  if(key==="dad"){const m=ranked.find(male);if(m)return m;}
+  return ranked.find(x=>!male(x))||ranked[0];
+}
+/* each character gets its own [speed, pitch]; lines are spoken sentence by sentence with extra lift on ！ and ？ */
+const VSTYLE={n:[.88,1.05],nora:[.98,1.3],lucas:[1.02,1.45],milo:[1.05,1.65],mom:[.9,1.18],dad:[.86,.82],witch:[.8,.68],q:[.92,1.2]};
+function speak(t,l,w){
+  if(!canSpeak||!t)return;
+  try{
+    speechSynthesis.cancel();
+    const key=w==="me"?(P&&P.id):w==="bro"?(P&&P.sib):w;
+    const st=VSTYLE[key]||VSTYLE.q,v=chooseTaiwanVoice(key),p0=v&&/yunjhe|zhiwei|\bmale\b|男/i.test(v.name)?1:st[1];
+    const text=String(t).replace(/\s+/g," ").trim();
+    const parts=text.match(/[^。！？!?…]+[。！？!?…」]*/g)||[text];
+    parts.forEach(s=>{
+      s=s.trim();if(!/[\u4e00-\u9fffA-Za-z0-9]/.test(s))return;
+      const ex=/[！!]/.test(s),qu=/[？?]/.test(s),dots=/…/.test(s);
+      const u=new SpeechSynthesisUtterance(s);u.lang=l||"zh-TW";
+      u.rate=Math.min(1.3,Math.max(.6,st[0]+(ex?.06:0)-(dots?.1:0)));
+      u.pitch=Math.min(2,p0+(ex?.15:0)+(qu?.1:0));
+      if(v)u.voice=v;speechSynthesis.speak(u);
+    });
+  }catch(e){}
+}
+function autoRead(t,w){if(autoVoice&&canSpeak)speak(t,"zh-TW",w);}
+function setVoiceIcon(){const b=$("#voiceBtn");b.textContent=autoVoice?"🗣️":"🤫";b.title=autoVoice?"自動朗讀：開啟":"自動朗讀：關閉";b.setAttribute("aria-label",b.title);}
+if(canSpeak)speechSynthesis.onvoiceschanged=()=>chooseTaiwanVoice();
+$("#voiceBtn").onclick=()=>{autoVoice=!autoVoice;Store.set("autoVoice",autoVoice);setVoiceIcon();if(!autoVoice&&canSpeak)speechSynthesis.cancel();else{ac();autoRead("自動朗讀已開啟。");}};
+setVoiceIcon();
+function setMuteIcon(){$("#muteBtn").textContent=muted?"🔇":"🔊";}
+$("#muteBtn").onclick=()=>{muted=!muted;Store.set("muted",muted);setMuteIcon();if(G)G.master.gain.value=muted?0:1;if(!muted){ac();SFX.click();}};
+setMuteIcon();
+
+/* ================= PIXEL SPRITES (left half, mirrored) ================= */
+const HERO_B=["........","....hhhh","..hhhhhh",".hhhhhhh",".hhsssss",".hskssss",".hssssss","..sssssm","...sssss","..cccccc",".ccccccc","sccccccc","scccbbbb",".ccccccc","..bbbbb.","..bbbbb."];
+const HERO_G=HERO_B.map((r,i)=>({7:".hsssssm",8:".hhsssss",9:".hcccccc",10:"hhcccccc"})[i]||r);
+const MOM=["........","....hhhh","..hhhhhh",".hhhhhhh",".hhsssss",".hhsksss",".hhsssss",".hhssssm",".hhhhsss",".hhccccc",".hcccccc","hhcccccc",".hcccccc","..cccccc",".ccccccc",".ccccccc"];
+const DAD=["..k.....","..kk....","..kkkkkk",".kkkkkkk",".kksssss",".ksrssss",".kssssss","..sssssm","kkkkkkkk","kkaaaaaa","kkaaaagg","skaaaaaa",".kaaaaaa",".kkaaaaa","..kkkkk.","..kkkkk."];
+const WITCH=["........",".......p","......pp",".....ppp","....pppp","...ppppp","pppppppp","..hsssss","..hssess","..hsssss","..hsssmm",".ppppppp","ppppppgg","pppppppp",".ppppppp",".pppppp."];
+const DRAGON=["........","..y.....","..yb....","..bbbbbb",".bbbbbbb",".bbkwbbb",".bbbbbbb",".bbbllll","..bbllll","dd.bbbbb","ddbbllll",".dbbllll",".dbbllll","..bbllll","..bbbbb.","..bbbbb."];
+const SLIME=["........","........","........","........","...bbbbb","..bbbbbb",".bbbbbbb",".bbkkbbb",".bbkkbbb",".bbbbbbb",".bbbbmmm",".bbbbbbb","bbbbbbbb","bbbbbbbb","bbbbbbbb","bbbbbbbb"];
+const BAT=["........","........","........","........","........","......d.",".....ddd","....dddd","d...drdd","dd..dddd","ddd.dddd","dddddddw","dddddd.d",".dd.dd..","........","........"];
+const GHOST=["........","........","...wwwww","..wwwwww",".wwwwwww",".wwkkwww",".wwkkwww",".wwwwwww",".wwwwmmm",".wwwwwww","wwwwwwww","wwwwwwww","wwwwwwww","wwwwwwww","ww.www.w","w..ww..."];
+const KNIGHT=["..d.....","...ddddd","..dddddd","..dddddd","..dkkrkk","..dddddd","...ddddd",".ddddddd","dddddlll","dddddddd","dd.ddddd",".d.ddddd","..dddddd","..ddd.dd","..ddd...","..kkk..."];
+function stretch(rows,dup){const o=[];rows.forEach((r,i)=>{o.push(r);for(let k=0;k<(dup[i]||0);k++)o.push(r);});return o;}
+const NORA=["..e.....","..ei....","..eii...","..hhhhhh",".hhhhhhh",".hhsssss",".dskssss",".dssssss",".dsssssm","..dwwwww",".wwwwwww",".ccwwwww","cc.ccggg","sc.ccggg","..cccggg",".ccccccc","cccccccc","cgcccgcc","..lll...","..xzbbb."];
+const NORA_P={e:"#a96a24",i:"#e9c892",h:"#c98a3a",s:"#f2c9a0",k:"#1a1a2e",m:"#c0554a",d:"#2a1a14",w:"#f6ecc4",c:"#d9972f",g:"#f0c24a",l:"#1a1a22",x:"#ff5a8a",z:"#5ac8ff",b:"#1a1a22"};
+const LUCAS=["..h..h..","..hhhhhh",".hhhhhhh",".hhsssss",".hskssss",".hsrssss","..sssssm",".yYYYYYY","yyyyyyyY","yyyyyyyY","syyyyyyY","yyyyyyyY",".yyyyyyY","..yyyyyy","..yyyy..",".gggggg."];
+const LUCAS_P={h:"#15151f",s:"#f2c9a0",k:"#1a1a2e",m:"#c0554a",r:"#e8453a",y:"#f4d21e",Y:"#d8b414",g:"#8a8a94"};
+const MILO=["..y.y.y.","..yyyyyy","..wwwwww",".wwwwwww",".wwsssss",".wskssss","zzsssssm",".wwwwwww","wwwwwwwn","swwwwwww","wwwwwwwn","..wwww..","ccgggg.."];
+const MILO_P={y:"#e0b030",w:"#f4f4f8",s:"#f2c9a0",k:"#1a1a2e",m:"#c0554a",z:"#1a1a22",n:"#c9c9d8",g:"#2e9e4a",c:"#ffffff"};
+const MOM_T=stretch(MOM,{10:1,11:1,12:2,13:1,14:1,15:1}).concat(["..bbbbb."]);
+const DADH_B=HERO_B.map((r,i)=>i===7?"..bbbbbm":i===14?"..ppppp.":r);
+const DADH_T=stretch(DADH_B,{9:1,10:2,11:2,13:1,14:4});
+const DAD_T=stretch(DAD,{9:1,10:2,11:2,12:1,13:1,14:3});
+const WITCH_T=stretch(WITCH,{11:1,12:1,13:2,14:2,15:2});
+function makeSprite(half,pal){
+  const c=document.createElement("canvas");c.width=16;c.height=half.length;const g=c.getContext("2d");
+  half.forEach((row,y)=>{for(let x=0;x<8;x++){const ch=row[x];if(!ch||ch==="."||!pal[ch])continue;g.fillStyle=pal[ch];g.fillRect(x,y,1,1);g.fillRect(15-x,y,1,1);}});
+  return c;
+}
+const PROFILES={
+  nora:{id:"nora",name:"幼晴",age:9,sib:"lucas",hair:"#5a3a22",cloth:"#9b4fe0",skin:"#f2c9a0",col:"#9b4fe0"},
+  lucas:{id:"lucas",name:"陸晨",age:6,sib:"nora",hair:"#1c1c28",cloth:"#2f7de1",skin:"#f2c9a0",col:"#2f7de1"}
+};
+const DPAL={
+  ember:{b:"#e8503a",l:"#ffc27a",d:"#a8321f",f:"#ff7a2f"},
+  leaf:{b:"#4cb35a",l:"#d4f1a0",d:"#2e7a3a",f:"#7bff5a"},
+  aqua:{b:"#3aa0e8",l:"#c4ecff",d:"#2368a8",f:"#5ac8ff"},
+  spark:{b:"#f2c230",l:"#fff3b0",d:"#c28a14",f:"#ffe14d"},
+  star:{b:"#8a5fe0",l:"#e6d7ff",d:"#5a36a8",f:"#d49bff"}
+};
+const SPR={
+  dadH:[DADH_T,{h:"#2b1d14",s:"#f2c9a0",k:"#1a1a2e",m:"#c0554a",c:"#3a6fd8",b:"#4a3328",p:"#2d3a5a"}],
+  mom:[MOM_T,{h:"#6b3b2a",s:"#f2c9a0",k:"#1a1a2e",m:"#c0554a",c:"#e86a92",b:"#4a3328"}],
+  momC:[MOM_T,{h:"#6b6b7a",s:"#cfd0d8",k:"#1a1a2e",m:"#8a8a99",c:"#7a7a8c",b:"#555560"}],
+  dad:[DAD_T,{k:"#1c1230",s:"#f2c9a0",r:"#ff3b3b",m:"#8a4a3a",a:"#4a2a6e",g:"#b66bff"}],
+  dadF:[DAD_T,{k:"#4a4466",s:"#f2c9a0",r:"#3a2a1a",m:"#8a4a3a",a:"#7f93c4",g:"#ffd66b"}],
+  witch:[WITCH_T,{p:"#4a1f7a",h:"#cfcfdd",s:"#8fcf6a",e:"#ffe14d",m:"#d03a5a",g:"#ff7bd8"}],
+  slime:[SLIME,{b:"#5b3a8c",k:"#ffe14d",m:"#1a1030"}],
+  bigslime:[SLIME,{b:"#8c2a5a",k:"#ffe14d",m:"#1a1030"}],
+  bat:[BAT,{d:"#3b2a63",r:"#ff4a4a",w:"#ffffff"}],
+  bigbat:[BAT,{d:"#2a1f4a",r:"#ffb000",w:"#ffffff"}],
+  stormbat:[BAT,{d:"#7a3a1a",r:"#ffee55",w:"#ffffff"}],
+  ghost:[GHOST,{w:"#bfc8ff",k:"#2a2a4a",m:"#2a2a4a"}],
+  bigghost:[GHOST,{w:"#9fe0f0",k:"#16304a",m:"#16304a"}],
+  knight:[KNIGHT,{d:"#4b4a6e",k:"#15152a",r:"#ff4a4a",l:"#7a79a8"}],
+  bigknight:[KNIGHT,{d:"#6a2a7a",k:"#1a0a22",r:"#ffcc33",l:"#a05ab0"}]
+};
+const SPRC={},SILO=new Map();
+let P=null,SAVE=null,SEEN=new Set();
+function heroSprite(id){return makeSprite(id==="nora"?NORA:LUCAS,id==="nora"?NORA_P:LUCAS_P);}
+function sp(key){
+  if(key==="hero")key=P?P.id:"nora";
+  if(key==="bro")key=P?P.sib:"lucas";
+  if(SPRC[key])return SPRC[key];
+  let s;
+  if(key==="nora"||key==="lucas")s=heroSprite(key);
+  else if(key==="milo")s=makeSprite(MILO,MILO_P);
+  else if(DPAL[key])s=makeSprite(DRAGON,Object.assign({y:"#ffe08a",k:"#1a1a2e",w:"#ffffff"},DPAL[key]));
+  else s=makeSprite(SPR[key][0],SPR[key][1]);
+  return SPRC[key]=s;
+}
+function silo(c){
+  if(SILO.has(c))return SILO.get(c);
+  const o=document.createElement("canvas");o.width=c.width;o.height=c.height;const g=o.getContext("2d");
+  g.drawImage(c,0,0);g.globalCompositeOperation="source-in";g.fillStyle="#ffffff";g.fillRect(0,0,c.width,c.height);
+  SILO.set(c,o);return o;
+}
+
+/* ================= BACKGROUNDS ================= */
+function rng(seed){let s=seed;return()=>(s=(s*1664525+1013904223)%4294967296)/4294967296;}
+function makeBG(kind){
+  const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+  const r=rng(kind.length*977+kind.charCodeAt(0));
+  const R=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x|0,y|0,w|0,h|0);};
+  const T={
+    meadow:{s:["#74c8ff","#9bdcff","#c4eeff"],g:"#4cb35a",g2:"#3d9a4b"},
+    forest:{s:["#1f4d3a","#2b6a4a","#38875c"],g:"#2f6b3b",g2:"#255a31"},
+    cave:{s:["#171230","#211a44","#2b2358"],g:"#4c4570",g2:"#3b3659"},
+    sky:{s:["#4f9cf5","#7ebcff","#b3dcff"],g:"#f6faff",g2:"#d5e5ff"},
+    castle:{s:["#240d34","#3a1648","#55205f"],g:"#2b2542",g2:"#1d1932"},
+    home:{s:["#b98f5e","#c79f6c","#d4ad7a"],g:"#8a5a35",g2:"#744a2b"}
+  }[kind];
+  T.s.forEach((col,i)=>R(0,i*27,W,28,col));
+  if(kind==="meadow"){
+    R(168,8,16,16,"#fff3a0");R(172,4,8,24,"#fff3a0");R(164,12,24,8,"#fff3a0");
+    [[20,14],[100,24],[60,8]].forEach(([x,y])=>{R(x,y,28,8,"#fff");R(x+6,y-4,16,4,"#fff");});
+    for(let x=0;x<W;x+=4){const h=14+Math.round(8*Math.sin(x/22));R(x,80-h,4,h,"#5cc46a");}
+  }
+  if(kind==="forest"){
+    for(let x=2;x<W;x+=26){R(x+8,48,6,34,"#5a3a22");R(x,24,22,28,"#2f8a4a");R(x+4,18,14,8,"#2f8a4a");R(x+3,30,6,6,"#3fa65a");}
+    for(let i=0;i<10;i++)R(r()*W,20+r()*50,2,2,"#ffee88");
+  }
+  if(kind==="cave"){
+    for(let x=0;x<W;x+=14){const h=10+(r()*18|0);R(x,0,10,h,"#3b3359");R(x+2,h,6,4,"#3b3359");R(x+4,h+4,2,4,"#3b3359");}
+    for(let i=0;i<6;i++){const x=10+i*34+(r()*10|0);R(x,66,4,14,"#5ae0ff");R(x-2,72,8,8,"#8af0ff");}
+  }
+  if(kind==="sky"){
+    [[10,20,60],[90,46,50],[150,16,44]].forEach(([x,y,w])=>{R(x,y,w,12,"#fff");R(x+8,y-8,w-20,10,"#fff");});
+  }
+  if(kind==="castle"){
+    R(160,10,18,18,"#f4f0c8");R(166,8,10,22,"#f4f0c8");R(160,8,4,4,"#55205f");
+    [[10,40,24,40],[60,26,30,54],[130,34,26,46],[170,48,28,32]].forEach(([x,y,w,h])=>{
+      R(x,y,w,h,"#160a22");for(let k=0;k<w;k+=8)R(x+k,y-4,4,4,"#160a22");R(x+w/2-2,y+12,4,7,"#ffcc55");});
+  }
+  if(kind==="home"){
+    for(let x=0;x<W;x+=24)R(x,0,2,80,"#b08555");
+    R(150,12,34,32,"#4a3320");R(153,15,28,26,"#1b2a5a");R(166,15,2,26,"#4a3320");R(153,27,28,2,"#4a3320");R(160,20,6,6,"#fff6c0");
+  }
+  R(0,80,W,32,T.g);
+  for(let y=84;y<H;y+=8)for(let x=((y/8)%2)*8;x<W;x+=16)R(x,y,8,4,T.g2);
+  if(kind==="meadow")for(let i=0;i<16;i++)R(r()*W,84+r()*24,3,3,["#ff6a8a","#ffe14d","#ffffff"][i%3]);
+  return c;
+}
+const BGS={};["meadow","forest","cave","sky","castle","home"].forEach(k=>BGS[k]=makeBG(k));
+
+/* ================= STAGE ENGINE ================= */
+const V={bg:"meadow",actors:[],proj:[],parts:[],floats:[]};
+const PEOPLE=["nora","lucas","milo","mom","momC","dadH","dad","dadF","witch"];
+function mkA(key,x,y,s,extra){const spr=sp(key),rk=key==="hero"?P.id:key==="bro"?P.sib:key;return Object.assign({key,spr,x,y:PEOPLE.includes(rk)?88-spr.height*s:y,s,ph:Math.random()*6,dx:0,dy:0,alpha:1,flashUntil:0,shakeUntil:0,hidden:false},extra||{});}
+function setView(bg,keys=[]){
+  V.cin=null;setMood(MOODMAP[bg]||"home");V.bg=bg;V.proj=[];V.parts=[];V.floats=[];V.actors=[];
+  const n=keys.length,span=W-24-48;
+  keys.forEach((k,i)=>{V.actors.push(mkA(k,n===1?80:12+Math.round(i*span/(n-1)),40,3));});
+  return V.actors;
+}
+function shoot(x0,y0,x1,y1,col,delay=0){return new Promise(res=>{V.proj.push({x0,y0,x1,y1,t0:performance.now()+delay,dur:380,col,res,id:runId});});}
+function burst(x,y,col,n=16){for(let i=0;i<n;i++)V.parts.push({x,y,vx:(Math.random()-.5)*3.4,vy:(Math.random()-1.1)*3,life:34,col});}
+function floatText(x,y,text,col){V.floats.push({x,y,t0:performance.now(),text,col});}
+function frame(ts){
+  cx.imageSmoothingEnabled=false;
+  if(V.cin){drawCin(ts-V.cin.t0);requestAnimationFrame(frame);return;}
+  cx.drawImage(BGS[V.bg],0,0);
+  for(const a of V.actors){
+    if(a.hidden)continue;
+    const bob=a.still?0:Math.round(Math.sin(ts/280+a.ph)*1.5);
+    const sx=ts<a.shakeUntil?(Math.floor(ts/45)%2?3:-3):0;
+    cx.globalAlpha=Math.max(0,a.alpha);
+    cx.drawImage(ts<a.flashUntil?silo(a.spr):a.spr,Math.round(a.x+a.dx+sx),Math.round(a.y+a.dy+bob),a.spr.width*a.s,a.spr.height*a.s);
+    cx.globalAlpha=1;
+  }
+  const live=[];
+  for(const p of V.proj){
+    if(ts<p.t0){live.push(p);continue;}
+    const k=(ts-p.t0)/p.dur;
+    if(k>=1){burst(p.x1,p.y1,p.col,10);if(p.id===runId)p.res();continue;}
+    const x=p.x0+(p.x1-p.x0)*k,y=p.y0+(p.y1-p.y0)*k-Math.sin(k*Math.PI)*10;
+    cx.fillStyle=p.col;cx.globalAlpha=.4;cx.fillRect(Math.round(x-8),Math.round(y+1),5,4);cx.globalAlpha=1;
+    cx.fillRect(Math.round(x-3),Math.round(y-1),8,8);cx.fillStyle="#fff";cx.fillRect(Math.round(x),Math.round(y+1),3,3);
+    live.push(p);
+  }
+  V.proj=live;
+  V.parts=V.parts.filter(p=>p.life>0);
+  for(const p of V.parts){p.x+=p.vx;p.y+=p.vy;p.vy+=.15;p.life--;cx.fillStyle=p.col;cx.globalAlpha=Math.min(1,p.life/14);cx.fillRect(Math.round(p.x),Math.round(p.y),2,2);cx.globalAlpha=1;}
+  V.floats=V.floats.filter(f=>ts-f.t0<1000);
+  cx.font="bold 10px 'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif";
+  for(const f of V.floats){const k=(ts-f.t0)/1000,y=Math.round(f.y-k*16);cx.globalAlpha=1-k*k;cx.fillStyle="#000";cx.fillText(f.text,Math.round(f.x)+1,y+1);cx.fillStyle=f.col;cx.fillText(f.text,Math.round(f.x),y);cx.globalAlpha=1;}
+  requestAnimationFrame(frame);
+}
+
+/* ================= QUESTIONS ================= */
+function Q(id,tag,big,text,o,hint,x){return Object.assign({id,tag,big,text,o,hint,lvl:1},x||{});}
+const distract=(list,correct,k=2)=>{
+  const sc=w=>(w[0]===correct[0]?2:0)+(Math.abs(w.length-correct.length)<=1?1:0)+Math.random();
+  return list.filter(w=>w!==correct).map(w=>[sc(w),w]).sort((a,b)=>b[0]-a[0]).slice(0,k).map(x=>x[1]);
+};
+const CHARS=[["人","ㄖㄣˊ","🧑"],["口","ㄎㄡˇ","👄"],["日","ㄖˋ","☀️"],["月","ㄩㄝˋ","🌙"],["山","ㄕㄢ","⛰️"],["水","ㄕㄨㄟˇ","💧"],["火","ㄏㄨㄛˇ","🔥"],["木","ㄇㄨˋ","🌳"],["手","ㄕㄡˇ","✋"],["心","ㄒㄧㄣ","❤️"],["耳","ㄦˇ","👂"],["目","ㄇㄨˋ","👁️"],["爸爸","ㄅㄚˋ ˙ㄅㄚ","👨"],["媽媽","ㄇㄚ ˙ㄇㄚ","👩"],["花","ㄏㄨㄚ","🌸"],["雨","ㄩˇ","🌧️"],["星","ㄒㄧㄥ","⭐"],["狗","ㄍㄡˇ","🐶"],["牛","ㄋㄧㄡˊ","🐮"],["馬","ㄇㄚˇ","🐴"],["羊","ㄧㄤˊ","🐑"],["米","ㄇㄧˇ","🍚"],["門","ㄇㄣˊ","🚪"],["車","ㄔㄜ","🚗"],["家","ㄐㄧㄚ","🏠"],["王","ㄨㄤˊ","👑"],["雪","ㄒㄩㄝˇ","❄️"],["風","ㄈㄥ","💨"],["書","ㄕㄨ","📖"],["蛋","ㄉㄢˋ","🥚"],["鳥","ㄋㄧㄠˇ","🐦"],["魚","ㄩˊ","🐟"],["雲","ㄩㄣˊ","☁️"],["龍","ㄌㄨㄥˊ","🐉"],["愛","ㄞˋ","🤗"]];
+const ZHP={};
+function zhPool(ch){
+  const n=Math.min(CHARS.length,8+ch*5);
+  if(ZHP[n])return ZHP[n];
+  const set=CHARS.slice(0,n),out=[],pick=(c,k,snd)=>{const seen=new Set([c[1]]);return shuffle(set.filter(x=>x[0]!==c[0])).filter(x=>{if(!snd)return true;if(seen.has(x[1]))return false;seen.add(x[1]);return true;}).slice(0,k);};
+  set.forEach(c=>{
+    const [h,z,e]=c,spk={t:h,l:"zh-TW"},tag="中文";
+    out.push(Q("zp:"+h,tag,`<span class="emo">${e}</span>`,zt("這是哪一個字？"),[ruby(h,z),...pick(c,2).map(d=>ruby(d[0],d[1]))],"看看圖，再看看每個字。",{oc:"zh",spk}));
+    out.push(Q("zc:"+h,tag,`<span class="zhbig">${ruby(h,z)}</span>`,zt("哪一張圖是這個字？"),[e,...pick(c,2).map(d=>d[2])],"看看旁邊的注音，怎麼唸呢？",{oc:"emo",spk}));
+    out.push(Q("zz:"+h,tag,`<span class="zy">${z}</span>`,zt("哪一個字唸這個音？"),[h,...pick(c,2,1).map(d=>d[0])],"慢慢唸出注音。",{oc:"zh",spk}));
+    out.push(Q("zr:"+h,tag,`<span class="zhbig">${h}</span>`,zt("哪一個注音是這個字？"),[z,...pick(c,2,1).map(d=>d[1])],"把每個選項唸出來試試看。",{oc:"zy",spk}));
+    const f0=[...z].find(x=>!TONES.includes(x)),other=set.filter(x=>[...x[1]].find(y=>!TONES.includes(y))!==f0);
+    if(other.length>=2)out.push(Q("zs:"+h,tag,`<span class="zy">${f0}</span>`,zt("哪一個是這個音開頭的？"),[z,...[...new Set(shuffle(other).map(d=>d[1]))].slice(0,2)],"唸唸看，聽第一個音。",{oc:"zy",spk}));
+  });
+  return ZHP[n]=out;
+}
+function pickQ(ch){
+  const extra=EXTRA[P.id].filter(q=>q.lvl<=ch);
+  let pool=Math.random()<.4&&extra.length?extra:zhPool(ch);
+  let fresh=pool.filter(q=>!SEEN.has(q.id));
+  if(!fresh.length){pool.forEach(q=>SEEN.delete(q.id));fresh=pool;}
+  const q=fresh[Math.floor(Math.random()*fresh.length)];
+  SEEN.add(q.id);Store.set("seen:"+P.id,[...SEEN]);
+  return q;
+}
+
+/* ================= ZHUYIN ANNOTATION ================= */
+const ZD=Object.fromEntries("一ㄧ 上ㄕㄤˋ 下ㄒㄧㄚˋ 不ㄅㄨˋ 世ㄕˋ 丟ㄉㄧㄡ 中ㄓㄨㄥ 主ㄓㄨˇ 也ㄧㄝˇ 了˙ㄌㄜ 事ㄕˋ 二ㄦˋ 互ㄏㄨˋ 五ㄨˇ 交ㄐㄧㄠ 享ㄒㄧㄤˇ 亮ㄌㄧㄤˋ 人ㄖㄣˊ 什ㄕㄣˊ 他ㄊㄚ 代ㄉㄞˋ 以ㄧˇ 件ㄐㄧㄢˋ 但ㄉㄢˋ 低ㄉㄧ 住ㄓㄨˋ 作ㄗㄨㄛˋ 你ㄋㄧˇ 來ㄌㄞˊ 保ㄅㄠˇ 信ㄒㄧㄣˋ 修ㄒㄧㄡ 個˙ㄍㄜ 們˙ㄇㄣ 假ㄐㄧㄚˇ 做ㄗㄨㄛˋ 傘ㄙㄢˇ 傷ㄕㄤ 像ㄒㄧㄤˋ 先ㄒㄧㄢ 光ㄍㄨㄤ 克ㄎㄜˋ 兒ㄦˊ 全ㄑㄩㄢˊ 兩ㄌㄧㄤˇ 公ㄍㄨㄥ 兵ㄅㄧㄥ 具ㄐㄩˋ 再ㄗㄞˋ 冰ㄅㄧㄥ 冷ㄌㄥˇ 准ㄓㄨㄣˇ 凱ㄎㄞˇ 出ㄔㄨ 分ㄈㄣ 切ㄑㄧㄝˋ 別ㄅㄧㄝˊ 到ㄉㄠˋ 前ㄑㄧㄢˊ 剩ㄕㄥˋ 副ㄈㄨˋ 劍ㄐㄧㄢˋ 力ㄌㄧˋ 功ㄍㄨㄥ 助ㄓㄨˋ 勇ㄩㄥˇ 動ㄉㄨㄥˋ 包ㄅㄠ 午ㄨˇ 半ㄅㄢˋ 卡ㄎㄚˇ 卻ㄑㄩㄝˋ 厚ㄏㄡˋ 原ㄩㄢˊ 厭ㄧㄢˋ 去ㄑㄩˋ 又ㄧㄡˋ 友ㄧㄡˇ 取ㄑㄩˇ 受ㄕㄡˋ 叢ㄘㄨㄥˊ 口ㄎㄡˇ 句ㄐㄩˋ 只ㄓˇ 叫ㄐㄧㄠˋ 可ㄎㄜˇ 史ㄕˇ 吃ㄔ 合ㄏㄜˊ 同ㄊㄨㄥˊ 向ㄒㄧㄤˋ 吧˙ㄅㄚ 吵ㄔㄠˇ 吸ㄒㄧ 吼ㄏㄡˇ 呀˙ㄧㄚ 呢˙ㄋㄜ 呼ㄏㄨ 和ㄏㄢˋ 咒ㄓㄡˋ 咕ㄍㄨ 咪ㄇㄧ 哇ㄨㄚ 哈ㄏㄚ 哎ㄞ 哥ㄍㄜ 哪ㄋㄚˇ 哭ㄎㄨ 唯ㄨㄟˊ 唱ㄔㄤˋ 唸ㄋㄧㄢˋ 問ㄨㄣˋ 啾ㄐㄧㄡ 善ㄕㄢˋ 喊ㄏㄢˇ 喜ㄒㄧˇ 單ㄉㄢ 嗎˙ㄇㄚ 嗯ㄣˇ 嘴ㄗㄨㄟˇ 噴ㄆㄣ 嚕ㄌㄨ 回ㄏㄨㄟˊ 因ㄧㄣ 困ㄎㄨㄣˋ 園ㄩㄢˊ 團ㄊㄨㄢˊ 在ㄗㄞˋ 地ㄉㄧˋ 坐ㄗㄨㄛˋ 垂ㄔㄨㄟˊ 城ㄔㄥˊ 堡ㄅㄠˇ 場ㄔㄤˇ 塔ㄊㄚˇ 填ㄊㄧㄢˊ 壞ㄏㄨㄞˋ 士ㄕˋ 外ㄨㄞˋ 多ㄉㄨㄛ 夜ㄧㄝˋ 大ㄉㄚˋ 天ㄊㄧㄢ 太ㄊㄞˋ 夫ㄈㄨ 失ㄕ 套ㄊㄠˋ 女ㄋㄩˇ 她ㄊㄚ 好ㄏㄠˇ 妹ㄇㄟˋ 姆ㄇㄨˇ 始ㄕˇ 媽ㄇㄚ 子ㄗˇ 孤ㄍㄨ 孩ㄏㄞˊ 學ㄒㄩㄝˊ 安ㄢ 完ㄨㄢˊ 定ㄉㄧㄥˋ 客ㄎㄜˋ 害ㄏㄞˋ 家ㄐㄧㄚ 容ㄖㄨㄥˊ 實ㄕˊ 寶ㄅㄠˇ 對ㄉㄨㄟˋ 小ㄒㄧㄠˇ 就ㄐㄧㄡˋ 局ㄐㄩˊ 展ㄓㄢˇ 山ㄕㄢ 工ㄍㄨㄥ 巨ㄐㄩˋ 巫ㄨ 己ㄐㄧˇ 已ㄧˇ 巴ㄅㄚ 帶ㄉㄞˋ 帽ㄇㄠˋ 幫ㄅㄤ 平ㄆㄧㄥˊ 幽ㄧㄡ 幾ㄐㄧˇ 座ㄗㄨㄛˋ 廳ㄊㄧㄥ 弟ㄉㄧˋ 張ㄓㄤ 強ㄑㄧㄤˊ 形ㄒㄧㄥˊ 影ㄧㄥˇ 往ㄨㄤˇ 很ㄏㄣˇ 後ㄏㄡˋ 得ㄉㄜˊ 從ㄘㄨㄥˊ 心ㄒㄧㄣ 忘ㄨㄤˋ 忙ㄇㄤˊ 快ㄎㄨㄞˋ 怎ㄗㄣˇ 怕ㄆㄚˋ 思ㄙ 怪ㄍㄨㄞˋ 情ㄑㄧㄥˊ 想ㄒㄧㄤˇ 意ㄧˋ 愛ㄞˋ 慢ㄇㄢˋ 憂ㄧㄡ 應ㄧㄥ 成ㄔㄥˊ 我ㄨㄛˇ 戲ㄒㄧˋ 房ㄈㄤˊ 所ㄙㄨㄛˇ 手ㄕㄡˇ 才ㄘㄞˊ 打ㄉㄚˇ 找ㄓㄠˇ 承ㄔㄥˊ 把ㄅㄚˇ 抓ㄓㄨㄚ 抖ㄉㄡˇ 抱ㄅㄠˋ 拉ㄌㄚ 拿ㄋㄚˊ 指ㄓˇ 掉ㄉㄧㄠˋ 掙ㄓㄥ 探ㄊㄢˋ 提ㄊㄧˊ 搬ㄅㄢ 搶ㄑㄧㄤˇ 擋ㄉㄤˇ 擔ㄉㄢ 擺ㄅㄞˇ 放ㄈㄤˋ 故ㄍㄨˋ 救ㄐㄧㄡˋ 敢ㄍㄢˇ 整ㄓㄥˇ 新ㄒㄧㄣ 斷ㄉㄨㄢˋ 方ㄈㄤ 於ㄩˊ 旁ㄆㄤˊ 早ㄗㄠˇ 明ㄇㄧㄥˊ 昏ㄏㄨㄣ 星ㄒㄧㄥ 是ㄕˋ 時ㄕˊ 晚ㄨㄢˇ 晶ㄐㄧㄥ 暖ㄋㄨㄢˇ 暗ㄢˋ 暴ㄅㄠˋ 更ㄍㄥˋ 書ㄕㄨ 最ㄗㄨㄟˋ 會ㄏㄨㄟˋ 月ㄩㄝˋ 有ㄧㄡˇ 朋ㄆㄥˊ 服ㄈㄨˊ 朝ㄔㄠˊ 木ㄇㄨˋ 朵ㄉㄨㄛˇ 村ㄘㄨㄣ 杯ㄅㄟ 東ㄉㄨㄥ 枕ㄓㄣˇ 林ㄌㄧㄣˊ 果ㄍㄨㄛˇ 枝ㄓ 架ㄐㄧㄚˋ 柔ㄖㄡˊ 根ㄍㄣ 案ㄢˋ 桌ㄓㄨㄛ 條ㄊㄧㄠˊ 棄ㄑㄧˋ 棉ㄇㄧㄢˊ 棒ㄅㄤˋ 森ㄙㄣ 樂ㄌㄜˋ 樣ㄧㄤˋ 樹ㄕㄨˋ 次ㄘˋ 歌ㄍㄜ 歡ㄏㄨㄢ 步ㄅㄨˋ 比ㄅㄧˇ 毛ㄇㄠˊ 民ㄇㄧㄣˊ 氣ㄑㄧˋ 水ㄕㄨㄟˇ 沒ㄇㄟˊ 河ㄏㄜˊ 治ㄓˋ 法ㄈㄚˇ 泳ㄩㄥˇ 洗ㄒㄧˇ 洛ㄌㄨㄛˋ 洞ㄉㄨㄥˋ 活ㄏㄨㄛˊ 流ㄌㄧㄡˊ 海ㄏㄞˇ 消ㄒㄧㄠ 涼ㄌㄧㄤˊ 淇ㄑㄧˊ 淋ㄌㄧㄣˊ 淹ㄧㄢ 游ㄧㄡˊ 溫ㄨㄣ 滑ㄏㄨㄚˊ 滴ㄉㄧ 漆ㄑㄧ 濕ㄕ 火ㄏㄨㄛˇ 為ㄨㄟˋ 無ㄨˊ 然ㄖㄢˊ 照ㄓㄠˋ 煮ㄓㄨˇ 燈ㄉㄥ 爸ㄅㄚˋ 片ㄆㄧㄢˋ 牌ㄆㄞˊ 牛ㄋㄧㄡˊ 牠ㄊㄚ 牽ㄑㄧㄢ 狗ㄍㄡˇ 獨ㄉㄨˊ 玩ㄨㄢˊ 玲ㄌㄧㄥˊ 現ㄒㄧㄢˋ 球ㄑㄧㄡˊ 理ㄌㄧˇ 甜ㄊㄧㄢˊ 生ㄕㄥ 用ㄩㄥˋ 田ㄊㄧㄢˊ 甲ㄐㄧㄚˇ 界ㄐㄧㄝˋ 當ㄉㄤ 病ㄅㄧㄥˋ 發ㄈㄚ 白ㄅㄞˊ 的˙ㄉㄜ 皮ㄆㄧˊ 盔ㄎㄨㄟ 盛ㄕㄥˋ 盞ㄓㄢˇ 直ㄓˊ 相ㄒㄧㄤ 盾ㄉㄨㄣˋ 省ㄕㄥˇ 看ㄎㄢˋ 真ㄓㄣ 眼ㄧㄢˇ 睛ㄐㄧㄥ 睡ㄕㄨㄟˋ 知ㄓ 短ㄉㄨㄢˇ 石ㄕˊ 破ㄆㄛˋ 禮ㄌㄧˇ 私ㄙ 穴ㄒㄩㄝˊ 空ㄎㄨㄥ 穿ㄔㄨㄢ 突ㄊㄨ 窩ㄨㄛ 站ㄓㄢˋ 笑ㄒㄧㄠˋ 第ㄉㄧˋ 等ㄉㄥˇ 筏ㄈㄚˊ 答ㄉㄚ 筷ㄎㄨㄞˋ 箏ㄓㄥ 節ㄐㄧㄝˊ 籠ㄌㄨㄥˊ 粗ㄘㄨ 糕ㄍㄠ 糖ㄊㄤˊ 紅ㄏㄨㄥˊ 紫ㄗˇ 累ㄌㄟˋ 終ㄓㄨㄥ 結ㄐㄧㄝˊ 絕ㄐㄩㄝˊ 給ㄍㄟˇ 統ㄊㄨㄥˇ 綁ㄅㄤˇ 經ㄐㄧㄥ 綠ㄌㄩˋ 緊ㄐㄧㄣˇ 線ㄒㄧㄢˋ 纏ㄔㄢˊ 罵ㄇㄚˋ 美ㄇㄟˇ 羽ㄩˇ 翅ㄔˋ 翔ㄒㄧㄤˊ 而ㄦˊ 耳ㄦˇ 耶ㄧㄝ 聆ㄌㄧㄥˊ 聊ㄌㄧㄠˊ 聲ㄕㄥ 聽ㄊㄧㄥ 肚ㄉㄨˋ 股ㄍㄨˇ 肯ㄎㄣˇ 能ㄋㄥˊ 脫ㄊㄨㄛ 膀ㄅㄤˇ 膠ㄐㄧㄠ 自ㄗˋ 興ㄒㄧㄥˋ 舉ㄐㄩˇ 良ㄌㄧㄤˊ 色ㄙㄜˋ 花ㄏㄨㄚ 草ㄘㄠˇ 莫ㄇㄛˋ 萊ㄌㄞˊ 落ㄌㄨㄛˋ 葉ㄧㄝˋ 著˙ㄓㄜ 蔓ㄇㄢˋ 藍ㄌㄢˊ 藏ㄘㄤˊ 藤ㄊㄥˊ 藥ㄧㄠˋ 蘋ㄆㄧㄥˊ 處ㄔㄨˇ 蛋ㄉㄢˋ 蝙ㄅㄧㄢ 蝠ㄈㄨˊ 表ㄅㄧㄠˇ 被ㄅㄟˋ 裝ㄓㄨㄤ 裡ㄌㄧˇ 褲ㄎㄨˋ 西ㄒㄧ 要ㄧㄠˋ 見ㄐㄧㄢˋ 覺ㄐㄩㄝˊ 討ㄊㄠˇ 記ㄐㄧˋ 許ㄒㄩˇ 詛ㄗㄨˇ 詞ㄘˊ 試ㄕˋ 話ㄏㄨㄚˋ 該ㄍㄞ 認ㄖㄣˋ 語ㄩˇ 誠ㄔㄥˊ 說ㄕㄨㄛ 誰ㄕㄟˊ 請ㄑㄧㄥˇ 諒ㄌㄧㄤˋ 諾ㄋㄨㄛˋ 謊ㄏㄨㄤ 謝ㄒㄧㄝˋ 護ㄏㄨˋ 讀ㄉㄨˊ 變ㄅㄧㄢˋ 讓ㄖㄤˋ 豐ㄈㄥ 貌ㄇㄠˋ 責ㄗㄜˊ 貼ㄊㄧㄝ 賣ㄇㄞˋ 贏ㄧㄥˊ 走ㄗㄡˇ 起ㄑㄧˇ 趕ㄍㄢˇ 跑ㄆㄠˇ 跟ㄍㄣ 路ㄌㄨˋ 身ㄕㄣ 躲ㄉㄨㄛˇ 車ㄔㄜ 較ㄐㄧㄠˋ 輕ㄑㄧㄥ 輪ㄌㄨㄣˊ 輸ㄕㄨ 轉ㄓㄨㄢˇ 辦ㄅㄢˋ 農ㄋㄨㄥˊ 迎ㄧㄥˊ 近ㄐㄧㄣˋ 這ㄓㄜˋ 進ㄐㄧㄣˋ 遇ㄩˋ 遊ㄧㄡˊ 遍ㄅㄧㄢˋ 過ㄍㄨㄛˋ 道ㄉㄠˋ 遠ㄩㄢˇ 適ㄕˋ 選ㄒㄩㄢˇ 邀ㄧㄠ 還ㄏㄞˊ 邊ㄅㄧㄢ 那ㄋㄚˋ 部ㄅㄨˋ 都ㄉㄡ 重ㄓㄨㄥˋ 野ㄧㄝˇ 量ㄌㄧㄤˋ 金ㄐㄧㄣ 錯ㄘㄨㄛˋ 鍊ㄌㄧㄢˋ 鎖ㄙㄨㄛˇ 鐵ㄊㄧㄝˇ 長ㄔㄤˊ 門ㄇㄣˊ 閃ㄕㄢˇ 開ㄎㄞ 間ㄐㄧㄢ 關ㄍㄨㄢ 阱ㄐㄧㄥˇ 陌ㄇㄛˋ 陪ㄆㄟˊ 陷ㄒㄧㄢˋ 陽ㄧㄤˊ 隊ㄉㄨㄟˋ 隻ㄓ 雅ㄧㄚˇ 離ㄌㄧˊ 難ㄋㄢˊ 雨ㄩˇ 雯ㄨㄣˊ 雲ㄩㄣˊ 雷ㄌㄟˊ 電ㄉㄧㄢˋ 需ㄒㄩ 霜ㄕㄨㄤ 露ㄌㄨˋ 靈ㄌㄧㄥˊ 靜ㄐㄧㄥˋ 靠ㄎㄠˋ 面ㄇㄧㄢˋ 鞋ㄒㄧㄝˊ 音ㄧㄣ 頭ㄊㄡˊ 顆ㄎㄜ 顧ㄍㄨˋ 風ㄈㄥ 飛ㄈㄟ 飯ㄈㄢˋ 餐ㄘㄢ 餓ㄜˋ 騎ㄑㄧˊ 騙ㄆㄧㄢˋ 體ㄊㄧˇ 高ㄍㄠ 鬧ㄋㄠˋ 鬱ㄩˋ 鬼ㄍㄨㄟˇ 魔ㄇㄛˊ 魚ㄩˊ 鳥ㄋㄧㄠˇ 麼˙ㄇㄜ 黃ㄏㄨㄤˊ 黏ㄋㄧㄢˊ 黑ㄏㄟ 點ㄉㄧㄢˇ 鼻ㄅㄧˊ 龍ㄌㄨㄥˊ 日ㄖˋ 目ㄇㄨˋ 王ㄨㄤˊ 米ㄇㄧˇ 馬ㄇㄚˇ 羊ㄧㄤˊ 雪ㄒㄩㄝˇ 注ㄓㄨˋ 圖ㄊㄨˊ 項ㄒㄧㄤˋ 章ㄓㄤ 勝ㄕㄥˋ 利ㄌㄧˋ 束ㄕㄨˋ 險ㄒㄧㄢˇ 冒ㄇㄠˋ 英ㄧㄥ 雄ㄒㄩㄥˊ 擇ㄗㄜˊ 爸ㄅㄚˋ 媽ㄇㄚ 三ㄙㄢ 久ㄐㄧㄡˇ 之ㄓ 伍ㄨˇ 位ㄨㄟˋ 入ㄖㄨˋ 加ㄐㄧㄚ 四ㄙˋ 字ㄗˋ 幼ㄧㄡˋ 度ㄉㄨˋ 恐ㄎㄨㄥˇ 按ㄢˋ 敵ㄉㄧˊ 文ㄨㄣˊ 晨ㄔㄣˊ 晴ㄑㄧㄥˊ 朗ㄌㄤˇ 每ㄇㄟˇ 深ㄕㄣ 清ㄑㄧㄥ 犯ㄈㄢˋ 由ㄧㄡˊ 紀ㄐㄧˋ 繼ㄐㄧˋ 續ㄒㄩˋ 習ㄒㄧˊ 裂ㄌㄧㄝˋ 設ㄕㄜˋ 跳ㄊㄧㄠˋ 返ㄈㄢˇ 逃ㄊㄠˊ 錄ㄌㄨˋ 除ㄔㄨˊ 陸ㄌㄨˋ 題ㄊㄧˊ".split(" ").filter(Boolean).map(x=>[x[0],x.slice(1)]));
+const PH=Object.fromEntries("媽媽=ㄇㄚ,˙ㄇㄚ 爸爸=ㄅㄚˋ,˙ㄅㄚ 我們=ㄨㄛˇ,˙ㄇㄣ 你們=ㄋㄧˇ,˙ㄇㄣ 他們=ㄊㄚ,˙ㄇㄣ 孩子們=ㄏㄞˊ,˙ㄗ,˙ㄇㄣ 孩子=ㄏㄞˊ,˙ㄗ 謝謝=ㄒㄧㄝˋ,˙ㄒㄧㄝ 朋友=ㄆㄥˊ,˙ㄧㄡ 什麼=ㄕㄣˊ,˙ㄇㄜ 桌子=ㄓㄨㄛ,˙ㄗ 房子=ㄈㄤˊ,˙ㄗ 鼻子=ㄅㄧˊ,˙ㄗ 肚子=ㄉㄨˋ,˙ㄗ 帽子=ㄇㄠˋ,˙ㄗ 筷子=ㄎㄨㄞˋ,˙ㄗ 杯子=ㄅㄟ,˙ㄗ 影子=ㄧㄥˇ,˙ㄗ 句子=ㄐㄩˋ,˙ㄗ 弟弟=ㄉㄧˋ,˙ㄉㄧ 妹妹=ㄇㄟˋ,˙ㄇㄟ 星星=ㄒㄧㄥ,˙ㄒㄧㄥ 月亮=ㄩㄝˋ,˙ㄌㄧㄤ 眼睛=ㄧㄢˇ,˙ㄐㄧㄥ 耳朵=ㄦˇ,˙ㄉㄨㄛ 嘴巴=ㄗㄨㄟˇ,˙ㄅㄚ 東西=ㄉㄨㄥ,˙ㄒㄧ 喜歡=ㄒㄧˇ,˙ㄏㄨㄢ 枕頭=ㄓㄣˇ,˙ㄊㄡ 石頭=ㄕˊ,˙ㄊㄡ 看看=ㄎㄢˋ,˙ㄎㄢ 想想=ㄒㄧㄤˇ,˙ㄒㄧㄤ 唸唸=ㄋㄧㄢˋ,˙ㄋㄧㄢ 笑一笑=ㄒㄧㄠˋ,˙ㄧ,ㄒㄧㄠˋ 第一次=ㄉㄧˋ,ㄧ,ㄘˋ 第一隊=ㄉㄧˋ,ㄧ,ㄉㄨㄟˋ 部分=ㄅㄨˋ,ㄈㄣˋ 靜地=ㄐㄧㄥˋ,˙ㄉㄜ 柔地=ㄖㄡˊ,˙ㄉㄜ 樂地=ㄌㄜˋ,˙ㄉㄜ 興地=ㄒㄧㄥˋ,˙ㄉㄜ 著火=ㄓㄠˊ,ㄏㄨㄛˇ 睡著=ㄕㄨㄟˋ,ㄓㄠˊ 隊長=ㄉㄨㄟˋ,ㄓㄤˇ 長出=ㄓㄤˇ,ㄔㄨ 露出=ㄌㄡˋ,ㄔㄨ 哭得=ㄎㄨ,˙ㄉㄜ 喊得=ㄏㄢˇ,˙ㄉㄜ 看得=ㄎㄢˋ,˙ㄉㄜ 覺得=ㄐㄩㄝˊ,˙ㄉㄜ 變得=ㄅㄧㄢˋ,˙ㄉㄜ 藤蔓=ㄊㄥˊ,ㄨㄢˋ 太陽=ㄊㄞˋ,ㄧㄤˊ 早上=ㄗㄠˇ,˙ㄕㄤ 晚上=ㄨㄢˇ,˙ㄕㄤ 試試=ㄕˋ,˙ㄕˋ".split(" ").filter(Boolean).map(e=>{const k=e.split("="),v=k[1].split(",").join(" ");return [k[0],v];}));
+const isCJK=c=>/[\u4e00-\u9fff]/.test(c);
+function zt(t){
+  let out="",i=0;const ch=[...t];
+  while(i<ch.length){
+    let hit=null;
+    for(let L=Math.min(4,ch.length-i);L>=2&&!hit;L--){const w=ch.slice(i,i+L).join("");if(PH[w])hit=[w,PH[w]];}
+    if(hit){const zs=hit[1].split(" ");[...hit[0]].forEach((c,k)=>{out+=ruby(c,zs[k]);});i+=[...hit[0]].length;continue;}
+    const c=ch[i];let z=ZD[c];
+    if(c==="一"||c==="不"){
+      const nx=ch[i+1],nz=nx&&ZD[nx];
+      if(nz){const t4=nz.includes("ˋ")||nz.startsWith("˙");z=c==="一"?(t4?"ㄧˊ":"ㄧˋ"):(t4?"ㄅㄨˊ":"ㄅㄨˋ");}
+    }
+    out+=z?ruby(c,z):c;i++;
+  }
+  return out;
+}
+const pk=(a,b)=>P&&P.id==="lucas"&&b?b:a;
+const fmt=t=>t.replace(/\{me\}/g,P.name).replace(/\{bro\}/g,PROFILES[P.sib].name);
+function who(w){
+  const m={n:["",""],me:[P.name,P.col],bro:[PROFILES[P.sib].name,PROFILES[P.sib].col],mom:["媽媽","#d6407a"],dad:["爸爸","#3a6fd8"],witch:["女巫莫雯","#a233d6"],milo:["洛明","#2fa84f"]}[w];
+  return {name:m[0]?zt(m[0]):"",c:m[1]};
+}
+const CHAPS=[
+{name:"陽光草原",bg:"meadow",
+ intro:[["n","{me}和{bro}跟著發光的羽毛，走進了陽光草原。","{me}和{bro}走進一片草原。"],["bro","也許龍可以幫我們找爸爸媽媽。我們去找龍吧！","龍也許能幫忙。我們去找龍！"],["me","小心！有影子史萊姆！","小心！史萊姆！"],["milo","吼！史萊姆！"]],
+ a:{enemy:"slime",name:"影子史萊姆",hp:3,s:3},
+ ev:{dragon:"ember",dname:"小火",elem:"火龍",
+  intro:[["n","草叢後面坐著一隻小小的紅龍，牠的肚子咕嚕咕嚕叫。{me}有一顆蘋果。","草叢旁有一隻小紅龍。牠肚子餓了。{me}有一顆蘋果。"]],
+  prompt:"{me}該怎麼做？",promptL:"{me}該怎麼做？",
+  opts:[["自己趕快把蘋果吃掉。",0,"嗯……小龍看起來更難過了。我們可以怎麼幫牠呢？","自己吃掉蘋果。","小龍很難過。我們可以怎麼做？"],["把蘋果分給小龍一起吃。",1,"小龍的眼睛亮了起來。分享可以交到新朋友！","把蘋果分給小龍。","小龍笑了！分享可以交朋友。"],["轉身走開。",0,"小龍吸著鼻子。有沒有更溫柔的做法呢？","走開。","小龍很難過。要對牠好。"]],
+  line:"謝謝你！我是小火，我會用火來保護你們！",lineL:"謝謝你！我是小火，我會幫你們！"},
+ b:{enemy:"bigslime",name:"巨大黏黏怪",hp:4,s:4}},
+{name:"低語森林",bg:"forest",
+ intro:[["n","低語森林裡好暗，黏黏的藤蔓從樹上垂下來。","森林好暗，樹上有藤蔓。"],["me","我覺得好像有東西在看我們……","好像有東西在看我們……"],["milo","好暗，我牽著你的手。"]],
+ a:{enemy:"bat",name:"黃昏蝙蝠",hp:3,s:3},
+ ev:{dragon:"leaf",dname:"小葉",elem:"森林龍",
+  intro:[["n","突然，{bro}被黏黏的藤蔓纏住了！一隻綠龍從樹枝上探頭往下看。","哎呀！{bro}被藤蔓纏住了！一隻綠龍往下看。"]],
+  prompt:"最好的做法是什麼？",promptL:"我們該怎麼做？",
+  opts:[["哈哈大笑，然後往前跑。",0,"{bro}覺得被丟下了。好隊友會怎麼做呢？","笑一笑，跑走。","{bro}很難過。好朋友會幫忙。"],["大家一起拉開藤蔓，也請綠龍幫忙。",1,"合作成功！藤蔓斷開了，大家都歡呼起來。","和綠龍一起拉藤蔓。","合作成功！藤蔓開了。耶！"],["等別人來幫忙。",0,"{bro}還是被卡住了。我們現在就幫他吧！","站著等。","{bro}還在卡住。快幫忙！"]],
+  line:"我最喜歡合作了！我是小葉，一起走吧！",lineL:"我最愛合作！我是小葉！"},
+ b:{enemy:"bigbat",name:"憂鬱蝙蝠",hp:4,s:4}},
+{name:"水晶洞穴",bg:"cave",
+ intro:[["n","閃閃發光的水晶照亮了洞穴，水一滴一滴落在黑暗裡。","洞裡有閃閃的水晶。"],["bro","靠近一點，這裡有好大的回聲。","靠近我。"],["milo","你好！你好！洞穴在說話！"]],
+ a:{enemy:"ghost",name:"洞穴幽靈",hp:3,s:3},
+ ev:{dragon:"aqua",dname:"小水",elem:"水龍",
+  intro:[["n","他們只有一盞燈籠。一隻藍龍在水邊發抖。{me}和{bro}都想提燈籠。","他們有一盞燈。藍龍好冷好怕。{me}和{bro}都想拿燈。"]],
+  prompt:"他們該怎麼辦？",promptL:"他們該怎麼辦？",
+  opts:[["搶過來大叫：「是我的！」",0,"藍龍躲起來了。用搶的不太好。","搶過來說：「我的！」","藍龍躲起來了。搶不好。"],["輪流提燈籠，還陪在藍龍旁邊走。",1,"輪流很公平。藍龍在溫暖的光裡覺得很安全。","輪流拿燈。","輪流很公平。藍龍不怕了。"],["丟下燈籠跑掉。",0,"太黑了！我們要想辦法一起合作。","丟下燈，跑走。","太黑了！要一起想辦法。"]],
+  line:"謝謝你們這麼公平。我是小水！",lineL:"謝謝你們。我是小水！"},
+ b:{enemy:"bigghost",name:"冰霜幽靈",hp:4,s:4}},
+{name:"白雲天空",bg:"sky",
+ intro:[["n","龍帶著孩子們飛到好高好高的雲上面。","龍帶大家飛到雲上。"],["me","哇！我們可以看到整個世界！","哇！我看得好遠！"],["milo","啾啾！我看到小鳥！"]],
+ a:{enemy:"stormbat",name:"風暴小鬼",hp:3,s:3},
+ ev:{dragon:"spark",dname:"小電",elem:"閃電龍",
+  intro:[["n","雲朵上有一隻小鳥獨自在哭。一隻黃龍在旁邊飛來飛去，很擔心。","雲上有一隻小鳥在哭。黃龍很擔心。"]],
+  prompt:"我們要怎麼關心小鳥？",promptL:"怎麼讓小鳥開心起來？",
+  opts:[["說：「不要哭了！」",0,"小鳥哭得更大聲。難過的心情需要被聽見。","說：「不要哭！」","小鳥哭更大聲。要聽牠說。"],["坐在小鳥旁邊，問：「你為什麼難過？」",1,"小鳥的窩不見了。大家一起幫牠找到了。用心聆聽，就是關心！","坐下來問：「你為什麼難過？」","小鳥的窩不見了。大家幫牠找到了。聽牠說，就是愛心！"],["飛走。",0,"小鳥覺得更孤單了。我們試試用關心的方法吧。","飛走。","小鳥很孤單。要對牠好。"]],
+  line:"你們用心聽我說話。我是小電！",lineL:"你們聽我說話。我是小電！"},
+ b:{enemy:"knight",name:"雲上騎士",hp:4,s:4}},
+{name:"影子城堡",bg:"castle",
+ intro:[["n","終於，影子城堡出現在他們眼前。","他們看到黑黑的城堡。"],["me","爸爸一定在裡面。","爸爸在裡面。"],["bro","我們要在一起，好嗎？"],["milo","好大的城堡！吼！"]],
+ a:{enemy:"knight",name:"影子士兵",hp:3,s:3},
+ ev:{dragon:"star",dname:"小星",elem:"星星龍",
+  intro:[["n","城堡大門前，一隻紫色的龍被鐵鍊鎖住了。牠因為害怕而低聲吼叫。","城門前有一隻紫龍被綁住了。牠很怕，一直吼。"]],
+  prompt:"你會怎麼做？",promptL:"你會怎麼做？",
+  opts:[["拿石頭丟牠。",0,"紫龍更害怕了。溫柔的話比較有力量。","拿石頭丟牠。","紫龍更怕了。要溫柔。"],["輕聲說話，答應做牠的朋友。",1,"鐵鍊慢慢消失了。善良是很強的魔法！","輕聲說話，當牠的朋友。","鐵鍊不見了。善良是魔法！"],["假裝沒看到。",0,"紫龍還是需要幫忙。我們要勇敢又善良。","假裝沒看到。","紫龍要幫忙。要勇敢又善良。"]],
+  line:"我是小星，我會幫你們救爸爸。",lineL:"我是小星，我來幫你們救爸爸。"},
+ b:{enemy:"bigknight",name:"影子隊長",hp:4,s:4}}
+];
+function buildSteps(){
+  const S=[];
+  S.push({t:"scene",bg:"home",actors:["mom","dadH","hero","milo","bro"],lines:[["n","{me}、{bro}和小洛明，跟爸爸媽媽住在龍山旁邊溫暖的小房子裡。","{me}、{bro}、洛明、爸爸和媽媽住在一間小房子裡。"],["mom","吃飯了！大家快去洗手。","吃飯了！"],["dad","吃完飯，誰想聽龍的故事？","誰想聽龍的故事？"],["milo","我！我！吼！"],["n","大家一邊笑，一邊分享好吃的，真開心。","大家都很開心。"]]});
+  S.push({t:"scene",bg:"home",actors:["momC","dadH","hero","milo","bro"],lines:[["n","有一天，媽媽生了重病，覺得又冷又沒力氣。","有一天，媽媽生病了。"],["dad","別擔心，我一定會找到辦法讓你好起來。","我會讓你好起來。"],["mom","路上要小心……早點回來。","早點回來。"],["n","那天晚上，爸爸走進黑夜，去找治病的方法。","晚上，爸爸出去找辦法。"]]});
+  S.push({t:"scene",bg:"home",actors:["hero","milo","bro"],lines:[["n","可是早上起來，房子裡好安靜。爸爸和媽媽都不見了。","早上，爸爸和媽媽不見了。"],["me","媽媽？爸爸？你們在哪裡？","媽媽？爸爸？"],["milo","媽咪呢？爸比呢？"],["bro","我們一定要找到他們。","我們要去找他們。"],["me","我們一起去，大家都去。","一起去！"],["n","門口有一根會發光的龍羽毛，指向遠方的山。","一根龍羽毛指向山。"]]});
+  CHAPS.forEach((c,i)=>{
+    S.push({t:"title",n:i+1,name:c.name,bg:c.bg});
+    S.push({t:"scene",bg:c.bg,actors:["hero","milo","bro"],lines:c.intro});
+    S.push(Object.assign({t:"battle",bg:c.bg,ch:i+1},c.a));
+    S.push(Object.assign({t:"event",bg:c.bg},c.ev));
+    S.push(Object.assign({t:"battle",bg:c.bg,ch:i+1},c.b));
+  });
+  S.push({t:"scene",bg:"castle",actors:["hero","milo","bro","dad"],lines:[["dad","站住！誰也不准進這座城堡。","站住！不准進來。"],["me","爸爸！是我，{me}！"],["bro","爸爸，我是{bro}！請你看看我們！"],["milo","爸比！我是洛明！"],["dad","我……不知道為什麼……可是我一定要擋住你們。","我……一定要擋住你們。"],["n","爸爸的眼睛發出紅光，好像有一股黑暗的力量抓住了他。孩子們要用愛打開爸爸的心。","爸爸的眼睛是紅色的。孩子們要用愛打開他的心。"]]});
+  S.push({t:"battle",bg:"castle",ch:6,boss:"dad",enemy:"dad",name:"爸爸的黑暗盔甲",hp:6,s:3,talk:{4:[["dad","為什麼你們的聲音……這麼溫暖？","你們的聲音……好溫暖。"]],3:[["milo","爸比，回家！我好想你！","爸比，回家！"]],2:[["dad","我想起了我們一起野餐……還有媽媽的笑聲。","我想起我們一起野餐。"],["me","爸爸，想起我們吧！我們愛你！"]],1:[["dad","對不起！我可以掙脫了！"]]}});
+  S.push({t:"scene",bg:"castle",actors:["hero","milo","bro","dadF"],lines:[["dad","{me}……{bro}……洛明……我全都想起來了。","我想起來了。"],["dad","媽媽生病後，我到處找藥。有一個女巫說，只要我幫她一個忙，她就能治好媽媽。","有一個女巫說，我幫她，她就治好媽媽。"],["dad","我答應了。可是那是一個騙局，她把我關進這副黑暗盔甲裡。","那是騙局。她讓我穿上黑盔甲。"],["bro","所以這一切都是女巫做的？","是女巫做的嗎？"]]});
+  S.push({t:"scene",bg:"castle",actors:["hero","milo","bro","dadF","witch"],lines:[["witch","哈哈哈！沒錯！你們媽媽的病，是我下的詛咒！","對！是我讓媽媽生病的！"],["witch","你們爸爸的盔甲給了我力量，我很快就要統治全世界！","我要統治全世界！"],["dad","媽媽被關在最高的塔裡。孩子們，我們一起去救她！","媽媽在高塔裡。去救她！"],["me","你傷害了我們的家，我們不會讓你贏！","你傷害我們的家！"],["bro","大家一起上！"],["milo","吼！壞女巫！吼！"]]});
+  S.push({t:"battle",bg:"castle",ch:6,boss:"witch",enemy:"witch",name:"女巫莫雯",hp:8,s:3,talk:{6:[["milo","吼！壞女巫走開！"]],4:[["witch","你們為什麼不認輸？！","認輸吧！"],["me","我們絕不放棄家人！"]]}});
+  S.push({t:"scene",bg:"castle",actors:["hero","milo","bro","dadF","mom"],lines:[["n","女巫的魔法破了，高塔的門打開，媽媽跑了出來。","女巫的魔法破了，媽媽從高塔出來了。"],["mom","我的家人！你們走了好遠的路來找我！","我的家人！你們來找我了！"],["milo","媽咪！爸比！抱抱！"],["dad","對不起，我不該一個人離開。我應該請你們幫忙。","對不起，我不該離開。"],["mom","我們原諒你。我們在一起就更有力量。","我們原諒你。在一起最有力量。"],["me","我們學到了：分享、合作和善良，是我們最大的力量。","分享、合作和善良，是最大的力量。"]]});
+  S.push({t:"scene",bg:"home",actors:["mom","dadH","hero","milo","bro"],lines:[["n","回到家，一家人一起吃了豐盛的晚餐，龍朋友們也來作客。","回到家，大家一起吃大餐，龍朋友也來了。"],["bro","龍是最棒的朋友！"],["n","從那天起，一家人和五隻龍快快樂樂地生活在一起。","一家人和五隻龍快樂地住在一起。"]]});
+  S.push({t:"end"});
+  return S;
+}
+const STEPS=buildSteps();
+/* ---- Chinese reading questions beyond single characters ---- */
+const CLOZE={
+ lucas:[["天上有太陽和___。","月亮","石頭","小狗"],["我用___看東西。","眼睛","耳朵","嘴巴"],["小鳥在天上___。","飛","跑","游"],["魚在水裡___。","游","飛","走"],["媽媽煮的___很好吃。","飯","雨","風"],["下雨了，我要拿___。","雨傘","書包","帽子"],["我和朋友一起___玩具。","分享","生氣","丟掉"],["花園裡有很多___。","花","車","石頭"],["龍會噴___。","火","書","門"],["洞裡很黑，我們帶了___。","燈籠","蛋糕","皮球"],["弟弟哭了，我來___他。","幫助","打","罵"],["晚上天空有很多___。","星星","魚","門"],["爸爸和媽媽很___我們。","愛","打","丟"],["我們是一個___。","家","車","雲"]],
+ nora:[["我們要互相___，才能一起完成工作。","幫助","忘記","討厭"],["天氣很冷，他穿上了厚厚的___。","外套","涼鞋","短褲"],["弟弟不小心打破杯子，他覺得很___。","難過","得意","無聊"],["勇敢的騎士舉起___保護大家。","盾牌","枕頭","筷子"],["朋友遇到困難時，我們應該___他。","幫忙","取笑","躲開"],["洞裡一片漆黑，我們點亮了___。","燈籠","棉被","糖果"],["龍展開翅膀，在天空中___。","飛翔","睡覺","游泳"],["下雨以後，路變得又濕又___。","滑","甜","亮"],["我們只要團結合作，什麼困難都能___。","克服","丟掉","忘記"],["他說話很___，所以大家都喜歡他。","溫柔","難聽","吵鬧"],["小鳥飛回自己的___，高興地唱歌。","窩","書","車"],["看到同學一個人坐著，我主動___他一起玩。","邀請","丟下","忘記"],["媽媽生病了，我們要好好___她。","照顧","責罵","躲開"],["誠實的孩子不會___。","說謊","唱歌","跑步"]]
+};
+const COMP={
+ lucas:[
+  ["小明有兩顆蘋果，妹妹沒有。小明分給妹妹一顆。",[["小明現在有幾顆蘋果？","一顆","兩顆","沒有"],["小明做了什麼？","他和妹妹分享。","他把蘋果藏起來。","他把兩顆都吃了。"]]],
+  ["小美的龍很怕打雷。小美坐在牠旁邊唱歌。過了不久，龍就不怕了。",[["龍一開始覺得怎麼樣？","很害怕","很餓","很好笑"],["小美做了什麼？","她唱歌給龍聽。","她跑走了。","她去睡覺。"]]],
+  ["小山和小海都想玩同一個玩具。他們輪流玩。兩個人都笑了。",[["他們怎麼做？","輪流玩。","打架。","把玩具藏起來。"],["最後他們覺得怎麼樣？","很開心","很生氣","很想睡覺"]]],
+  ["有一隻小鳥飛不回家。小花找到了鳥窩，把小鳥放回去。小鳥說：「謝謝你！」",[["誰幫了小鳥？","小花","小明","媽媽"],["小鳥說什麼？","謝謝你！","走開！","我好餓！"]]],
+  ["爸爸做了蛋糕。孩子們擺好桌子。媽媽說：「你們真是好團隊！」",[["誰做了蛋糕？","爸爸","媽媽","孩子們"],["誰擺好桌子？","孩子們","爸爸","小狗"]]],
+  ["洞裡好黑。小林提著燈籠，朋友走在後面，他們一起找到了路。",[["小林提著什麼？","燈籠","寶劍","風箏"],["他們為什麼能找到路？","因為他們一起合作。","因為他們睡著了。","因為他們吃午飯。"]]]
+ ],
+ nora:[
+  ["小雅的弟弟不小心把冰淇淋掉在地上，大哭起來。小雅自己的冰淇淋已經吃了一半。她想了想，把剩下的給弟弟，說：「大家分享，吃起來更好吃。」",[["弟弟為什麼哭？","他的冰淇淋掉了。","他累了。","他輸了遊戲。"],["故事裡的「分享」是什麼意思？","把自己的一部分給別人","把東西藏起來","把東西賣掉"]]],
+  ["龍不肯離開山洞。村民們大聲喊叫，還朝牠丟石頭。小玲安靜地坐在洞外，輕聲問：「你怎麼了？」龍小聲說，牠害怕很大的聲音。",[["龍為什麼不肯離開山洞？","牠害怕很大的聲音。","牠想睡覺。","牠想吃東西。"],["小玲做的事有什麼不一樣？","她溫柔地問，還認真聽。","她喊得更大聲。","她跑走了。"]]],
+  ["兩隊人要過一條河。第一隊吵著誰當隊長；第二隊分好工作：一個人看水，一個人搬東西，一個人做木筏。太陽下山以前，第二隊就過河了。",[["哪一隊先過河？","分工合作的那一隊","吵架的那一隊","兩隊都沒過河"],["最好的道理是什麼？","合作可以節省時間。","河水很慢。","隊長不用幫忙。"]]],
+  ["新同學一個人坐在餐廳裡吃午餐。小凱有點緊張，但他還是走過去說：「要不要和我們一起坐？」新同學第一次露出笑容。",[["小凱說話以前覺得怎麼樣？","緊張","無聊","生氣"],["那個笑容代表什麼？","新同學覺得受到歡迎。","新同學肚子餓。","新同學想離開。"]]],
+  ["女巫答應給農夫一場雨，條件是要他唯一的一頭牛。雨來了，卻是一場大風雨，把田淹沒了。農夫這才明白，女巫的承諾是個陷阱。",[["農夫的田後來怎麼了？","被水淹了。","長出黃金。","著火了。"],["我們可以學到什麼？","承諾聽起來太好時，要小心。","要相信陌生人。","牛會下雨。"]]],
+  ["小美的風箏壞了，她很難過。表哥沒有笑她，而是拿來膠帶和線，兩個人一起把風箏修好了。",[["表哥是怎麼做的？","友善又肯幫忙","大聲又沒禮貌","無聊又想睡覺"],["哪個詞最適合形容表哥？","體貼","粗心","自私"]]]
+ ]
+};
+const EXTRA={lucas:[],nora:[]};
+const blank=t=>t.split("___").map(zt).join("<u>&nbsp;</u>");
+["lucas","nora"].forEach(id=>{
+  CLOZE[id].forEach(([t,a,b,c],i)=>EXTRA[id].push(Q("c"+id[0]+":"+i,"填空",`<span class="sent">${blank(t)}</span>`,zt("選一個最合適的詞。"),[zt(a),zt(b),zt(c)],"把整個句子再慢慢唸一遍。",{oc:"zhm",spk:{t:t.replace("___","什麼"),l:"zh-TW"}})));
+  COMP[id].forEach(([t,qs],i)=>qs.forEach(([q,a,b,c],j)=>EXTRA[id].push(Q(`p${id[0]}:${i}:${j}`,"讀故事",`<span class="sent">${zt(t)}</span>`,zt(q),[zt(a),zt(b),zt(c)],"回到故事裡找找答案。",{oc:"zhl",lvl:2,spk:{t:t+q,l:"zh-TW"}}))));
+});
+
+
+/* ================= UI HELPERS ================= */
+function waitClick(sel){const id=runId;return new Promise(res=>{const b=panel.querySelector(sel);b.onclick=()=>{if(id!==runId)return;SFX.click();res();};});}
+function setHearts(n,max){const h=$("#hearts");h.hidden=false;h.innerHTML=Array.from({length:max},(_,i)=>i<n?"❤️":"🖤").join("");}
+function hideBattleUI(){$("#hearts").hidden=true;$("#bhud").hidden=true;}
+function partyUpdate(){$("#party").innerHTML=(SAVE?SAVE.dragons:[]).map(k=>`<img src="${sp(k).toDataURL()}" alt="${k} dragon">`).join("");}
+async function dialog(lines){
+  for(const [w,t1,t2] of lines){
+    const i=who(w),txt=zt(fmt(pk(t1,t2)));
+    panel.innerHTML=`<div class="dlg">${i.name?`<div class="who" style="color:${i.c}">${i.name}</div>`:""}<p class="say${i.name?"":" nar"}">${txt}</p><div class="row"><button class="spk" aria-label="朗讀">🔊</button><button class="btn go">下一步 ▶</button></div></div>`;
+    panel.querySelector(".spk").onclick=()=>speak(strip(txt),"zh-TW",w);
+    autoRead(strip(txt),w);
+    await waitClick(".go");
+  }
+}
+async function runScene(st){setView(st.bg,st.actors);await dialog(st.lines);}
+async function runTitle(st){
+  setView(st.bg,["hero","milo","bro"]);
+  panel.innerHTML=`<div class="qtag">${zt("第"+"一二三四五"[st.n-1]+"章")}</div><h2 class="ct">${zt(st.name)}</h2><button class="btn go">出發 ▶</button>`;
+  await waitClick(".go");
+}
+
+/* ================= QUIZ ================= */
+function ask(q,hooks){
+  const id=runId;
+  return new Promise(res=>{
+    const order=shuffle(q.o.map((_,i)=>i));
+    panel.innerHTML=`<div class="q"><div class="qtag">${q.tag}</div>${q.big?`<div class="qbig">${q.big}</div>`:""}<div class="qtext">${q.text}</div><div class="opts">${order.map(i=>`<button class="opt ${q.oc||""}" data-k="${i}">${q.o[i]}</button>`).join("")}</div><div class="qfoot"><button class="spk" aria-label="朗讀">🔊</button><p class="hint" aria-live="polite"></p></div></div>`;
+    const spk=q.spk||{t:strip(q.text),l:"zh-TW"};
+    const isText=q.oc==="zhm"||q.oc==="zhl";
+    const readQuestion=()=>isText?[strip(q.big||"").replace(/&nbsp;/g,"……"),strip(q.text||""),...order.map(i=>strip(q.o[i]))].filter(Boolean).join("。 "):strip(q.text||"");
+    panel.querySelector(".spk").onclick=()=>speak(readQuestion(),"zh-TW");
+    autoRead(readQuestion());
+    const hint=panel.querySelector(".hint");let busy=false,wrongs=0;
+    panel.querySelectorAll(".opt").forEach(b=>{b.onclick=async()=>{
+      if(busy||b.disabled||id!==runId)return;busy=true;
+      if(b.dataset.k==="0"){
+        b.classList.add("ok");panel.querySelectorAll(".opt").forEach(x=>x.disabled=true);
+        await hooks.right(wrongs);res({ok:true});
+      }else{
+        b.classList.add("no");b.disabled=true;wrongs++;hint.innerHTML=zt("再想想看。"+q.hint);
+        autoRead("再想想看。"+q.hint);
+        const dead=await hooks.wrong();busy=false;if(dead)res({dead:true});
+      }
+    };});
+  });
+}
+
+/* ================= BATTLE ================= */
+function bhud(B,st){
+  const el=$("#bhud");el.hidden=false;
+  el.innerHTML=`<b>${st.name}</b><span aria-label="Enemy health">${Array.from({length:st.hp},(_,i)=>`<i class="seg${i<B.hp?" on":""}"></i>`).join("")}</span><span aria-label="Team meter">合力 ${[0,1,2].map(i=>`<i class="pip${i<B.streak?" on":""}"></i>`).join("")}</span>`;
+}
+function hitFx(e,d){const n=performance.now();e.flashUntil=n+220;e.shakeUntil=n+380;SFX.hit();burst(e.x+8*e.s,e.y+e.spr.height*e.s/2,"#fff6a0");floatText(e.x+4,e.y-4,"-"+d,"#ff5a4a");}
+async function runBattle(st){
+  while(true){
+    const r=await battleOnce(st);
+    if(r==="win")return;
+    setView(st.bg,["hero","milo","bro"]);
+    panel.innerHTML=`<div class="qtag">${zt("龍之盾！")}</div><p class="say">${zt(fmt(pk("{me}和{bro}深呼吸一下。犯錯可以幫助我們學習。我們再試一次！","深呼吸，我們再試一次！")))}</p><div class="row"><span></span><button class="btn go">再試一次 ▶</button></div>`;
+    await waitClick(".go");
+  }
+}
+async function battleOnce(st){
+  const MAXH=4,final=st.boss==="witch",owned=SAVE.dragons;
+  const B={hp:st.hp,streak:0,hearts:MAXH,done:{}};
+  setView(st.bg,[]);
+  B.hero=mkA("hero",0,40,3);B.bro=mkA("bro",36,40,3);B.milo=mkA("milo",72,40,3);V.actors.push(B.hero,B.bro,B.milo);
+  const allies=[B.hero,B.bro,B.milo];B.hero.col="#fff6a0";B.bro.col="#a0f0ff";B.milo.col="#7aff9a";
+  if(final){
+    const d=mkA("dadF",108,40,3);d.col="#ffd66b";V.actors.push(d);allies.push(d);
+    owned.forEach((k,i)=>{const a=mkA(k,26+i*34,6,2);a.col=DPAL[k].f;V.actors.push(a);allies.push(a);});
+  }else if(owned.length){
+    const k=owned[owned.length-1];B.dragon=mkA(k,108,40,3);B.dragon.col=DPAL[k].f;V.actors.push(B.dragon);allies.push(B.dragon);
+  }
+  const big=st.s===4;
+  B.e=mkA(st.enemy,big?136:150,big?24:40,st.s);V.actors.push(B.e);
+  setMood(st.boss?"boss":MOODMAP[st.bg]||"home");
+  setHearts(B.hearts,MAXH);bhud(B,st);
+  while(B.hp>0){
+    const q=pickQ(st.ch);
+    const res=await ask(q,{
+      right:async wrongs=>{
+        let dmg=1,team=false;
+        if(wrongs===0){B.streak++;if(B.streak>=3){team=true;B.streak=0;dmg=2;}}else B.streak=0;
+        if(team){
+          SFX.team();floatText(B.hero.x+4,B.hero.y-4,"合力！","#ffd84a");floatText(B.milo.x,B.milo.y-4,"吼！","#7aff9a");
+          await Promise.all(allies.map((a,i)=>shoot(a.x+16*a.s-8,a.y+6*a.s,B.e.x+10,B.e.y+B.e.spr.height*B.e.s/2,a.col||"#fff",i*90)));
+          B.hearts=Math.min(MAXH,B.hearts+1);setHearts(B.hearts,MAXH);
+          allies.forEach(a=>burst(a.x+8*a.s,a.y+4*a.s,"#ff7aa8",6));floatText(B.hero.x+10,B.hero.y+10,"+♥","#ff7aa8");
+        }else{
+          SFX.ok();const f=B.dragon||B.hero;
+          await shoot(f.x+16*f.s-8,f.y+6*f.s,B.e.x+10,B.e.y+B.e.spr.height*B.e.s/2,f.col||"#fff6a0");
+        }
+        const prev=B.hp;B.hp=Math.max(0,B.hp-dmg);hitFx(B.e,dmg);bhud(B,st);await sleep(450);
+        if(st.talk&&B.hp>0)for(const k of Object.keys(st.talk).map(Number).sort((a,b)=>b-a)){
+          if(prev>k&&B.hp<=k&&!B.done[k]){B.done[k]=1;await dialog(st.talk[k]);}
+        }
+      },
+      wrong:async()=>{
+        B.streak=0;
+        B.hearts--;setHearts(B.hearts,MAXH);bhud(B,st);
+        B.e.dx=-34;await sleep(130);const n=performance.now();allies.forEach(a=>a.shakeUntil=n+350);SFX.no();floatText(B.hero.x+4,B.hero.y-4,"-♥","#ff4a6a");B.e.dx=0;
+        await sleep(300);return B.hearts<=0;
+      }
+    });
+    if(res.dead){hideBattleUI();return "lose";}
+  }
+  if(st.boss==="dad"){
+    B.e.spr=sp("dadF");B.e.flashUntil=performance.now()+500;SFX.gain();
+    for(let i=0;i<5;i++){burst(B.e.x+30,B.e.y+30,"#ff7aa8",14);await sleep(150);}
+    panel.innerHTML=`<div class="qtag">${zt("愛心光束！")}</div><p class="say">${zt(fmt(pk("黑暗盔甲裂開了，爸爸自由了！孩子們用的是愛，不是打架。","黑暗盔甲裂開了，爸爸自由了！愛贏了！")))}</p><div class="row"><span></span><button class="btn go">下一步 ▶</button></div>`;
+  }else{
+    SFX.win();
+    for(let i=0;i<10;i++){B.e.alpha=1-i/10;B.e.dy+=2;await sleep(45);}
+    B.e.hidden=true;burst(B.e.x+20,B.e.y+20,"#ffe14d",24);
+    panel.innerHTML=`<div class="qtag">${zt("勝利！")}</div><p class="say">${zt(final?"女巫的魔法被打破了！":"敵人逃走了。你們合作得真棒！")}</p><div class="row"><span></span><button class="btn go">下一步 ▶</button></div>`;
+  }
+  hideBattleUI();setMood(st.boss==="dad"?"home":MOODMAP[st.bg]||"home");
+  await waitClick(".go");
+  return "win";
+}
+
+/* ================= EVENT (HEART CHOICE) ================= */
+async function runEvent(st){
+  setView(st.bg,[]);V.actors.push(mkA("hero",0,40,3),mkA("bro",40,40,3),mkA("milo",80,40,3));
+  const d=mkA(st.dragon,150,40,3,{alpha:.45});V.actors.push(d);
+  await dialog(st.intro);
+  const choice=await new Promise(res=>{
+    const id=runId,opts=st.opts.map((o,i)=>({t:pk(o[0],o[3]),ok:o[1],r:pk(o[2],o[4]),i}));
+    const order=shuffle(opts);
+    panel.innerHTML=`<div class="q"><div class="qtag">${zt("愛心選擇")}</div><div class="qtext">${zt(fmt(pk(st.prompt,st.promptL)))}</div><div class="opts col">${order.map(o=>`<button class="opt left" data-i="${o.i}">${zt(fmt(o.t))}</button>`).join("")}</div><div class="qfoot"><button class="spk" aria-label="朗讀">🔊</button><p class="hint" aria-live="polite"></p></div></div>`;
+    const readEvent=()=>fmt(pk(st.prompt,st.promptL))+"。"+order.map(o=>fmt(strip(o.t))).join("。 ");
+    panel.querySelector(".spk").onclick=()=>speak(readEvent(),"zh-TW");
+    autoRead(readEvent());
+    const hint=panel.querySelector(".hint");
+    panel.querySelectorAll(".opt").forEach(b=>{b.onclick=()=>{
+      if(id!==runId||b.disabled)return;const o=opts[+b.dataset.i];
+      if(o.ok){b.classList.add("ok");panel.querySelectorAll(".opt").forEach(x=>x.disabled=true);res(o);}
+      else{b.classList.add("no");b.disabled=true;SFX.no();hint.innerHTML=zt(fmt(o.r));autoRead(fmt(o.r),"n");}
+    };});
+  });
+  d.alpha=1;SFX.gain();burst(d.x+24,d.y+24,DPAL[st.dragon].f,30);
+  await sleep(500);
+  await dialog([["n",choice.r],["n",`${st.dname}（${st.elem}）加入了我們的隊伍！`,`${st.dname}加入了隊伍！`],["n",`${st.dname}說：「${pk(st.line,st.lineL)}」`],["milo","龍！像我的恐龍！吼！"]]);
+  if(!SAVE.dragons.includes(st.dragon))SAVE.dragons.push(st.dragon);
+  partyUpdate();
+}
+
+/* ================= OPENING ANIMATION ================= */
+const STARS=Array.from({length:40},(_,i)=>{const r=rng(i*31+7);r();return{x:Math.floor(r()*W),y:Math.floor(r()*66),p:r()*6};});
+const HEART=["01010","11111","11111","01110","00100"];
+const FLY=["ember","leaf","aqua","spark","star"];
+function drawHeart(g,x,y,col,sc){g.fillStyle=col;HEART.forEach((r,j)=>{for(let i=0;i<5;i++)if(r[i]==="1")g.fillRect(x+i*sc,y+j*sc,sc,sc);});}
+const NIGHT=["#0b0824","#150f3a","#231658","#35206f"],DAWN=["#3a2a5e","#7a3f78","#c8726e","#ffb27a"];
+const hexv=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));
+const mix=(a,b,k)=>"#"+hexv(a).map((v,i)=>Math.round(v+(hexv(b)[i]-v)*k).toString(16).padStart(2,"0")).join("");
+function drawCin(t){
+  const g=cx,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const dk=cl((t-10800)/3000,0,1),hill1=mix("#1d1440","#3a2650",dk),hill2=mix("#120c2e","#26183e",dk);
+  NIGHT.forEach((c,i)=>{g.fillStyle=mix(c,DAWN[i],dk);g.fillRect(0,i*22,W,23);});
+  STARS.forEach(s=>{g.globalAlpha=(1-dk)*(.35+.65*Math.abs(Math.sin(t/500+s.p)));g.fillStyle="#ffffff";const z=s.p>3?2:1;g.fillRect(s.x,s.y,z,z);});
+  g.globalAlpha=1-dk*.7;g.fillStyle="#f4f0c8";g.fillRect(150,10,14,14);g.fillStyle="#d8d29c";g.fillRect(153,13,3,3);g.fillRect(158,18,2,2);g.globalAlpha=1;
+  g.fillStyle=hill1;for(let x=0;x<W;x+=2){const h=Math.round(24+7*Math.sin(x/17)+4*Math.sin(x/7));g.fillRect(x,82-h,2,H);}
+  g.fillStyle=hill2;for(let x=0;x<W;x+=2){const h=Math.round(10+5*Math.sin(x/11+1));g.fillRect(x,98-h,2,H);}
+  g.fillRect(14,90,50,H);
+  g.fillStyle="#4a3022";g.fillRect(48,66,5,9);
+  g.fillStyle="#5a3c2b";g.fillRect(22,76,34,16);
+  for(let r=0;r<10;r++){const w=42-r*4;g.fillStyle="#9a3636";g.fillRect(Math.round(39-w/2),75-r,w,1);}
+  g.fillStyle=t<3600?(Math.sin(t/90)>.92?"#d9a64a":"#ffd36b"):t<10800?"#6b6b7a":"#1a1428";g.fillRect(28,80,8,8);
+  g.fillStyle=t>10800?"#07040c":"#3a2418";g.fillRect(44,82,7,10);
+  if(t<3600)for(let k=0;k<5;k++){const y=64-((t/40+k*8)%30);g.globalAlpha=Math.max(0,(y-34)/30)*.8;g.fillStyle="#c9c0e0";g.fillRect(Math.round(50+Math.sin(t/400+k)*3+k*.5),Math.round(y),3,3);}
+  g.globalAlpha=1;
+  const bob=ph=>Math.round(Math.abs(Math.sin(t/260+ph))*1.5);
+  const put=(k,x,foot,sc,a)=>{const sr=sp(k),h=sr.height*sc;g.globalAlpha=a===undefined?1:a;g.drawImage(sr,Math.round(x),Math.round(foot-h),sr.width*sc,h);g.globalAlpha=1;};
+  if(t<5200){const sick=t>=3600;put(sick?"momC":"mom",sick?70-(t-3600)/1600*26:70,96-bob(0),2,t>4900?cl((5200-t)/300,0,1):1);}
+  if(t<10800){const go=t>7200,x=go?96+(t-7200)*.04:96;if(x<212){put("dadH",x,96-(go?Math.round(Math.abs(Math.sin(t/120))*2):bob(1)),2);if(go){g.fillStyle=Math.sin(t/80)>0?"#ffd36b":"#e0a84a";g.fillRect(Math.round(x+30),76,4,5);}}}
+  put("nora",122,96-bob(2),2);put("lucas",142,96-bob(3),2);put("milo",164,96-bob(4),2);
+  if(t>10800&&t<11300){g.globalAlpha=1-(t-10800)/500;g.fillStyle="#ffffff";g.fillRect(0,0,W,H);g.globalAlpha=1;}
+  if(t>12800&&t<15600)for(let i=0;i<5;i++){const p=cl((t-12800-i*350)/2500,0,1);if(p>0)drawHeart(g,Math.round(24+i*34+Math.sin(t/220+i)*3),Math.round(94-p*62),DPAL[FLY[i]].f,2);}
+  if(t>15000)FLY.forEach((k,i)=>{const tt=t-15000-i*300;if(tt>0){const x=((tt*.05)%(W+80))-40,y=22+(i%2)*14+i*4+Math.round(Math.sin(t/180+i)*3);g.drawImage(sp(k),Math.round(x),y,32,32);}});
+  if(t>15600){const a=cl((t-15600)/800,0,1),o=Math.round((1-a)*10);g.globalAlpha=a;g.font="bold 18px 'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif";g.textAlign="center";
+    [["龍心冒險",62]].forEach(([tx,y])=>{g.fillStyle="#2a0a3a";g.fillText(tx,W/2+1,y+o+1);g.fillStyle="#ffd84a";g.fillText(tx,W/2,y+o);});
+    g.textAlign="left";g.globalAlpha=1;}
+}
+async function showIntro(){
+  const id=++runId;hideBattleUI();P=null;SAVE=null;partyUpdate();
+  V.actors=[];V.proj=[];V.parts=[];V.floats=[];V.cin={t0:performance.now()};
+  panel.innerHTML=`<p class="say nar"></p><div class="row"><button class="btn alt snd">🔊 開聲音</button><button class="btn skip">跳過 ▶</button></div>`;
+  setMood("home");startMusic();
+  const sb=panel.querySelector(".snd");if(AC&&AC.state==="running")sb.hidden=true;sb.onclick=()=>{ac();SFX.click();sb.hidden=true;};
+  panel.querySelector(".skip").onclick=()=>{ac();SFX.click();showMenu();};
+  const caps=[["一家人快樂地住在龍山旁邊的小房子裡。",3600],["有一天，媽媽生了重病。",3600],["爸爸在夜裡出門，想辦法救她。",3600],["可是到了早上，爸爸媽媽都不見了。",3600],["於是孩子們出發去找爸爸媽媽！",3600]];
+  for(const [txt,ms] of caps){panel.querySelector(".say").innerHTML=zt(txt);autoRead(txt,"n");await sleep(ms);}
+  panel.innerHTML=`<h1 class="logo">龍心冒險</h1><p class="sub">${zt("選擇你的英雄，開始冒險。")}</p><button class="btn go">開始 ▶</button>`;
+  await waitClick(".go");showMenu();
+}
+
+/* ================= FLOW / MENUS ================= */
+function saveGame(){Store.set("save4:"+P.id,SAVE);}
+function freshSave(){return {step:0,dragons:[]};}
+async function play(){
+  const id=++runId;hideBattleUI();partyUpdate();startMusic();
+  while(SAVE.step<STEPS.length){
+    const st=STEPS[SAVE.step];
+    if(st.t==="scene")await runScene(st);
+    else if(st.t==="title")await runTitle(st);
+    else if(st.t==="battle")await runBattle(st);
+    else if(st.t==="event")await runEvent(st);
+    else if(st.t==="end"){await runEnd();return;}
+    SAVE.step++;saveGame();
+  }
+}
+async function runEnd(){
+  setView("home",["mom","dadH","hero","milo","bro"]);V.actors.forEach(a=>burst(a.x+24,a.y+10,"#ffe14d",14));SFX.win();
+  panel.innerHTML=`<h2 class="ct">${zt("完")}</h2><p class="say" style="min-height:0">${zt(fmt("{me}、{bro}和小洛明用善良、合作，還有五隻龍朋友，救回了爸爸媽媽。"))}</p><p class="qbig" style="margin:14px 0">${ruby("家","ㄐㄧㄚ")} ${ruby("愛","ㄞˋ")}</p><div class="stack"><button class="btn" id="again">再玩一次</button><button class="btn alt" id="menu">選擇英雄</button></div>`;
+  $("#again").onclick=()=>{SFX.click();SAVE=freshSave();saveGame();play();};
+  $("#menu").onclick=()=>{SFX.click();showMenu();};
+}
+function showMenu(){
+  runId++;hideBattleUI();P=null;SAVE=null;partyUpdate();if(canSpeak)speechSynthesis.cancel();
+  setView("meadow",["nora","milo","lucas","ember","leaf"]);
+  const card=id=>{const s=Store.get("save4:"+id,null),p=PROFILES[id];const prog=s&&s.step>0?`第${Math.min(5,Math.max(1,Math.floor((s.step-3)/5)+1))}章 · ${s.dragons.length}隻龍`:"新的冒險";
+    return `<button class="card" data-p="${id}"><img src="${sp(id).toDataURL()}" alt=""><b>${p.name}</b><span>${prog}</span></button>`;};
+  panel.innerHTML=`<h1 class="logo">龍心冒險</h1><p class="sub">${zt("選一位英雄，找到龍，救回家人。")}</p><div class="cards">${card("nora")}${card("lucas")}</div><div class="fine"><button id="clr">家長：清除題目紀錄</button><button id="intro">看開場</button><button id="rst">家長：重設所有進度</button></div>`;
+  panel.querySelectorAll(".card").forEach(b=>b.onclick=()=>{ac();SFX.click();chooseProfile(b.dataset.p);});
+  $("#intro").onclick=()=>{ac();SFX.click();showIntro();};
+  let rarm=false;$("#rst").onclick=e=>{if(!rarm){rarm=true;e.target.textContent="再按一次，清除兩位小朋友的進度";return;}Store.set("save4:nora",null);Store.set("save4:lucas",null);showMenu();};
+  let armed=false;$("#clr").onclick=e=>{if(!armed){armed=true;e.target.textContent="再按一次，清除兩位小朋友的題目紀錄";return;}Store.set("seen:nora",[]);Store.set("seen:lucas",[]);e.target.textContent="已清除。";armed=false;};
+  setMood("home");startMusic();
+}
+function chooseProfile(id){
+  P=PROFILES[id];SEEN=new Set(Store.get("seen:"+id,[]));
+  const s=Store.get("save4:"+id,null);
+  if(s&&s.step>0&&STEPS[s.step]&&STEPS[s.step].t!=="end"){
+    SAVE=s;partyUpdate();setView("meadow",["hero","milo","bro"]);
+    panel.innerHTML=`<h1 class="logo">${P.name}的冒險</h1><p class="sub">${zt("歡迎回來！")}</p><div class="stack"><button class="btn" id="cont">繼續</button><button class="btn alt" id="newg">重新開始</button><button class="btn alt" id="back">返回</button></div>`;
+    $("#cont").onclick=()=>{SFX.click();play();};
+    $("#newg").onclick=()=>{SFX.click();SAVE=freshSave();saveGame();play();};
+    $("#back").onclick=()=>{SFX.click();showMenu();};
+  }else{SAVE=freshSave();saveGame();play();}
+}
+function toast(t){let el=$("#toast");if(!el){el=document.createElement("div");el.id="toast";el.setAttribute("role","status");document.body.appendChild(el);}el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,4500);}
+$("#fsBtn").onclick=async()=>{SFX.click();const d=document,el=d.documentElement;try{if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d);return;}const r=el.requestFullscreen||el.webkitRequestFullscreen;if(!r)throw 0;await r.call(el);}catch(e){toast("這裡無法自動全螢幕。在 Mac 上請按 Control + Command + F。");}};
+$("#menuBtn").onclick=()=>{SFX.click();showMenu();};
+showIntro();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

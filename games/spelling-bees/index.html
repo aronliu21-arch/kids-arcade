@@ -1,0 +1,1338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spelling Bees</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff4d6;--ink:#1d1b2e;--card:#ffffff;--line:#1d1b2e;--muted:#5b5670;--soft:#f1e6c8;
+--purple:#7048e8;--orange:#f76707;--kid:#7048e8;--blue:#1c7ed6;--red:#e03131;--gold:#f5b301;--green:#2f9e44;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1730;--ink:#f4f1ff;--card:#28243f;--line:#05040c;--muted:#bcb5da;--soft:#332e52;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a1730;--ink:#f4f1ff;--card:#28243f;--line:#05040c;--muted:#bcb5da;--soft:#332e52;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Nunito,"Trebuchet MS",system-ui,sans-serif;font-weight:800;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body.lucas{--kid:#f76707}
+.disp{font-family:Bungee,"Arial Black",Impact,sans-serif;font-weight:400;letter-spacing:.01em}
+#app{position:relative;height:100%;overflow:hidden}
+.screen{position:absolute;inset:0;display:none}
+.screen.on{display:flex}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{min-height:52px;padding:0 20px;border:3px solid var(--line);border-radius:14px;background:var(--gold);color:#1d1b2e;font-family:Bungee,"Arial Black",Impact,sans-serif;font-size:18px;box-shadow:0 4px 0 var(--line);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.ghost{background:var(--card);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-weight:900;font-size:16px}
+.btn.kid{background:var(--kid);color:#fff}
+.btn:focus-visible,.key:focus-visible,.mcard:focus-visible,.who:focus-visible{outline:3px solid var(--kid);outline-offset:3px}
+/* intro */
+#intro{flex-direction:column;background:#ffb703}
+#intro svg{width:100%;height:100%;display:block;overflow:hidden}
+#startBtn{position:absolute;left:70%;bottom:9%;transform:translateX(-50%);font-size:24px;min-height:64px;padding:0 32px}
+#startBtn:active{transform:translate(-50%,3px)}
+/* who's playing */
+#pick{flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px;overflow-y:auto}
+#pick h1{margin:0;font-size:clamp(26px,5vw,40px);text-align:center}
+.whos{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.who{width:min(260px,42vw);min-height:220px;border:4px solid var(--line);border-radius:22px;background:var(--card);box-shadow:0 6px 0 var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px}
+.who:active{transform:translateY(4px);box-shadow:0 2px 0 var(--line)}
+.who svg{width:130px;height:130px}
+.who b{font-family:Bungee,"Arial Black",sans-serif;font-weight:400;font-size:26px;color:#fff;padding:2px 18px;border-radius:999px;border:3px solid var(--line)}
+.who span{font-size:15px;color:var(--muted)}
+/* menu */
+#menu{flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.mwrap{max-width:980px;width:100%;margin:0 auto;padding:18px 16px 28px}
+.mhead{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.mhead svg{width:76px;height:76px;flex:none}
+.mhead h1{margin:0;font-size:clamp(22px,4.4vw,34px);line-height:1.05}
+.mhead p{margin:4px 0 0;color:var(--muted);font-size:15px}
+.review{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--kid);color:#fff;border:3px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 4px 0 var(--line);margin-bottom:18px}
+.review b{font-family:Bungee,"Arial Black",sans-serif;font-weight:400;font-size:20px;display:block}
+.review span{font-size:15px;opacity:.95}
+.review .btn{flex:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.mcard{text-align:left;background:var(--card);border:3px solid var(--line);border-radius:16px;box-shadow:0 4px 0 var(--line);padding:12px 14px;min-height:120px;display:flex;flex-direction:column;gap:6px}
+.mcard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.mcard .t{font-family:Bungee,"Arial Black",sans-serif;font-weight:400;font-size:17px;line-height:1.15}
+.mcard .ex{color:var(--muted);font-size:14px}
+.stars{color:var(--gold);font-size:20px;letter-spacing:2px;-webkit-text-stroke:1px var(--line)}
+.stars .off{color:transparent}
+.bar{height:10px;border-radius:6px;background:var(--soft);border:2px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green)}
+.mcard .st{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.mfoot{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+/* play */
+#play{flex-direction:column}
+.top{display:flex;align-items:center;gap:10px;padding:6px 10px;height:58px;flex:none}
+.top .mname{font-family:Bungee,"Arial Black",sans-serif;font-size:16px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);background:var(--card)}
+.dots i.g{background:var(--green)}.dots i.h{background:var(--gold)}.dots i.m{background:var(--red)}.dots i.c{background:var(--kid)}
+.score{font-family:Bungee,"Arial Black",sans-serif;font-size:16px;min-width:40px;text-align:right}
+.ibtn{width:48px;height:48px;border:3px solid var(--line);border-radius:12px;background:var(--card);display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}
+.ibtn svg{width:24px;height:24px}
+.stage{flex:1;min-height:0;position:relative;background:linear-gradient(#ffd166 50%,#2f9e44 50%)}
+.stage>svg{position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
+.panel{flex:none;padding:8px 10px 10px;max-width:760px;width:100%;margin:0 auto}
+.clue{font-size:16px;color:var(--muted);text-align:center;min-height:22px;margin-bottom:6px;line-height:1.3}
+.clue em{font-style:normal;color:var(--kid)}
+.arow{display:flex;gap:8px;align-items:stretch;margin-bottom:8px}
+.answer{flex:1;min-width:0;min-height:56px;border:3px solid var(--line);border-radius:14px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;letter-spacing:.06em;overflow:hidden;white-space:nowrap;padding:4px}
+.answer.boxes{background:transparent;border-color:transparent;gap:4px;letter-spacing:0}
+.slot{flex:1 1 0;max-width:46px;min-width:0;height:48px;border:3px solid var(--line);border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900}
+.slot.now{border-color:var(--kid);box-shadow:0 0 0 3px var(--kid) inset}
+.slot.fix{background:var(--gold);color:#1d1b2e}
+.answer .caret{display:inline-block;width:3px;height:30px;background:var(--kid);margin-left:3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.answer.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+#shoot{min-height:56px;font-size:20px;background:var(--blue);color:#fff}
+.hear{display:flex;gap:8px;margin-bottom:8px}
+.hear .btn{flex:1;min-height:48px;font-size:15px;padding:0 10px}
+#helpBtn{background:#fff3bf;color:#1d1b2e}
+.kb{display:flex;flex-direction:column;gap:6px;touch-action:manipulation}
+.kr{display:flex;gap:5px;justify-content:center}
+.key{flex:1 1 0;min-width:0;max-width:64px;height:50px;border:2px solid var(--line);border-radius:10px;background:var(--card);font-size:22px;font-weight:900;box-shadow:0 3px 0 var(--line);padding:0}
+.key:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.key.wide{flex:1.6 1 0;max-width:96px;font-size:18px}
+/* overlays in stage */
+.ov{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(10,8,25,.45)}
+.ov.on{display:flex}
+.card{background:var(--card);color:var(--ink);border:3px solid var(--line);border-radius:18px;box-shadow:0 5px 0 var(--line);padding:16px 18px;max-width:440px;width:100%;text-align:center}
+.card h2{margin:0 0 6px;font-family:Bungee,"Arial Black",sans-serif;font-weight:400;font-size:22px}
+.card p{margin:6px 0;font-size:17px;line-height:1.4}
+.card .big{font-size:38px;font-weight:900;letter-spacing:.04em;color:var(--kid);margin:6px 0}
+.card .btn{margin-top:10px}
+#result,#brk{align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+#result .card,#brk .card{max-width:520px}
+.rstars{font-size:52px;color:var(--gold);-webkit-text-stroke:2px var(--line);letter-spacing:6px}
+.rstars .off{color:transparent}
+.tip{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:16px;text-align:left;margin-top:10px}
+.bt{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#gate{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,8,25,.55);padding:16px;z-index:5}
+#gate.on{display:flex}
+#gate input[type=text]{font:inherit;font-size:26px;width:180px;text-align:center;border:3px solid var(--line);border-radius:12px;padding:8px;background:var(--bg);color:var(--ink)}
+.chk{display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;min-height:48px}
+.chk input{width:26px;height:26px}
+.err{color:var(--red);font-size:15px;min-height:20px}
+#rotate{display:none}
+@media (orientation:portrait) and (max-width:600px){
+ body.playing #rotate{display:flex;position:absolute;inset:0;z-index:9;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;font-size:20px}
+}
+@media (orientation:landscape) and (max-height:540px){
+ #play.on{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);grid-template-rows:auto minmax(0,1fr)}
+ #play .top{grid-column:1/3;height:52px}
+ #play .stage{grid-row:2;grid-column:1}
+ #play .panel{grid-row:2;grid-column:2;overflow:auto;padding-top:0;display:flex;flex-direction:column;justify-content:center}
+ .key{height:44px;font-size:20px}
+ .answer{min-height:48px;font-size:26px}
+ .slot{height:42px;font-size:22px}
+ #shoot{min-height:48px}
+ .hear .btn{min-height:44px;font-size:14px}
+ .clue{margin-bottom:4px;font-size:14px;min-height:18px}
+}
+@media (prefers-reduced-motion:reduce){.answer .caret{animation:none}.answer.shake{animation:none}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<section id="intro" class="screen on" aria-label="Opening">
+<svg id="isvg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+ <rect width="800" height="450" fill="#ffb703"/>
+ <g id="rays" transform="translate(560 190)"></g>
+ <g id="speed" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity="0">
+  <line x1="-40" y1="250" x2="140" y2="250"/><line x1="0" y1="290" x2="220" y2="290"/><line x1="-30" y1="320" x2="120" y2="320"/><line x1="40" y1="215" x2="180" y2="215"/>
+ </g>
+ <rect y="362" width="800" height="90" fill="#2f9e44"/>
+ <rect y="362" width="800" height="8" fill="#237a33"/>
+ <g id="nsBack"></g>
+ <g id="nsFront"></g>
+ <g id="ib"><circle r="15" fill="#fff" stroke="#000" stroke-width="4"/><path d="M-5,-5 L5,-5 L7,4 L0,9 L-7,4Z" fill="#1d1b2e"/></g>
+ <g id="ishout" opacity="0" transform="translate(150 120)">
+  <path d="M-80,-30 L-56,-48 L-34,-34 L-8,-56 L10,-36 L40,-52 L52,-28 L84,-30 L68,-6 L90,12 L60,20 L64,46 L34,34 L10,56 L-8,34 L-40,50 L-44,24 L-82,22 L-62,0 Z" fill="#fff" stroke="#1d1b2e" stroke-width="5" stroke-linejoin="round"/>
+  <text id="ishoutT" y="10" text-anchor="middle" font-family="Bungee,Arial Black,Impact,sans-serif" font-size="28" fill="#7048e8">Nora!</text>
+ </g>
+ <g id="ttl" opacity="0" transform="translate(560 190)">
+  <text y="-28" text-anchor="middle" font-family="Bungee,Arial Black,Impact,sans-serif" font-size="70" fill="#fff" stroke="#1d1b2e" stroke-width="10" paint-order="stroke" stroke-linejoin="round">Spelling</text>
+  <text y="52" text-anchor="middle" font-family="Bungee,Arial Black,Impact,sans-serif" font-size="70" fill="#1c7ed6" stroke="#1d1b2e" stroke-width="10" paint-order="stroke" stroke-linejoin="round">Bees</text>
+ </g>
+</svg>
+<button id="startBtn" class="btn">▶ Tap to start</button>
+</section>
+
+<section id="pick" class="screen" aria-label="Who’s playing">
+ <h1 class="disp">Who’s playing?</h1>
+ <div class="whos">
+  <button class="who" data-kid="nora"><svg viewBox="-60 -190 120 120" aria-hidden="true"><g class="face-nora"></g></svg><b style="background:#7048e8">Nora</b><span id="pickNora"></span></button>
+  <button class="who" data-kid="lucas"><svg viewBox="-60 -195 120 125" aria-hidden="true"><g class="face-lucas"></g></svg><b style="background:#f76707">Lucas</b><span id="pickLucas"></span></button>
+ </div>
+</section>
+
+<section id="menu" class="screen" aria-label="Missions">
+<div class="mwrap">
+ <div class="mhead"><svg viewBox="-60 -195 120 125" aria-hidden="true"><g id="mface"></g></svg>
+  <div><h1 class="disp" id="mtitle"></h1><p id="msub"></p></div></div>
+ <div class="review"><div><b id="revT">Review</b><span id="revS"></span></div><button class="btn" id="revBtn">Play review</button></div>
+ <div class="grid" id="grid"></div>
+ <div class="mfoot"><button class="btn ghost" id="switchBtn">Switch player</button><button class="btn ghost" id="boxBtn"></button><button class="btn ghost" id="sndM"></button><button class="btn ghost" id="resetBtn">Reset records</button></div>
+</div>
+</section>
+
+<section id="play" class="screen" aria-label="Penalty kick">
+ <div class="top">
+  <button class="ibtn" id="homeBtn" aria-label="Back to missions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button>
+  <div class="mname" id="mname"></div>
+  <div class="dots" id="dots"></div>
+  <div class="score" id="score">0</div>
+  <button class="ibtn" id="sndP" aria-label="Sound"></button>
+ </div>
+ <div class="stage">
+  <svg id="scene" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+   <defs><clipPath id="vbclip" clipPathUnits="userSpaceOnUse"><rect width="800" height="420"/></clipPath><filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#f5b301" flood-opacity="1"/></filter></defs>
+   <rect width="800" height="420" fill="#ffd166"/>
+   <g clip-path="url(#vbclip)"><g id="srays" transform="translate(400 30)"></g></g>
+   <rect y="50" width="800" height="60" fill="#3b3560"/>
+   <g id="crowd" clip-path="url(#vbclip)"></g>
+   <rect y="110" width="800" height="310" fill="#2f9e44"/>
+   <g fill="#37a84c"><rect y="160" width="800" height="40"/><rect y="240" width="800" height="40"/><rect y="320" width="800" height="40"/></g>
+   <path d="M140,230 L660,230 L720,380 L80,380 Z" fill="none" stroke="#fff" stroke-width="4" opacity=".9"/>
+   <line x1="0" y1="230" x2="800" y2="230" stroke="#fff" stroke-width="4" opacity=".9"/>
+   <rect x="250" y="96" width="300" height="134" fill="#ffffff" fill-opacity=".22"/>
+   <g stroke="#ffffff" stroke-opacity=".55" stroke-width="1.5" id="net"></g>
+   <path d="M250,230 L250,96 L550,96 L550,230" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round"/>
+   <circle cx="420" cy="368" r="4" fill="#fff"/>
+   <g id="keeper" transform="translate(400 232)"><g id="kbody"></g></g>
+   <g id="me" transform="translate(214 410) scale(1.12)"></g>
+   <g id="ball" transform="translate(420 362)"><circle r="14" fill="#fff" stroke="#000" stroke-width="3.5"/><path d="M-5,-5 L5,-5 L7,4 L0,9 L-7,4Z" fill="#1d1b2e"/></g>
+   <g id="badge"></g>
+   <g id="burst" opacity="0" transform="translate(400 160)">
+    <text id="bt1" text-anchor="middle" font-family="Bungee,Arial Black,Impact,sans-serif" font-size="74" fill="#f5b301" stroke="#1d1b2e" stroke-width="10" paint-order="stroke" stroke-linejoin="round">GOAL!</text>
+    <text id="bt2" y="44" text-anchor="middle" font-family="Bungee,Arial Black,Impact,sans-serif" font-size="30" fill="#fff" stroke="#1d1b2e" stroke-width="7" paint-order="stroke" stroke-linejoin="round"></text>
+   </g>
+  </svg>
+  <div class="ov" id="preOv"><div class="card"><h2 id="preT"></h2><p id="preR"></p><p style="color:var(--muted);font-size:15px" id="preHow"></p><button class="btn" id="kickoff">Kick off ▶</button></div></div>
+  <div class="ov" id="revOv"><div class="card"><h2>Saved twice</h2><p>The word is</p><div class="big" id="revW"></div><p id="revWhy"></p><p style="color:var(--muted);font-size:15px">This word will come back so you can score it next time.</p><button class="btn" id="revNext">Next kick ▶</button></div></div>
+  <div class="ov" id="doneOv"><div class="card"><h2 id="doneT"></h2><p id="doneP"></p><button class="btn" id="doneBtn">Back to missions</button></div></div>
+ </div>
+ <div class="panel">
+  <div class="clue" id="clue"></div>
+  <div class="hear"><button class="btn ghost" id="hearAll">🔊 Sentence</button><button class="btn ghost" id="hearWord">🔊 Word</button><button class="btn ghost" id="helpBtn">💡 Give me a letter</button></div>
+  <div class="arow"><div class="answer" id="answer" aria-live="polite"></div><button class="btn" id="shoot">Shoot</button></div>
+  <div class="kb" id="kb"></div>
+ </div>
+</section>
+
+<section id="result" class="screen" aria-label="Mission result">
+ <div class="card">
+  <h2 id="resT"></h2>
+  <div class="rstars" id="resS"></div>
+  <p id="resP"></p>
+  <p id="resMiss" style="color:var(--muted)"></p>
+  <div class="tip" id="resTip"></div>
+  <div class="bt"><button class="btn" id="nextBtn"></button><button class="btn ghost" id="menuBtn">Missions</button></div>
+ </div>
+</section>
+
+<section id="brk" class="screen" aria-label="Break">
+ <div class="card"><h2>Great practice! Time for a break</h2><p id="brkP"></p><button class="btn" id="finishBtn">Finish for now</button></div>
+</section>
+
+<div id="gate" role="dialog" aria-modal="true" aria-label="Parent check">
+ <div class="card">
+  <h2>Parent check</h2>
+  <div id="g1"><p id="gq"></p><input type="text" id="ga" inputmode="numeric" autocomplete="off" aria-label="Answer"><div class="err" id="gerr"></div>
+   <div class="bt"><button class="btn" id="gok">Check</button><button class="btn ghost" id="gx1">Cancel</button></div></div>
+  <div id="g2" style="display:none"><p>Choose whose records to clear on this device. This clears stars, mastered words, review words and settings.</p>
+   <label class="chk"><input type="checkbox" id="gNora"> Nora</label><label class="chk"><input type="checkbox" id="gLucas"> Lucas</label><div class="err" id="gerr2"></div>
+   <div class="bt"><button class="btn kid" id="gdo">Reset</button><button class="btn ghost" id="gx2">Cancel</button></div></div>
+ </div>
+</div>
+
+<div id="rotate"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M3 9a9 9 0 0 1 3-5"/><path d="M3 4v5h5"/></svg><div class="disp">Turn your phone sideways</div><div style="color:var(--muted)" id="rotP"></div></div>
+</div>
+
+<script>
+"use strict";
+// ==== Word banks. word|sentence|note(optional)
+const M=[
+{n:'Long a',ex:'ai, ay, a_e, eigh, ey',rule:'Long a is often spelled ai in the middle of a word, ay at the end, or a-consonant-e.',tip:'Try it today: find three ai or ay words in the book you’re reading.',w:`
+explain|Can you explain how you solved it?
+remain|Please remain in your seat.
+display|Her art is on display in the hall.
+mistake|Everyone makes a mistake sometimes.
+delay|The rain caused a delay in the game.
+complain|She did not complain about the cold.
+escape|The puppy tried to escape from the yard.
+sailor|The sailor tied a strong knot.
+holiday|Our favorite holiday is in the winter.
+stain|Juice left a stain on her shirt.
+crayon|She picked a purple crayon.
+grateful|I am grateful for my friends.
+parade|The parade marched down the street.
+afraid|She was not afraid of the dark.
+railway|The railway runs along the river.
+basement|We keep the bikes in the basement.
+neighbor|Our neighbor waters her garden every day.|eigh can also spell long a: n-eigh-bor.
+obey|Dogs learn to obey their owners.|ey can spell long a at the end of a word: o-bey.
+behave|She tried to behave at the museum.
+daily|She reads a book daily.|Long a here is ai: d-ai-ly.`},
+{n:'Long e',ex:'ee, ea, ie, ei',rule:'Long e is often spelled ee or ea. Many words use ie, but after c it is usually ei.',tip:'Try it today: spot ee and ea words on a sign or a menu.',w:`
+freedom|The bird flew off to freedom.
+season|Soccer season starts in the fall.
+believe|I believe you can do it.
+breathe|Breathe in slowly before you kick.
+speech|She gave a speech to the class.
+beneath|The cat hid beneath the bed.
+field|The team ran onto the field.
+cheerful|She has a cheerful smile.
+niece|My aunt has a niece named Lily.
+reason|Tell me the reason you are late.
+receive|Did you receive my letter?|After c, use ei: rec-ei-ve.
+ceiling|A spider is on the ceiling.|After c, use ei: c-ei-ling.
+complete|She can complete the puzzle in five minutes.|Long e here is e-consonant-e: com-plete.
+greedy|The greedy squirrel took every nut.
+league|Our team plays in a girls’ league.|ea makes the long e, and the ue at the end is silent.
+increase|Practice will increase your speed.
+peaceful|The lake was peaceful at dawn.
+shriek|She let out a shriek at the surprise.
+agree|We all agree on the plan.
+eagle|An eagle soared over the hill.`},
+{n:'Long i and long o',ex:'igh, i_e, y, oa, ow, o_e',rule:'Long i is often igh, i-consonant-e, or y at the end. Long o is often oa, ow, or o-consonant-e.',tip:'Try it today: when you write a note, check every long i sound. Is it igh, i_e or y?',w:`
+delight|The gift filled her with delight.
+frighten|Loud thunder can frighten the dog.
+survive|Plants need water to survive.
+supply|We have a supply of snacks.
+mighty|The mighty wind shook the trees.
+reply|Please reply to my message.
+polite|It is polite to say thank you.
+bright|The stars look bright tonight.
+approach|Slow down as you approach the goal.
+shadow|Her shadow grew long in the evening.
+explode|The fireworks explode in the sky.
+coastal|We drove along the coastal road.
+throat|Drink warm tea for a sore throat.
+borrow|May I borrow your pencil?
+follow|Follow the coach onto the field.
+alone|She was alone in the quiet library.
+toaster|The bread popped out of the toaster.
+window|Open the window for fresh air.
+suppose|I suppose we can try again.
+highway|The highway was full of cars.`},
+{n:'ou, ow, oi, oy',ex:'mountain, allow, avoid, loyal',rule:'ow and oy usually come at the end of a word or syllable. ou and oi usually come in the middle.',tip:'Try it today: read one page and count the ou and oi words.',w:`
+mountain|We hiked up the mountain.
+thousand|A thousand fans cheered.
+coward|Our hero was no coward.
+allow|Mom will allow one more game.
+avoid|She tried to avoid the puddle.
+poison|Some berries are poison to eat.
+employ|The bakery will employ two new workers.
+loyal|A loyal friend sticks by you.
+appoint|The coach will appoint a new captain.
+crowded|The bus was crowded this morning.
+announce|The teacher will announce the winner.
+boundary|The ball crossed the boundary line.
+choice|It was a hard choice.
+destroy|The storm did not destroy our fort.
+voyage|The ship began its long voyage.
+power|Kick with all your power.
+pointed|She pointed at the map.
+enjoy|I enjoy reading at night.
+flower|A yellow flower grew by the gate.
+cloudy|Today is cloudy and cool.`},
+{n:'Bossy r',ex:'ar, er, ir, or, ur',rule:'er, ir and ur often make the same sound, so you have to remember which one each word uses.',tip:'Try it today: find five er, ir or ur words in your reading and sort them into three groups.',w:`
+thirsty|After practice she was thirsty.
+return|Please return the book on Friday.
+perfect|She made a perfect pass.
+purpose|What is the purpose of this tool?
+artist|The artist painted a sunset.
+record|She set a new record in the race.
+curtain|The curtain opened for the play.
+birthday|Her birthday party is on Saturday.
+alert|Stay alert during the game.
+partner|Find a partner for the project.
+circle|Sit in a circle on the rug.
+surprise|We planned a surprise for Mom.|sur-prise: don’t forget the first r.
+forward|She ran forward with the ball.
+whirl|Leaves whirl in the wind.
+nervous|She felt nervous before the test.
+garden|We grow tomatoes in the garden.
+squirm|The puppy began to squirm in my arms.
+turtle|A turtle swam slowly by.
+shortest|She took the shortest path home.
+person|Each person gets one ticket.`},
+{n:'Double it',ex:'stop → stopped, swim → swimming',rule:'If a word ends in one short vowel and one consonant, double the last consonant before -ed or -ing.',tip:'Try it today: before you write an -ing word, ask: one short vowel and one last consonant? Then double it.',w:`
+stopped|The music stopped suddenly.
+beginning|The beginning of the story was exciting.|be-GIN-ning: the beat is on gin, so double the n.
+forgetting|She kept forgetting her water bottle.|for-GET-ting: the beat is on get, so double the t.
+planning|We are planning a picnic.
+shopping|Mom went shopping for shoes.
+skipped|She skipped down the hallway.
+wrapped|She wrapped the gift in blue paper.
+begged|The dog begged for a treat.
+swimming|Swimming is fun in summer.
+dropped|She dropped the ball and laughed.
+hugging|The sisters were hugging at the airport.
+clapped|Everyone clapped for the team.
+grabbed|She grabbed her coat and ran.
+spinning|The top kept spinning.
+trimmed|Grandma trimmed the bushes.
+admitted|She admitted the mistake.|ad-MIT-ted: the beat is on mit, so double the t.
+patted|She patted the kitten softly.
+running|She was running to catch the bus.
+flipped|She flipped the pancake.
+winning|Our team is winning the game.`},
+{n:'Drop the e',ex:'hope → hoping, smile → smiling',rule:'When a word ends in a silent e, drop the e before an ending that starts with a vowel, like -ing or -ed.',tip:'Try it today: before you add -ing, check for a silent e and drop it.',w:`
+hoping|I am hoping for sunny weather.|hope drops its e: hop-ing. (hopping, with two p’s, means jumping.)
+smiling|She was smiling in the photo.
+arrived|The bus arrived at noon.
+making|We are making cookies.
+decided|She decided to join the team.
+saving|She is saving money for a bike.
+writing|Her writing is very neat.|write drops its e, and the t stays single: wri-ting.
+changed|The leaves changed color.
+dancing|The girls were dancing in the rain.
+shining|The sun is shining today.
+believing|Keep believing in yourself.
+amazing|That goal was amazing.
+riding|She is riding her new bike.
+skated|She skated across the ice.
+traded|They traded stickers at recess.
+exciting|The final game was exciting.
+practicing|She is practicing her free kicks.
+continued|The rain continued all day.
+noticed|She noticed a bird in the tree.
+blamed|Nobody blamed her for the loss.`},
+{n:'Change y to i',ex:'carry → carried, city → cities',rule:'When a word ends in a consonant plus y, change the y to i before -es, -ed, -er or -est.',tip:'Try it today: write three sentences about yesterday and watch for words like carry → carried.',w:`
+carried|She carried the bag upstairs.
+happier|She felt happier after lunch.
+studied|She studied for the test.
+cities|We visited two big cities.
+families|Many families came to the fair.
+hurried|She hurried to the bus stop.
+easiest|This is the easiest puzzle.
+babies|The babies were sleeping.
+ladies|The ladies sang in the choir.
+replied|She replied with a smile.
+puppies|The puppies played in the grass.
+funnier|Her joke was funnier than mine.
+tried|She tried a new trick.
+copied|She copied the notes from the board.
+stories|Grandma tells great stories.
+emptied|She emptied her backpack.
+heaviest|The heaviest box goes on the bottom.
+countries|She wants to visit many countries.
+worried|She worried about the test.
+earliest|She took the earliest train.`},
+{n:'Homophones',ex:'their, there, they’re',rule:'Homophones sound the same but are spelled differently. Use the sentence to pick the right one.',tip:'Try it today: in your next message, check every their, there and they’re.',w:`
+their|The girls packed their bags.|their means belonging to them.
+there|Put the ball over there.|there means a place, and it has here inside it.
+they're|They're going to the park.|they’re is short for they are.
+your|Is this your jacket?|your means belonging to you.
+you're|You're a great goalie.|you’re is short for you are.
+too|She wants to come too.|too means also, or more than enough.
+two|She scored two goals.|two is the number 2.
+hear|I can hear the birds.|You hear with your ear, and hear has ear inside it.
+here|Come here and look.|here means this place.
+weight|The weight of the box is ten pounds.|weight is how heavy something is.
+wait|Please wait for the bell.|wait means stay until something happens.
+piece|May I have a piece of cake?|A piece of pie: both have pie.
+peace|The park was full of peace and quiet.|peace means calm, with no fighting.
+whole|She ate the whole sandwich.|whole means all of it, and it starts with w.
+hole|The rabbit dug a hole.|a hole is an opening, like one in the ground.
+knew|She knew the answer.|knew is the past of know, with a silent k.
+new|She got new shoes.|new means not old.
+would|Would you like some juice?|would goes with could and should: o-u-l-d.
+wood|The table is made of wood.|wood comes from trees.
+brake|Press the brake to stop the bike.|a brake stops a bike or a car.`},
+{n:'Silent letters',ex:'kn, wr, mb, st, gn',rule:'Some letters stay quiet. Common ones: k in kn, w in wr, b in mb, and t after s.',tip:'Try it today: say silent-letter words the funny way, like k-nife, to remember them.',w:`
+knife|Use a knife to cut the bread.|kn: the k is silent.
+wrist|She wears a watch on her wrist.|wr: the w is silent.
+thumb|She raised her thumb.|mb: the b is silent.
+listen|Listen carefully to the coach.|The t is silent: lis-ten.
+castle|The castle had tall towers.|The t is silent: cas-tle.
+answer|Write your answer on the line.|The w is silent: ans-wer.
+honest|Always be honest with your friends.|The h is silent: hon-est.
+design|She drew a design for a kite.|The g is silent: de-sign.
+knowledge|Books give you knowledge.|Silent k at the start, and dge at the end.
+climb|She likes to climb trees.|mb: the b is silent.
+knock|Knock on the door before you enter.|kn: the k is silent.
+wrong|That answer is wrong, so try again.|wr: the w is silent.
+lamb|The lamb followed its mother.|mb: the b is silent.
+whistle|The referee blew her whistle.|wh at the start, and the t is silent: whis-tle.
+island|We took a boat to the island.|The s is silent: is-land.
+kneel|Kneel down to tie your shoe.|kn: the k is silent.
+wrinkle|Her shirt had a wrinkle.|wr: the w is silent.
+plumber|The plumber fixed the sink.|mb: the b is silent.
+often|She often reads before bed.|The t is usually silent: of-ten.
+hour|The movie is one hour long.|The h is silent: hour sounds like our.`},
+{n:'Prefixes',ex:'un, re, dis, mis, pre',rule:'A prefix goes in front of the base word, and the base word keeps all of its letters.',tip:'Try it today: add un-, re- or dis- to three words you know and make new words.',w:`
+unhappy|She was unhappy about the rain.
+rewrite|Please rewrite this sentence.
+disagree|It is okay to disagree politely.
+misspell|Try not to misspell your name.|mis + spell: keep both s’s.
+unusual|We saw an unusual bird.
+review|Let’s review the rules.
+dishonest|Cheating is dishonest.|dis + honest, with a silent h.
+mislead|The sign may mislead drivers.
+preview|We watched a preview of the movie.
+unlock|She used a key to unlock the door.
+reheat|Reheat the soup for dinner.
+disappear|The magician made the coin disappear.|dis + appear: one s, two p’s.
+misplace|Don’t misplace your homework.
+preheat|Preheat the oven before baking.
+unkind|Teasing is unkind.
+replay|Let’s replay the last level.
+dislike|I dislike cold soup.
+unnecessary|It is unnecessary to shout.|un + necessary: two n’s, one c, two s’s.
+recycle|We recycle paper and cans.
+preschool|Her little sister goes to preschool.`},
+{n:'Tricky words',ex:'because, through, enough',rule:'These words break the usual rules, so you have to remember how they look.',tip:'Try it today: write each tricky word once, cover it, then write it again from memory.',w:`
+because|I stayed in because it was raining.|be-cause: the end is a-u-s-e.
+friend|My friend sits next to me.|A friend is there to the end: fri-end.
+through|She walked through the forest.|thr + ough.
+enough|I have enough paper.|ough sounds like uff here.
+though|She smiled, though she was tired.|th + ough, like dough.
+thought|She thought about the question.|th + ought.
+caught|The goalie caught the ball.|c + aught.
+laugh|Her jokes make me laugh.|augh sounds like aff here.
+different|Each snowflake is different.|dif-fer-ent: three parts.
+favorite|Blue is my favorite color.|fa-vor-ite.
+probably|It will probably rain later.|prob-ab-ly.
+beautiful|The sunset was beautiful.|b-e-a-u: big elephants are useful.
+separate|Keep the colors separate.|There is a rat in sep-a-rat-e.
+February|Her birthday is in February.|Don’t forget the first r: Feb-ru-ar-y.
+Wednesday|We have art on Wednesday.|Wed-nes-day.
+library|She borrowed a book from the library.|li-brar-y: two r’s.
+although|Although it was cold, she played outside.|al + though: only one l.
+eighth|She finished in eighth place.|eight + h.
+guess|Can you guess my number?|The u after g is silent.
+minute|Wait one minute.|min-ute.`}
+];
+
+// Easier words for Nora (3rd grade), mixed about 1 in 2 with the 4th grade words above
+const NORA_EASY=[
+`rain|The rain fell all night.
+train|We rode the train to the city.
+paint|She likes to paint flowers.
+play|Let's play tag at recess.
+stay|Please stay in line.
+gray|The sky was gray this morning.
+plate|Put the apple on your plate.
+snake|A green snake hid in the grass.
+brave|She was brave at the doctor.
+eight|She has eight crayons.|eigh spells long a: eight.`,
+`green|Her shirt is green.
+sleep|The baby needs to sleep.
+teeth|Brush your teeth after breakfast.
+dream|She had a funny dream.
+beach|We built a sand fort at the beach.
+clean|Please clean your room.
+sheep|The sheep ate the grass.
+leaf|A red leaf fell from the tree.
+street|We live on a quiet street.
+thief|The thief took the cookies.|ie spells long e here: th-ie-f.`,
+`night|The moon glows at night.
+light|Turn on the light.
+kite|She flew a kite at the park.
+smile|Her smile is big and happy.
+fly|Birds can fly very high.
+boat|The boat floated on the lake.
+road|Look both ways before you cross the road.
+snow|The snow is soft and cold.
+home|We walked home together.
+slow|The snail is very slow.`,
+`house|Her house has a red door.
+cloud|A white cloud floated by.
+mouth|Open your mouth and say ah.
+round|A ball is round.
+town|Our town has a big library.
+brown|The dog has brown spots.
+coin|She found a coin on the floor.
+boil|Boil the water for tea.
+toy|Her favorite toy is a stuffed bear.
+joy|She jumped for joy.`,
+`car|Mom parked the car.
+star|She made a wish on a star.
+shirt|Her shirt has a rainbow on it.
+bird|A bird sang outside.
+girl|The girl kicked the ball.
+turn|It is your turn to roll.
+hurt|She hurt her knee but kept playing.
+horse|The horse ran across the field.
+corn|We ate corn at dinner.
+short|The movie was short.`,
+`sitting|She is sitting on the bench.
+hopped|The frog hopped away.
+digging|The dog is digging in the yard.
+cutting|She is cutting paper hearts.
+getting|It is getting dark.
+batted|She batted the ball far.
+napping|The cat is napping in the sun.
+petting|She is petting the puppy.
+jogging|Mom goes jogging every morning.
+rubbed|She rubbed her sleepy eyes.`,
+`baking|Grandma is baking bread.
+hiding|The cat is hiding under the bed.
+liked|She liked the story.
+used|She used a blue pen.
+waving|She is waving goodbye.
+smiled|She smiled at her friend.
+taking|She is taking a picture.
+giving|Thank you for giving me a hug.
+closed|The store is closed today.
+joking|She was only joking.`,
+`cried|The baby cried at night.
+dried|She dried the dishes.
+flies|The bird flies over the house.
+fries|We ate fries with lunch.
+pennies|She saved ten pennies.
+ponies|The ponies ran in the field.
+berries|She picked berries in the garden.
+bunnies|Two bunnies hopped by.
+sillier|Her joke was sillier than mine.
+cries|The kitten cries when it is hungry.`,
+`see|I can see the moon.|see means to look with your eyes.
+sea|Fish swim in the sea.|the sea is a big ocean.
+meet|Nice to meet you!|meet means to come together.
+meat|Wolves eat meat.|meat is food from animals.
+blue|The sky is blue.|blue is a color.
+blew|The wind blew the hat away.|blew is the past of blow.
+right|Turn right at the corner.|right is a direction, or means correct.
+write|She likes to write stories.|write means to put words on paper, with a silent w.
+one|She has one sister.|one is the number 1.
+won|Our team won the game.|won is the past of win.`,
+`knee|She bumped her knee.|kn: the k is silent.
+know|I know the answer.|kn: the k is silent.
+knot|She tied a knot in the rope.|kn: the k is silent.
+wrap|Help me wrap the present.|wr: the w is silent.
+comb|She used a comb on her hair.|mb: the b is silent.
+ghost|She dressed up as a ghost.|The h is silent: g-host.
+sign|The sign says stop.|The g is silent: si-gn.
+half|She ate half the apple.|The l is silent.
+walk|We walk to school.|The l is silent.
+talk|Let's talk about the book.|The l is silent.`,
+`undo|Can you undo the knot?
+redo|She had to redo the page.
+unpack|Help me unpack the bags.
+retell|Retell the story in your own words.
+untie|She will untie her shoes.
+refill|Please refill the water jug.
+unfair|The game felt unfair.
+reread|She likes to reread her favorite book.
+unsafe|It is unsafe to run by the pool.
+rebuild|We will rebuild the block tower.`,
+`said|She said hello.|s-a-i-d, even though it sounds like sed.
+does|Does she like pizza?|d-o-e-s, even though it sounds like duz.
+could|Could you help me?|c-o-u-l-d: the l is silent.
+should|You should wear a coat.|s-h-o-u-l-d: the l is silent.
+people|Lots of people came to the game.|peo-ple: there is an o you can’t hear.
+again|Let's try again.|a-g-a-i-n.
+many|She has many friends.|m-a-n-y, even though it sounds like menny.
+every|She reads every night.|ev-er-y.
+pretty|The garden is pretty.|pret-ty: two t’s.
+once|She went to the zoo once.|o-n-c-e, even though it starts with a w sound.`
+];
+// Lucas: 1st grade, 12 patterns x 20 words
+const L=[
+{n:'Short a',ex:'cat, map, bag',rule:'Short a says /a/ like in cat. It is spelled with just the letter a.',tip:'Try it today: find three things at home that rhyme with cat.',w:`
+cat|The cat sat on the mat.
+hat|He wore a red hat.
+bag|Put the ball in the bag.
+map|He looked at the map.
+van|Dad drives a blue van.
+jam|He put jam on his toast.
+nap|The baby takes a nap.
+sad|He felt sad when it rained.
+ham|We ate ham for lunch.
+fan|Turn on the fan.
+man|The man waved at us.
+dad|His dad is tall.
+tap|Tap the ball with your foot.
+cap|He wore his soccer cap.
+bat|He hit the ball with a bat.
+can|He can run fast.
+pan|Dad cooked eggs in a pan.
+rag|Wipe the table with a rag.
+mad|He was mad at the rain.
+wag|The dog likes to wag its tail.`},
+{n:'Short e and i',ex:'bed, pig, six',rule:'Short e says /e/ like in bed. Short i says /i/ like in pig.',tip:'Try it today: say bed and pig, and listen for the middle sound.',w:`
+bed|He made his bed.
+red|His ball is red.
+pen|He wrote with a pen.
+ten|He has ten toes.
+wet|The grass is wet.
+leg|He kicked with his left leg.
+jet|A jet flew over the house.
+hen|The hen laid an egg.
+net|The ball hit the net.
+yes|He said yes to the game.
+big|He kicked the big ball.
+pig|The pig rolled in the mud.
+sit|Please sit down.
+hit|He hit the ball far.
+win|He wants to win the race.
+kid|Every kid got a sticker.
+lip|He bit his lip.
+six|He is six years old.
+fin|The fish has a fin.
+dig|He likes to dig in the sand.`},
+{n:'Short o and u',ex:'dog, box, sun',rule:'Short o says /o/ like in dog. Short u says /u/ like in sun.',tip:'Try it today: point to things with short o or u, like a box or a cup.',w:`
+dog|His dog runs fast.
+hot|The soup is hot.
+box|The toy is in the box.
+top|He spun the top.
+log|A frog sat on a log.
+pot|Dad stirred the pot.
+fox|The fox ran into the woods.
+mop|He used a mop on the floor.
+hop|Frogs can hop.
+job|He did a great job.
+sun|The sun is hot.
+bug|A bug crawled on the leaf.
+cup|He drank from a cup.
+run|He likes to run.
+fun|Soccer is fun.
+bus|He rides the bus.
+mud|His boots were full of mud.
+hug|He gave Mom a hug.
+nut|The squirrel found a nut.
+cub|The bear cub played.`},
+{n:'Blends',ex:'stop, frog, clap',rule:'Blends are two consonants side by side. Say each sound: s-t-o-p.',tip:'Try it today: clap each sound in stop: s, t, o, p.',w:`
+stop|Stop at the red light.
+frog|The frog jumped in the pond.
+flag|He waved a flag.
+clap|Clap your hands.
+drum|He played the drum.
+swim|He can swim in the pool.
+crab|A crab walked on the sand.
+sled|He rode the sled down the hill.
+plan|We have a plan.
+step|Watch your step.
+spin|He can spin the ball on his finger.
+grin|He had a big grin.
+trip|We went on a trip.
+glad|He was glad to see Grandpa.
+snap|Snap your fingers.
+skip|He can skip rope.
+slip|Don't slip on the ice.
+drip|The water began to drip.
+plum|He ate a sweet plum.
+belt|He wore a black belt.`},
+{n:'sh, ch, th, wh',ex:'ship, lunch, bath',rule:'Two letters can make one new sound: sh, ch, th and wh.',tip:'Try it today: find something that starts with sh, ch or th.',w:`
+ship|The ship sailed away.
+shop|We went to the shop.
+fish|He caught a fish.
+wish|He made a wish.
+dish|Put the dish in the sink.
+chip|He ate a potato chip.
+chin|He has mud on his chin.
+much|Thank you very much.
+lunch|He ate lunch at noon.
+chop|Dad will chop the wood.
+thin|The book is thin.
+path|Walk on the path.
+math|He loves math.
+bath|He took a bath.
+them|He played with them.
+then|First eat, then play.
+when|When is the game?
+whip|Dad can whip the cream.
+which|Which ball is yours?
+with|He came with his brother.`},
+{n:'ck, ng, nk',ex:'kick, sing, pink',rule:'After a short vowel, the k sound is often spelled ck. ng and nk come at the end.',tip:'Try it today: kick a ball and spell kick out loud.',w:`
+duck|The duck swam in the pond.
+kick|He can kick the ball far.
+sock|He lost a sock.
+back|He came back home.
+rock|He sat on a big rock.
+neck|The giraffe has a long neck.
+pick|Pick a card.
+luck|Good luck at the game!
+ring|The phone began to ring.
+sing|He likes to sing.
+king|The king wore a crown.
+song|He sang a song.
+long|The snake is long.
+bang|The door shut with a bang.
+sink|Wash your hands in the sink.
+pink|The flower is pink.
+bank|He put money in the bank.
+think|Think before you answer.
+wink|He gave a wink.
+trunk|The elephant has a trunk.`},
+{n:'Magic e: a and i',ex:'cake, bike, five',rule:'A silent e at the end makes the vowel say its name: cap becomes cape.',tip:'Try it today: look for a magic e in words on a cereal box.',w:`
+cake|He ate birthday cake.
+game|We won the game.
+gate|Close the gate.
+make|Let's make a fort.
+name|What is your name?
+same|We have the same shoes.
+lake|He swam in the lake.
+tape|Use tape to fix the page.
+made|He made a card for Mom.
+wave|Wave to the crowd.
+bike|He rides his bike.
+kite|He flew a kite.
+time|It is time for bed.
+five|He has five cards.
+like|I like pizza.
+ride|He likes to ride the bus.
+hide|Let's play hide and seek.
+nine|He scored nine goals.
+line|Stand in line.
+mine|That ball is mine.`},
+{n:'Magic e: o and u',ex:'home, rope, cube',rule:'A silent e at the end makes o and u say their names: hop becomes hope.',tip:'Try it today: find a cube shape at home and spell cube.',w:`
+home|He ran home.
+bone|The dog has a bone.
+hole|He dug a hole.
+nose|He touched his nose.
+rope|Hold on to the rope.
+rose|The rose is red.
+note|He wrote a note.
+joke|Tell me a joke.
+stone|He threw a stone in the pond.
+hope|I hope we win.
+cute|The puppy is cute.
+mule|The mule carried the bags.
+tube|Squeeze the tube of paint.
+cube|He has an ice cube.
+huge|The truck is huge.
+June|His birthday is in June.
+rule|Follow the rule.
+flute|He plays the flute.
+use|Use a pencil.
+tune|He hummed a tune.`},
+{n:'ee and ea',ex:'tree, feet, eat',rule:'ee and ea both make the long e sound you hear in tree and eat.',tip:'Try it today: count the trees on your next walk and spell tree.',w:`
+see|I see a bird.
+tree|He climbed the tree.
+feet|He has big feet.
+bee|A bee is on the flower.
+keep|Keep your eyes on the ball.
+seed|He planted a seed.
+need|We need a goalie.
+week|There are seven days in a week.
+sheep|The sheep says baa.
+green|The grass is green.
+eat|Let's eat lunch.
+sea|Fish live in the sea.
+read|He likes to read.
+team|He is on the blue team.
+seat|Take a seat.
+beat|Can you beat my score?
+leaf|A leaf fell down.
+bean|He planted a bean.
+each|Each kid gets a cup.
+clean|Clean up your toys.`},
+{n:'ai, ay, oa, ow',ex:'rain, play, boat, snow',rule:'For long a, ai goes in the middle and ay goes at the end. oa and ow make long o.',tip:'Try it today: when it rains, spell rain out loud.',w:`
+rain|The rain is cold.
+tail|The dog wags its tail.
+wait|Wait for me!
+mail|He got mail today.
+paint|He likes to paint.
+day|It is a sunny day.
+play|Let's play soccer.
+say|What did he say?
+way|Which way is the park?
+stay|Stay with the group.
+boat|He sailed a toy boat.
+coat|Put on your coat.
+goat|The goat ate grass.
+road|The road is long.
+soap|Wash with soap.
+snow|He played in the snow.
+slow|The turtle is slow.
+grow|Plants grow in the sun.
+show|Show me your card.
+blow|Blow out the candles.`},
+{n:'ar and or',ex:'car, park, fork',rule:'When r comes after a vowel, it changes the sound: car, for.',tip:'Try it today: spell your favorite sport out loud.',w:`
+car|He has a toy car.
+star|He drew a star.
+park|We went to the park.
+farm|Cows live on a farm.
+jar|The cookies are in the jar.
+arm|He raised his arm.
+card|He traded a card with his friend.
+shark|The shark swam fast.
+dark|It is dark at night.
+yard|He played in the yard.
+for|This gift is for you.
+corn|He ate corn.
+fork|Eat with a fork.
+horn|Dad honked the horn.
+sport|Soccer is his favorite sport.
+storm|The storm was loud.
+born|The puppy was born today.
+short|The game was short.
+north|Birds fly north in spring.
+torn|His shirt is torn.`},
+{n:'Sight words',ex:'said, was, they',rule:'Sight words don’t follow the rules. Learn how they look.',tip:'Try it today: read a page and point to every said and was.',w:`
+said|He said thank you.|s-a-i-d.
+was|He was very fast.|w-a-s, even though it sounds like wuz.
+they|They played tag.|t-h-e-y.
+are|We are a team.|a-r-e.
+have|I have a red ball.|have ends with a silent e.
+what|What is that?|w-h-a-t.
+come|Come and play.|come ends with a silent e.
+some|He ate some grapes.|some ends with a silent e.
+from|He got a card from Grandpa.|f-r-o-m.
+put|Put on your shoes.|p-u-t.
+want|Do you want to play?|w-a-n-t.
+where|Where is my ball?|w-h-e-r-e.
+could|He could not find his shoe.|The l is silent: c-o-u-l-d.
+would|Would you like a snack?|The l is silent: w-o-u-l-d.
+there|The ball is over there.|there has here inside it.
+one|He has one dog.|o-n-e, even though it starts with a w sound.
+two|He has two shoes.|t-w-o is the number 2.
+give|Give me the ball.|give ends with a silent e.
+live|Fish live in water.|live ends with a silent e.
+who|Who wants to play?|w-h-o.`}
+];
+
+function parse(txt,mi,pre,easy){return txt.trim().split('\n').map(l=>{const p=l.split('|');return {id:pre+p[0].toLowerCase(),w:p[0],s:p[1],n:p[2]||'',m:mi,easy}})}
+M.forEach((m,i)=>{m.words=parse(m.w,i,i+':',false).concat(parse(NORA_EASY[i],i,i+'e:',true))});
+L.forEach((m,i)=>{m.words=parse(m.w,i,'L'+i+':',false)});
+const KIDS={
+ nora:{name:'Nora',color:'#7048e8',bank:M,autoHint:false,sub:'Spell it right, score the goal. About half the words are a step easier.'},
+ lucas:{name:'Lucas',color:'#f76707',bank:L,autoHint:true,sub:'Spell it right, score the goal. Miss once and you get a letter.'}
+};
+let KID='nora';
+const BANK=()=>KIDS[KID].bank;
+const ALLW=k=>[].concat(...KIDS[k].bank.map(m=>m.words));
+const KICKS=6, REBOUND_MAX=3;
+
+// ==== Storage (per device, per kid)
+const KEY='liuSpellingShootout.v2', OLD='noraSpellingShootout.v1';
+function kidFresh(){return {w:{},stars:{},row:{n:0,t:0},boxes:true}}
+function fresh(){return {v:2,sound:true,introKick:0,kids:{nora:kidFresh(),lucas:kidFresh()}}}
+function load(){
+ try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===2&&d.kids){['nora','lucas'].forEach(k=>{if(!d.kids[k])d.kids[k]=kidFresh()});return d}}catch(e){}
+ const d=fresh();
+ try{const o=JSON.parse(localStorage.getItem(OLD));if(o&&o.v===1&&o.nora){d.sound=o.sound!==false;d.kids.nora.w=o.nora.w||{};d.kids.nora.stars=o.nora.stars||{}}}catch(e){}
+ return d}
+let DB=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
+let dayShift=0;
+function today(){const d=new Date();return Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5)+dayShift}
+const KD=()=>DB.kids[KID];
+const ws=id=>KD().w[id]||{s:'n',k:0,d:0};
+const isNew=x=>ws(x.id).s==='n';
+const isDue=x=>{const s=ws(x.id);return s.s==='l'&&s.d<=today()};
+const isLearning=x=>ws(x.id).s==='l';
+const isMastered=x=>ws(x.id).s==='m';
+
+// ==== Helpers
+const $=s=>document.querySelector(s);
+const pretty=s=>s.replace(/'/g,'’');
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,'').trim();
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const reduced=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function blankOut(sent,word){const re=new RegExp("(^|[^A-Za-z'])("+word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+")(?![A-Za-z])","i");return sent.replace(re,(a,p)=>p+'______')}
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ==== Speech (browser voice, works on iPad, iPhone and Mac)
+let voice=null;
+function pickVoice(){try{const vs=speechSynthesis.getVoices();voice=vs.find(v=>/en[-_]US/i.test(v.lang)&&/Samantha|Ava|Allison|Google US English|Zira|Jenny/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null}catch(e){}}
+if('speechSynthesis' in window){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
+let sayTimer=0;
+function say(t){if(!('speechSynthesis' in window))return;try{speechSynthesis.cancel();clearTimeout(sayTimer);sayTimer=setTimeout(()=>{try{const u=new SpeechSynthesisUtterance(t);if(voice)u.voice=voice;u.lang='en-US';u.rate=KID==='lucas'?.8:.85;speechSynthesis.speak(u)}catch(e){}},80)}catch(e){}}
+function sayWord(x,full){say(full?`${x.w}. ${x.s} ${x.w}.`:x.w)}
+function spellOut(w){return w.split('').map(c=>c==="'"?'apostrophe':c.toUpperCase()).join(', ')}
+function unlockSpeech(){if('speechSynthesis' in window){try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u)}catch(e){}}}
+
+// ==== Audio: anthem on intro and menus only, sound effects in play
+let AC=null,master,musG,sfxG,musOn=false,musStep=0,musNext=0,musTimer=0;
+function audioInit(){if(AC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.connect(AC.destination);musG=AC.createGain();musG.gain.value=0;musG.connect(master);sfxG=AC.createGain();sfxG.gain.value=.9;sfxG.connect(master);applySound()}catch(e){AC=null}}
+function applySound(){if(AC)master.gain.setTargetAtTime(DB.sound?.8:0,AC.currentTime,.03);drawSnd()}
+function note(m){return 440*Math.pow(2,(m-69)/12)}
+function osc(t,f,d,type,g,dest,f2){const o=AC.createOscillator(),a=AC.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.01);a.gain.exponentialRampToValueAtTime(.0008,t+d);o.connect(a);a.connect(dest);o.start(t);o.stop(t+d+.05)}
+function noise(t,d,g,freq){const b=AC.createBuffer(1,Math.floor(AC.sampleRate*d),AC.sampleRate),c=b.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.random()*2-1;const s=AC.createBufferSource();s.buffer=b;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=freq||1200;const a=AC.createGain();a.gain.setValueAtTime(g,t);a.gain.exponentialRampToValueAtTime(.0008,t+d);s.connect(f);f.connect(a);a.connect(sfxG);s.start(t)}
+const MEL=[67,null,72,74,76,null,74,72,74,null,79,null,76,null,null,null,77,null,76,74,72,null,74,76,79,null,81,null,79,null,null,null];
+const BASS=[48,43,45,41],CH=[[60,64,67],[59,62,67],[57,60,64],[57,60,65]];
+const STEP=60/124/2;
+function musTick(){if(!AC)return;while(musNext<AC.currentTime+.25){const i=musStep%32,bar=Math.floor(i/8)%4,t=musNext;
+ if(MEL[i])osc(t,note(MEL[i]),STEP*1.7,'square',.06,musG);
+ if(i%2===0)osc(t,note(BASS[bar]),STEP*1.6,'triangle',.22,musG);
+ if(i%8===0||i%8===4)CH[bar].forEach(n=>osc(t,note(n),STEP*3,'triangle',.05,musG));
+ if(i%4===0)osc(t,90,.12,'sine',.25,musG,40);
+ musStep++;musNext+=STEP}}
+function musicSync(){if(!AC)return;const want=(CUR==='intro'&&introRunning)||CUR==='menu'||CUR==='pick';
+ if(want&&!musOn){musOn=true;if(AC.state==='suspended')AC.resume();musNext=AC.currentTime+.05;musStep=0;clearInterval(musTimer);musTimer=setInterval(musTick,60);musG.gain.cancelScheduledValues(AC.currentTime);musG.gain.setTargetAtTime(.55,AC.currentTime,.15)}
+ else if(!want&&musOn){musOn=false;musG.gain.cancelScheduledValues(AC.currentTime);musG.gain.setTargetAtTime(0,AC.currentTime,.25);const tm=musTimer;setTimeout(()=>{if(!musOn)clearInterval(tm)},1500)}}
+const sfx={
+ kick(){if(!AC)return;const t=AC.currentTime;osc(t,150,.16,'sine',.9,sfxG,45);noise(t,.05,.3,2500)},
+ goal(){if(!AC)return;const t=AC.currentTime;noise(t,.7,.22,900);[523,659,784,1047].forEach((f,i)=>osc(t+.06*i,f,.3,'triangle',.25,sfxG))},
+ save(){if(!AC)return;const t=AC.currentTime;osc(t,240,.3,'sine',.5,sfxG,110);noise(t,.12,.25,600)},
+ key(){if(!AC)return;osc(AC.currentTime,1400,.03,'square',.03,sfxG)},
+ hint(){if(!AC)return;const t=AC.currentTime;osc(t,880,.15,'triangle',.2,sfxG);osc(t+.08,1320,.2,'triangle',.18,sfxG)},
+ hit(){if(!AC)return;const t=AC.currentTime;osc(t,180,.25,'sine',.6,sfxG,50);noise(t,.2,.3,1800)}
+};
+
+// ==== Drawing. The kids: bold retro sports-anime with fixed looks. Everyone else: soft style.
+const K='#000',HAIR='#15131d',SKIN='#ffd9bf';
+function star(cx,cy,r){let p='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;p+=(i?'L':'M')+(cx+Math.cos(a)*rr).toFixed(1)+','+(cy+Math.sin(a)*rr).toFixed(1)}return p+'Z'}
+function noraHead(){return `
+<path d="M18,-166 C50,-184 80,-164 76,-130 C73,-108 62,-96 68,-84 C55,-84 50,-98 54,-116 C58,-140 46,-154 24,-154 Z" fill="${HAIR}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
+<path d="M62,-90 C70,-86 72,-78 66,-74" fill="none" stroke="${K}" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="0" cy="-124" rx="44" ry="46" fill="${HAIR}" stroke="${K}" stroke-width="4"/>
+<ellipse cx="0" cy="-112" rx="34" ry="35" fill="${SKIN}" stroke="${K}" stroke-width="4"/>
+<path d="M-42,-122 C-42,-162 -8,-176 22,-168 C40,-162 47,-144 43,-120 C37,-134 27,-142 15,-142 C5,-134 -9,-129 -21,-131 C-29,-129 -35,-121 -39,-108 Z" fill="${HAIR}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
+<path d="M-24,-157 Q-6,-168 16,-161" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+<path d="M-39,-122 C-45,-104 -43,-90 -36,-78 C-33,-92 -33,-108 -31,-120 Z" fill="${HAIR}" stroke="${K}" stroke-width="3" stroke-linejoin="round"/>
+<path d="M39,-122 C45,-104 43,-90 36,-78 C33,-92 33,-108 31,-120 Z" fill="${HAIR}" stroke="${K}" stroke-width="3" stroke-linejoin="round"/>
+<ellipse cx="27" cy="-163" rx="10" ry="7.5" fill="#f783ac" stroke="${K}" stroke-width="3"/>
+<path d="${star(-25,-143,8)}" fill="#f5b301" stroke="${K}" stroke-width="2" stroke-linejoin="round"/>
+<path d="M-22,-123 Q-14,-128 -6,-124" stroke="${K}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+<path d="M6,-124 Q14,-128 22,-123" stroke="${K}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+<ellipse cx="-12" cy="-107" rx="7.5" ry="10" fill="#7a4520" stroke="${K}" stroke-width="1.5"/>
+<ellipse cx="12" cy="-107" rx="7.5" ry="10" fill="#7a4520" stroke="${K}" stroke-width="1.5"/>
+<circle cx="-14.5" cy="-110.5" r="2.9" fill="#fff"/><circle cx="-9.5" cy="-103" r="1.5" fill="#fff"/>
+<circle cx="9.5" cy="-110.5" r="2.9" fill="#fff"/><circle cx="14.5" cy="-103" r="1.5" fill="#fff"/>
+<path d="M-21,-112 Q-12,-121 -3,-113" stroke="${K}" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+<path d="M3,-113 Q12,-121 21,-112" stroke="${K}" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+<ellipse cx="-22" cy="-95" rx="6" ry="3" fill="#ff8fab" opacity=".75"/><ellipse cx="22" cy="-95" rx="6" ry="3" fill="#ff8fab" opacity=".75"/>
+<path d="M-10,-93 Q0,-78 10,-93 Z" fill="#c92a2a" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M-8,-92.5 L8,-92.5 L7,-90 L-7,-90 Z" fill="#fff"/>`}
+
+function lucasHead(){return `
+<ellipse cx="0" cy="-124" rx="43" ry="44" fill="${HAIR}" stroke="${K}" stroke-width="4"/>
+<ellipse cx="0" cy="-112" rx="34" ry="35" fill="${SKIN}" stroke="${K}" stroke-width="4"/>
+<path d="M-45,-116 L-58,-142 L-40,-140 L-50,-172 L-24,-156 L-18,-190 L0,-162 L18,-190 L24,-156 L50,-172 L40,-140 L58,-142 L45,-116 L35,-128 L27,-116 L18,-133 L8,-120 L0,-136 L-8,-120 L-18,-133 L-27,-116 L-35,-128 Z" fill="${HAIR}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
+<path d="M-20,-168 L-10,-160 M14,-172 L20,-160" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+<path d="M-23,-122 L-5,-114" stroke="${K}" stroke-width="5.5" stroke-linecap="round"/>
+<path d="M5,-114 L23,-122" stroke="${K}" stroke-width="5.5" stroke-linecap="round"/>
+<ellipse cx="-12" cy="-105" rx="7" ry="8.5" fill="#5a3a1c" stroke="${K}" stroke-width="1.5"/>
+<ellipse cx="12" cy="-105" rx="7" ry="8.5" fill="#5a3a1c" stroke="${K}" stroke-width="1.5"/>
+<circle cx="-14" cy="-108" r="2.6" fill="#fff"/><circle cx="10" cy="-108" r="2.6" fill="#fff"/>
+<path d="M-20,-110 Q-12,-117 -4,-111 M4,-111 Q12,-117 20,-110" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M-14,-95 L14,-95 L12,-85 L-12,-85 Z" fill="#fff" stroke="${K}" stroke-width="2.6" stroke-linejoin="round"/>
+<path d="M-13,-90 L13,-90 M-7,-95 L-7,-85 M0,-95 L0,-85 M7,-95 L7,-85" stroke="${K}" stroke-width="1.6"/>
+<path d="M30,-128 Q34,-124 31,-120 Q28,-124 30,-128Z" fill="#74c0fc" stroke="${K}" stroke-width="1.5"/>`}
+function frontFig(kid){const nora=kid==='nora',trim=nora?'#f5b301':'#ffffff',num=nora?9:6;return `<g filter="url(#glow)">
+<path d="M-34,-12 L-30,0 L-12,0 L-14,-12 Z M34,-12 L30,0 L12,0 L14,-12 Z" fill="${K}"/>
+<rect x="-24" y="-24" width="12" height="14" fill="#1c7ed6" stroke="${K}" stroke-width="3"/><rect x="12" y="-24" width="12" height="14" fill="#1c7ed6" stroke="${K}" stroke-width="3"/>
+<rect x="-24" y="-20" width="12" height="3" fill="${trim}"/><rect x="12" y="-20" width="12" height="3" fill="${trim}"/>
+<path d="M-32,-38 L32,-38 L30,-22 L4,-22 L0,-28 L-4,-22 L-30,-22 Z" fill="#0b3d91" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>
+<path d="M-30,-72 L-48,-46 L-38,-39 L-26,-56 Z M30,-72 L48,-46 L38,-39 L26,-56 Z" fill="#1c7ed6" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>
+<circle cx="-45" cy="-36" r="6.5" fill="${SKIN}" stroke="${K}" stroke-width="3"/><circle cx="45" cy="-36" r="6.5" fill="${SKIN}" stroke="${K}" stroke-width="3"/>
+<rect x="-9" y="-84" width="18" height="14" fill="${SKIN}" stroke="${K}" stroke-width="3"/>
+<path d="M-31,-73 Q0,-80 31,-73 L34,-36 L-34,-36 Z" fill="#1c7ed6" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
+<path d="M-11,-76 L0,-64 L11,-76" fill="none" stroke="${trim}" stroke-width="4" stroke-linejoin="round"/>
+<path d="M-44,-48 L-37,-42 M44,-48 L37,-42" stroke="${trim}" stroke-width="4" stroke-linecap="round"/>
+<text x="0" y="-41" text-anchor="middle" font-family="Bungee,Arial Black,Impact,sans-serif" font-size="27" fill="${trim}" stroke="${K}" stroke-width="1.6">${num}</text>
+${nora?noraHead():lucasHead()}</g>`}
+function sideFig(kid,p){
+ const nora=kid==='nora',jer=nora?'#f5b301':'#1c7ed6',trim=nora?'#1c7ed6':'#ffffff',num=nora?9:6,numc=nora?'#1c7ed6':'#ffffff';
+ const limb=(id,x,y,inner)=>`<g id="${p}${id}" transform="translate(${x} ${y})">${inner}</g>`;
+ const leg=`<rect x="-7" y="0" width="14" height="24" fill="${SKIN}" stroke="${K}" stroke-width="3"/><rect x="-7" y="20" width="14" height="14" fill="#1c7ed6" stroke="${K}" stroke-width="3"/><path d="M-8,34 L17,34 L17,42 L-8,42 Z" fill="${K}"/>`;
+ const arm=`<rect x="-5" y="0" width="10" height="30" rx="5" fill="${jer}" stroke="${K}" stroke-width="3"/><circle cx="0" cy="33" r="6" fill="${SKIN}" stroke="${K}" stroke-width="3"/>`;
+ const back=nora?`<path d="M-18,-158 C-58,-178 -100,-162 -106,-134 C-110,-114 -100,-102 -88,-104 C-99,-112 -97,-130 -82,-139 C-64,-148 -40,-146 -22,-142 Z" fill="${HAIR}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>`:'';
+ const hair=nora?`<path d="M-31,-118 C-34,-154 0,-166 28,-155 C42,-149 46,-134 44,-126 C32,-138 18,-142 6,-138 C2,-120 -10,-100 -24,-92 C-33,-100 -33,-110 -31,-118 Z" fill="${HAIR}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
+<path d="M-18,-150 Q2,-160 24,-152" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+<ellipse cx="-22" cy="-150" rx="8" ry="10" fill="#f783ac" stroke="${K}" stroke-width="3"/>
+<path d="${star(22,-146,8)}" fill="#f5b301" stroke="${K}" stroke-width="2" stroke-linejoin="round"/>
+<path d="M14,-108 C16,-96 14,-88 10,-84 L6,-96 Z" fill="${HAIR}" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>`
+ :`<path d="M-32,-110 L-62,-118 L-40,-132 L-68,-150 L-36,-152 L-50,-180 L-16,-164 L-8,-192 L10,-162 L32,-174 L26,-150 L46,-142 C32,-144 18,-140 6,-136 C2,-120 -10,-104 -22,-96 C-30,-100 -32,-106 -32,-110 Z" fill="${HAIR}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
+<path d="M-30,-160 L-14,-152" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>`;
+ const brow=nora?`<path d="M18,-131 Q26,-135 34,-131" stroke="${K}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`:`<path d="M16,-134 L35,-126" stroke="${K}" stroke-width="5.5" stroke-linecap="round"/>`;
+ const mouth=nora?`<ellipse cx="34" cy="-96" rx="6" ry="7" fill="#c92a2a" stroke="${K}" stroke-width="2.5"/>`:`<path d="M26,-102 L44,-106 L42,-88 L30,-90 Z" fill="#c92a2a" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/><path d="M28,-101 L43,-104 L43,-100 L29,-98Z" fill="#fff"/>`;
+ return back+limb('legB',0,-40,leg)+limb('armB',-2,-74,arm)+`
+<path d="M-20,-84 L22,-84 L26,-38 L-24,-38 Z" fill="${jer}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/>
+<path d="M-21,-50 L25,-50" stroke="${trim}" stroke-width="5"/>
+<rect x="-25" y="-44" width="52" height="16" fill="#1c7ed6" stroke="${K}" stroke-width="3.5"/>
+<text x="0" y="-56" text-anchor="middle" font-family="Bungee,Arial Black,Impact,sans-serif" font-size="20" fill="${numc}" stroke="${K}" stroke-width="1">${num}</text>`+limb('legF',0,-40,leg)+limb('armF',4,-74,arm)+`
+<rect x="-2" y="-94" width="16" height="12" fill="${SKIN}" stroke="${K}" stroke-width="3"/>
+<circle cx="6" cy="-120" r="37" fill="${SKIN}" stroke="${K}" stroke-width="4"/>
+${hair}${brow}
+<ellipse cx="27" cy="-116" rx="6.5" ry="9.5" fill="#7a4520" stroke="${K}" stroke-width="1.5"/>
+<circle cx="25" cy="-119.5" r="2.6" fill="#fff"/><circle cx="29" cy="-112" r="1.3" fill="#fff"/>
+<path d="M19,-121 Q27,-129 35,-121" stroke="${K}" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+${nora?`<ellipse cx="24" cy="-102" rx="6" ry="3" fill="#ff8fab" opacity=".75"/>`:''}
+<path d="M43,-118 L47,-110 L42,-108" fill="none" stroke="${K}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+${mouth}`}
+function keeperSVG(girl){return `
+<rect x="-20" y="-22" width="13" height="22" rx="4" fill="#c92a2a"/><rect x="7" y="-22" width="13" height="22" rx="4" fill="#c92a2a"/>
+<ellipse cx="-14" cy="0" rx="10" ry="5" fill="#2b2b2b"/><ellipse cx="14" cy="0" rx="10" ry="5" fill="#2b2b2b"/>
+<rect x="-24" y="-40" width="48" height="20" rx="6" fill="#343a40"/>
+<rect x="-26" y="-86" width="52" height="50" rx="12" fill="#e03131"/>
+<rect x="-62" y="-86" width="40" height="13" rx="6" fill="#e03131"/><rect x="22" y="-86" width="40" height="13" rx="6" fill="#e03131"/>
+<circle cx="-66" cy="-80" r="10" fill="#ffd43b"/><circle cx="66" cy="-80" r="10" fill="#ffd43b"/>
+<circle cx="0" cy="-106" r="22" fill="#f1c7a6"/>
+${girl?`<path d="M-22,-108 C-22,-132 22,-132 22,-108 C14,-118 -14,-118 -22,-108 Z" fill="#6b4226"/><circle cx="0" cy="-132" r="9" fill="#6b4226"/>`
+:`<path d="M-22,-106 C-24,-130 22,-134 22,-106 C18,-114 8,-118 2,-114 C-6,-120 -16,-116 -22,-106 Z" fill="#6b4226"/>`}
+<circle cx="-7" cy="-104" r="2.6" fill="#2b2b2b"/><circle cx="7" cy="-104" r="2.6" fill="#2b2b2b"/>
+<path d="M-5,-95 Q0,-91 5,-95" stroke="#2b2b2b" stroke-width="2" fill="none" stroke-linecap="round"/>`}
+function badgeSVG(x,y){const k=KIDS[KID];return `<g transform="translate(${x} ${y})"><rect x="-44" y="-17" width="88" height="30" rx="15" fill="${k.color}" stroke="#000" stroke-width="3"/><text y="6" text-anchor="middle" font-family="Bungee,Arial Black,Impact,sans-serif" font-size="17" fill="#fff">${k.name}</text></g>`}
+const headFor=k=>k==='nora'?noraHead():lucasHead();
+
+function buildArt(){
+ let r='';for(let i=0;i<18;i++){const a=i*Math.PI/9,b=a+Math.PI/18,R=900;r+=`<path d="M0,0 L${(Math.cos(a)*R).toFixed(0)},${(Math.sin(a)*R).toFixed(0)} L${(Math.cos(b)*R).toFixed(0)},${(Math.sin(b)*R).toFixed(0)}Z" fill="#ffd166"/>`}
+ $('#rays').innerHTML=r;
+ let s='';for(let i=0;i<24;i++){const a=Math.PI*(i/24),b=a+Math.PI/48;s+=`<path d="M0,0 L${(Math.cos(a)*600).toFixed(0)},${(Math.sin(a)*600).toFixed(0)} L${(Math.cos(b)*600).toFixed(0)},${(Math.sin(b)*600).toFixed(0)}Z" fill="#ffe08a"/>`}
+ $('#srays').innerHTML=s;
+ const cc=['#f783ac','#74c0fc','#ffd43b','#ff8787','#b197fc','#ffffff','#63e6be'];let c='';
+ for(let row=0;row<3;row++)for(let i=0;i<40;i++)c+=`<circle cx="${10+i*20+(row%2)*10}" cy="${64+row*16}" r="6" fill="${cc[(i*7+row*3)%cc.length]}"/>`;
+ $('#crowd').innerHTML=c;
+ let n='';for(let x=270;x<550;x+=20)n+=`<line x1="${x}" y1="96" x2="${x}" y2="230"/>`;for(let y=114;y<230;y+=18)n+=`<line x1="250" y1="${y}" x2="550" y2="${y}"/>`;
+ $('#net').innerHTML=n;
+ document.querySelectorAll('.face-nora').forEach(g=>g.innerHTML=`<g transform="translate(0 -18)">${noraHead()}</g>`);
+ document.querySelectorAll('.face-lucas').forEach(g=>g.innerHTML=`<g transform="translate(0 -2)">${lucasHead()}</g>`);
+}
+function buildKidArt(){
+ $('#kbody').innerHTML=keeperSVG(KID==='nora');
+ $('#me').innerHTML=frontFig(KID);
+ $('#badge').innerHTML=badgeSVG(214,410-(KID==='lucas'?204:196)*1.12);
+ $('#mface').innerHTML=`<g transform="translate(0 ${KID==='nora'?-18:-2})">${headFor(KID)}</g>`;
+ document.body.classList.toggle('lucas',KID==='lucas');
+}
+
+// ==== Screens
+let CUR='intro';
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));CUR=id;document.body.classList.toggle('playing',id==='play');musicSync()}
+
+// ==== Intro: both kids run in, one takes the shot (alternates each time)
+let introRunning=false,introRaf=0,introStart=0,kicked=false;
+const kicker=()=>DB.introKick%2?'lucas':'nora';
+function buildIntro(){const f=kicker(),b=f==='nora'?'lucas':'nora';$('#nsFront').innerHTML=sideFig(f,'f');$('#nsBack').innerHTML=sideFig(b,'b');$('#ishoutT').textContent=KIDS[f].name+'!';$('#ishoutT').setAttribute('fill',KIDS[f].color)}
+function setLimbs(p,t,kick,stopAt){const run=t<stopAt;const a=run?Math.sin(t/55)*38:0;
+ const lf=$('#'+p+'legF');if(!lf)return;
+ const fa=kick?(t<1350?-a:(t<1700?-(-40+90*Math.min(1,(t-1350)/200)):-10)):(run?-a:0);
+ lf.setAttribute('transform',`translate(0 -40) rotate(${fa.toFixed(1)})`);
+ $('#'+p+'legB').setAttribute('transform',`translate(0 -40) rotate(${(run?a:(kick?20:0)).toFixed(1)})`);
+ $('#'+p+'armF').setAttribute('transform',`translate(4 -74) rotate(${(run?a*.8:(kick?-30:10)).toFixed(1)})`);
+ $('#'+p+'armB').setAttribute('transform',`translate(-2 -74) rotate(${(run?-a*.8:(kick?40:-10)).toFixed(1)})`)}
+function introFrame(t){
+ const fx=t<1200?-120+410*(t/1200):290, bx=t<1250?-260+380*(t/1250):120;
+ $('#nsFront').setAttribute('transform',`translate(${fx.toFixed(1)} 362)`);
+ $('#nsBack').setAttribute('transform',`translate(${bx.toFixed(1)} 352) scale(.9)`);
+ setLimbs('f',t,true,1350);setLimbs('b',t,false,1250);
+ $('#speed').setAttribute('opacity',t<1300?'.85':'0');
+ $('#speed').setAttribute('transform',`translate(${(fx-200).toFixed(1)} 0)`);
+ let x=350,y=348,s=1;if(t>=1500){const k=Math.min(1,(t-1500)/650);x=350+580*k;y=348-260*k+120*k*k;s=1-0.4*k}
+ $('#ib').setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${s.toFixed(2)}) rotate(${(t*.8).toFixed(0)})`);
+ $('#rays').setAttribute('transform',`translate(560 190) rotate(${(t/60).toFixed(1)})`);
+ if(t>=1750){const k=Math.min(1,(t-1750)/300),sc=2.2-1.2*(1-Math.pow(1-k,3));$('#ttl').setAttribute('opacity','1');$('#ttl').setAttribute('transform',`translate(560 190) scale(${sc.toFixed(3)})`)}else $('#ttl').setAttribute('opacity','0');
+ $('#ishout').setAttribute('opacity',t>=1450&&t<3400?'1':'0');
+}
+function introPoster(){buildIntro();introFrame(1300);const t=$('#ttl');t.setAttribute('opacity','1');t.setAttribute('transform','translate(560 190) scale(1)');$('#ishout').setAttribute('opacity','0')}
+function introLoop(now){if(!introRunning)return;const t=now-introStart;introFrame(t);if(t>=1500&&!kicked){kicked=true;sfx.hit()}if(t>3800){endIntro();return}introRaf=requestAnimationFrame(introLoop)}
+function startIntro(){audioInit();unlockSpeech();$('#startBtn').style.display='none';introRunning=true;musicSync();if(reduced()){introFrame(3000);setTimeout(endIntro,1200);return}kicked=false;introStart=performance.now();introRaf=requestAnimationFrame(introLoop)}
+function endIntro(){if(!introRunning)return;cancelAnimationFrame(introRaf);introFrame(3000);introRunning=false;DB.introKick=(DB.introKick||0)+1;save();openPick()}
+$('#startBtn').addEventListener('click',e=>{e.stopPropagation();startIntro()});
+$('#intro').addEventListener('click',()=>{if(introRunning)endIntro()});
+
+// ==== Who's playing
+function mastered(k){const keep=KID;KID=k;const n=ALLW(k).filter(isMastered).length;KID=keep;return n}
+function openPick(){$('#pickNora').textContent=`${mastered('nora')} of ${ALLW('nora').length} words mastered`;$('#pickLucas').textContent=`${mastered('lucas')} of ${ALLW('lucas').length} words mastered`;show('pick')}
+document.querySelectorAll('.who').forEach(b=>b.addEventListener('click',()=>{audioInit();unlockSpeech();KID=b.dataset.kid;buildKidArt();openMenu()}));
+
+// ==== Menu
+function mStat(i){const w=BANK()[i].words;return {total:w.length,mastered:w.filter(isMastered).length,learning:w.filter(isLearning).length,due:w.filter(isDue).length,fresh:w.filter(isNew).length}}
+function starsHTML(n){let s='';for(let i=0;i<3;i++)s+=i<n?'★':'<span class="off">★</span>';return s}
+function openMenu(){
+ const k=KIDS[KID];buildKidArt();
+ $('#mtitle').textContent=`${k.name}’s Spelling Bees`;$('#msub').textContent=k.sub;
+ const g=$('#grid');g.innerHTML='';
+ BANK().forEach((m,i)=>{const st=mStat(i),stars=KD().stars[i]||0;let status;
+  if(st.mastered===st.total)status=`All ${st.total} mastered`;else if(st.due+st.fresh===0)status='Review words come back tomorrow';else status=st.due?`${st.due} to review, ${st.fresh} new`:`${st.fresh} new words`;
+  const b=document.createElement('button');b.className='mcard';b.dataset.m=i;
+  b.innerHTML=`<span class="t">${esc(m.n)}</span><span class="ex">${esc(pretty(m.ex))}</span><span class="stars">${starsHTML(stars)}</span><span class="bar"><i style="width:${st.mastered/st.total*100}%"></i></span><span class="st"><span>${st.mastered} of ${st.total} mastered</span><span>${status}</span></span>`;
+  b.addEventListener('click',()=>startMission(i));g.appendChild(b)});
+ const all=ALLW(KID),due=all.filter(isDue).length,learn=all.filter(isLearning).length;
+ $('#revT').textContent=due?`Review: ${due} word${due>1?'s':''} waiting`:'Review';
+ $('#revS').textContent=due?'Missed words come back until you score them twice.':(learn?`${learn} word${learn>1?'s':''} will be ready tomorrow.`:'Nothing to review yet. Missed words land here.');
+ $('#revBtn').style.display=due?'':'none';
+ drawBox();show('menu');
+}
+$('#revBtn').addEventListener('click',()=>startMission(-1));
+$('#switchBtn').addEventListener('click',openPick);
+function drawBox(){$('#boxBtn').textContent=KD().boxes?'Letter boxes: on':'Letter boxes: off'}
+$('#boxBtn').addEventListener('click',()=>{KD().boxes=!KD().boxes;save();drawBox()});
+
+// ==== Sound buttons
+const ICON_ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
+const ICON_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+function drawSnd(){$('#sndP').innerHTML=DB.sound?ICON_ON:ICON_OFF;$('#sndP').setAttribute('aria-label',DB.sound?'Music and sounds on':'Music and sounds off');$('#sndM').innerHTML=(DB.sound?ICON_ON:ICON_OFF).replace('<svg','<svg width="22" height="22"')+(DB.sound?' Music and sounds on':' Music and sounds off')}
+function toggleSnd(){audioInit();DB.sound=!DB.sound;save();applySound()}
+$('#sndM').addEventListener('click',toggleSnd);$('#sndP').addEventListener('click',toggleSnd);
+
+// ==== Play
+let G=null,play=0;
+function pickFrom(list,n){return shuffle(list.filter(isDue)).concat(shuffle(list.filter(isNew))).slice(0,n)}
+function buildQueue(mi){
+ if(mi<0)return shuffle(ALLW(KID).filter(isDue)).slice(0,KICKS);
+ const w=BANK()[mi].words;
+ if(KID!=='nora')return pickFrom(w,KICKS);
+ const hard=pickFrom(w.filter(x=>!x.easy),KICKS),easy=pickFrom(w.filter(x=>x.easy),KICKS);
+ let h=hard.slice(0,KICKS/2),e=easy.slice(0,KICKS/2);
+ if(h.length<KICKS/2)e=easy.slice(0,KICKS-h.length);
+ if(e.length<KICKS/2)h=hard.slice(0,KICKS-e.length);
+ const out=[],order=Math.random()<.5?[h,e]:[e,h];
+ while(h.length||e.length)order.forEach(a=>{if(a.length)out.push(a.shift())});
+ return out.slice(0,KICKS)}
+function startMission(mi){
+ audioInit();
+ const q=buildQueue(mi);
+ G={mi,queue:q.map(w=>({w,reb:false})),i:0,tries:0,score:0,max:0,slots:[],typed:'',busy:false,missed:[],rebounds:0,marks:[],stage:'pre',helped:false,hinted:false,hintMsg:''};
+ play++;
+ buildKidArt();show('play');resetScene();
+ $('#mname').textContent=mi<0?'Review':BANK()[mi].n;
+ $('#rotP').textContent=`The goal needs room, ${KIDS[KID].name}.`;
+ $('#revOv').classList.remove('on');
+ if(!q.length){const all=mi>=0&&mStat(mi).mastered===mStat(mi).total;$('#doneT').textContent=all?'All mastered!':'Nothing to kick right now';$('#doneP').textContent=all?`You’ve mastered every ${BANK()[mi].n} word. Try another pattern.`:'Your review words come back tomorrow. Try another pattern today.';G.stage='done';$('#doneOv').classList.add('on');$('#preOv').classList.remove('on');renderPanel();return}
+ $('#doneOv').classList.remove('on');
+ $('#preT').textContent=mi<0?'Review shootout':BANK()[mi].n;
+ $('#preR').textContent=mi<0?'These are words you missed before. Score each one twice to master it.':BANK()[mi].rule;
+ $('#preHow').textContent=(KD().boxes?'Listen, then fill the boxes and shoot. ':'Listen, type the word, then shoot. ')+'Tap 💡 for one free letter.'+(KIDS[KID].autoHint?' Miss once and you get a letter too.':'');
+ $('#preOv').classList.add('on');renderPanel();
+}
+$('#doneBtn').addEventListener('click',openMenu);
+$('#kickoff').addEventListener('click',startKicks);
+function startKicks(){if(!G||G.stage!=='pre')return;$('#preOv').classList.remove('on');G.stage='kick';loadWord()}
+function cur(){return G&&G.queue[G.i]}
+const boxes=()=>KD().boxes;
+function loadWord(){G.tries=0;G.typed='';G.helped=false;G.hinted=false;G.hintMsg='';G.busy=false;const c=cur();G.slots=c?[...c.w.w].map(()=>({ch:'',fix:false})):[];resetScene();renderPanel();if(c)sayWord(c.w,true)}
+function value(){return boxes()?G.slots.map(s=>s.ch).join(''):G.typed}
+function complete(){return boxes()?G.slots.every(s=>s.ch):G.typed.length>0}
+function renderPanel(){
+ if(!G)return;const c=cur();
+ const d=$('#dots');d.innerHTML='';G.queue.forEach((q,i)=>{const e=document.createElement('i');const m=G.marks[i];if(m)e.className=m;else if(i===G.i)e.className='c';d.appendChild(e)});
+ $('#score').textContent=G.score;
+ const live=G.stage==='kick';
+ $('#clue').innerHTML=c&&live?esc(pretty(blankOut(c.w.s,c.w.w)))+(G.hintMsg?` <em>${esc(G.hintMsg)}</em>`:''):'';
+ $('#helpBtn').textContent=G.helped?'💡 Letter used':'💡 Give me a letter';
+ const a=$('#answer');a.innerHTML='';
+ if(boxes()&&c){a.classList.add('boxes');const nowI=G.slots.findIndex(s=>!s.fix&&!s.ch);
+  G.slots.forEach((s,i)=>{const el=document.createElement('span');el.className='slot'+(s.fix?' fix':'')+(live&&!G.busy&&i===nowI?' now':'');el.textContent=pretty(s.ch);a.appendChild(el)})}
+ else{a.classList.remove('boxes');const sp=document.createElement('span');sp.textContent=pretty(G.typed);a.appendChild(sp);if(live&&!G.busy){const k=document.createElement('span');k.className='caret';a.appendChild(k)}}
+}
+function typeKey(ch){if(!G||G.stage!=='kick'||G.busy)return;
+ if(boxes()){if(ch==='back'){for(let i=G.slots.length-1;i>=0;i--){const s=G.slots[i];if(!s.fix&&s.ch){s.ch='';break}}}else{const i=G.slots.findIndex(s=>!s.fix&&!s.ch);if(i<0)return;G.slots[i].ch=ch}}
+ else{if(ch==='back')G.typed=G.typed.slice(0,-1);else if(G.typed.length<16)G.typed+=ch}
+ sfx.key();renderPanel()}
+function giveLetter(auto){
+ if(!G||G.stage!=='kick'||G.busy)return false;
+ if(!auto&&G.helped)return false;
+ const ans=cur().w.w;let p=-1;
+ if(boxes()){p=G.slots.findIndex((s,i)=>!s.fix&&norm(s.ch)!==norm(ans[i]));if(p<0)p=G.slots.findIndex(s=>!s.fix);if(p<0)return false;G.slots[p]={ch:ans[p],fix:true}}
+ else{const t=G.typed;p=0;while(p<ans.length&&p<t.length&&norm(t[p])===norm(ans[p]))p++;if(p>=ans.length)return false;G.typed=t.slice(0,p)+ans[p];G.hintMsg=`Letter ${p+1} is “${pretty(ans[p])}”.`}
+ if(!auto)G.helped=true;G.hinted=true;sfx.hint();renderPanel();return true}
+$('#helpBtn').addEventListener('click',()=>giveLetter(false));
+function clearTyped(){if(boxes())G.slots.forEach(s=>{if(!s.fix)s.ch=''});else G.typed=''}
+function submit(){
+ if(!G||G.stage!=='kick'||G.busy)return;
+ if(!complete()){const a=$('#answer');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake');return}
+ const c=cur(),ok=norm(value())===norm(c.w.w),myPlay=play;G.busy=true;renderPanel();
+ if(ok){const first=G.tries===0,pts=first?2:1;G.score+=pts;G.max+=2;const clean=first&&!G.hinted;record(c,clean);G.marks[G.i]=clean?'g':'h';
+  kickAnim(true,()=>{if(myPlay!==play)return;burst('GOAL!','+'+pts);sfx.goal();renderPanel();setTimeout(()=>{if(myPlay===play)nextKick()},650)})}
+ else{G.tries++;
+  if(G.tries<2){kickAnim(false,()=>{if(myPlay!==play)return;burst('SAVED!','Try again');sfx.save();setTimeout(()=>{if(myPlay!==play)return;clearTyped();G.busy=false;resetScene();if(KIDS[KID].autoHint)giveLetter(true);renderPanel();sayWord(c.w,false)},700)})}
+  else{G.max+=2;record(c,false);G.marks[G.i]='m';renderPanel();
+   kickAnim(false,()=>{if(myPlay!==play)return;burst('SAVED!','');sfx.save();setTimeout(()=>{if(myPlay===play)reveal(c)},500)})}}
+}
+// A word is retired only when scored on the first try with no letter given. Anything else comes back.
+function record(c,clean){
+ const id=c.w.id,s=ws(id),t=today(),W=KD().w;
+ if(clean){
+  if(s.s==='n')W[id]={s:'m',k:0,d:0};
+  else if(s.s==='l'){const k=s.k+1;W[id]=k>=2?{s:'m',k:0,d:0}:{s:'l',k,d:t+1}}
+ }else{
+  if(!G.missed.includes(c.w.w))G.missed.push(c.w.w);
+  const canReb=!c.reb&&G.rebounds<REBOUND_MAX;
+  W[id]={s:'l',k:0,d:canReb?t:t+1};
+  if(canReb){G.rebounds++;G.queue.push({w:c.w,reb:true})}
+ }
+ save();
+}
+function reveal(c){G.stage='reveal';$('#revW').textContent=pretty(c.w.w);$('#revWhy').textContent=pretty(c.w.n||BANK()[c.w.m].rule);$('#revOv').classList.add('on');say(`The word is ${c.w.w}. ${spellOut(c.w.w)}.`)}
+$('#revNext').addEventListener('click',()=>{if(!G||G.stage!=='reveal')return;$('#revOv').classList.remove('on');G.stage='kick';nextKick()});
+function nextKick(){G.i++;if(G.i>=G.queue.length){finish();return}renderPanel();loadWord()}
+$('#shoot').addEventListener('click',submit);
+$('#hearAll').addEventListener('click',()=>{const c=cur();if(c&&G.stage==='kick')sayWord(c.w,true)});
+$('#hearWord').addEventListener('click',()=>{const c=cur();if(c&&G.stage==='kick')sayWord(c.w,false)});
+$('#homeBtn').addEventListener('click',()=>{play++;try{speechSynthesis.cancel()}catch(e){}openMenu()});
+
+(function(){const rows=['qwertyuiop',"asdfghjkl'",'zxcvbnm'];const kb=$('#kb');
+ const mk=(label,ch,cls,aria)=>{const b=document.createElement('button');b.className='key'+(cls?' '+cls:'');b.textContent=label;b.setAttribute('aria-label',aria);b.addEventListener('pointerdown',e=>{e.preventDefault();typeKey(ch)});b.addEventListener('click',e=>{if(e.detail===0)typeKey(ch)});return b};
+ rows.forEach((r,ri)=>{const row=document.createElement('div');row.className='kr';
+  r.split('').forEach(ch=>row.appendChild(mk(ch==="'"?'’':ch,ch,'',ch==="'"?'apostrophe':ch)));
+  if(ri===2)row.appendChild(mk('⌫','back','wide','Delete'));
+  kb.appendChild(row)})})();
+document.addEventListener('keydown',e=>{
+ if($('#gate').classList.contains('on'))return;
+ if(CUR==='intro'&&introRunning){endIntro();return}
+ if(CUR!=='play'||!G)return;
+ if(G.stage==='pre'&&e.key==='Enter'){startKicks();return}
+ if(G.stage==='reveal'&&e.key==='Enter'){$('#revNext').click();return}
+ if(e.metaKey||e.ctrlKey||e.altKey)return;
+ const k=e.key;if(/^[a-zA-Z]$/.test(k)){typeKey(k.toLowerCase());e.preventDefault()}else if(k==="'"||k==='’'){typeKey("'");e.preventDefault()}else if(k==='Backspace'){typeKey('back');e.preventDefault()}else if(k==='Enter'){submit();e.preventDefault()}
+});
+
+// ==== Scene animation
+function tween(ms,fn,done){if(reduced())ms=Math.min(ms,120);const t0=performance.now();function f(now){const k=Math.min(1,(now-t0)/ms);fn(k);if(k<1)requestAnimationFrame(f);else done&&done()}requestAnimationFrame(f)}
+function resetScene(){$('#ball').setAttribute('transform','translate(420 362)');$('#keeper').setAttribute('transform','translate(400 232)');$('#kbody').setAttribute('transform','');$('#burst').setAttribute('opacity','0');$('#me').setAttribute('transform','translate(214 410) scale(1.12)')}
+function kickAnim(goal,done){
+ const side=Math.random()<.5?-1:1,tx=400+side*(70+Math.random()*60),ty=125+Math.random()*70;
+ const kdir=goal?-side:side;sfx.kick();
+ tween(140,k=>$('#me').setAttribute('transform',`translate(${214+14*k} ${410-6*Math.sin(k*Math.PI)}) scale(1.12)`));
+ tween(560,k=>{const e=1-Math.pow(1-k,2);let x=420+(tx-420)*e,y=362+(ty-362)*e-40*Math.sin(Math.PI*k),s=1-.4*e;
+   $('#ball').setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${s.toFixed(2)})`);
+   const kk=Math.min(1,k*1.4),reach=goal?110:Math.abs(tx-400)-20;
+   $('#keeper').setAttribute('transform',`translate(${(400+kdir*reach*kk).toFixed(1)} ${(232-30*Math.sin(Math.PI*kk)).toFixed(1)})`);
+   $('#kbody').setAttribute('transform',`rotate(${(kdir*62*kk).toFixed(1)} 0 -50)`)},
+  ()=>{if(!goal)$('#ball').setAttribute('transform',`translate(${(400+kdir*(Math.abs(tx-400)-10)).toFixed(1)} ${(ty+18).toFixed(1)}) scale(.62)`);done()});
+}
+function burst(a,b){$('#bt1').textContent=a;$('#bt1').setAttribute('fill',a==='GOAL!'?'#f5b301':'#ff6b6b');$('#bt2').textContent=b;const g=$('#burst');g.setAttribute('opacity','1');tween(260,k=>g.setAttribute('transform',`translate(400 160) scale(${(1.6-.6*k).toFixed(3)})`))}
+
+// ==== Finish, result, break
+function nextMissionIndex(from){const n=BANK().length;for(let j=1;j<=n;j++){const i=((from<0?-1:from)+j)%n;const st=mStat(i);if(st.due+st.fresh>0)return i}return -1}
+function finish(){
+ const k=KIDS[KID],pct=G.max?G.score/G.max:0,stars=pct>=.9?3:pct>=.7?2:1;
+ if(G.mi>=0)KD().stars[G.mi]=Math.max(KD().stars[G.mi]||0,stars);
+ const row=KD().row,now=Date.now();if(now-row.t>30*60*1000)row.n=0;row.n++;row.t=now;save();
+ G.stage='done';
+ if(row.n>=3){$('#brkP').textContent=`Three missions in a row, ${k.name}. Your brain grows while you rest.`;show('brk');return}
+ $('#resT').textContent=G.mi<0?'Review complete':`${BANK()[G.mi].n} complete`;
+ $('#resS').innerHTML=starsHTML(stars);
+ $('#resP').textContent=`${k.name} scored ${G.score} of ${G.max} points.`;
+ $('#resMiss').textContent=G.missed.length?`Coming back for practice: ${G.missed.map(pretty).join(', ')}.`:'Every word scored on the first try with no help!';
+ $('#resTip').textContent=G.mi<0?'Try it today: write your two hardest words on a sticky note and spell them out loud before bed.':BANK()[G.mi].tip;
+ const nx=nextMissionIndex(G.mi),nb=$('#nextBtn');
+ if(nx>=0){nb.style.display='';nb.textContent=`Next: ${BANK()[nx].n} ▶`;nb.onclick=()=>startMission(nx)}else nb.style.display='none';
+ show('result');
+}
+$('#menuBtn').addEventListener('click',openMenu);
+$('#finishBtn').addEventListener('click',()=>{KD().row={n:0,t:0};save();G=null;$('#startBtn').style.display='';introPoster();show('intro')});
+
+// ==== Parent gate and reset
+let gA=0;
+function newQ(){const a=100+Math.floor(Math.random()*900),b=10+Math.floor(Math.random()*90);gA=a*b;$('#gq').textContent=`What is ${a} × ${b}?`;$('#ga').value=''}
+$('#resetBtn').addEventListener('click',()=>{newQ();$('#gerr').textContent='';$('#g1').style.display='';$('#g2').style.display='none';$('#gNora').checked=false;$('#gLucas').checked=false;$('#gate').classList.add('on');setTimeout(()=>$('#ga').focus(),50)});
+$('#gok').addEventListener('click',()=>{const v=$('#ga').value.trim();if(!v){$('#gerr').textContent='Enter an answer first.';return}if(parseInt(v,10)===gA){$('#g1').style.display='none';$('#g2').style.display='';$('#gerr2').textContent=''}else{$('#gerr').textContent='Not quite. Here’s a new one.';newQ()}});
+$('#ga').addEventListener('input',()=>$('#gerr').textContent='');
+$('#ga').addEventListener('keydown',e=>{if(e.key==='Enter')$('#gok').click()});
+$('#gdo').addEventListener('click',()=>{const n=$('#gNora').checked,l=$('#gLucas').checked;if(!n&&!l){$('#gerr2').textContent='Tick a name first.';return}if(n)DB.kids.nora=kidFresh();if(l)DB.kids.lucas=kidFresh();save();$('#gate').classList.remove('on');openMenu()});
+['#gNora','#gLucas'].forEach(s=>$(s).addEventListener('change',()=>$('#gerr2').textContent=''));
+['#gx1','#gx2'].forEach(s=>$(s).addEventListener('click',()=>$('#gate').classList.remove('on')));
+
+// ==== Boot
+buildArt();buildKidArt();introPoster();drawSnd();
+
+// Expose for automated playtests. Harmless for players.
+window.__test={
+ state:()=>({screen:CUR,kid:KID,round:G?G.i+1:0,stage:G?G.stage:null,done:CUR==='result'||CUR==='brk',word:G&&cur()?cur().w.w:null,score:G?G.score:0,queue:G?G.queue.length:0,value:G?value():'',slots:G?G.slots.map(s=>(s.fix?'*':'')+s.ch):[]}),
+ solve:()=>{if(CUR==='play'&&G){if(G.stage==='pre')startKicks();if(G.stage==='reveal'){$('#revNext').click();return}if(G.stage==='kick'&&!G.busy){const a=cur().w.w;if(boxes())G.slots.forEach((s,i)=>{if(!s.fix)s.ch=a[i].toLowerCase()});else G.typed=a.toLowerCase();submit()}}else if(CUR==='result'){$('#nextBtn').click()}},
+ miss:()=>{if(CUR==='play'&&G&&G.stage==='kick'&&!G.busy){if(boxes())G.slots.forEach(s=>{if(!s.fix)s.ch='z'});else G.typed='zzzz';submit()}},
+ help:()=>giveLetter(false),
+ type:s=>[...s].forEach(typeKey),
+ kid:k=>{KID=k;buildKidArt()},
+ start:(k,mi)=>{KID=k;startMission(mi)},
+ shiftDay:n=>{dayShift+=n},
+ db:()=>JSON.parse(JSON.stringify(DB)),
+ bank:k=>KIDS[k].bank.map(m=>m.words.map(w=>({w:w.w,easy:w.easy,blank:blankOut(w.s,w.w)})))
+};
+
+</script>
+</body>
+</html>
