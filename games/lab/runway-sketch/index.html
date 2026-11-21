@@ -62,6 +62,9 @@ body[data-pref="land"] .rot.l{display:none}
 .theme .h{font-size:.85rem;color:var(--muted);margin-top:4px}
 .side .btn{width:100%}
 .btn.pink{background:#d6336c}
+#ready{display:none;position:fixed;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:15;font-size:1.15rem;box-shadow:0 4px 0 var(--ink),0 6px 18px rgba(0,0,0,.25)}
+@media (max-width:600px),(max-height:450px){#ready{display:block}#walk{display:none}.items{padding-bottom:70px}}
+.tab.need{animation:need .5s 4;border-color:#d6336c;background:#ffe3ec;color:#a61e4d}@keyframes need{50%{transform:scale(1.12)}}
 .small{font-size:.85rem;color:var(--muted);text-align:center}
 .runway{position:absolute;inset:0;z-index:20;background:#2b2140;border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
 .cat{position:relative;flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:linear-gradient(#2b2140 0 45%,#3d2f5c 45%)}
@@ -85,12 +88,13 @@ body[data-pref="land"] .rot.l{display:none}
 </style></head><body data-pref="any">
 <div class="app">
   <div class="top"><a href="../../#tester" aria-label="Back to arcade">←</a><div class="ttl">👗 Runway Sketchbook<span class="tag">sample</span></div><span class="pill" id="timer">⏱ 2:00</span><button class="ico" id="snd" aria-label="Sound">🔊</button></div>
-  <div class="main" id="main"><div class="studio">
+  <div class="main" id="main"><button class="btn pink" id="ready">✨ I’m ready!</button>
+<div class="studio">
  <div class="panel closet"><div class="tabs" id="tabs"></div><div class="items" id="items"></div>
   <div class="paint"><div class="lab" id="paintLab"></div><div class="sw" id="sw"></div><div class="pats" id="pats"></div></div></div>
  <div class="stage" id="stage"><span class="badge">Nora</span><div id="fig" style="height:100%;display:flex;align-items:center;justify-content:center"></div></div>
  <div class="panel side"><div class="theme"><div class="k">TODAY’S THEME</div><div class="t" id="thEn"></div><div class="zh" id="thZh"></div><div class="h" id="thHint"></div></div>
-  <button class="btn pink" id="walk">✨ Walk the runway</button><button class="btn ghost" id="newTheme">🎲 New theme</button><button class="btn ghost" id="tmBtn">⏱ Timer on</button><div class="small">Tap clothes to try them on. Pick a color or pattern for the last thing you tapped.</div></div>
+  <button class="btn pink" id="walk">✨ I’m ready! Walk the runway</button><button class="btn ghost" id="newTheme">🎲 New theme</button><button class="btn ghost" id="tmBtn">⏱ Timer on</button><div class="small">Tap clothes to try them on. Pick a color or pattern for the last thing you tapped.</div></div>
 </div></div>
 </div>
 <div class="toast hide" id="toast"></div>
@@ -224,8 +228,8 @@ function renderItems(){const box=$('items');box.innerHTML='';CAT[tab].items.forE
   b.onclick=()=>wear(tab,it);box.appendChild(b);});renderPaint();}
 function wear(cat,it){audio();
   if(cat==='acc'){const i=look.acc.indexOf(it.id);if(i>=0)look.acc.splice(i,1);else look.acc.push(it.id);sel='acc:'+it.id;}
-  else if(cat==='dress'){look.dress=look.dress===it.id?null:it.id;if(look.dress){look.top=null;look.bottom=null;}sel='dress';}
-  else if(cat==='top'||cat==='bottom'){look[cat]=look[cat]===it.id?null:it.id;if(look[cat])look.dress=null;sel=cat;}
+  else if(cat==='dress'){const off=look.dress===it.id;look.dress=off?null:it.id;if(look.dress){look.top=null;look.bottom=null;}sel='dress';if(off)toast('Took off the '+it.en.toLowerCase()+'. Pick a dress, or a top and a bottom.',2200);}
+  else if(cat==='top'||cat==='bottom'){const off=look[cat]===it.id;look[cat]=off?null:it.id;if(look[cat])look.dress=null;sel=cat;if(off)toast('Took off the '+it.en.toLowerCase()+'. Tap it again to put it back.',1800);}
   else{look[cat]=it.id;sel=cat;}
   tone(700+Math.random()*300,.06,'triangle',.08);renderFig();renderItems();}
 function selItem(){if(sel.startsWith('acc:')){const id=sel.slice(4);return look.acc.includes(id)?['acc',find('acc',id)]:null;}
@@ -262,8 +266,8 @@ function judge(){const W=worn(),clothes=W.filter(([c])=>c!=='hair');
   const r3=s3>=4?'So creative! Your own patterns and colors make it special.':pats?'Nice pattern! Add an extra or two for more sparkle.':'Try a pattern or a new color to make it yours!';
   return [['👩🏻‍🦰','Ms. Aria','Theme',s1,r1],['👩🏽','Ms. Coco','Colors',s2,r2],['👩🏼‍🦱','Ms. Lily','Creativity',s3,r3]];}
 function runway(){if(running)return;audio();
-  if(!(look.dress||(look.top&&look.bottom))){toast('👗 She needs a top and a bottom, or a dress!');return;}
-  if(!look.shoes){toast('👟 Don’t forget shoes!');return;}
+  const need=!look.dress&&!look.top&&!look.bottom?['top','👗 Pick a dress, or a top and a bottom!']:!look.dress&&!look.top?['top','👚 She needs a top! (Or pick a dress.)']:!look.dress&&!look.bottom?['bottom','👖 She needs a bottom! (Or pick a dress.)']:!look.shoes?['shoes','👟 Don’t forget shoes!']:null;
+  if(need){sfx.boing();toast(need[1],2600);say(need[1].replace(/[^\w\s!.,’'()]/g,''));tab=need[0];renderTabs();renderItems();const t=[...document.querySelectorAll('.tab')].find(b=>b.textContent===CAT[need[0]].en);if(t){t.classList.add('need');t.scrollIntoView({block:'center',behavior:'smooth'});}return;}
   running=true;const J=judge();const R=document.createElement('div');R.className='runway';
   R.innerHTML='<div class="cat"><div class="strip"></div><div class="model" id="model">'+figureSVG()+'</div></div><div class="judges" id="jd"></div><div class="total" id="tot"></div>';
   $('main').appendChild(R);say('Walking the runway for '+theme.en+'!');
@@ -278,7 +282,7 @@ function runway(){if(running)return;audio();
     const t=base+fam,title=t>=18?'👑 Runway Superstar!':t>=14?'🌟 Fashion Star!':t>=10?'✨ Stylish!':'💡 Keep designing!';sfx.win();if(t>=14)confetti();
     $('tot').innerHTML=title+' &nbsp;'+t+' / 20 ⭐<div style="display:flex;gap:8px;justify-content:center;margin-top:6px;flex-wrap:wrap"><button class="btn" id="again">New theme ▶</button><button class="btn ghost" id="keep">Keep styling</button></div>';
     $('again').onclick=()=>{R.remove();running=false;fresh();newTheme();renderFig();renderItems();};$('keep').onclick=()=>{R.remove();running=false;timeLeft=Math.max(timeLeft,60);showTime();};});}
-$('walk').onclick=runway;
+$('walk').onclick=runway;$('ready').onclick=runway;
 fresh();renderTabs();renderItems();renderFig();newTheme();
 window.__test={state:()=>({look:JSON.parse(JSON.stringify(look)),theme:theme.id,running:running}),judge:()=>judge().map(x=>[x[2],x[3],x[4]]),runway:runway,wear:(c,id)=>wear(c,find(c,id)),tab:t=>{tab=t;renderTabs();renderItems();}};
 
