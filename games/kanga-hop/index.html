@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kanga Hop – Kangaroo-style Math Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff3d1;--card:#fffaf0;--ink:#2b2340;--soft:#6b6180;--green:#2f7d5b;--gold:#f2b138;--plum:#5b3e8f;--bad:#c2410c;--line:#e6d6a8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f1836;--card:#2b2248;--ink:#f7efd9;--soft:#b9aed3;--green:#5fcf9b;--gold:#f6c25b;--plum:#b79cf0;--bad:#ff9a62;--line:#473a72;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1f1836;--card:#2b2248;--ink:#f7efd9;--soft:#b9aed3;--green:#5fcf9b;--gold:#f6c25b;--plum:#b79cf0;--bad:#ff9a62;--line:#473a72;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;font-size:18px;line-height:1.4;min-height:100vh}
+main{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+main.young{font-size:21px}
+h1{font-size:2.4rem;margin:8px 0 4px;color:var(--plum)}
+h2{font-size:1.4rem;margin:0 0 12px}
+p{margin:0 0 12px}
+.sub{color:var(--soft)}
+.card{background:var(--card);border:3px solid var(--line);border-radius:22px;padding:18px}
+button{font:inherit;cursor:pointer;color:var(--ink)}
+button:focus-visible{outline:4px solid var(--plum);outline-offset:2px}
+.lvl{display:block;width:100%;text-align:left;background:var(--card);border:3px solid var(--line);border-radius:18px;padding:14px 16px;margin:0 0 12px}
+.lvl:hover{border-color:var(--green)}
+.lvl b{font-size:1.25rem}
+.lvl span{display:block;color:var(--soft);font-size:.95rem}
+.go{background:var(--green);color:#fff;border:0;border-radius:16px;padding:12px 22px;font-weight:700;font-size:1.1rem}
+:root:not([data-theme="light"]) .go{color:#10261c}
+.track{display:flex;align-items:flex-end;justify-content:space-between;margin:6px 0 16px;height:64px;border-bottom:6px dotted var(--gold)}
+.stone{width:14%;text-align:center;font-size:1.7rem;min-height:44px;line-height:44px}
+.stone.here{transform:translateY(-6px);transition:transform .25s}
+.stone.done{opacity:.45}
+.bar{display:flex;justify-content:space-between;align-items:center;color:var(--soft);font-weight:600;margin-bottom:6px}
+.q{font-size:1.25rem;font-weight:600;margin-bottom:14px}
+.vis{text-align:center;margin:0 0 14px}
+.art{font-size:2rem;letter-spacing:4px;margin:0 0 12px;word-break:break-word}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--bg);border:3px solid var(--line);border-radius:16px;padding:10px 14px;margin:0 0 10px;font-size:1.15rem}
+.opt i{font-style:normal;font-weight:700;background:var(--gold);color:#2b2340;border-radius:10px;min-width:34px;height:34px;display:grid;place-items:center}
+.opt:hover:not(:disabled){border-color:var(--plum)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--green);background:color-mix(in srgb,var(--green) 22%,var(--card))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 20%,var(--card))}
+.why{margin-top:14px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--gold) 25%,var(--card))}
+.big{font-size:4rem;text-align:center;margin:4px 0}
+.score{font-size:2.6rem;font-weight:700;text-align:center;color:var(--plum)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.ghost{background:transparent;border:3px solid var(--line);border-radius:14px;padding:6px 14px;font-weight:600;font-size:.95rem}
+@media (prefers-reduced-motion:reduce){.stone.here{transition:none}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+var G=[
+{name:"Little Joey",k:0,grade:"Grade 1",icon:"🐣",young:1,pool:[
+{p:3,q:"3 kangaroos stand in a row. How many ears do they have in all?",o:["3","5","6","8","9"],a:2,e:"Each kangaroo has 2 ears. 2 + 2 + 2 = 6."},
+{p:3,q:"Which number is the biggest?",o:["19","91","9","29","12"],a:1,e:"91 has 9 tens, more than any of the others. So 91 is the biggest."},
+{p:3,q:"Joey has 2 stars and wants 9. How many more stars does Joey need?",o:["5","6","7","8","11"],a:2,e:"2 + 7 = 9, so Joey needs 7 more."},
+{p:3,q:"How many red triangles can you count?",art:"🔺🔵🔺🔺🔵",o:["2","3","4","5","6"],a:1,e:"Skip the blue circles and count only the 🔺: 1, 2, 3."},
+{p:3,q:"Today is Tuesday. What day will it be in 3 days?",o:["Wednesday","Thursday","Friday","Saturday","Sunday"],a:2,e:"1 day later is Wednesday, 2 days later is Thursday, 3 days later is Friday."},
+{p:4,q:"Joey has 5 stars. Joey finds 3 more and then gives 2 to a friend. How many stars does Joey have now?",o:["4","5","6","7","8"],a:2,e:"5 + 3 = 8, then 8 − 2 = 6."},
+{p:4,q:"A frog starts on number 3. It hops 4 steps forward, then 2 steps back. Which number is the frog on?",o:["3","4","5","6","7"],a:2,e:"3 + 4 = 7, then 7 − 2 = 5."},
+{p:4,q:"10 sweets are shared equally between 2 kangaroos. How many sweets does each one get?",o:["2","4","5","6","8"],a:2,e:"5 + 5 = 10, so each gets 5."},
+{p:5,q:"How many legs do 2 koalas and 1 bird have together? (A koala has 4 legs, a bird has 2.)",o:["6","8","9","10","12"],a:3,e:"Koalas: 4 + 4 = 8 legs. Bird: 2 legs. 8 + 2 = 10."},
+{p:5,q:"What comes next in the pattern?",art:"🍎🍌🍌🍎🍌🍌🍎🍌 ?",o:["🍎","🍌","🍇","🍓","🍊"],a:1,e:"The pattern is 🍎🍌🍌 again and again. After 🍎🍌 comes one more 🍌."},
+{p:3,q:"Which number comes right after 49?",o:["40","48","50","51","59"],a:2,e:"Counting up: 48, 49, 50. After 49 comes 50."},
+{p:3,q:"Which shape has 4 sides that are all the same length?",o:["Triangle","Square","Circle","Half-moon","Heart"],a:1,e:"A square has 4 equal sides. A triangle has only 3 sides, and a circle has no straight sides."},
+{p:3,q:"Joey has 8 apples and eats 3. How many apples are left?",o:["3","4","5","6","11"],a:2,e:"Eating means taking away: 8 − 3 = 5."},
+{p:4,q:"What is 9 + 5 − 3?",o:["7","8","10","11","17"],a:3,e:"Go step by step: 9 + 5 = 14, then 14 − 3 = 11."},
+{p:4,q:"9 birds sit in a tree. 4 fly away and then 2 fly back. How many birds are in the tree now?",o:["3","5","6","7","15"],a:3,e:"9 − 4 = 5 birds are left, then 5 + 2 = 7."},
+{p:4,q:"Count by 2s: 4, 6, 8, ?, 12. Which number is missing?",o:["9","10","11","14","16"],a:1,e:"Each number is 2 more than the one before. 8 + 2 = 10, and 10 + 2 = 12."},
+{p:4,q:"Max is older than Lily. Lily is older than Sam. Who is the youngest?",o:["Max","Lily","Sam","Max and Lily","Can’t tell"],a:2,e:"From oldest to youngest: Max, Lily, Sam. Sam is the youngest."},
+{p:5,q:"A snail starts at 0. It goes forward 3 steps, back 1, forward 3, back 1, then forward 3. Which number is the snail on?",o:["5","6","7","8","9"],a:2,e:"3 − 1 + 3 − 1 + 3. Step by step: 3, 2, 5, 4, 7. The snail ends on 7."},
+{p:5,q:"I am a number. I am more than 12 and less than 15, and I am even. Which number am I?",o:["11","12","13","14","15"],a:3,e:"Only 13 and 14 are between 12 and 15. 13 is odd and 14 is even, so I am 14."},
+{p:3,q:"How many fingers are on 2 hands?",o:["5","8","10","12","20"],a:2,e:"Each hand has 5 fingers. 5 + 5 = 10."},
+{p:3,q:"Which number is the smallest?",o:["31","13","23","32","21"],a:1,e:"13 has only 1 ten. All the others have 2 or 3 tens, so 13 is the smallest."},
+{p:3,q:"What is 9 + 4?",o:["10","11","12","13","14"],a:3,e:"9 + 1 = 10, and 3 more makes 13."},
+{p:3,q:"How many corners does a square have?",o:["3","4","5","6","8"],a:1,e:"A square has 4 corners and 4 sides."},
+{p:3,q:"What is 15 − 6?",o:["6","7","8","9","10"],a:3,e:"15 − 5 = 10, then 1 more less makes 9."},
+{p:3,q:"Which of these is an even number?",o:["7","11","13","15","18"],a:4,e:"An even number can be shared into 2 equal groups. 18 = 9 + 9."},
+{p:3,q:"How many tens are in the number 50?",o:["1","5","10","15","50"],a:1,e:"10 + 10 + 10 + 10 + 10 = 50, so there are 5 tens."},
+{p:3,q:"Mia has 4 red balloons and 5 blue balloons. How many balloons does she have?",o:["8","9","10","11","20"],a:1,e:"4 + 5 = 9."},
+{p:3,q:"How many animals are there in all?",art:"🦘🦘🦘🐨🐨",o:["3","4","5","6","7"],a:2,e:"3 kangaroos and 2 koalas. 3 + 2 = 5."},
+{p:3,q:"What number is 10 more than 25?",o:["26","30","35","45","125"],a:2,e:"Adding 10 changes the tens digit by one: 25 becomes 35."},
+{p:3,q:"Which number is one less than 30?",o:["28","29","30","31","32"],a:1,e:"Counting down from 30: 29. So 29 is one less."},
+{p:3,q:"What is half of 10?",o:["2","4","5","8","20"],a:2,e:"Half means 2 equal parts. 5 + 5 = 10."},
+{p:4,q:"There are 3 plates with 2 cookies on each plate. How many cookies are there in all?",o:["5","6","8","9","32"],a:1,e:"2 + 2 + 2 = 6."},
+{p:4,q:"Sam has 12 stickers. He gives 5 to Tom and 2 to Ana. How many stickers does Sam have left?",o:["3","4","5","7","9"],a:2,e:"He gives away 5 + 2 = 7 stickers. 12 − 7 = 5."},
+{p:4,q:"Which number is missing? 5, 10, 15, ?, 25",o:["16","18","19","20","30"],a:3,e:"The numbers go up by 5 each time. 15 + 5 = 20."},
+{p:4,q:"A ladybug has 6 legs. How many legs do 3 ladybugs have?",o:["9","12","15","18","24"],a:3,e:"6 + 6 + 6 = 18."},
+{p:4,q:"Lily is 7 years old. Her brother is 3 years older. How old is her brother?",o:["4","9","10","11","21"],a:2,e:"Older means add: 7 + 3 = 10."},
+{p:4,q:"I think of a number. If I take away 4 from it, I get 6. What is my number?",o:["2","6","8","10","12"],a:3,e:"Work backwards: 6 + 4 = 10. Check: 10 − 4 = 6."},
+{p:4,q:"How many days are there in 2 weeks?",o:["7","10","12","14","21"],a:3,e:"1 week has 7 days. 7 + 7 = 14."},
+{p:4,q:"A kangaroo hops 3 metres, then 3 metres, then 3 metres. How many metres did it hop in all?",o:["6","9","12","27","33"],a:1,e:"3 + 3 + 3 = 9."},
+{p:4,q:"Which of these numbers is between 38 and 42?",o:["36","37","38","40","43"],a:3,e:"The numbers between 38 and 42 are 39, 40 and 41. Only 40 is in the list."},
+{p:4,q:"Emma has 3 coins. Each coin is worth 10 cents. How many cents does she have?",o:["13","20","30","33","310"],a:2,e:"10 + 10 + 10 = 30 cents."},
+{p:4,q:"A chocolate bar has 3 rows with 4 squares in each row. How many squares are there?",o:["7","9","10","12","14"],a:3,e:"4 + 4 + 4 = 12."},
+{p:4,q:"A clock has its short hand on the 3 and its long hand on the 12. What time is it?",o:["12:03","3:00","3:12","12:30","6:00"],a:1,e:"The short hand shows the hour (3) and the long hand on 12 means o’clock. It is 3:00."},
+{p:4,q:"There are 14 children in a class. 6 of them are boys. How many are girls?",o:["5","6","7","8","20"],a:3,e:"14 − 6 = 8."},
+{p:5,q:"Kanga has 10 carrots. She eats 2 carrots each day. After how many days will she have 4 carrots left?",o:["2","3","4","5","6"],a:1,e:"She must eat 10 − 4 = 6 carrots. 2 + 2 + 2 = 6, so it takes 3 days."},
+{p:5,q:"Ben has 3 more marbles than Zoe. Together they have 11 marbles. How many marbles does Zoe have?",o:["3","4","5","7","8"],a:1,e:"Try Zoe = 4: Ben has 7, and 4 + 7 = 11. ✓"},
+{p:5,q:"Leo has 3 coins worth 5 cents each and 2 coins worth 10 cents each. How many cents does he have in all?",o:["25","30","35","40","50"],a:2,e:"3 × 5 = 15 cents and 2 × 10 = 20 cents. 15 + 20 = 35."},
+{p:5,q:"Which number is missing? 2, 3, 5, 8, 12, ?",o:["14","15","16","17","18"],a:3,e:"The jumps get bigger each time: +1, +2, +3, +4, so next is +5. 12 + 5 = 17."},
+{p:5,q:"A frog is on step 10 of a ladder. It jumps down 3 steps, then up 2 steps, then down 4 steps. Which step is it on?",o:["2","3","4","5","6"],a:3,e:"10 − 3 = 7, then 7 + 2 = 9, then 9 − 4 = 5."},
+{p:5,q:"Which of these gives the biggest answer?",o:["3 + 9","6 + 5","4 + 7","10 + 1","8 + 5"],a:4,e:"They equal 12, 11, 11, 11 and 13. The biggest is 8 + 5 = 13."},
+{p:3,q:"How many circles are there?",svg:V(200,90,[40,100,160].map(function(x){return Ci(x,25,16,'var(--gold)')+Ci(x,65,16,'var(--gold)')}).join('')),o:["4","5","6","7","8"],a:2,e:"There are 2 rows of 3 circles. 3 + 3 = 6."},
+{p:3,q:"How many squares are green?",svg:V(200,100,Gd(2,4,40,20,10,function(i){return [0,3,6].indexOf(i)>=0?'var(--green)':''})),o:["2","3","4","5","8"],a:1,e:"Count only the green squares: 1, 2, 3."},
+{p:4,q:"How many sides does this shape have?",svg:V(160,130,Po('80,10 132,48 112,112 48,112 28,48','var(--gold)')),o:["4","5","6","7","8"],a:1,e:"Count the straight sides all the way around: 1, 2, 3, 4, 5. It is a pentagon."},
+{p:4,q:"The frog is on number 4. It jumps 3 steps forward. Which number does it land on?",svg:NL(0,10,4),o:["6","7","8","9","10"],a:1,e:"Start at 4 and count 3 jumps: 5, 6, 7. The frog lands on 7."},
+{p:5,q:"The picture shows how many fruits Mia has. How many fruits does she have in all?",svg:Br([7,4,5],['🍎','🍐','🍌'],14),o:["12","14","15","16","17"],a:3,e:"7 apples + 4 pears + 5 bananas. 7 + 4 = 11, and 11 + 5 = 16."}]},
+{name:"Wallaby",k:"g2",grade:"Grade 2",icon:"🌿",pool:[
+{p:3,q:"The dots are in rows. How many dots are there in all?",svg:V(200,100,[0,1,2].map(function(r){return [0,1,2,3].map(function(c){return Ci(35+c*43,20+r*30,11,'var(--green)')}).join('')}).join('')),o:["7","10","12","14","16"],a:2,e:"3 rows of 4 dots. 4 + 4 + 4 = 12."},
+{p:3,q:"The graph shows the favourite pets in a class. How many children chose a cat or a fish?",svg:Br([6,4,2],['Dogs','Cats','Fish'],18),o:["4","5","6","8","12"],a:2,e:"Cats 4 and fish 2. 4 + 2 = 6."},
+{p:4,q:"What time does the clock show?",svg:Ck(3,30),o:["3:06","3:30","6:15","6:30","3:15"],a:1,e:"The short hand is just past the 3 and the long hand points to the 6, which means 30 minutes. It is half past 3: 3:30."},
+{p:4,q:"The rows of squares follow a pattern. How many squares will the 4th row have?",svg:(function(){var o='';[1,3,5].forEach(function(n,r){for(var k=0;k<n;k++)o+=R(100+(k-(n-1)/2)*26-11,10+r*30,22,22,'var(--gold)')});return V(200,100,o)})(),o:["6","7","8","9","10"],a:1,e:"The rows have 1, 3, 5 squares. Each row has 2 more than the one before, so the 4th row has 7."},
+{p:5,q:"How many more yellow squares than green squares are there?",svg:V(190,140,Gd(4,5,30,20,10,function(i){return [0,1,2,5,6,10,11,15,16].indexOf(i)>=0?'var(--gold)':([3,4,8,9,13,14].indexOf(i)>=0?'var(--green)':'')})),o:["2","3","4","5","15"],a:1,e:"There are 9 yellow squares and 6 green squares. 9 − 6 = 3."},
+{p:3,q:"What is 36 + 27?",o:["53","61","62","63","73"],a:3,e:"36 + 20 = 56, then 56 + 7 = 63."},
+{p:3,q:"What is 80 − 35?",o:["35","45","55","65","115"],a:1,e:"80 − 30 = 50, then 50 − 5 = 45."},
+{p:3,q:"How many cents are in 3 dimes and 2 nickels? (A dime is 10 cents, a nickel is 5 cents.)",o:["30","32","35","40","50"],a:3,e:"3 dimes = 30 cents and 2 nickels = 10 cents. 30 + 10 = 40."},
+{p:3,q:"Which of these numbers is odd?",o:["14","28","36","41","60"],a:3,e:"Odd numbers end in 1, 3, 5, 7 or 9. 41 is odd."},
+{p:3,q:"What number is 100 less than 450?",o:["250","340","350","360","550"],a:2,e:"Taking away 100 lowers the hundreds digit by one: 450 becomes 350."},
+{p:3,q:"How many sides do 3 triangles have altogether?",o:["6","8","9","10","12"],a:2,e:"A triangle has 3 sides. 3 + 3 + 3 = 9."},
+{p:3,q:"Count by 10s: 24, 34, 44, ?, 64. Which number is missing?",o:["45","50","54","55","74"],a:2,e:"Each number is 10 more than the last. 44 + 10 = 54."},
+{p:3,q:"How many hours is it from 9 in the morning to 3 in the afternoon?",o:["3","5","6","7","12"],a:2,e:"9 to 12 is 3 hours, and 12 to 3 is 3 more hours. 3 + 3 = 6."},
+{p:4,q:"A bag has 5 red marbles and 8 blue marbles. Mia takes out 6 marbles. How many marbles are left in the bag?",o:["5","6","7","13","19"],a:2,e:"5 + 8 = 13 marbles, then 13 − 6 = 7."},
+{p:4,q:"There are 4 boxes with 6 pencils in each box. How many pencils are there in all?",o:["10","20","24","28","46"],a:2,e:"6 + 6 + 6 + 6 = 24."},
+{p:4,q:"Ben had 50 cents and bought a sticker for 35 cents. How much money does he have left?",o:["5","10","15","25","85"],a:2,e:"50 − 35 = 15 cents."},
+{p:4,q:"I think of a number. If I double it I get 18. What is my number?",o:["6","8","9","16","36"],a:2,e:"Double means 2 equal parts. 9 + 9 = 18, so my number is 9."},
+{p:4,q:"A movie starts at 2:15 and lasts 1 hour. When does it end?",o:["2:16","3:00","3:15","3:30","4:15"],a:2,e:"1 hour later than 2:15 is 3:15."},
+{p:4,q:"Kanga hops 24 times in the morning and 19 times in the afternoon. How many hops is that in all?",o:["33","41","43","45","53"],a:2,e:"24 + 19: 24 + 20 = 44, minus 1 = 43."},
+{p:4,q:"How many 2-digit numbers have a 3 in the tens place and are smaller than 36?",o:["3","5","6","7","36"],a:2,e:"They are 30, 31, 32, 33, 34 and 35. That is 6 numbers."},
+{p:4,q:"There are 12 apples. Each child gets 3 apples. How many children get apples?",o:["3","4","5","9","15"],a:1,e:"3 + 3 + 3 + 3 = 12, so 4 children."},
+{p:5,q:"Zoe is 3 years older than Ben. Ben is 5 years older than Cleo. Cleo is 4 years old. How old is Zoe?",o:["7","9","11","12","13"],a:3,e:"Ben is 4 + 5 = 9. Zoe is 9 + 3 = 12."},
+{p:5,q:"How many 2-digit numbers have digits that add up to 5?",o:["3","4","5","6","9"],a:2,e:"14, 23, 32, 41 and 50. That is 5 numbers."},
+{p:5,q:"A snail climbs 3 cm up a wall each day and slides 1 cm down each night. The wall is 7 cm tall. After how many days does it first reach the top?",o:["2","3","4","5","7"],a:1,e:"Day 1: up to 3, night: 2. Day 2: up to 5, night: 4. Day 3: up to 7. It reaches the top on day 3."},
+{p:5,q:"Ann has 17 stickers. Ben has 5 fewer than Ann. Cleo has 4 more than Ben. How many stickers does Cleo have?",o:["12","13","16","17","21"],a:2,e:"Ben has 17 − 5 = 12. Cleo has 12 + 4 = 16."}]},
+{name:"Wombat",k:"g3",grade:"Grade 3",icon:"🐨",pool:[
+{p:3,q:"What fraction of the rectangle is shaded?",svg:V(200,100,Gd(2,4,40,20,10,function(i){return i<3?'var(--gold)':''})),o:["1/3","3/5","3/8","5/8","3/4"],a:2,e:"The rectangle has 8 equal parts and 3 of them are shaded. That is 3/8."},
+{p:3,q:"The graph shows how many books each child read. How many books did they read in all?",svg:Br([5,8,3,6],['Ann','Ben','Cy','Di'],14),o:["20","21","22","23","24"],a:2,e:"5 + 8 + 3 + 6: 5 + 8 = 13, 13 + 3 = 16, 16 + 6 = 22."},
+{p:4,q:"What time does the clock show?",svg:Ck(8,45),o:["8:09","8:15","8:45","9:15","9:45"],a:2,e:"The long hand points to the 9, which is 45 minutes. The short hand is almost at the 9. So it is 8:45."},
+{p:4,q:"What is the perimeter of this rectangle?",svg:V(270,110,R(20,24,180,70,'var(--gold)')+Tx(110,16,'9 cm',16)+Tx(236,64,'4 cm',16)),o:["13 cm","18 cm","26 cm","36 cm","72 cm"],a:2,e:"Opposite sides are equal: 9 + 4 + 9 + 4 = 26 cm."},
+{p:5,q:"How many squares of any size can you find in this picture?",svg:V(190,120,Gd(2,3,50,20,10,function(){return ''})),o:["6","7","8","9","10"],a:2,e:"There are 6 small squares. There are also 2 bigger squares made of 4 small squares each. 6 + 2 = 8."},
+{p:3,q:"What is 6 × 7?",o:["36","40","42","48","49"],a:2,e:"6 × 7 = 42. (6 × 6 = 36, plus 6 more.)"},
+{p:3,q:"What is 256 + 138?",o:["384","394","404","494","3818"],a:1,e:"256 + 100 = 356, then + 30 = 386, then + 8 = 394."},
+{p:3,q:"What is 400 − 168?",o:["232","242","268","332","568"],a:0,e:"168 + 232 = 400, so 400 − 168 = 232."},
+{p:3,q:"What is 56 ÷ 7?",o:["6","7","8","9","49"],a:2,e:"7 × 8 = 56, so 56 ÷ 7 = 8."},
+{p:3,q:"What is half of 86?",o:["33","42","43","44","53"],a:2,e:"Half of 80 is 40 and half of 6 is 3. 40 + 3 = 43."},
+{p:3,q:"How many quarters (25-cent coins) make $2?",o:["4","5","8","10","20"],a:2,e:"4 quarters make $1, so $2 is 4 + 4 = 8 quarters."},
+{p:3,q:"What is 647 rounded to the nearest ten?",o:["600","640","650","700","647"],a:2,e:"The ones digit is 7, so round up: 650."},
+{p:3,q:"A pizza is cut into 8 equal slices. Tom eats 3 slices. What fraction of the pizza is left?",o:["3/8","3/5","5/8","5/3","1/8"],a:2,e:"8 − 3 = 5 slices are left out of 8. That is 5/8."},
+{p:4,q:"There are 8 rows of chairs with 9 chairs in each row. How many chairs are there?",o:["17","63","72","81","89"],a:2,e:"8 × 9 = 72."},
+{p:4,q:"Mia reads 15 pages every day. How many pages does she read in one week?",o:["95","100","105","112","150"],a:2,e:"A week has 7 days. 7 × 15 = 70 + 35 = 105."},
+{p:4,q:"A rope is 3 metres long. How many centimetres is that?",o:["30","33","103","300","3000"],a:3,e:"1 metre = 100 cm, so 3 metres = 300 cm."},
+{p:4,q:"I think of a number, multiply it by 4 and then subtract 3. The result is 25. What is my number?",o:["5","6","7","8","28"],a:2,e:"Work backwards: 25 + 3 = 28, then 28 ÷ 4 = 7."},
+{p:4,q:"A film starts at 6:50 pm and ends at 8:25 pm. How long is the film?",o:["1 h 25 min","1 h 35 min","1 h 45 min","2 h 25 min","2 h 35 min"],a:1,e:"6:50 to 7:00 is 10 minutes. 7:00 to 8:00 is 1 hour. 8:00 to 8:25 is 25 minutes. 10 + 25 = 35 minutes, so 1 h 35 min."},
+{p:4,q:"What is the next number? 3, 6, 12, 24, ?",o:["30","36","42","48","96"],a:3,e:"Each number is double the one before. 24 × 2 = 48."},
+{p:4,q:"How many different 3-digit numbers can you make with the digits 1, 2 and 3 using each digit once?",o:["3","4","6","9","27"],a:2,e:"123, 132, 213, 231, 312 and 321. That is 6 numbers."},
+{p:4,q:"A square has a perimeter of 28 cm. How long is one side?",o:["4 cm","7 cm","14 cm","24 cm","56 cm"],a:1,e:"A square has 4 equal sides. 28 ÷ 4 = 7 cm."},
+{p:5,q:"What is the smallest number that is a multiple of both 4 and 6?",o:["10","12","18","24","30"],a:1,e:"Multiples of 6: 6, 12, 18… The first one that 4 divides evenly is 12."},
+{p:5,q:"Tom has 3 times as many cards as Lily. If Tom gives Lily 10 cards, they have the same number. How many cards does Tom have?",o:["20","24","30","36","40"],a:2,e:"Try Tom = 30 and Lily = 10. After giving 10, Tom has 20 and Lily has 20. ✓"},
+{p:5,q:"How many numbers from 1 to 30 are multiples of 2 or of 5 (or both)?",o:["15","16","18","20","21"],a:2,e:"Multiples of 2: 15. Multiples of 5: 6. The multiples of 10 are counted twice (3 of them). 15 + 6 − 3 = 18."},
+{p:5,q:"A hen lays 2 eggs on Monday. Each day after that she lays 1 more egg than the day before. How many eggs does she lay from Monday to Friday?",o:["10","15","18","20","25"],a:3,e:"The days are 2, 3, 4, 5 and 6 eggs. 2 + 3 + 4 + 5 + 6 = 20."}]},
+{name:"Roo",k:1,grade:"Grade 4",icon:"🦘",pool:[
+{p:3,q:"Anna is taller than Ben. Ben is taller than Cara. Dan is shorter than Cara. Who is the second tallest?",o:["Anna","Ben","Cara","Dan","Can’t tell"],a:1,e:"Order from tallest: Anna, Ben, Cara, Dan. The second tallest is Ben."},
+{p:3,q:"A movie starts at 4:45 and lasts 1 hour 50 minutes. When does it end?",o:["6:15","6:25","6:35","6:45","6:55"],a:2,e:"4:45 plus 1 hour is 5:45. Then 50 more minutes: 5:45 + 15 = 6:00, and 35 more minutes makes 6:35."},
+{p:3,q:"The average of three numbers is 8. Two of them are 5 and 9. What is the third number?",o:["6","8","10","12","14"],a:2,e:"Average 8 means the total is 3 × 8 = 24. 5 + 9 = 14, and 24 − 14 = 10."},
+{p:4,q:"Ten fence posts stand in a straight line with equal gaps. The first and last posts are 36 m apart. How far apart are two neighbouring posts?",o:["3 m","3.6 m","4 m","5 m","6 m"],a:2,e:"10 posts make 9 gaps, not 10. 36 ÷ 9 = 4 m."},
+{p:4,q:"Joey is 5 years old. Mum is 4 times as old as Joey. How old will Mum be when Joey is 10?",o:["20","22","24","25","30"],a:3,e:"Mum is 4 × 5 = 20 now. Joey needs 5 more years, so Mum will be 20 + 5 = 25."},
+{p:4,q:"Use the digits 2, 3, 5 and 8 once each. What is the biggest even number you can make?",o:["8532","8523","5832","8352","5238"],a:0,e:"An even number must end in 2 or 8. Ending in 2, put the biggest digits first: 8, 5, 3, then 2 makes 8532. That beats anything ending in 8."},
+{p:4,q:"Look at the pattern: 2, 5, 8, 11, … What is the 10th number?",o:["27","28","29","30","32"],a:2,e:"The numbers go up by 3 each time. The 10th number takes 9 jumps: 2 + 9 × 3 = 29."},
+{p:5,q:"A big cube is painted on every face, then cut into 27 small equal cubes (3 × 3 × 3). How many small cubes have exactly one painted face?",o:["4","6","8","12","24"],a:1,e:"Only the middle cube of each big face has one painted face. There are 6 faces, so 6 cubes."},
+{p:5,q:"5 kangaroos meet. Every kangaroo shakes paws once with each of the others. How many shakes happen?",o:["5","10","15","20","25"],a:1,e:"Each of the 5 shakes with 4 others, which is 20, but every shake is counted twice. 20 ÷ 2 = 10."},
+{p:5,q:"You have lots of 3-cent and 5-cent stamps. Which amount can you NOT make exactly?",o:["7","8","9","10","11"],a:0,e:"8 = 3 + 5, 9 = 3 + 3 + 3, 10 = 5 + 5, 11 = 3 + 3 + 5. But 7 can’t be made."},
+{p:3,q:"What is 7 × 8 − 6?",o:["42","48","50","52","56"],a:2,e:"7 × 8 = 56, then 56 − 6 = 50."},
+{p:3,q:"A rectangle is 8 cm long and 5 cm wide. What is its perimeter?",o:["13 cm","26 cm","30 cm","40 cm","80 cm"],a:1,e:"Perimeter is the distance all the way around: 8 + 5 + 8 + 5 = 26 cm."},
+{p:3,q:"A bus ride lasts 2 hours and 15 minutes. How many minutes is that?",o:["115","125","135","145","215"],a:2,e:"2 hours = 120 minutes. 120 + 15 = 135."},
+{p:4,q:"How many numbers from 1 to 50 are multiples of 7?",o:["5","6","7","8","9"],a:2,e:"7, 14, 21, 28, 35, 42 and 49. That is 7 numbers."},
+{p:4,q:"Tom reads 12 pages every day. How many days does he need to finish an 80-page book?",o:["6","7","8","9","10"],a:1,e:"6 days is only 72 pages, which is not enough. On day 7 he reaches 84, so he finishes during day 7."},
+{p:4,q:"25 children stand in a line. Mia is 9th from the front. How many children stand behind her?",o:["15","16","17","18","19"],a:1,e:"Count everyone up to and including Mia: 9. Then 25 − 9 = 16 children are behind her."},
+{p:4,q:"A pen and a notebook cost $11 together. The notebook costs $7 more than the pen. How much is the pen?",o:["$1","$2","$3","$4","$5"],a:1,e:"Take away the extra $7: $11 − $7 = $4, shared by two equal prices, so the pen is $2 and the notebook is $9."},
+{p:5,q:"What is the smallest number greater than 1 that leaves remainder 1 when divided by 2, by 3 and by 4?",o:["5","7","13","25","49"],a:2,e:"The number minus 1 must divide evenly by 2, 3 and 4. The smallest such number is 12, so the answer is 12 + 1 = 13."},
+{p:5,q:"A big square is made of 9 small squares (3 rows of 3). How many squares of any size can you find?",o:["9","10","13","14","16"],a:3,e:"There are 9 small squares, 4 squares made of 2 × 2 small ones, and 1 big square. 9 + 4 + 1 = 14."},
+{p:5,q:"2 apples and 1 pear cost $7. 1 apple and 2 pears cost $5. How much does 1 apple cost?",o:["$1","$2","$3","$4","$5"],a:2,e:"Add both: 3 apples and 3 pears cost $12, so 1 apple and 1 pear cost $4. Compare with 1 apple and 2 pears at $5: the extra pear costs $1. So the apple is $3."},
+{p:3,q:"What is 9 × 7?",o:["54","56","63","72","81"],a:2,e:"9 × 7 = 63. (10 × 7 = 70, minus 7.)"},
+{p:3,q:"What is 144 ÷ 12?",o:["11","12","13","14","16"],a:1,e:"12 × 12 = 144, so 144 ÷ 12 = 12."},
+{p:3,q:"What is 450 + 380?",o:["720","730","820","830","930"],a:3,e:"450 + 380: 400 + 300 = 700 and 50 + 80 = 130. 700 + 130 = 830."},
+{p:3,q:"What is 3,478 rounded to the nearest hundred?",o:["3,400","3,500","3,480","3,000","3,600"],a:1,e:"Look at the tens digit: 7 means round up. 3,478 is closer to 3,500."},
+{p:3,q:"What is one quarter of 36?",o:["6","8","9","12","18"],a:2,e:"One quarter means 36 ÷ 4 = 9."},
+{p:3,q:"How many sides does a hexagon have?",o:["5","6","7","8","10"],a:1,e:"Hex means six. A hexagon has 6 sides."},
+{p:3,q:"School starts at 8:30 in the morning and ends at 3:15 in the afternoon. How long is the school day?",o:["6 h 15 min","6 h 30 min","6 h 45 min","7 h 15 min","7 h 45 min"],a:2,e:"8:30 to 3:30 would be 7 hours. 3:15 is 15 minutes earlier, so 6 h 45 min."},
+{p:3,q:"What is the next number? 1, 4, 9, 16, 25, ?",o:["30","34","35","36","49"],a:3,e:"These are 1×1, 2×2, 3×3, 4×4, 5×5. Next is 6 × 6 = 36."},
+{p:3,q:"Which number is the biggest?",o:["0.5","0.45","0.405","0.54","0.504"],a:3,e:"Compare tenths first: 0.5, 0.54 and 0.504 have 5 tenths. Then compare hundredths: 0.54 has the most."},
+{p:3,q:"How many minutes are in 3 hours?",o:["120","150","180","240","300"],a:2,e:"1 hour is 60 minutes. 60 × 3 = 180."},
+{p:3,q:"Kanga buys 4 books for $6 each and pays with a $30 note. How much change does she get?",o:["$2","$4","$5","$6","$24"],a:3,e:"4 × $6 = $24. Change: $30 − $24 = $6."},
+{p:3,q:"What is 1000 − 357?",o:["543","633","643","647","743"],a:2,e:"357 + 643 = 1000, so 1000 − 357 = 643."},
+{p:3,q:"How many edges does a cube have?",o:["6","8","10","12","14"],a:3,e:"4 edges on the top, 4 on the bottom and 4 going up the sides: 12."},
+{p:3,q:"What is the perimeter of a square with sides of 9 cm?",o:["18 cm","27 cm","36 cm","45 cm","81 cm"],a:2,e:"A square has 4 equal sides. 4 × 9 = 36 cm."},
+{p:4,q:"A number is multiplied by 6 and then 4 is added. The result is 46. What was the number?",o:["6","7","8","9","42"],a:1,e:"Work backwards: 46 − 4 = 42, then 42 ÷ 6 = 7."},
+{p:4,q:"A rope 60 cm long is cut into pieces that are 7 cm long. How many whole pieces can be cut?",o:["7","8","9","10","53"],a:1,e:"8 × 7 = 56 fits, but 9 × 7 = 63 is too long. So 8 pieces."},
+{p:4,q:"Tom has twice as many stickers as Ann. Together they have 36 stickers. How many does Tom have?",o:["12","18","20","24","30"],a:3,e:"Ann has 1 share and Tom has 2 shares, 3 shares in all. 36 ÷ 3 = 12 for Ann, so Tom has 24."},
+{p:4,q:"A train leaves at 9:40 and the trip takes 2 hours 35 minutes. When does it arrive?",o:["11:55","12:05","12:10","12:15","12:25"],a:3,e:"9:40 + 2 hours = 11:40. Then 20 minutes more is 12:00 and 15 more is 12:15."},
+{p:4,q:"What is 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10?",o:["45","50","55","60","100"],a:2,e:"Pair them up: 1 + 10, 2 + 9, 3 + 8, 4 + 7, 5 + 6. Five pairs of 11 make 55."},
+{p:4,q:"An egg box holds 8 eggs. How many boxes are needed for 50 eggs?",o:["5","6","7","8","9"],a:2,e:"6 boxes hold only 48 eggs, which is not enough. 7 boxes hold 56, so you need 7."},
+{p:4,q:"Which number can be divided exactly by both 3 and 4?",o:["14","18","22","24","30"],a:3,e:"24 = 3 × 8 and 24 = 4 × 6. 18 and 30 divide by 3 but not 4."},
+{p:4,q:"A garden is a rectangle 12 m long and 5 m wide. What is its area?",o:["17 m²","34 m²","60 m²","120 m²","600 m²"],a:2,e:"Area = length × width = 12 × 5 = 60 m²."},
+{p:4,q:"How many different 2-digit numbers can you make from the digits 3, 5 and 7 if you use two different digits each time?",o:["3","4","5","6","9"],a:3,e:"35, 37, 53, 57, 73 and 75. That’s 6 numbers."},
+{p:4,q:"What is half of a quarter of 80?",o:["5","10","20","40","160"],a:1,e:"A quarter of 80 is 20, and half of 20 is 10."},
+{p:4,q:"In 4 years Mia will be 12. How old was Mia 3 years ago?",o:["4","5","6","7","8"],a:1,e:"Mia is 12 − 4 = 8 now. 3 years ago she was 8 − 3 = 5."},
+{p:4,q:"A shop sells pencils at 3 for $2. How much do 12 pencils cost?",o:["$6","$8","$9","$12","$24"],a:1,e:"12 pencils is 4 groups of 3. 4 × $2 = $8."},
+{p:5,q:"How many whole numbers from 1 to 100 have the digit 5 in them? (For example 5, 15 and 50 count.)",o:["10","18","19","20","21"],a:2,e:"Ending in 5: 5, 15, …, 95 is 10 numbers. Starting with 5: 50 to 59 is 10 numbers. But 55 is in both lists, so 10 + 10 − 1 = 19."},
+{p:5,q:"How many 3-digit numbers have digits that add up to 4?",o:["6","8","9","10","12"],a:3,e:"Start with 1: 103, 112, 121, 130. Start with 2: 202, 211, 220. Start with 3: 301, 310. Start with 4: 400. That’s 4 + 3 + 2 + 1 = 10."},
+{p:5,q:"A farm has chickens (2 legs) and cows (4 legs). There are 10 heads and 28 legs in all. How many cows are there?",o:["3","4","5","6","7"],a:1,e:"If all 10 were chickens there would be 20 legs. We need 8 more legs, and each cow adds 2 extra. 8 ÷ 2 = 4 cows."},
+{p:5,q:"In how many different ways can you pay exactly 10 cents using only 5-cent coins and 2-cent coins?",o:["1","2","3","4","5"],a:1,e:"Two 5-cent coins, or five 2-cent coins. Mixing doesn’t work: one 5-cent coin leaves 5 cents, which 2-cent coins can’t make."},
+{p:3,q:"Each small square is 1 cm². What is the area of the shape?",svg:V(190,130,Gd(3,4,36,20,10,function(i){return (i==2||i==3)?null:'var(--gold)'})),o:["8 cm²","9 cm²","10 cm²","12 cm²","14 cm²"],a:2,e:"Count the squares row by row: 2 + 4 + 4 = 10, so the area is 10 cm²."},
+{p:3,q:"The graph shows rain in mm each day. How many more mm of rain fell on Thursday than on Wednesday?",svg:Br([3,5,2,6,4],['Mon','Tue','Wed','Thu','Fri'],20),o:["2","3","4","5","6"],a:2,e:"Thursday had 6 mm and Wednesday had 2 mm. 6 − 2 = 4."},
+{p:4,q:"What time does the clock show?",svg:Ck(4,20),o:["3:20","4:04","4:20","5:20","4:40"],a:2,e:"The long hand points to the 4, which is 4 × 5 = 20 minutes. The short hand is just past the 4. It is 4:20."},
+{p:4,q:"What is the perimeter of this shape? All the corners are right angles.",svg:V(300,200,Po('50,25 122,25 122,97 242,97 242,169 50,169','var(--gold)')+Tx(86,18,'3 cm',15)+Tx(146,190,'8 cm',15)+Tx(24,102,'6 cm',15)+Tx(270,138,'3 cm',15)),o:["22 cm","24 cm","26 cm","28 cm","30 cm"],a:3,e:"The missing sides are 6 − 3 = 3 cm going down and 8 − 3 = 5 cm going across. Add all sides: 3 + 3 + 5 + 3 + 8 + 6 = 28 cm."},
+{p:5,q:"How many triangles of any size can you find in this picture?",svg:V(240,140,Po('120,10 20,120 220,120')+Ln(120,10,87,120)+Ln(120,10,153,120)),o:["3","4","5","6","7"],a:3,e:"There are 3 thin triangles, 2 made of two thin ones side by side, and 1 big triangle. 3 + 2 + 1 = 6."}]},
+{name:"Boomer",k:"g5",grade:"Grade 5",icon:"🏆",pool:[
+{p:3,q:"What fraction of the rectangle is shaded? Give the simplest form.",svg:V(200,100,Gd(3,4,26,20,10,function(i){return i<9?'var(--gold)':''})),o:["1/4","1/3","2/3","3/4","4/5"],a:3,e:"9 of the 12 parts are shaded. 9/12 simplifies to 3/4 (divide top and bottom by 3)."},
+{p:3,q:"The graph shows books sold each day. How many books were sold in all four days?",svg:Br([12,8,15,5],['Mon','Tue','Wed','Thu'],8),o:["35","38","40","42","45"],a:2,e:"12 + 8 + 15 + 5 = 40."},
+{p:3,q:"What is 3/4 of 24?",o:["6","12","16","18","20"],a:3,e:"1/4 of 24 is 6. 3/4 is 3 × 6 = 18."},
+{p:3,q:"What is 0.7 + 0.45?",o:["0.52","1.05","1.15","1.25","1.52"],a:2,e:"0.70 + 0.45 = 1.15. Line up the decimal points."},
+{p:3,q:"What is 15 × 12?",o:["150","170","180","190","210"],a:2,e:"15 × 10 = 150 and 15 × 2 = 30. 150 + 30 = 180."},
+{p:3,q:"What is 2 + 3 × 4?",o:["14","20","24","9","10"],a:0,e:"Multiply first: 3 × 4 = 12. Then 2 + 12 = 14."},
+{p:3,q:"What is 25% of 80?",o:["5","8","16","20","25"],a:3,e:"25% is one quarter. 80 ÷ 4 = 20."},
+{p:3,q:"Which of these numbers can be divided exactly by 9?",o:["429","513","622","735","841"],a:1,e:"A number divides by 9 if its digits add up to a multiple of 9. 5 + 1 + 3 = 9."},
+{p:3,q:"What is 4.763 rounded to the nearest tenth?",o:["4.7","4.76","4.8","4.9","5"],a:2,e:"The tenths digit is 7 and the next digit is 6, so round up: 4.8."},
+{p:3,q:"What is 1/2 + 1/4?",o:["2/6","1/4","2/4","3/4","1"],a:3,e:"1/2 = 2/4. So 2/4 + 1/4 = 3/4."},
+{p:4,q:"What is the angle between the hands of the clock?",svg:Ck(4,0),o:["90°","100°","120°","150°","180°"],a:2,e:"A full clock is 360° and has 12 hours, so each hour is 30°. From 12 to 4 is 4 hours: 4 × 30 = 120°."},
+{p:4,q:"What is the area of this shape? All the corners are right angles.",svg:V(300,200,Po('50,25 122,25 122,97 242,97 242,169 50,169','var(--gold)')+Tx(86,18,'3 cm',15)+Tx(146,190,'8 cm',15)+Tx(24,102,'6 cm',15)+Tx(270,138,'3 cm',15)),o:["30 cm²","33 cm²","36 cm²","39 cm²","48 cm²"],a:1,e:"The big rectangle is 8 × 6 = 48 cm². The missing corner is 5 × 3 = 15 cm². 48 − 15 = 33 cm²."},
+{p:4,q:"A train travels 60 km each hour. How far does it go in 2 hours and 30 minutes?",o:["120 km","130 km","150 km","160 km","180 km"],a:2,e:"2 hours = 120 km and half an hour = 30 km. 120 + 30 = 150 km."},
+{p:4,q:"The average of 4 numbers is 12. Three of them are 10, 11 and 15. What is the fourth number?",o:["10","12","14","15","16"],a:1,e:"The total is 4 × 12 = 48. 10 + 11 + 15 = 36. 48 − 36 = 12."},
+{p:4,q:"How many factors (numbers that divide it exactly) does 12 have?",o:["4","5","6","7","8"],a:2,e:"1, 2, 3, 4, 6 and 12. That is 6 factors."},
+{p:4,q:"A shirt costs $40. The price is reduced by 25%. What is the new price?",o:["$10","$25","$30","$35","$38"],a:2,e:"25% of $40 is $10. $40 − $10 = $30."},
+{p:4,q:"What is the sum of the angles in a triangle plus the sum of the angles in a square?",o:["360°","450°","540°","720°","900°"],a:2,e:"A triangle has 180° and a square has 4 × 90 = 360°. 180 + 360 = 540°."},
+{p:4,q:"Kanga saves $3 on day 1, $6 on day 2, $9 on day 3, and so on. How much has she saved after 6 days?",o:["$54","$57","$63","$66","$72"],a:2,e:"3 + 6 + 9 + 12 + 15 + 18 = 63. (Or 3 × (1 + 2 + … + 6) = 3 × 21 = 63.)"},
+{p:4,q:"A number is increased by 20% and becomes 60. What was the number?",o:["40","48","50","52","72"],a:2,e:"The new number is 120% of the old one, so old = 60 ÷ 1.2 = 50. Check: 20% of 50 is 10 and 50 + 10 = 60."},
+{p:4,q:"What is the last digit of 3 × 13 × 23 × 33?",o:["1","3","7","9","0"],a:0,e:"Only the last digits matter: 3 × 3 × 3 × 3 = 81, which ends in 1."},
+{p:5,q:"How many rectangles of any size (squares count too) can you find in this picture?",svg:Sg(['yyy','yyy'],50),o:["12","15","16","18","21"],a:3,e:"A rectangle is picked by choosing 2 of the 4 vertical lines (6 ways) and 2 of the 3 horizontal lines (3 ways). 6 × 3 = 18."},
+{p:5,q:"How many 3-digit numbers have digits that add up to 3?",o:["3","4","6","7","10"],a:2,e:"102, 111, 120, 201, 210 and 300. That is 6 numbers."},
+{p:5,q:"Ana, Ben and Cy have 28 marbles in all. Ana has twice as many as Ben, and Ben has twice as many as Cy. How many marbles does Ana have?",o:["8","12","14","16","20"],a:3,e:"Cy has 1 share, Ben 2 shares, Ana 4 shares: 7 shares in all. 28 ÷ 7 = 4, so Ana has 4 × 4 = 16."},
+{p:5,q:"The product of two whole numbers is 36 and their sum is 15. What is the bigger number?",o:["9","10","12","13","18"],a:2,e:"The pairs with product 36 are 1×36, 2×18, 3×12, 4×9 and 6×6. Only 3 + 12 = 15."},
+{p:5,q:"What is the smallest whole number bigger than 5 that leaves remainder 2 when divided by 3 and remainder 3 when divided by 4?",o:["8","11","14","15","23"],a:1,e:"Numbers with remainder 3 when divided by 4: 7, 11, 15… Check remainder 2 when divided by 3: 7 gives 1, 11 gives 2. So 11."}]}
+];
+function V(w,h,b){return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" role="img" aria-label="Picture for the puzzle" style="max-width:100%;height:auto">'+b+'</svg>'}
+function R(x,y,w,h,f){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+(f||'none')+'" stroke="var(--ink)" stroke-width="2"/>'}
+function Ci(x,y,r,f){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+(f||'none')+'" stroke="var(--ink)" stroke-width="2"/>'}
+function Tx(x,y,t,s){return '<text x="'+x+'" y="'+y+'" font-size="'+(s||18)+'" font-weight="600" fill="var(--ink)" text-anchor="middle">'+t+'</text>'}
+function Po(p,f){return '<polygon points="'+p+'" fill="'+(f||'none')+'" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>'}
+function Ln(a,b,c,d){return '<line x1="'+a+'" y1="'+b+'" x2="'+c+'" y2="'+d+'" stroke="var(--ink)" stroke-width="2"/>'}
+function Gd(r,c,s,x,y,f){var o='';for(var i=0;i<r;i++)for(var j=0;j<c;j++){var k=f(i*c+j);if(k!==null)o+=R(x+j*s,y+i*s,s,s,k)}return o}
+function Br(v,l,u){var o='';v.forEach(function(n,k){var x=20+k*60;o+=R(x,150-n*u,40,n*u,'var(--gold)')+Tx(x+20,144-n*u,n)+Tx(x+20,172,l[k])});return V(20+v.length*60,180,o)}
+function NL(a,b,p){var o=Ln(20,60,20+(b-a)*32,60);for(var k=a;k<=b;k++){var x=20+(k-a)*32;o+=Ln(x,54,x,66)+Tx(x,86,k,15)}return V(40+(b-a)*32,100,o+Tx(20+(p-a)*32,40,'🐸',26))}
+function Ck(h,m){var o=Ci(80,80,62,'var(--card)');[[12,80,26],[3,138,86],[6,80,146],[9,22,86]].forEach(function(t){o+=Tx(t[1],t[2],t[0],16)});var ha=((h%12)*30+m/2)*Math.PI/180,ma=m*6*Math.PI/180;o+='<line x1="80" y1="80" x2="'+(80+32*Math.sin(ha))+'" y2="'+(80-32*Math.cos(ha))+'" stroke="var(--plum)" stroke-width="6" stroke-linecap="round"/>';o+='<line x1="80" y1="80" x2="'+(80+50*Math.sin(ma))+'" y2="'+(80-50*Math.cos(ma))+'" stroke="var(--green)" stroke-width="4" stroke-linecap="round"/>';return V(160,160,o+Ci(80,80,4,'var(--ink)'))}
+function Dt(rows){var o='',m={g:'var(--green)',y:'var(--gold)',p:'var(--plum)',r:'var(--bad)','.':''};rows.forEach(function(s,r){for(var k=0;k<s.length;k++)o+=Ci(24+k*30,22+r*30,11,m[s[k]])});return V(24+Math.max.apply(null,rows.map(function(s){return s.length}))*30,rows.length*30+14,o)}
+function Sg(rows,s){s=s||34;var o='',m={g:'var(--green)',y:'var(--gold)',p:'var(--plum)','.':''};rows.forEach(function(t,r){for(var k=0;k<t.length;k++)if(t[k]!==' ')o+=R(10+k*s,10+r*s,s,s,m[t[k]])});return V(20+s*Math.max.apply(null,rows.map(function(t){return t.length})),20+s*rows.length,o)}
+function Ta(n){var o='',g=Math.floor(n/5),r=n%5,x,j;for(var k=0;k<g;k++){x=20+k*50;for(j=0;j<4;j++)o+=Ln(x+j*9,10,x+j*9,50);o+=Ln(x-4,45,x+32,15)}x=20+g*50;for(j=0;j<r;j++)o+=Ln(x+j*9,10,x+j*9,50);return V(60+g*50,60,o)}
+var H1=[
+{p:3,q:"How many more green dots than gold dots are there?",svg:Dt(['ggggg','yyy']),o:["1","2","3","5","8"],a:1,e:"There are 5 green dots and 3 gold dots. 5 − 3 = 2."},
+{p:3,q:"How many squares are in this shape?",svg:Sg(['yyyy','yy','yy']),o:["6","7","8","9","10"],a:2,e:"Count row by row: 4 + 2 + 2 = 8."},
+{p:3,q:"The frog is on number 6. It jumps back 4 steps. Which number does it land on?",svg:NL(0,10,6),o:["1","2","3","8","10"],a:1,e:"Back means count down: 5, 4, 3, 2. The frog lands on 2."},
+{p:3,q:"The graph shows the pets in a street. How many pets are there in all?",svg:Br([3,5,4],['🐶','🐱','🐟'],20),o:["8","10","12","13","15"],a:2,e:"3 + 5 + 4: 3 + 5 = 8, and 8 + 4 = 12."},
+{p:3,q:"What time does the clock show?",svg:Ck(5,0),o:["12:05","1:00","5:00","5:05","6:00"],a:2,e:"The long hand points to the 12, so it is exactly o’clock. The short hand points to 5, so it is 5:00."},
+{p:3,q:"What time does the clock show?",svg:Ck(2,30),o:["2:06","2:30","6:02","6:30","3:30"],a:1,e:"The long hand points to the 6, which means half past. The short hand is between 2 and 3. So it is half past 2: 2:30."},
+{p:4,q:"What colour is the next dot in the pattern?",svg:Dt(['yggyggyg']),o:["Gold","Green","Purple","Red","White"],a:1,e:"The pattern is gold, green, green, again and again. After gold, green comes next."},
+{p:4,q:"How many triangles can you find in this picture?",svg:V(200,120,Po('100,10 20,110 180,110')+Ln(100,10,100,110)),o:["1","2","3","4","5"],a:2,e:"There are 2 small triangles (left and right). Together they make 1 big triangle. 2 + 1 = 3."},
+{p:4,q:"The frog starts on 3. It jumps forward 5 steps and then back 2 steps. Where is it now?",svg:NL(0,10,3),o:["4","5","6","7","8"],a:2,e:"3 + 5 = 8, then 8 − 2 = 6."},
+{p:4,q:"3 apples all have the same number. Together they are 12. What number is each apple?",art:"🍎 + 🍎 + 🍎 = 12",o:["3","4","5","6","9"],a:1,e:"4 + 4 + 4 = 12, so each apple is 4."},
+{p:4,q:"How many more red circles than blue circles are there?",svg:Br([6,2,5],['🔴','🔵','🟡'],16),o:["2","3","4","5","8"],a:2,e:"Red is 6 and blue is 2. 6 − 2 = 4."},
+{p:4,q:"How many squares are NOT coloured?",svg:Sg(['yyy','y.y','yy.']),o:["1","2","3","4","7"],a:1,e:"Only the white squares count. There are 2 white squares."},
+{p:4,q:"Each | is one. How many tally marks are there?",svg:Ta(12),o:["8","10","12","14","15"],a:2,e:"Each crossed group is 5. Two groups make 10, and 2 more lines make 12."},
+{p:4,q:"The clock shows half past 7. What time will it be in one hour?",svg:Ck(7,30),o:["7:30","8:00","8:30","9:30","7:00"],a:2,e:"One hour later the minutes stay the same and the hour goes up by 1: 8:30."},
+{p:4,q:"How many cents are there? (A nickel is 5 cents. A penny is 1 cent.)",svg:V(260,64,[5,5,1,1,1].map(function(c,k){return Ci(30+k*46,32,20,'var(--gold)')+Tx(30+k*46,38,c+'¢',15)}).join('')),o:["8","10","11","13","15"],a:3,e:"2 nickels = 5 + 5 = 10 cents. Then 3 pennies make 13 cents."},
+{p:4,q:"Which number is the star?",art:"★ + 3 = 11",o:["6","7","8","9","14"],a:2,e:"3 + 8 = 11, so the star is 8."},
+{p:4,q:"How many more dots are needed to fill the two rows of 5 (make 10)?",svg:Dt(['ggggg','ggg..']),o:["1","2","3","5","7"],a:1,e:"Look at the empty circles. There are 2, so 2 more dots make 10."},
+{p:4,q:"How many more yellow squares than green squares are there?",svg:Sg(['gyg','yyg','ygy']),o:["0","1","2","4","5"],a:1,e:"There are 5 yellow and 4 green squares. 5 − 4 = 1."},
+{p:5,q:"Ann gives 3 of her marbles to Ben. How many marbles does Ben have now?",svg:Br([8,3,5],['Ann','Ben','Cy'],14),o:["3","5","6","8","11"],a:2,e:"Ben starts with 3 and gets 3 more. 3 + 3 = 6."},
+{p:5,q:"The frog starts on 0 and jumps forward 4 steps each time. It jumps 3 times. Where does it land?",svg:NL(0,12,0),o:["8","10","12","13","16"],a:2,e:"4, then 8, then 12. The frog lands on 12."},
+{p:5,q:"How many blocks make these stairs?",svg:Sg(['   y','  yy',' yyy','yyyy']),o:["7","8","9","10","11"],a:3,e:"The steps have 1, 2, 3 and 4 blocks. 1 + 2 + 3 + 4 = 10."},
+{p:5,q:"How many dots are there in all?",svg:Dt(['gggggg','yyyy','pp']),o:["10","11","12","13","14"],a:2,e:"6 + 4 = 10, and 10 + 2 = 12."},
+{p:5,q:"The clock shows 9:00. What time was it 3 hours ago?",svg:Ck(9,0),o:["3:00","6:00","7:00","9:03","12:00"],a:1,e:"Going back 3 hours from 9: 8, 7, 6. It was 6:00."},
+{p:5,q:"Which shape is the odd one out?",svg:(function(){var o='';['A','B','C','D','E'].forEach(function(L,k){var x=40+k*55;o+=(k==2?R(x-18,24,36,36,'var(--gold)'):Po((x-20)+',60 '+x+',22 '+(x+20)+',60','var(--green)'))+Tx(x,84,L,16)});return V(300,96,o)})(),o:["A","B","C","D","E"],a:2,e:"A, B, D and E are triangles. C is a square, so C is the odd one out."},
+{p:5,q:"What two numbers go in the blanks?",art:"2  4  6  8  _  _  14",o:["9 and 10","10 and 12","10 and 11","11 and 12","12 and 13"],a:1,e:"The numbers go up by 2 each time: 8, 10, 12, 14."},
+{p:5,q:"How many cents are there? (A dime is 10 cents, a nickel is 5 cents, a penny is 1 cent.)",svg:V(260,64,[10,10,5,1,1].map(function(c,k){return Ci(30+k*50,32,21,'var(--gold)')+Tx(30+k*50,37,c+'¢',14)}).join('')),o:["22","25","26","27","30"],a:3,e:"10 + 10 = 20, then + 5 = 25, then + 1 + 1 = 27 cents."},
+{p:5,q:"A and C have stickers too. How many more stickers do A and C have together than B?",svg:Br([6,3,6,5],['A','B','C','D'],16),o:["6","7","9","12","15"],a:2,e:"A + C = 6 + 6 = 12. B has 3. 12 − 3 = 9."},
+{p:5,q:"Max has 10 stickers. He puts 4 on a card and 3 in a book. How many stickers does he have left?",svg:Dt(['yyyyyyyyyy']),o:["3","4","6","7","10"],a:0,e:"He uses 4 + 3 = 7 stickers. 10 − 7 = 3."},
+{p:5,q:"Which number is the star?",art:"3 + ★ = 5 + 4",o:["4","5","6","7","9"],a:2,e:"5 + 4 = 9. Then 3 + 6 = 9, so the star is 6."},
+{p:5,q:"How many squares of any size can you find? (Count the big one too.)",svg:Sg(['yy','yy'],50),o:["4","5","6","8","9"],a:1,e:"There are 4 small squares and 1 big square made of all 4. 4 + 1 = 5."}
+];
+var H2=[
+{p:4,q:"The pattern keeps going the same way. What colour is the 10th dot?",svg:Dt(['rggyrggy']),o:["Red","Green","Gold","Purple","White"],a:1,e:"The pattern is red, green, green, gold (4 dots). The 9th dot is red and the 10th is green."},
+{p:4,q:"The frog jumped forward 4 steps and landed on 9. Which number did it start on?",svg:NL(0,12,9),o:["3","4","5","6","13"],a:2,e:"Work backwards: 9 − 4 = 5. Check: 5 + 4 = 9."},
+{p:4,q:"The graph shows sweets. How many more sweets does the child with the most have than the child with the fewest?",svg:Br([4,7,2,5],['A','B','C','D'],16),o:["2","3","4","5","7"],a:3,e:"The most is 7 (B) and the fewest is 2 (C). 7 − 2 = 5."},
+{p:4,q:"Mia has these coins and buys a sticker for 12 cents. How many cents does she have left? (A dime is 10, a nickel is 5, a penny is 1.)",svg:V(320,64,[10,5,5,1,1,1].map(function(c,k){return Ci(30+k*50,32,21,'var(--gold)')+Tx(30+k*50,37,c+'¢',14)}).join('')),o:["9","10","11","12","13"],a:2,e:"10 + 5 + 5 + 1 + 1 + 1 = 23 cents. 23 − 12 = 11 cents."},
+{p:4,q:"School starts at the time on the clock. It ends 6 hours later. When does school end?",svg:Ck(8,0),o:["12:00","1:00","2:00","3:00","4:00"],a:2,e:"8 + 6 = 14, which is 2 o’clock in the afternoon: 2:00."},
+{p:4,q:"A full square has 3 rows of 3. How many more squares are needed to finish it?",svg:Sg(['yyy','yy','y']),o:["2","3","4","5","6"],a:1,e:"A full 3 by 3 square has 9 squares. The picture has 3 + 2 + 1 = 6. 9 − 6 = 3."},
+{p:4,q:"Two kangaroos share some carrots equally with none left over. Which number of carrots does NOT work?",art:"🦘 🦘",o:["12","14","15","16","18"],a:2,e:"Only even numbers can be shared equally between 2. 15 is odd, so it leaves 1 over."},
+{p:4,q:"Both apples are the same number. What number is the banana?",art:"🍎 + 🍎 = 8     🍎 + 🍌 = 10",o:["2","4","5","6","8"],a:3,e:"4 + 4 = 8, so each apple is 4. Then 4 + 6 = 10, so the banana is 6."},
+{p:4,q:"You make groups of 3 from these dots. How many dots are left over?",svg:Dt(['gggggggg']),o:["0","1","2","3","5"],a:2,e:"8 dots make 2 groups of 3 (that is 6 dots). 8 − 6 = 2 dots are left over."},
+{p:4,q:"How many sides do the two shapes have in total?",svg:V(240,100,Po('50,85 90,85 70,20')+Po('180,10 222,40 206,90 154,90 138,40')),o:["7","8","9","10","11"],a:1,e:"The triangle has 3 sides and the pentagon has 5. 3 + 5 = 8."},
+{p:5,q:"The frog starts on 2. It jumps forward 5, forward 3, then back 4. Where does it finish?",svg:NL(0,12,2),o:["4","5","6","7","8"],a:2,e:"2 + 5 = 7, then 7 + 3 = 10, then 10 − 4 = 6."},
+{p:5,q:"How many triangles of any size can you find?",svg:V(240,140,Po('120,10 20,120 220,120')+Ln(120,10,87,120)+Ln(120,10,153,120)),o:["3","4","5","6","7"],a:3,e:"3 thin triangles, 2 made of two thin ones side by side, and 1 big one. 3 + 2 + 1 = 6."},
+{p:5,q:"How many squares of any size can you find in this 3 by 3 picture?",svg:Sg(['yyy','yyy','yyy'],40),o:["9","10","13","14","16"],a:3,e:"9 small squares, 4 squares made of 2 by 2 small ones, and 1 big square. 9 + 4 + 1 = 14."},
+{p:5,q:"4 friends each give one high-five to every other friend, once. How many high-fives are there?",art:"🧒 🧒 🧒 🧒",o:["4","6","8","12","16"],a:1,e:"Call them A, B, C, D. A has 3 high-fives, B has 2 new ones, C has 1 new one. 3 + 2 + 1 = 6."},
+{p:5,q:"Both rows add up to the same number. What number goes in the ? box?",svg:V(200,112,R(20,10,80,45)+R(100,10,80,45)+R(20,55,80,45)+R(100,55,80,45)+Tx(60,40,'4',24)+Tx(140,40,'5',24)+Tx(60,85,'3',24)+Tx(140,85,'?',24)),o:["5","6","7","9","12"],a:1,e:"The top row is 4 + 5 = 9. The bottom row needs 3 + 6 = 9."},
+{p:5,q:"An apple weighs 2 and a pear weighs 3. A bag has 2 apples and 1 pear. How much does the bag weigh?",art:"🍎 = 2    🍐 = 3",o:["5","6","7","8","9"],a:2,e:"2 apples = 2 + 2 = 4. Add the pear: 4 + 3 = 7."},
+{p:5,q:"Zoe has 4 more stickers than Ben. Together they have 14 stickers. How many stickers does Ben have?",o:["4","5","6","9","10"],a:1,e:"Try Ben = 5: Zoe has 9 and 5 + 9 = 14. ✓"},
+{p:5,q:"A kangaroo hops from Start to End along the lines. It can only go right or down. How many different paths are there?",svg:V(240,190,Gd(2,2,70,40,20,function(){return ''})+Tx(40,14,'Start',14)+Tx(180,182,'End',14)),o:["2","3","4","6","8"],a:3,e:"Write R for right and D for down. Each path has 2 R and 2 D: RRDD, RDRD, RDDR, DRRD, DRDR, DDRR. That is 6 paths."},
+{p:5,q:"What is the rule? Which number comes at the end?",art:"2 → 5     4 → 7     6 → 9     8 → ?",o:["10","11","12","13","14"],a:1,e:"The rule is add 3: 2 + 3 = 5, 4 + 3 = 7, 6 + 3 = 9. So 8 + 3 = 11."},
+{p:5,q:"Today is Wednesday. What day will it be in 10 days?",o:["Thursday","Friday","Saturday","Sunday","Monday"],a:2,e:"A week later is also Wednesday (7 days). 3 more days: Thursday, Friday, Saturday."},
+{p:5,q:"The film starts at the time on the clock. What time was it 2 hours before the film started?",svg:Ck(4,30),o:["2:00","2:30","3:30","4:30","6:30"],a:1,e:"The clock shows half past 4. Two hours before is half past 2: 2:30."},
+{p:5,q:"How many dots are green or purple?",svg:Dt(['gpg','ypy','gyp']),o:["4","5","6","7","9"],a:2,e:"Green: 3 dots (row 1 has 2, row 3 has 1). Purple: 3 dots (one in each row). 3 + 3 = 6."},
+{p:5,q:"I am a number between 10 and 20. My ones digit is 3 more than my tens digit. Which number am I?",o:["12","13","14","15","16"],a:2,e:"Between 10 and 20 the tens digit is 1. The ones digit is 1 + 3 = 4. So I am 14."},
+{p:5,q:"Kanga climbs a staircase with 4 steps. She hops up 1 step or 2 steps at a time. How many different ways can she reach the top?",svg:Sg(['   y','  yy',' yyy','yyyy']),o:["3","4","5","6","8"],a:2,e:"The ways are 1+1+1+1, 1+1+2, 1+2+1, 2+1+1 and 2+2. That is 5 ways."},
+{p:5,q:"In how many different ways can you pay exactly 6 cents using only 1-cent and 2-cent coins?",o:["2","3","4","5","6"],a:2,e:"Six 1-cent coins; one 2-cent and four 1-cent; two 2-cent and two 1-cent; or three 2-cent coins. That is 4 ways."}
+];
+G[0].pool=H2;G[0].t=[4,4,5,5,5];G[0].k='g1x';
+var T=[3,3,4,4,5],L=0,i=0,score=0,hops=0,answered=false,set=[];
+var app=document.getElementById("app");
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function fmt(n){return (Math.round(n*100)/100).toString()}
+function shuf(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1)),t=a[k];a[k]=a[j];a[j]=t}return a}
+function used(n){try{return JSON.parse(localStorage.getItem("kangaUsed"+G[n].k)||"[]")}catch(e){return []}}
+function saveUsed(n,u){try{localStorage.setItem("kangaUsed"+G[n].k,JSON.stringify(u))}catch(e){}}
+function draw(n){
+ var pool=G[n].pool,u=used(n),by={};pool.forEach(function(q,k){q.id=k});
+ [3,4,5].forEach(function(p){
+  var need=T.filter(function(x){return x==p}).length,tier=pool.filter(function(q){return q.p==p});
+  var take=shuf(tier.filter(function(q){return u.indexOf(q.id)<0})).slice(0,need);
+  if(take.length<need){u=u.filter(function(id){return pool[id].p!=p});
+   take=take.concat(shuf(tier.filter(function(q){return take.indexOf(q)<0})).slice(0,need-take.length))}
+  by[p]=take});
+ saveUsed(n,u);var c={3:0,4:0,5:0};return T.map(function(p){return by[p][c[p]++]});
+}
+function speak(t){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+function home(){
+ app.className="";
+ var h='<div class="big">🦘</div><h1 style="text-align:center">Kanga Hop</h1><p class="sub" style="text-align:center">Hop across the outback by solving Kangaroo-style puzzles. Pick a trail!</p>';
+ G.forEach(function(l,n){h+='<button class="lvl" data-l="'+n+'"><b>'+l.icon+' '+l.grade+' · '+l.name+' trail</b><span>'+l.pool.length+' puzzles in the pool · '+used(n).length+' asked so far · no repeats until all are asked</span></button>'});
+ h+='<div class="card"><h2>How scoring works</h2><p style="margin:0">Puzzles are worth 3 to 5 points (harder ones are worth more). A right answer earns the points. A wrong answer costs a quarter of them, so think before you hop! Tap 🔊 to hear a puzzle read aloud.</p></div>';
+ app.innerHTML=h;
+ app.querySelectorAll(".lvl").forEach(function(b){b.onclick=function(){start(+b.dataset.l)}});
+}
+function start(n){L=n;i=0;score=0;hops=0;T=G[n].t||[3,3,4,4,5];set=draw(n);show()}
+function track(){
+ var t='<div class="track" aria-hidden="true">';
+ for(var k=0;k<=5;k++){var c=k<hops?"done":"";if(k==hops)c="here";t+='<div class="stone '+c+'">'+(k==hops?"🦘":(k==5?"🌳":"🪨"))+'</div>'}
+ return t+'</div>';
+}
+function show(){
+ answered=false;app.className=G[L].young?"young":"";var q=set[i];
+ var h='<div class="bar"><button class="ghost" id="hmb" aria-label="Back to home page">🏠 Home</button><span>'+G[L].icon+' '+G[L].grade+'</span><span>Score: '+fmt(score)+'</span></div>'+track();
+ h+='<div class="card"><div class="bar"><span>Puzzle '+(i+1)+' of 5 · '+q.p+' points</span><button class="ghost" id="say" aria-label="Read the puzzle aloud">🔊 Read</button></div><div class="q">'+esc(q.q)+'</div>';
+ if(q.art)h+='<div class="art">'+esc(q.art)+'</div>';
+ if(q.svg)h+='<div class="vis">'+q.svg+'</div>';
+ q.o.forEach(function(o,k){h+='<button class="opt" data-k="'+k+'"><i>'+"ABCDE"[k]+'</i><span>'+esc(o)+'</span></button>'});
+ h+='<div id="fb" aria-live="polite"></div></div>';
+ app.innerHTML=h;
+ document.getElementById("say").onclick=function(){speak(q.q.replace(/[^\x00-\x7F’]/g,""))};
+ app.querySelectorAll(".opt").forEach(function(b){b.onclick=function(){pick(+b.dataset.k)}});
+ document.getElementById("hmb").onclick=function(){try{speechSynthesis.cancel()}catch(e){}home()};
+}
+function pick(k){
+ if(answered)return;answered=true;
+ var q=set[i],ok=k==q.a,p=q.p,btns=app.querySelectorAll(".opt");
+ btns.forEach(function(b,n){b.disabled=true;if(n==q.a)b.classList.add("right");else if(n==k)b.classList.add("wrong")});
+ var us=used(L);if(us.indexOf(q.id)<0){us.push(q.id);saveUsed(L,us)}
+ if(ok){score+=p;hops++}else{score-=p/4}
+ var last=i==4;
+ var msg=ok?"🎉 Great hop! +"+p+" points":"Oops! −"+fmt(p/4)+" points. The answer is "+"ABCDE"[q.a]+".";
+ document.getElementById("fb").innerHTML='<div class="why"><b>'+msg+'</b><br>'+esc(q.e)+'</div><div class="row"><button class="go" id="nx">'+(last?"See my result":"Next puzzle")+'</button></div>';
+ document.getElementById("nx").focus();
+ document.getElementById("nx").onclick=function(){if(last)end();else{i++;show()}};
+}
+function end(){
+ var mx=T.reduce(function(a,b){return a+b},0),s=Math.max(0,score),m=s>=mx*.88?["🥇","Kangaroo champion!"]:s>=mx*.58?["🥈","Super hopper!"]:s>=mx*.26?["🥉","Nice hopping!"]:["🌱","Keep practising, you’ll get there!"];
+ var h='<div class="card"><div class="big">'+m[0]+'</div><h2 style="text-align:center">'+m[1]+'</h2><div class="score">'+fmt(s)+' / '+mx+'</div><p class="sub" style="text-align:center">You landed '+hops+' of 5 puzzles on the '+G[L].grade+' trail.</p><div class="row" style="justify-content:center"><button class="go" id="again">Play again</button><button class="ghost" id="hm">All trails</button></div></div>';
+ app.innerHTML=h;
+ document.getElementById("again").onclick=function(){start(L)};
+ document.getElementById("hm").onclick=home;
+}
+home();
+</script>
+</body>
+</html>
