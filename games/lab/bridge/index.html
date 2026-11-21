@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <title>Bridge Builder</title>
 <style>
 :root{--ink:#1b1f3b;--bg:#eef5ff;--card:#fff;--muted:#5b6782;--ok:#2b8a3e;--bad:#e03131;--gold:#ffd43b;--nora:#7048e8;--lucas:#f76707;--milo:#2f9e44;--blue:#1c7ed6;color-scheme:light;
@@ -22,22 +22,28 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:grid;place-items:center;z-index:40;padding:16px}
 .modal>div{background:#fff;border:4px solid var(--ink);border-radius:22px;padding:16px 20px;max-width:560px;width:100%;text-align:center}
 .modal h2{margin:4px 0}
-.rot{display:none;position:fixed;bottom:6px;left:0;right:0;text-align:center;color:var(--muted);font-size:.85rem;pointer-events:none}
-@media (orientation:portrait) and (max-width:700px){.rot{display:block}}
+.rot{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:max(8px,env(safe-area-inset-bottom));pointer-events:none;background:var(--gold);border:3px solid var(--ink);border-radius:999px;padding:4px 14px;font-weight:800;font-size:.85rem;z-index:45;white-space:nowrap}
+body[data-pref="land"] .rot.l{display:none}
+@media (orientation:portrait) and (max-width:600px){body[data-pref="land"] .rot.l{display:block}}
+@media (orientation:landscape) and (max-height:450px){body[data-pref="port"] .rot.p{display:block}}
+/* phones: never cut things off; scroll instead, and keep the top bar small */
+@media (max-width:600px),(max-height:450px){.main{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}.tag{display:none}.ttl{font-size:1.05rem}.top a,.ico{width:44px;height:44px;flex-basis:44px}.pill{padding:2px 8px;font-size:.9rem}.app{padding-top:4px}}
 .drag{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .m{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px}
 #cv{flex:1;min-height:0;width:100%;border:4px solid var(--ink);border-radius:18px;background:#d0ebff;touch-action:none}
 .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .hint{color:var(--muted);font-size:.95rem;flex:1}
-</style></head><body>
+@media (max-width:600px){.bar .hint{display:none}.bar{justify-content:center}.bar .btn{flex:1;padding:6px 8px;font-size:1rem}}
+@media (max-height:450px){.bar .hint{display:none}.bar{justify-content:flex-end}.bar .btn{min-height:44px;padding:4px 14px}}
+</style></head><body data-pref="land">
 <div class="app">
   <div class="top"><a href="../../#tester" aria-label="Back to arcade">←</a><div class="ttl">🌉 Bridge Builder<span class="tag">sample</span></div><span class="pill" id="cost">💰 $0 / $4000</span><button class="ico" id="snd" aria-label="Sound">🔊</button></div>
   <div class="main" id="main"><div class="m"><canvas id="cv"></canvas><div class="bar"><span class="hint" id="hint">Tap two dots to add a beam. Tap a beam to remove it. Gray road beams must go all the way across!</span>
 <button class="btn ghost" id="clr">Clear</button><button class="btn ghost" id="ex">Example</button><button class="btn" id="go">🚚 Test!</button></div></div></div>
 </div>
 <div class="toast hide" id="toast"></div>
-<div class="rot">Turn your phone sideways ↻</div>
+<div class="rot l">Turn your phone sideways ↻</div><div class="rot p">Best with your phone upright ↻</div>
 <script>
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rnd(a,b+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
@@ -82,12 +88,12 @@ const total=()=>beams.reduce((s,b)=>s+costOf(b),0);
 function fit(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;sc=Math.min(cv.width/W,cv.height/H);ox=(cv.width-W*sc)/2;oy=(cv.height-H*sc)/2;draw();}
 function toW(e){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;return{x:((e.clientX-r.left)*d-ox)/sc,y:((e.clientY-r.top)*d-oy)/sc};}
 cv.addEventListener('pointerdown',e=>{if(sim)return;audio();const p=toW(e);
-  const n=N.findIndex(q=>Math.hypot(q.x-p.x,q.y-p.y)<20);
+  const px=sc/(devicePixelRatio||1),hr=Math.min(ST*.48,Math.max(20,24/px));let n=-1,bd=1e9;N.forEach((q,i)=>{const d=Math.hypot(q.x-p.x,q.y-p.y);if(d<bd){bd=d;n=i;}});if(bd>hr)n=-1;
   if(n>=0){if(sel===null){sel=n;sfx.pop();}else if(sel===n)sel=null;else if(near(N[sel],N[n])){const a=Math.min(sel,n),b=Math.max(sel,n);
       if(!beams.some(x=>x.a===a&&x.b===b)){const nb={a:a,b:b};if(total()+costOf(nb)>BUDGET){sfx.bad();toast('💸 Over budget!');}else{beams.push(nb);sfx.pop();}}sel=n;}
     else{sel=n;sfx.pop();}draw();return;}
   // remove a beam near the tap
-  const k=beams.findIndex(b=>{const A=N[b.a],B=N[b.b],t=Math.max(0,Math.min(1,((p.x-A.x)*(B.x-A.x)+(p.y-A.y)*(B.y-A.y))/((B.x-A.x)**2+(B.y-A.y)**2)));return Math.hypot(A.x+(B.x-A.x)*t-p.x,A.y+(B.y-A.y)*t-p.y)<10;});
+  const k=beams.findIndex(b=>{const A=N[b.a],B=N[b.b],t=Math.max(0,Math.min(1,((p.x-A.x)*(B.x-A.x)+(p.y-A.y)*(B.y-A.y))/((B.x-A.x)**2+(B.y-A.y)**2)));return Math.hypot(A.x+(B.x-A.x)*t-p.x,A.y+(B.y-A.y)*t-p.y)<Math.max(10,14/(sc/(devicePixelRatio||1)));});
   if(k>=0){beams.splice(k,1);sfx.boing();}sel=null;draw();});
 function draw(){const c=cx;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cv.width,cv.height);c.setTransform(sc,0,0,sc,ox,oy);
   c.fillStyle='#d0ebff';c.fillRect(0,0,W,H);c.fillStyle='#4dabf7';c.fillRect(X0,ROAD+150,X1-X0,H);
@@ -96,8 +102,8 @@ function draw(){const c=cx;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cv.width,
   const P=sim?sim.p:N;const live=sim?sim.b:beams.map(b=>Object.assign({},b));
   live.forEach(b=>{if(b.broken)return;const A=P[b.a],B=P[b.b];c.lineCap='round';c.strokeStyle='#1b1f3b';c.lineWidth=isRoad(b)?13:9;c.beginPath();c.moveTo(A.x,A.y);c.lineTo(B.x,B.y);c.stroke();
     const s=sim&&b.s?Math.min(1,b.s):0;c.strokeStyle=isRoad(b)?(s>.5?'#e03131':'#868e96'):`rgb(${200+55*s|0},${150-120*s|0},${60-40*s|0})`;c.lineWidth=isRoad(b)?8:5;c.stroke();});
-  if(!sim)N.forEach((q,i)=>{c.fillStyle=q.fix?'#1b1f3b':i===sel?'#ffd43b':'#fff';c.strokeStyle='#1b1f3b';c.lineWidth=2.5;c.beginPath();c.arc(q.x,q.y,q.fix?8:7,0,6.283);c.fill();c.stroke();
-    if(sel!==null&&near(N[sel],q)){c.strokeStyle='#ffd43b';c.lineWidth=3;c.beginPath();c.arc(q.x,q.y,12,0,6.283);c.stroke();}});
+  if(!sim)N.forEach((q,i)=>{c.fillStyle=q.fix?'#1b1f3b':i===sel?'#ffd43b':'#fff';c.strokeStyle='#1b1f3b';c.lineWidth=2.5;const rr=Math.min(14,Math.max(q.fix?8:7,(q.fix?9:8)/(sc/(devicePixelRatio||1))));c.beginPath();c.arc(q.x,q.y,rr,0,6.283);c.fill();c.stroke();
+    if(sel!==null&&near(N[sel],q)){c.strokeStyle='#ffd43b';c.lineWidth=3;c.beginPath();c.arc(q.x,q.y,Math.max(12,13/(sc/(devicePixelRatio||1))),0,6.283);c.stroke();}});
   if(sim){c.font='54px system-ui';c.textAlign='center';c.textBaseline='bottom';c.save();c.translate(sim.tx,sim.ty);c.rotate(sim.ta||0);c.scale(-1,1);c.fillText('🚚',0,4);c.restore();}
   $('cost').textContent='💰 $'+total()+' / $'+BUDGET;}
 /* Test: a real truss calculation. Each truck position: solve K·u = F. No triangles = it can't hold (wobbly). Too much force in a beam = it snaps. */
