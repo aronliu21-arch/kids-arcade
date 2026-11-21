@@ -123,7 +123,7 @@ h2.q{margin:6px 0 24px;text-align:center;font-family:"Lilita One","Arial Rounded
 }
 .kidbtn:active{transform:translate(6px,6px);box-shadow:2px 2px 0 var(--ink)}
 .kidbtn:focus-visible{outline:4px solid #ffd43b;outline-offset:4px}
-.kidbtn.nora{--k:var(--nora)} .kidbtn.lucas{--k:var(--lucas)} .kidbtn.milo{--k:var(--milo)}
+.kidbtn.nora{--k:var(--nora)} .kidbtn.lucas{--k:var(--lucas)} .kidbtn.milo{--k:var(--milo)} .kidbtn.tester{--k:#495057}
 .face{width:min(160px,38vw);aspect-ratio:1;border-radius:50%;background:#fff;border:5px solid var(--ink);display:grid;place-items:center;overflow:hidden}
 .face svg{width:88%;height:88%}
 .kname{font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-size:2.6rem;line-height:1;text-shadow:3px 3px 0 var(--ink)}
@@ -187,11 +187,21 @@ const GAMES = [
   {zh:[["袋","ㄉㄞˋ"],["鼠","ㄕㄨˇ"],["跳","ㄊㄧㄠˋ"],["跳","ㄊㄧㄠˋ"],["樂","ㄌㄜˋ"]], en:"Kanga Hop", url:"games/kanga-hop/", kids:["nora","lucas"], color:"#d9480f", icon:"kanga"},
   {zh:[["九","ㄐㄧㄡˇ"],["九","ㄐㄧㄡˇ"],["大","ㄉㄚˋ"],["闖","ㄔㄨㄤˇ"],["關","ㄍㄨㄢ"]], en:"Times Table Challenge", url:"games/times-challenge/", kids:["nora"], color:"#1f8a70", icon:"jj"},
   {zh:[["草","ㄘㄠˇ"],["寫","ㄒㄧㄝˇ"],["字","ㄗˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Nora’s Cursive Quest", url:"games/cursive-quest/", kids:["nora"], color:"#5f3dc4", icon:"cursive"},
-  {zh:[["生","ㄕㄥ"],["活","ㄏㄨㄛˊ"],["小","ㄒㄧㄠˇ"],["高","ㄍㄠ"],["手","ㄕㄡˇ"]], en:"Life Skills Club", url:"games/life-skills/", kids:["nora","lucas","milo"], color:"#0b7285", icon:"skills"}
+  {zh:[["生","ㄕㄥ"],["活","ㄏㄨㄛˊ"],["小","ㄒㄧㄠˇ"],["高","ㄍㄠ"],["手","ㄕㄡˇ"]], en:"Life Skills Club", url:"games/life-skills/", kids:["nora","lucas","milo"], color:"#0b7285", icon:"skills"},
+  {zh:[["犯","ㄈㄢˋ"],["罪","ㄗㄨㄟˋ"],["現","ㄒㄧㄢˋ"],["場","ㄔㄤˇ"]], en:"Crime Scene Explorer", url:"games/lab/crime-scene/", kids:["tester"], color:"#7048e8", icon:"skills"},
+  {zh:[["檸","ㄋㄧㄥˊ"],["檬","ㄇㄥˊ"],["汁","ㄓ"],["小","ㄒㄧㄠˇ"],["攤","ㄊㄢ"]], en:"Lemonade Stand", url:"games/lab/lemonade/", kids:["tester"], color:"#f59f00", icon:"lab"},
+  {zh:[["造","ㄗㄠˋ"],["橋","ㄑㄧㄠˊ"],["高","ㄍㄠ"],["手","ㄕㄡˇ"]], en:"Bridge Builder", url:"games/lab/bridge/", kids:["tester"], color:"#1c7ed6", icon:"lab"},
+  {zh:[["卡","ㄎㄚˇ"],["片","ㄆㄧㄢˋ"],["交","ㄐㄧㄠ"],["換","ㄏㄨㄢˋ"],["市","ㄕˋ"],["集","ㄐㄧˊ"]], en:"Card Trading Market", url:"games/lab/trading-market/", kids:["tester"], color:"#f76707", icon:"lab"},
+  {zh:[["卡","ㄎㄚˇ"],["片","ㄆㄧㄢˋ"],["商","ㄕㄤ"],["店","ㄉㄧㄢˋ"]], en:"Card Shop", url:"games/lab/card-shop/", kids:["tester"], color:"#e8590c", icon:"lab"},
+  {zh:[["亂","ㄌㄨㄢˋ"],["七","ㄑㄧ"],["八","ㄅㄚ"],["糟","ㄗㄠ"],["的","˙ㄉㄜ"],["家","ㄐㄧㄚ"]], en:"Dino’s Messy House", url:"games/lab/messy-house/", kids:["tester"], color:"#2f9e44", icon:"lab"},
+  {zh:[["過","ㄍㄨㄛˋ"],["馬","ㄇㄚˇ"],["路","ㄌㄨˋ"]], en:"Cross the Street", url:"games/lab/cross-street/", kids:["tester"], color:"#e03131", icon:"lab"},
+  {zh:[["恐","ㄎㄨㄥˇ"],["龍","ㄌㄨㄥˊ"],["廚","ㄔㄨˊ"],["房","ㄈㄤˊ"]], en:"Dino Kitchen", url:"games/lab/dino-kitchen/", kids:["tester"], color:"#d9480f", icon:"lab"},
+  {zh:[["寶","ㄅㄠˇ"],["藏","ㄗㄤˋ"],["門","ㄇㄣˊ"]], en:"Treasure Door · Team Play", url:"games/lab/team-door/", kids:["tester"], color:"#5f3dc4", icon:"lab"}
 ];
-const NAMES = {nora:"Nora", lucas:"Lucas", milo:"Milo"};
+const NAMES = {nora:"Nora", lucas:"Lucas", milo:"Milo", tester:"Tester"};
 const S = 'stroke="#1b1f3b" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"';
 const ICONS = {
+  lab:`<svg viewBox="0 0 64 64"><path d="M24 6h16M27 6v18L10 52c-2 4 0 6 4 6h36c4 0 6-2 4-6L37 24V6" fill="#fff" ${S}/><path d="M16 44h32l4 8c1 2 0 3-2 3H14c-2 0-3-1-2-3z" fill="#69db7c" ${S}/><circle cx="30" cy="36" r="3" fill="#69db7c" ${S}/><circle cx="38" cy="28" r="2" fill="#69db7c"/></svg>`,
   skills:`<svg viewBox="0 0 64 64"><rect x="30" y="6" width="22" height="30" rx="4" fill="#74c0fc" ${S} transform="rotate(14 41 21)"/><circle cx="26" cy="28" r="17" fill="#d0ebff" ${S}/><circle cx="26" cy="28" r="12" fill="none" stroke="#ffc61a" stroke-width="4"/><path d="M38 40l14 14" stroke="#1b1f3b" stroke-width="9" stroke-linecap="round"/><path d="M38 40l14 14" stroke="#8b5a2b" stroke-width="5" stroke-linecap="round"/><text x="26" y="35" text-anchor="middle" font-family="Lilita One,sans-serif" font-size="18" font-weight="900" fill="#1b1f3b">?</text></svg>`,
   kanga:`<svg viewBox="0 0 64 64"><path d="M14 56c2-10 6-16 14-20-4-8-2-18 6-22l2-8 4 7c6 2 9 7 8 13l6 3-2 4-6-1c-1 4-3 7-6 9 4 4 6 9 6 15h-8c0-4-2-7-4-9-4 3-8 6-10 9z" fill="#e8890c" ${S}/><path d="M28 36c-8 4-16 8-22 16" fill="none" ${S}/><circle cx="42" cy="18" r="2" fill="#1b1f3b"/><text x="20" y="22" text-anchor="middle" font-family="Lilita One,sans-serif" font-size="14" font-weight="900" fill="#1b1f3b">?</text></svg>`,
   jj:`<svg viewBox="0 0 64 64"><rect x="8" y="10" width="48" height="44" rx="10" fill="#d8efe8" ${S}/><text x="32" y="42" text-anchor="middle" font-family="PingFang TC,Noto Sans TC,sans-serif" font-size="22" font-weight="900" fill="#1b1f3b">九九</text><path d="M46 6l2 5 5 1-4 3 1 5-4-3-5 3 1-5-4-3 5-1z" fill="#ffd43b" stroke="#1b1f3b" stroke-width="2" stroke-linejoin="round"/></svg>`,
@@ -222,6 +232,7 @@ function titleHTML(t){
   }).join("");
 }
 const FACES = {
+  tester:`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#e9ecef" ${S}/><path d="M38 22h24M42 22v22L26 72c-2 4 0 7 4 7h40c4 0 6-3 4-7L58 44V22" fill="#fff" ${S}/><path d="M32 62h36l5 10c1 3 0 4-3 4H30c-3 0-4-1-3-4z" fill="#69db7c" ${S}/></svg>`,
   nora:`<svg viewBox="0 0 100 100"><path d="M74 34c14 4 18 22 10 40-2-10-6-16-12-20z" fill="#2b2118" ${S}/><path d="M22 52c-2-24 12-36 28-36s30 12 28 36c-4-10-12-16-28-18-16 2-24 8-28 18z" fill="#2b2118" ${S}/><circle cx="50" cy="56" r="26" fill="#ffd8b5" ${S}/><path d="M24 50c4-12 14-18 26-18s22 6 26 18c-8-6-16-8-26-8s-18 2-26 8z" fill="#2b2118" ${S}/><path d="M70 30l10-6 2 10z" fill="#f06595" ${S}/><circle cx="41" cy="58" r="3.5" fill="#1b1f3b"/><circle cx="59" cy="58" r="3.5" fill="#1b1f3b"/><circle cx="35" cy="66" r="4" fill="#ffa8a8"/><circle cx="65" cy="66" r="4" fill="#ffa8a8"/><path d="M43 68q7 7 14 0" fill="none" stroke="#1b1f3b" stroke-width="3.5" stroke-linecap="round"/></svg>`,
   lucas:`<svg viewBox="0 0 100 100"><circle cx="50" cy="58" r="26" fill="#ffd8b5" ${S}/><path d="M22 52l-2-18 10 6 2-16 10 10 6-16 8 14 10-12 2 16 12-6-4 20c-8-8-18-12-28-12s-20 4-28 14z" fill="#2b2118" ${S}/><circle cx="41" cy="60" r="3.5" fill="#1b1f3b"/><circle cx="59" cy="60" r="3.5" fill="#1b1f3b"/><path d="M40 70q10 9 20 0z" fill="#fff" ${S}/></svg>`,
   milo:`<svg viewBox="0 0 100 100"><path d="M30 22l6-10 6 10M44 18l6-10 6 10M58 22l6-10 6 10" fill="#ffd43b" ${S}/><path d="M16 56c0-22 16-36 36-36s34 14 34 34c0 14-10 26-34 26H30c-8 0-14-10-14-24z" fill="#40c057" ${S}/><circle cx="62" cy="46" r="8" fill="#fff" ${S}/><circle cx="64" cy="46" r="3.5" fill="#1b1f3b"/><circle cx="80" cy="60" r="2.5" fill="#1b1f3b"/><path d="M40 66q14 8 30 0" fill="none" stroke="#1b1f3b" stroke-width="3.5" stroke-linecap="round"/><circle cx="34" cy="48" r="4" fill="#2f9e44"/><circle cx="44" cy="38" r="3" fill="#2f9e44"/></svg>`
@@ -229,7 +240,8 @@ const FACES = {
 const ZH = {
   nora:[["幼","ㄧㄡˋ"],["晴","ㄑㄧㄥˊ"]],
   lucas:[["陸","ㄌㄨˋ"],["晨","ㄔㄣˊ"]],
-  milo:[["洛","ㄌㄨㄛˋ"],["明","ㄇㄧㄥˊ"]]
+  milo:[["洛","ㄌㄨㄛˋ"],["明","ㄇㄧㄥˊ"]],
+  tester:[["測","ㄘㄜˋ"],["試","ㄕˋ"]]
 };
 const $ = id => document.getElementById(id);
 $("hzh").innerHTML = titleHTML([["小","ㄒㄧㄠˇ"],["朋","ㄆㄥˊ"],["友","ㄧㄡˇ"],["遊","ㄧㄡˊ"],["戲","ㄒㄧˋ"],["廳","ㄊㄧㄥ"]]);

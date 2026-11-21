@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Card Trading Market</title>
+<style>
+:root{--ink:#1b1f3b;--bg:#eef5ff;--card:#fff;--muted:#5b6782;--ok:#2b8a3e;--bad:#e03131;--gold:#ffd43b;--nora:#7048e8;--lucas:#f76707;--milo:#2f9e44;--blue:#1c7ed6;color-scheme:light;
+--font:"Arial Rounded MT Bold",ui-rounded,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-tap-highlight-color:transparent;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+.app{height:100%;display:flex;flex-direction:column;padding:8px max(10px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin-bottom:6px}
+.top a,.ico{width:48px;height:48px;border-radius:14px;border:3px solid var(--ink);background:#fff;display:grid;place-items:center;text-decoration:none;color:var(--ink);font-size:1.3rem;flex:0 0 48px}
+.ttl{flex:1;min-width:0;font-weight:800;font-size:1.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{background:#ffe8cc;border:2px solid var(--ink);border-radius:999px;padding:1px 10px;font-size:.8rem;font-weight:700;margin-left:6px;vertical-align:middle}
+.pill{background:#fff;border:3px solid var(--ink);border-radius:999px;padding:4px 12px;font-weight:800;white-space:nowrap}
+.main{flex:1;min-height:0;position:relative}
+.btn{border:3px solid var(--ink);border-radius:16px;background:var(--blue);color:#fff;font-weight:800;font-size:1.15rem;padding:8px 18px;min-height:52px;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.ghost{background:#fff;color:var(--ink)}.btn[disabled]{opacity:.45}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#fff;border:3px solid var(--ink);border-radius:18px;padding:10px 18px;font-weight:800;font-size:1.2rem;z-index:50;box-shadow:0 6px 0 var(--ink);text-align:center;max-width:92vw;pointer-events:none;transition:opacity .3s}
+.toast.hide{opacity:0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:grid;place-items:center;z-index:40;padding:16px}
+.modal>div{background:#fff;border:4px solid var(--ink);border-radius:22px;padding:16px 20px;max-width:560px;width:100%;text-align:center}
+.modal h2{margin:4px 0}
+.rot{display:none;position:fixed;bottom:6px;left:0;right:0;text-align:center;color:var(--muted);font-size:.85rem;pointer-events:none}
+@media (orientation:portrait) and (max-width:700px){.rot{display:block}}
+.drag{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.gc{width:clamp(56px,11vh,88px);aspect-ratio:3/4;border-radius:10px;border:3px solid #1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:3px;position:relative;box-shadow:0 3px 0 rgba(0,0,0,.25);flex:0 0 auto}
+.gc .ce{font-size:clamp(1.4rem,4vh,2.2rem);line-height:1;margin-top:10px}.gc .cn{font-size:.55rem;font-weight:700;text-align:center;line-height:1}
+.gc .cv{position:absolute;top:-10px;left:-10px;width:28px;height:28px;border-radius:50%;background:#ffd43b;border:3px solid #1a1a1a;display:grid;place-items:center;font-weight:800;font-size:.95rem}
+.m{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto;gap:8px}
+.album{display:flex;gap:6px;justify-content:center;background:#fff;border:4px solid var(--ink);border-radius:16px;padding:6px;align-items:center}
+.album .slot{width:clamp(38px,7vh,52px);aspect-ratio:3/4;border:3px dashed #adb5bd;border-radius:8px;display:grid;place-items:center;font-size:clamp(1rem,3vh,1.5rem);opacity:.35}
+.album .slot.got{opacity:1;border-style:solid;border-color:var(--ink)}
+.album b{margin-right:6px}
+.mid{display:grid;grid-template-columns:1fr auto;gap:10px;min-height:0}
+.scalebox{position:relative;background:#e7f5ff;border:4px solid var(--ink);border-radius:18px;overflow:hidden}
+.post{position:absolute;left:50%;bottom:0;width:16px;height:70%;background:#8b5a2b;border:3px solid var(--ink);transform:translateX(-50%)}
+.beam{position:absolute;left:8%;right:8%;top:30%;height:14px;background:#8b5a2b;border:3px solid var(--ink);border-radius:8px;transition:transform .5s;transform-origin:50% 50%}
+.pan{position:absolute;top:100%;width:44%;min-height:clamp(90px,20vh,140px);border:4px solid var(--ink);border-top:none;border-radius:0 0 50% 50%/0 0 30% 30%;background:rgba(255,255,255,.85);display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-content:flex-start;padding:14px 4px 22px;transition:transform .5s;transform-origin:50% 0}
+.pan.l{left:-4%}.pan.r{right:-4%}
+.pan .lab{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-weight:800;font-size:.85rem}
+.pan.glow{background:#fff3bf}
+.friend{width:clamp(130px,22vw,220px);background:#fff;border:4px solid var(--ink);border-radius:18px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.friend .face{font-size:clamp(2.2rem,8vh,4rem);line-height:1}
+.friend .bub{background:#fff4e6;border:3px solid var(--ink);border-radius:14px;padding:4px 8px;font-weight:700;font-size:.9rem}
+.binder{display:flex;gap:12px;overflow-x:auto;background:#ffe8cc;border:4px solid var(--ink);border-radius:16px;padding:14px 12px 8px;min-height:clamp(96px,17vh,130px);align-items:center}
+.binder b{flex:0 0 auto}
+</style></head><body>
+<div class="app">
+  <div class="top"><a href="../../#tester" aria-label="Back to arcade">←</a><div class="ttl">🤝 Card Trading Market<span class="tag">sample</span></div><span class="pill" id="alb">📒 0 / 6</span><button class="ico" id="snd" aria-label="Sound">🔊</button></div>
+  <div class="main" id="main"><div class="m"><div class="album" id="album"></div>
+<div class="mid"><div class="scalebox" id="sb"><div class="post"></div><div class="beam" id="beam"><div class="pan l" id="panL"><span class="lab">You give</span></div><div class="pan r" id="panR"><span class="lab" id="rLab">He gives</span></div></div></div>
+<div class="friend"><div class="face">👦</div><b id="fname"></b><div class="bub" id="bub"></div><button class="btn" id="trade" disabled>Trade! 🤝</button><button class="btn ghost" id="pass">Say no</button></div></div>
+<div class="binder" id="binder"><b>Your cards →</b></div></div></div>
+</div>
+<div class="toast hide" id="toast"></div>
+<div class="rot">Turn your phone sideways ↻</div>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rnd(a,b+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true;try{SOUND=localStorage.getItem('lab.sound')!=='0';}catch(e){}
+let ac=null;function audio(){if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(ac&&ac.state==='suspended')ac.resume();return ac;}
+function tone(f,d,type,vol,dl){if(!SOUND)return;const c=audio();if(!c)return;try{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+(dl||0);o.type=type||'sine';o.frequency.setValueAtTime(f,t);o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(vol||.15,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d+.05);}catch(e){}}
+const sfx={good(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.16,i*.07));},bad(){tone(200,.25,'sawtooth',.08);},pop(){tone(880,.08,'triangle',.14);},
+  boing(){if(!SOUND)return;const c=audio();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(300,c.currentTime);o.frequency.exponentialRampToValueAtTime(90,c.currentTime+.3);o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.15,c.currentTime);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.35);o.start();o.stop(c.currentTime+.4);},
+  coin(){tone(1320,.08,'square',.06);tone(1760,.12,'square',.05,.06);},honk(){tone(330,.35,'square',.09);tone(415,.35,'square',.07);},
+  win(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.3,'triangle',.15,i*.1));}};
+function say(t,rate){if(!SOUND||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=rate||.95;u.pitch=1.1;speechSynthesis.speak(u);}catch(e){}}
+let tt=0;function toast(h,ms){const t=$('toast');t.innerHTML=h;t.classList.remove('hide');clearTimeout(tt);tt=setTimeout(()=>t.classList.add('hide'),ms||1600);}
+function modal(html,btns){const m=document.createElement('div');m.className='modal';m.innerHTML='<div>'+html+'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px"></div></div>';
+  const row=m.querySelector('div>div:last-child');(btns||[]).forEach(([l,f,ghost])=>{const b=document.createElement('button');b.className='btn'+(ghost?' ghost':'');b.textContent=l;b.onclick=()=>{m.remove();f&&f();};row.appendChild(b);});document.body.appendChild(m);return m;}
+$('snd').textContent=SOUND?'🔊':'🔇';$('snd').onclick=()=>{SOUND=!SOUND;$('snd').textContent=SOUND?'🔊':'🔇';try{localStorage.setItem('lab.sound',SOUND?'1':'0');}catch(e){}if(!SOUND&&'speechSynthesis' in window)speechSynthesis.cancel();};
+/* Drag helper: makeDrag(el,{onDrop(el,x,y)->bool keep}) — pointer events, works with touch + mouse */
+function makeDrag(el,o){el.classList.add('drag');el.addEventListener('pointerdown',e=>{if(o.can&&!o.can(el))return;e.preventDefault();audio();el.setPointerCapture(e.pointerId);
+  const r=el.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,ph=document.createElement('div');
+  const st={pos:el.style.position,l:el.style.left,t:el.style.top,z:el.style.zIndex,w:el.style.width};
+  el.style.width=r.width+'px';el.style.position='fixed';el.style.left=r.left+'px';el.style.top=r.top+'px';el.style.zIndex=30;el.style.transform='scale(1.08)';
+  o.start&&o.start(el);
+  const mv=ev=>{el.style.left=(ev.clientX-dx)+'px';el.style.top=(ev.clientY-dy)+'px';o.move&&o.move(el,ev.clientX,ev.clientY);};
+  const up=ev=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);el.style.transform='';
+    const keep=o.drop?o.drop(el,ev.clientX,ev.clientY):false;
+    if(!keep){el.style.position=st.pos;el.style.left=st.l;el.style.top=st.t;el.style.zIndex=st.z;el.style.width=st.w;}};
+  el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);});}
+const hit=(el,x,y)=>{const r=el.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;};
+function confetti(){const c=document.createElement('canvas');c.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:60';c.width=innerWidth;c.height=innerHeight;document.body.appendChild(c);
+  const x=c.getContext('2d'),P=Array.from({length:120},()=>({x:innerWidth/2,y:innerHeight/3,vx:rnd(-7,7),vy:rnd(-9,1),c:pick(['#ffd43b','#ff6b6b','#74c0fc','#b197fc','#69db7c'])}));let n=0;
+  (function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.25;x.fillStyle=p.c;x.fillRect(p.x,p.y,7,7);});if(++n<120)requestAnimationFrame(f);else c.remove();})();}
+const CARDS=[['Fire Fox','🦊','#ff8787'],['Wave Whale','🐳','#74c0fc'],['Leaf Lizard','🦎','#8ce99a'],['Spark Bat','🦇','#ffe066'],['Rock Rhino','🦏','#ced4da'],['Ice Owl','🦉','#a5d8ff'],
+  ['Moon Moth','🦋','#d0bfff'],['Sand Snake','🐍','#f2c98a'],['Storm Hawk','🦅','#91a7ff'],['Thunder Bull','🐂','#ffc078'],['Dragon Pup','🐉','#faa2c1']];
+const BOYS=['Leo','Max','Ben','Sam','Kai','Theo','Jay','Ryan','Eli','Owen','Finn','Noah'];
+function cardEl(c){const d=document.createElement('div');d.className='gc';d.style.background=c.c;d.innerHTML='<span class="cv">'+c.v+'</span><span class="ce">'+c.e+'</span><span class="cn">'+c.n+'</span>';d._c=c;return d;}
+
+const SET=CARDS.slice(0,6);let got=new Set(),mine=[],offer=null,friend='';
+const mk=(i,v)=>({n:CARDS[i][0],e:CARDS[i][1],c:CARDS[i][2],v:v,i:i});
+function renderAlbum(){$('album').innerHTML='<b>📒 Set</b>'+SET.map((c,i)=>'<div class="slot'+(got.has(i)?' got':'')+'" style="'+(got.has(i)?'background:'+c[2]:'')+'">'+c[1]+'</div>').join('');$('alb').textContent='📒 '+got.size+' / 6';}
+function onPan(){return [...$('panL').querySelectorAll('.gc')].map(d=>d._c);}
+function tilt(){const l=onPan().reduce((a,c)=>a+c.v,0),r=offer?offer.v:0,d=Math.max(-4,Math.min(4,r-l));$('beam').style.transform='rotate('+(d*4)+'deg)';
+  [$('panL'),$('panR')].forEach(p=>p.style.transform='rotate('+(-d*4)+'deg)');const lv=l===r&&l>0;if(lv&&$('trade').disabled){sfx.good();say('Level! That’s fair.');}$('trade').disabled=!lv;}
+function addToBinder(c){const d=cardEl(c);$('binder').appendChild(d);
+  makeDrag(d,{move:(el,x,y)=>$('panL').classList.toggle('glow',hit($('sb'),x,y)),drop:(el,x,y)=>{$('panL').classList.remove('glow');const into=hit($('sb'),x,y)?$('panL'):$('binder');
+    el.style.position='';el.style.left='';el.style.top='';el.style.zIndex='';el.style.width='';into.insertBefore(el,into.id==='panL'?into.querySelector('.lab'):null);sfx.pop();tilt();return true;}});}
+function canMake(v,t){const s=new Set([0]);v.forEach(x=>[...s].forEach(y=>s.add(y+x)));return s.has(t);}
+function newFriend(){
+  const need=[...SET.keys()].filter(i=>!got.has(i));if(!need.length){sfx.win();confetti();modal('<h2>Set complete! 📒✨</h2><p>Every trade was fair. Nice trading, Lucas!</p>',[['New set',start]]);return;}
+  [...$('panL').querySelectorAll('.gc')].forEach(d=>$('binder').appendChild(d));
+  friend=pick(BOYS);const i=pick(need);offer=mk(i,ri(3,9));$('fname').textContent=friend;
+  $('panR').querySelectorAll('.gc').forEach(x=>x.remove());$('panR').insertBefore(cardEl(offer),$('rLab'));$('rLab').textContent=friend+' gives';
+  if(!canMake(mine.map(c=>c.v),offer.v)){const c=mk(ri(6,10),ri(1,Math.min(6,offer.v)));mine.push(c);addToBinder(c);if(!canMake(mine.map(c=>c.v),offer.v)){const c2=mk(ri(6,10),offer.v);mine.push(c2);addToBinder(c2);}}
+  $('bub').textContent='I’ll trade my '+offer.n+' ('+offer.v+'). Make it fair!';say(friend+' will trade his '+offer.n+'. It’s worth '+offer.v+'. Put cards on your side to make it level.');tilt();}
+$('trade').onclick=()=>{const give=[...$('panL').querySelectorAll('.gc')];give.forEach(d=>{mine.splice(mine.indexOf(d._c),1);d.remove();});got.add(offer.i);renderAlbum();sfx.win();
+  say('Fair trade! You got the '+offer.n+'.');toast('🤝 Fair trade! +'+offer.e);
+  if(mine.length<4){for(let k=0;k<3;k++){const c=mk(ri(6,10),ri(1,6));mine.push(c);addToBinder(c);}setTimeout(()=>toast('🎁 New card pack!'),1000);}
+  $('trade').disabled=true;setTimeout(newFriend,900);};
+$('pass').onclick=()=>{say('No thanks!');newFriend();};
+function start(){got=new Set();mine=[];$('binder').querySelectorAll('.gc').forEach(x=>x.remove());for(let k=0;k<7;k++){const c=mk(ri(6,10),ri(1,6));mine.push(c);addToBinder(c);}renderAlbum();newFriend();}
+start();
+window.__test={state:()=>({got:got.size,offer:offer&&offer.v,pan:onPan().map(c=>c.v),mine:mine.map(c=>c.v)})};
+
+</script></body></html>
