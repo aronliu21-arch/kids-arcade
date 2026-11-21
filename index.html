@@ -102,7 +102,9 @@ main{max-width:1200px;margin:0 auto;padding:28px 18px 40px}
 .name.zh.xl{font-size:1.15rem}
 .en{margin:0 0 12px;text-align:center;font-weight:800;font-size:1.02rem;line-height:1.2;color:#fff;opacity:.95}
 .zc{display:inline-flex;align-items:center}
-.zy{writing-mode:vertical-rl;text-orientation:upright;font-family:"PingFang TC","Noto Sans TC",sans-serif;font-size:.55em;line-height:1;letter-spacing:0;text-shadow:none;font-weight:700;margin-left:1px}
+.zy{display:inline-flex;align-items:center;font-family:"PingFang TC","Noto Sans TC",sans-serif;font-size:.55em;line-height:1;letter-spacing:0;text-shadow:none;font-weight:700;margin-left:1px}
+.zs{display:inline-flex;flex-direction:column;align-items:center}.zs i{font-style:normal;display:block;line-height:1}
+.zt{font-size:.8em;line-height:1;margin-left:.02em}.zn{font-size:.8em;line-height:.6}
 .who{margin-top:auto;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .kid{
   font-weight:800;font-size:.95rem;color:#fff;
@@ -211,7 +213,11 @@ const ICONS = {
 };
 function titleHTML(t){
   if (typeof t === "string") return t;
-  return t.map(([c,z]) => `<span class="zc"><span>${c}</span><span class="zy">${z}</span></span>`).join("");
+  return t.map(([c,z]) => {
+    const neutral = z.startsWith("˙"), body = z.replace(/[˙ˊˇˋ]/g, ""), tone = (z.match(/[ˊˇˋ]/) || [""])[0];
+    const col = (neutral ? '<i class="zn">˙</i>' : "") + [...body].map(s => `<i>${s}</i>`).join("");
+    return `<span class="zc"><span>${c}</span><span class="zy"><span class="zs">${col}</span>${tone ? `<span class="zt">${tone}</span>` : ""}</span></span>`;
+  }).join("");
 }
 const FACES = {
   nora:`<svg viewBox="0 0 100 100"><path d="M74 34c14 4 18 22 10 40-2-10-6-16-12-20z" fill="#2b2118" ${S}/><path d="M22 52c-2-24 12-36 28-36s30 12 28 36c-4-10-12-16-28-18-16 2-24 8-28 18z" fill="#2b2118" ${S}/><circle cx="50" cy="56" r="26" fill="#ffd8b5" ${S}/><path d="M24 50c4-12 14-18 26-18s22 6 26 18c-8-6-16-8-26-8s-18 2-26 8z" fill="#2b2118" ${S}/><path d="M70 30l10-6 2 10z" fill="#f06595" ${S}/><circle cx="41" cy="58" r="3.5" fill="#1b1f3b"/><circle cx="59" cy="58" r="3.5" fill="#1b1f3b"/><circle cx="35" cy="66" r="4" fill="#ffa8a8"/><circle cx="65" cy="66" r="4" fill="#ffa8a8"/><path d="M43 68q7 7 14 0" fill="none" stroke="#1b1f3b" stroke-width="3.5" stroke-linecap="round"/></svg>`,
