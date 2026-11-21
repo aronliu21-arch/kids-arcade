@@ -57,6 +57,7 @@ h1{
   -webkit-text-stroke:2px var(--ink);
   paint-order:stroke fill;
 }
+.hzh{display:flex;justify-content:center;gap:2px;margin-top:8px;color:#fff;font-family:"PingFang TC","Noto Sans TC",sans-serif;font-weight:900;font-size:1.6rem;text-shadow:2px 2px 0 var(--ink)}
 .sub{margin:10px 0 0;color:#fff;font-weight:800;font-size:1.15rem}
 main{max-width:1200px;margin:0 auto;padding:28px 18px 40px}
 .grid{
@@ -96,7 +97,10 @@ main{max-width:1200px;margin:0 auto;padding:28px 18px 40px}
   font-size:1.45rem;line-height:1.15;
   text-shadow:2px 2px 0 var(--ink);
 }
-.name.zh{font-size:1.6rem;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 1px}
+.name.zh{font-size:1.6rem;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 1px;margin-bottom:6px}
+.name.zh.long{font-size:1.3rem;flex-wrap:nowrap}
+.name.zh.xl{font-size:1.15rem}
+.en{margin:0 0 12px;text-align:center;font-weight:800;font-size:1.02rem;line-height:1.2;color:#fff;opacity:.95}
 .zc{display:inline-flex;align-items:center}
 .zy{writing-mode:vertical-rl;text-orientation:upright;font-family:"PingFang TC","Noto Sans TC",sans-serif;font-size:.55em;line-height:1;letter-spacing:0;text-shadow:none;font-weight:700;margin-left:1px}
 .who{margin-top:auto;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
@@ -140,11 +144,12 @@ footer{text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;padd
 <body>
 <header>
   <h1>Kids Arcade</h1>
-  <p class="sub" id="sub">Who’s playing?</p>
+  <div class="hzh" lang="zh-Hant" id="hzh"></div>
+  <p class="sub" id="sub">誰要玩？ · Who’s playing?</p>
 </header>
 <main>
   <section id="pickView">
-    <h2 class="q">Tap your name!</h2>
+    <h2 class="q">點你的名字 · Tap your name!</h2>
     <div class="pick" id="pick"></div>
   </section>
   <section id="gameView" hidden>
@@ -160,22 +165,22 @@ footer{text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;padd
 <script>
 // To add a game: add one line to this list. kids = whose page it appears on.
 const GAMES = [
-  {title:"Spelling Bees", url:"games/spelling-bees/", kids:["nora","lucas"], color:"#2f9e44", icon:"spell"},
-  {title:"Pitch Smarts", url:"games/pitch-smarts/", kids:["nora","lucas"], color:"#1c7ed6", icon:"ball"},
-  {title:"Question Beasts", url:"games/question-beasts/", kids:["nora","lucas","milo"], color:"#c2255c", icon:"beast"},
-  {title:[["九","ㄐㄧㄡˇ"],["九","ㄐㄧㄡˇ"],["乘","ㄔㄥˊ"],["法","ㄈㄚˇ"],["表","ㄅㄧㄠˇ"],["像","ㄒㄧㄤˋ"],["素","ㄙㄨˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], url:"games/times-tables/", kids:["nora"], color:"#0c8599", icon:"grid"},
-  {title:"Lucas’s Sports Stars", url:"games/sports-stars/", kids:["lucas"], color:"#f76707", icon:"star"},
-  {title:[["幼","ㄧㄡˋ"],["晴","ㄑㄧㄥˊ"],["的","˙ㄉㄜ"],["魔","ㄇㄛˊ"],["法","ㄈㄚˇ"],["學","ㄒㄩㄝˊ"],["院","ㄩㄢˋ"]], url:"games/magic-academy/", kids:["nora"], color:"#7048e8", icon:"hat"},
-  {title:[["龍","ㄌㄨㄥˊ"],["心","ㄒㄧㄣ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], url:"games/dragon-heart/", kids:["nora","lucas"], color:"#e03131", icon:"dragon"},
-  {title:"Milo’s Dino Journey", url:"games/dino-journey/", kids:["milo"], color:"#e8890c", icon:"dino"},
-  {title:"Calendar Quest", url:"games/calendar-quest/", kids:["nora","lucas","milo"], color:"#d6336c", icon:"cal"},
-  {title:[["遊","ㄧㄡˊ"],["戲","ㄒㄧˋ"],["間","ㄐㄧㄢ"]], url:"games/game-room/", kids:["nora","lucas","milo"], color:"#3b5bdb", icon:"pad"},
-  {title:"Family Zoo", url:"games/family-zoo/", kids:["nora","lucas","milo"], color:"#9c6644", icon:"lion"},
-  {title:[["注","ㄓㄨˋ"],["音","ㄧㄣ"],["拼","ㄆㄧㄣ"],["拼","ㄆㄧㄣ"],["看","ㄎㄢˋ"]], url:"games/zhuyin/", kids:["nora","lucas","milo"], color:"#be4bdb", icon:"zhuyin"},
-  {title:[["光","ㄍㄨㄤ"],["靈","ㄌㄧㄥˊ"],["大","ㄉㄚˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], url:"games/lumi-quest/", kids:["nora","lucas"], color:"#f59f00", icon:"lumi"},
-  {title:"Math Quest", url:"https://aronliu21-arch.github.io/math-quest/", kids:["nora","lucas","milo"], color:"#4c6ef5", icon:"pie"},
-  {title:"Doodle Dash", url:"https://aronliu21-arch.github.io/drawing-game-/", kids:["nora","lucas"], color:"#0ca678", icon:"doodle"},
-  {title:"Critter Grove", url:"games/critter-grove/", kids:["nora","lucas","milo"], color:"#2b8a3e", icon:"critter"}
+  {zh:[["拼","ㄆㄧㄣ"],["字","ㄗˋ"],["蜜","ㄇㄧˋ"],["蜂","ㄈㄥ"]], en:"Spelling Bees", url:"games/spelling-bees/", kids:["nora","lucas"], color:"#2f9e44", icon:"spell"},
+  {zh:[["足","ㄗㄨˊ"],["球","ㄑㄧㄡˊ"],["高","ㄍㄠ"],["手","ㄕㄡˇ"]], en:"Pitch Smarts", url:"games/pitch-smarts/", kids:["nora","lucas"], color:"#1c7ed6", icon:"ball"},
+  {zh:[["問","ㄨㄣˋ"],["題","ㄊㄧˊ"],["怪","ㄍㄨㄞˋ"],["獸","ㄕㄡˋ"]], en:"Question Beasts", url:"games/question-beasts/", kids:["nora","lucas","milo"], color:"#c2255c", icon:"beast"},
+  {zh:[["九","ㄐㄧㄡˇ"],["九","ㄐㄧㄡˇ"],["乘","ㄔㄥˊ"],["法","ㄈㄚˇ"],["表","ㄅㄧㄠˇ"],["像","ㄒㄧㄤˋ"],["素","ㄙㄨˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Times Table Pixel Quest", url:"games/times-tables/", kids:["nora"], color:"#0c8599", icon:"grid"},
+  {zh:[["陸","ㄌㄨˋ"],["晨","ㄔㄣˊ"],["的","˙ㄉㄜ"],["運","ㄩㄣˋ"],["動","ㄉㄨㄥˋ"],["明","ㄇㄧㄥˊ"],["星","ㄒㄧㄥ"]], en:"Lucas’s Sports Stars", url:"games/sports-stars/", kids:["lucas"], color:"#f76707", icon:"star"},
+  {zh:[["幼","ㄧㄡˋ"],["晴","ㄑㄧㄥˊ"],["的","˙ㄉㄜ"],["魔","ㄇㄛˊ"],["法","ㄈㄚˇ"],["學","ㄒㄩㄝˊ"],["院","ㄩㄢˋ"]], en:"Nora’s Magic Academy", url:"games/magic-academy/", kids:["nora"], color:"#7048e8", icon:"hat"},
+  {zh:[["龍","ㄌㄨㄥˊ"],["心","ㄒㄧㄣ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Dragon Heart Quest", url:"games/dragon-heart/", kids:["nora","lucas"], color:"#e03131", icon:"dragon"},
+  {zh:[["洛","ㄌㄨㄛˋ"],["明","ㄇㄧㄥˊ"],["的","˙ㄉㄜ"],["恐","ㄎㄨㄥˇ"],["龍","ㄌㄨㄥˊ"],["之","ㄓ"],["旅","ㄌㄩˇ"]], en:"Milo’s Dino Journey", url:"games/dino-journey/", kids:["milo"], color:"#e8890c", icon:"dino"},
+  {zh:[["月","ㄩㄝˋ"],["曆","ㄌㄧˋ"],["大","ㄉㄚˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Calendar Quest", url:"games/calendar-quest/", kids:["nora","lucas","milo"], color:"#d6336c", icon:"cal"},
+  {zh:[["遊","ㄧㄡˊ"],["戲","ㄒㄧˋ"],["間","ㄐㄧㄢ"]], en:"Game Room", url:"games/game-room/", kids:["nora","lucas","milo"], color:"#3b5bdb", icon:"pad"},
+  {zh:[["家","ㄐㄧㄚ"],["庭","ㄊㄧㄥˊ"],["動","ㄉㄨㄥˋ"],["物","ㄨˋ"],["園","ㄩㄢˊ"]], en:"Family Zoo", url:"games/family-zoo/", kids:["nora","lucas","milo"], color:"#9c6644", icon:"lion"},
+  {zh:[["注","ㄓㄨˋ"],["音","ㄧㄣ"],["拼","ㄆㄧㄣ"],["拼","ㄆㄧㄣ"],["看","ㄎㄢˋ"]], en:"Zhuyin Spell-It", url:"games/zhuyin/", kids:["nora","lucas","milo"], color:"#be4bdb", icon:"zhuyin"},
+  {zh:[["光","ㄍㄨㄤ"],["靈","ㄌㄧㄥˊ"],["大","ㄉㄚˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Lumi Quest", url:"games/lumi-quest/", kids:["nora","lucas"], color:"#f59f00", icon:"lumi"},
+  {zh:[["數","ㄕㄨˋ"],["學","ㄒㄩㄝˊ"],["大","ㄉㄚˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Math Quest", url:"https://aronliu21-arch.github.io/math-quest/", kids:["nora","lucas","milo"], color:"#4c6ef5", icon:"pie"},
+  {zh:[["塗","ㄊㄨˊ"],["鴉","ㄧㄚ"],["衝","ㄔㄨㄥ"],["衝","ㄔㄨㄥ"],["衝","ㄔㄨㄥ"]], en:"Doodle Dash", url:"https://aronliu21-arch.github.io/drawing-game-/", kids:["nora","lucas"], color:"#0ca678", icon:"doodle"},
+  {zh:[["小","ㄒㄧㄠˇ"],["精","ㄐㄧㄥ"],["靈","ㄌㄧㄥˊ"],["森","ㄙㄣ"],["林","ㄌㄧㄣˊ"]], en:"Critter Grove", url:"games/critter-grove/", kids:["nora","lucas","milo"], color:"#2b8a3e", icon:"critter"}
 ];
 const NAMES = {nora:"Nora", lucas:"Lucas", milo:"Milo"};
 const S = 'stroke="#1b1f3b" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"';
@@ -212,6 +217,7 @@ const ZH = {
   milo:[["洛","ㄌㄨㄛˋ"],["明","ㄇㄧㄥˊ"]]
 };
 const $ = id => document.getElementById(id);
+$("hzh").innerHTML = titleHTML([["小","ㄒㄧㄠˇ"],["朋","ㄆㄥˊ"],["友","ㄧㄡˇ"],["遊","ㄧㄡˊ"],["戲","ㄒㄧˋ"],["廳","ㄊㄧㄥ"]]);
 $("pick").innerHTML = Object.keys(NAMES).map(k => `
   <button class="kidbtn ${k}" type="button" data-kid="${k}" aria-label="${NAMES[k]}">
     <div class="face" aria-hidden="true">${FACES[k]}</div>
@@ -225,7 +231,8 @@ $("back").addEventListener("click", () => { location.hash = ""; });
 function cardHTML(g){
   return `<a class="cart" href="${g.url}" target="_blank" rel="noopener" style="--c:${g.color}">
     <div class="emblem" aria-hidden="true">${ICONS[g.icon]}</div>
-    <div class="name${typeof g.title === "string" ? "" : " zh"}" lang="${typeof g.title === "string" ? "en" : "zh-Hant"}">${titleHTML(g.title)}</div>
+    <div class="name zh${g.zh.length>6?' xl':g.zh.length>4?' long':''}" lang="zh-Hant">${titleHTML(g.zh)}</div>
+    <div class="en" lang="en">${g.en}</div>
   </a>`;
 }
 function show(){
@@ -233,7 +240,7 @@ function show(){
   const valid = Object.prototype.hasOwnProperty.call(NAMES, kid);
   $("pickView").hidden = valid;
   $("gameView").hidden = !valid;
-  $("sub").textContent = valid ? "Tap a game to play!" : "Who\u2019s playing?";
+  $("sub").textContent = valid ? "點一個遊戲 · Tap a game to play!" : "誰要玩？ · Who\u2019s playing?";
   if (!valid) return;
   $("whoNow").innerHTML = `<span class="mini" aria-hidden="true">${FACES[kid]}</span><span>${NAMES[kid]}\u2019s games</span>`;
   $("grid").innerHTML = GAMES.filter(g => g.kids.includes(kid)).map(cardHTML).join("");
