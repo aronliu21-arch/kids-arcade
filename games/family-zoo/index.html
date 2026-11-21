@@ -84,6 +84,11 @@ svg.i{width:1em;height:1em;display:block;fill:none;stroke:currentColor;stroke-wi
 .sheetHead h2{margin:0;font-family:var(--font-sign);font-weight:400;font-size:clamp(22px,2.8vw,32px)}
 .x{width:52px;height:52px;border-radius:50%;background:#fff;color:var(--navy);display:grid;place-items:center;font-size:24px}
 /* draw */
+.headBtns{display:flex;align-items:center;gap:8px;flex:none}
+.headGo{display:none;align-items:center;gap:6px;min-height:52px;padding:0 16px;border-radius:999px;background:var(--gold);color:var(--navy);border:4px solid #fff;font-family:var(--font-sign);font-size:20px;white-space:nowrap}
+.headGo span{font-size:24px;display:flex}.headGo:active{transform:scale(.95)}
+#draw .sheetHead h2{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body:has(#draw:not([hidden])) #turn{display:none!important}
 #draw .sheet{width:min(1060px,100%);height:min(760px,100%)}
 .drawBody{flex:1;display:flex;gap:16px;padding:16px;min-height:0}
 .paperWrap{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;position:relative}
@@ -317,9 +322,27 @@ button.pill{cursor:pointer}
   .who span:last-child{display:none}.who{padding:4px}.right{gap:6px}.roundBtn{width:48px;height:48px;font-size:22px}
   .tool .lbl{display:none}.tools{gap:8px}.tool .roundBtn{width:52px;height:52px;font-size:24px}
   .drawBtn{font-size:18px;padding:8px 14px 8px 8px;border-width:4px;gap:8px}.drawBtn .bi{width:40px;height:40px;font-size:20px}
-  .drawBody{flex-direction:column}.side{width:auto}.paperWrap{min-height:0}#paper{height:auto;width:100%}.hint{display:none}
+  .hint{display:none}
   .swatches{grid-template-columns:repeat(6,1fr)}.szact{flex-direction:row;gap:6px}.szact>div{flex:1;gap:6px}
 }
+/* phones: confirm buttons live in the header so the home bar, Safari toolbar or keyboard can never cover them */
+@media (max-height:520px),(max-width:600px){
+  #draw .sheet{height:100%}
+  #draw[data-step=draw] #makeTop,#draw[data-step=reveal] #zooTop{display:flex}
+  #makeBtn,#toZooBtn{display:none}
+  #draw .sheetHead{padding:6px 8px 6px 14px}#draw .sheetHead h2{font-size:20px}
+}
+@media (max-width:600px){
+  #draw .drawBody{flex-direction:column;padding:10px;gap:10px}
+  #draw .paperWrap{flex:1;min-height:0}
+  #draw .side{width:auto;flex:none;gap:8px}
+  #draw .swatches{grid-template-columns:repeat(6,1fr);gap:6px}.sw{border-width:3px}
+  #draw .szact{flex-direction:row;gap:6px}#draw .szact>div{flex:1;gap:6px}#draw .sz,#draw .act{min-height:48px}
+  .reveal{grid-template-columns:1fr;grid-template-rows:minmax(150px,36%) 1fr;padding:10px;gap:10px}
+  .namePane h3{font-size:20px}
+}
+@media (max-height:520px) and (min-width:601px){.reveal{grid-template-columns:1fr 1fr;grid-template-rows:none}}
+@media (max-height:520px){.reveal{padding:10px;gap:10px}.namePane h3{font-size:20px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -355,7 +378,7 @@ button.pill{cursor:pointer}
 
   <div class="overlay" id="draw" hidden>
     <div class="sheet">
-      <div class="sheetHead"><h2 id="drawTitle">Draw an animal</h2><button class="x" id="drawClose" aria-label="Close" data-i="x"></button></div>
+      <div class="sheetHead"><h2 id="drawTitle">Draw an animal</h2><div class="headBtns"><button class="headGo" id="makeTop"><span data-i="sparkle"></span>Make it real</button><button class="headGo" id="zooTop"><span data-i="arrow"></span>To the zoo</button><button class="x" id="drawClose" aria-label="Close" data-i="x"></button></div></div>
       <div class="drawBody" id="drawStep">
         <div class="paperWrap"><canvas id="paper" width="640" height="640" aria-label="Drawing paper"></canvas></div>
         <div class="side">
@@ -375,7 +398,7 @@ button.pill{cursor:pointer}
         <div class="stage"><canvas id="preview"></canvas><div class="before"><span id="beforePic"></span><span>Before</span></div><div class="sparks" id="sparks"></div></div>
         <div class="namePane">
           <h3>What's its name?</h3>
-          <input id="nameIn" maxlength="16" placeholder="Bubbles" autocomplete="off" aria-label="Animal name">
+          <input id="nameIn" maxlength="16" enterkeyhint="done" placeholder="Bubbles" autocomplete="off" aria-label="Animal name">
           <div class="chips" id="nameChips"></div>
           <h3>A fun fact</h3>
           <div class="chips" id="factChips"></div>
@@ -1079,7 +1102,9 @@ function floodFill(fx,fy,hex){const W=640,H=640,x=clamp(Math.floor(fx),0,W-1),y=
   px.putImageData(img,0,0);return true;}
 function dot(p){style();px.beginPath();px.arc(p.x,p.y,px.lineWidth/2,0,7);px.fill();}
 function seg(a,b){style();px.beginPath();px.moveTo(a.x,a.y);px.lineTo(b.x,b.y);px.stroke();}
-function openDraw(){audio();closeSign();if(tickets()<COST.draw){needTickets(COST.draw,'to draw an animal');return;}$('#draw').hidden=false;$('#drawStep').hidden=false;$('#revealStep').hidden=true;$('#drawTitle').textContent='Draw an animal';
+function fitPaper(){const w=paper.parentElement;if(!w||$('#draw').hidden)return;paper.style.width=paper.style.height='';const s=Math.floor(Math.min(w.clientWidth,w.clientHeight));if(s>40){paper.style.width=paper.style.height=s+'px';}}
+function drawStepIs(k){$('#draw').dataset.step=k;}
+function openDraw(){audio();closeSign();if(tickets()<COST.draw){needTickets(COST.draw,'to draw an animal');return;}$('#draw').hidden=false;drawStepIs('draw');requestAnimationFrame(fitPaper);$('#drawStep').hidden=false;$('#revealStep').hidden=true;$('#drawTitle').textContent='Draw an animal';
   px.clearRect(0,0,640,640);hist=[];strokes=0;speak('Draw any animal you like. Make it big, and join up the lines!');}
 $('#drawClose').onclick=()=>{if(made&&!$('#revealStep').hidden){$('#toZooBtn').onclick();return;}$('#draw').hidden=true;stopPreview();};
 
@@ -1100,7 +1125,7 @@ $('#makeBtn').onclick=async()=>{audio();if(strokes<1){$('#paper').classList.remo
   const small=document.createElement('canvas');small.width=small.height=320;small.getContext('2d').drawImage(paper,0,0,320,320);const png=small.toDataURL('image/png');
   const img=await loadImg(png);const inf=inflate(img,S.nextAnimal);if(!inf){SFX.nope();toast('Draw a bit bigger');return;}
   if(!spend(COST.draw,'to draw an animal')){$('#draw').hidden=true;return;}
-  made={png,inf};$('#drawStep').hidden=true;$('#revealStep').hidden=false;$('#drawTitle').textContent='It came alive!';$('#beforePic').innerHTML='<img alt="Your drawing" src="'+png+'">';
+  made={png,inf};$('#drawStep').hidden=true;$('#revealStep').hidden=false;drawStepIs('reveal');$('#drawTitle').textContent='It came alive!';$('#beforePic').innerHTML='<img alt="Your drawing" src="'+png+'">';
   factSel=null;const nm=NAMES.slice().sort(()=>Math.random()-.5).slice(0,4);$('#nameIn').value='';
   $('#nameChips').innerHTML=nm.map(n=>'<button class="chip">'+n+'</button>').join('');$('#nameChips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;$('#nameIn').value=b.textContent;SFX.tap();speak(b.textContent,true);updToZoo();};
   $('#factChips').innerHTML=FACTS.slice().sort(()=>Math.random()-.5).slice(0,5).map(n=>'<button class="chip">'+n+'</button>').join('');
@@ -1115,6 +1140,12 @@ $('#makeBtn').onclick=async()=>{audio();if(strokes<1){$('#paper').classList.remo
     const el=reduced?1:(k<1?1-Math.pow(2,-10*k)*Math.cos(k*Math.PI*5):1);
     prevMesh.scale.set(s,s*(reduced?1:.6+.4*Math.min(1,k*1.5)),s*Math.max(.02,el));prevMesh.rotation.y=reduced?.5:(k<1?k*Math.PI*2+.4:.4+Math.sin((prevT-1.3)*.9)*.55);prevR.render(prevScene,prevCam);};loop();};
 function updToZoo(){const n=$('#nameIn').value.trim();$('#toZooTxt').textContent=n?'Take '+n+' to the zoo':'Take it to the zoo';}
+$('#makeTop').onclick=()=>$('#makeBtn').onclick();
+$('#zooTop').onclick=()=>{$('#nameIn').blur();$('#toZooBtn').onclick();};
+$('#nameIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#nameIn').blur();}});
+$('#nameIn').addEventListener('blur',()=>setTimeout(()=>{window.scrollTo(0,0);document.documentElement.scrollTop=document.body.scrollTop=0;},50));
+function drawResize(){if($('#draw').hidden)return;fitPaper();if(prevR&&!$('#revealStep').hidden)sizePreview();}
+addEventListener('resize',drawResize);if(window.visualViewport)visualViewport.addEventListener('resize',drawResize);addEventListener('orientationchange',()=>setTimeout(drawResize,300));
 $('#nameIn').addEventListener('input',updToZoo);
 function saveNow(){try{localStorage.setItem(KEY,JSON.stringify(S));return true;}catch(e){return false;}}
 $('#toZooBtn').onclick=async()=>{if(!made)return;let n=$('#nameIn').value.trim();if(!n){n=$('#nameChips .chip')?.textContent||'Buddy';}
