@@ -45,7 +45,7 @@ p{margin:0}.muted{color:var(--muted);font-size:15px}
 .big{font-size:54px;font-family:var(--display);vertical-align:middle;margin-left:8px}
 .han{font-size:1.5em;font-weight:400}
 .zy{display:inline-flex;align-items:center;margin-right:.12em}
-.zy i{writing-mode:vertical-rl;font-style:normal;font-size:.42em;line-height:1;margin-left:1px;color:var(--gold)}
+.zy .zv{display:inline-flex;align-items:center;font-style:normal;font-size:.42em;line-height:1;margin-left:1px;color:var(--gold)}.zv b{font-weight:inherit}.zv .zs{display:inline-flex;flex-direction:column;align-items:center}.zv u{text-decoration:none;display:block;line-height:1.05}.zv .zt{font-size:.9em;margin-left:.04em}.zv .zn{font-size:.9em;line-height:.6}.opt .zy .zv{font-size:.48em;color:#2f6a52}
 .berries{display:inline-flex;gap:8px;flex-wrap:wrap;vertical-align:middle;margin:4px 8px}
 .berries i{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffc2d2,#d6336c)}
 .opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -328,7 +328,7 @@ const KINDS={
  lucas:{math:['balance','coins','clock','sort'],logic:['odd','sudoku','shadow'],memory:['pairs','order','flash'],words:['spell','rhyme','parts']},
  nora:{math:['balance','coins','clock','sort'],logic:['odd','sudoku','shadow','paths'],memory:['pairs','order','flash'],words:['spell','rhyme','parts']}};
 const berries=n=>'<span class="berries">'+'<i></i>'.repeat(n)+'</span>';
-const zyOne=(ch,z)=>'<span class="zy">'+ch+'<i>'+z+'</i></span>';
+const zyOne=(ch,z)=>{const T='ˊˇˋ',a=[...z],tn=a.find(c=>T.includes(c))||'',neu=a[0]==='˙',s=a.filter(c=>!T.includes(c)&&c!=='˙');return '<span class="zy">'+ch+'<i class="zv"><b class="zs">'+(neu?'<u class="zn">˙</u>':'')+s.map(c=>'<u>'+c+'</u>').join('')+'</b>'+(tn?'<b class="zt">'+tn+'</b>':'')+'</i></span>'};
 const cc=(id,px,extra)=>'<canvas width="'+px*2+'" height="'+px*2+'" style="width:'+px+'px;height:'+px+'px" data-sp="'+id+'" data-lvl="1"'+(extra||'')+'></canvas>';
 function wr(ans,cands,k,min){min=min==null?0:min;const out=[];for(const v of cands){if(v!==ans&&v>=min&&out.indexOf(v)<0)out.push(v);if(out.length===k)return out}
   let d=1;while(out.length<k){[ans+d,ans-d].forEach(v=>{if(v>=min&&v!==ans&&out.indexOf(v)<0&&out.length<k)out.push(v)});d++}return out}
@@ -336,7 +336,7 @@ function choose(n,r){let a=1;for(let i=1;i<=r;i++)a=a*(n-r+i)/i;return Math.roun
 const sum=a=>a.reduce((s,v)=>s+v,0);
 const clockTxt=(h,m)=>h+':'+String(m).padStart(2,'0');
 function later(t){return t>=60?Math.floor(t/60)+' hour'+(t>=120?'s':'')+(t%60?' '+(t%60)+' minutes':''):t+' minutes'}
-function panelText(h){const d=document.createElement('div');d.innerHTML=String(h).replace(/<i>[^<]*<\/i>/g,'');return d.textContent}
+function panelText(h){const d=document.createElement('div');d.innerHTML=String(h).replace(/<i class="zv">.*?<\/i>/g,'');return d.textContent}
 function alive(tok){return G.tok===tok}
 function later_(ms,tok,fn){setTimeout(()=>{if(alive(tok))fn()},still?Math.min(ms,400):ms)}
 

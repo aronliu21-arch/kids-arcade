@@ -36,7 +36,8 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
   padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wrap>section{flex:1;min-height:0;display:flex;flex-direction:column}
 [hidden]{display:none!important}
-.zy{display:inline-flex;gap:.12em;vertical-align:middle;line-height:1}.zc{display:inline-flex;align-items:center}.zc .z{writing-mode:vertical-rl;text-orientation:upright;font-size:.36em;line-height:1.05;margin-left:.06em;color:var(--muted);font-weight:500;letter-spacing:-.05em}
+.zy{display:inline-flex;gap:.12em;vertical-align:middle;line-height:1}.zc{display:inline-flex;align-items:center}.zc .z{display:inline-flex;align-items:center;font-size:.36em;line-height:1.05;margin-left:.06em;color:var(--muted);font-weight:500;letter-spacing:-.05em}
+.zc .z b{font-weight:inherit}.zc .zs{display:inline-flex;flex-direction:column;align-items:center}.zc .zs i{font-style:normal;display:block;line-height:1.05}.zc .zt{margin-left:.03em;font-size:.85em}.zc .zn{font-size:.85em;line-height:.6}
 .top{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex:0 0 auto}
 .brand{font-weight:700;font-size:1.3rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .ico{width:48px;height:48px;flex:0 0 48px;border-radius:14px;border:2px solid var(--line);background:var(--card);font-size:1.3rem;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -269,7 +270,8 @@ const MON=['January','February','March','April','May','June','July','August','Se
 const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const ZHNUM=[['日','ㄖˋ'],['一','ㄧ'],['二','ㄦˋ'],['三','ㄙㄢ'],['四','ㄙˋ'],['五','ㄨˇ'],['六','ㄌㄧㄡˋ'],['七','ㄑㄧ'],['八','ㄅㄚ'],['九','ㄐㄧㄡˇ'],['十','ㄕˊ']];
 /* Chinese text with vertical zhuyin beside each character. zy is space-separated, one syllable per character. */
-function RB(ch,zy){const z=zy.split(' '),c=Array.from(ch);return '<span class="zy">'+c.map((x,i)=>'<span class="zc"><span class="c">'+x+'</span><span class="z">'+(z[i]||'')+'</span></span>').join('')+'</span>';}
+function ZYC(z){const T='ˊˇˋ',a=[...z],tn=a.find(c=>T.includes(c))||'',neu=a[0]==='˙',s=a.filter(c=>!T.includes(c)&&c!=='˙');return '<b class="zs">'+(neu?'<i class="zn">˙</i>':'')+s.map(c=>'<i>'+c+'</i>').join('')+'</b>'+(tn?'<b class="zt">'+tn+'</b>':'')}
+function RB(ch,zy){const z=zy.split(' '),c=Array.from(ch);return '<span class="zy">'+c.map((x,i)=>'<span class="zc"><span class="c">'+x+'</span><span class="z">'+ZYC(z[i]||'')+'</span></span>').join('')+'</span>';}
 function zhMonth(m){ // m 1..12
   if(m<=10)return RB(ZHNUM[m][0]+'月',ZHNUM[m][1]+' ㄩㄝˋ');
   return RB('十'+ZHNUM[m-10][0]+'月','ㄕˊ '+ZHNUM[m-10][1]+' ㄩㄝˋ');

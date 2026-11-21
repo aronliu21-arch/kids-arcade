@@ -98,7 +98,7 @@ main{max-width:1200px;margin:0 auto;padding:28px 18px 40px}
   text-shadow:2px 2px 0 var(--ink);
 }
 .name.zh{font-size:1.6rem;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 1px;margin-bottom:6px}
-.name.zh.long{font-size:1.3rem;flex-wrap:nowrap}
+.name.zh.fit{flex-wrap:nowrap;white-space:nowrap}
 .name.zh.xl{font-size:1.15rem}
 .en{margin:0 0 12px;text-align:center;font-weight:800;font-size:1.02rem;line-height:1.2;color:#fff;opacity:.95}
 .zc{display:inline-flex;align-items:center}
@@ -244,7 +244,7 @@ $("back").addEventListener("click", () => { location.hash = ""; });
 function cardHTML(g){
   return `<a class="cart" href="${g.url}" target="_blank" rel="noopener" style="--c:${g.color}">
     <div class="emblem" aria-hidden="true">${ICONS[g.icon]}</div>
-    <div class="name zh${g.zh.length>6?' xl':g.zh.length>4?' long':''}" lang="zh-Hant">${titleHTML(g.zh)}</div>
+    <div class="name zh${g.zh.length>6?' xl':' fit'}" lang="zh-Hant">${titleHTML(g.zh)}</div>
     <div class="en" lang="en">${g.en}</div>
   </a>`;
 }
@@ -257,8 +257,18 @@ function show(){
   if (!valid) return;
   $("whoNow").innerHTML = `<span class="mini" aria-hidden="true">${FACES[kid]}</span><span>${NAMES[kid]}\u2019s games</span>`;
   $("grid").innerHTML = GAMES.filter(g => g.kids.includes(kid)).map(cardHTML).join("");
+  fitNames();
   window.scrollTo(0, 0);
 }
+function fitNames(){
+  document.querySelectorAll(".name.zh.fit").forEach(el => {
+    el.style.fontSize = "";
+    let size = parseFloat(getComputedStyle(el).fontSize), max = el.parentElement.clientWidth - 16;
+    while (el.scrollWidth > max && size > 12) { size -= 1; el.style.fontSize = size + "px"; }
+  });
+}
+window.addEventListener("resize", fitNames);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNames);
 window.addEventListener("hashchange", show);
 show();
 </script>
