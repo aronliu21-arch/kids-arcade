@@ -253,11 +253,11 @@ body[data-pref="land"] .rot.l{display:none}
 .machine{border:4px solid #4a3426;border-radius:18px;overflow:hidden;max-width:640px;margin:6px auto;background:#fff}.machine svg{display:block;width:100%;height:auto}.machine.jolt{animation:shake .3s}
 .sewbtn{display:block;margin:10px auto;min-width:240px;min-height:84px;border-radius:42px;border:4px solid #4a3426;background:#e64980;color:#fff;font-size:1.4rem;font-weight:900;box-shadow:0 6px 0 #4a3426;touch-action:none;-webkit-user-select:none;user-select:none}.sewbtn.on{transform:translateY(5px);box-shadow:0 1px 0 #4a3426;background:#c2255c}
 .belt{position:relative;height:150px;max-width:720px;margin:8px auto;background:repeating-linear-gradient(90deg,#868e96 0 30px,#adb5bd 30px 60px);border:4px solid #4a3426;border-radius:16px;overflow:hidden;animation:beltmv 1s linear infinite}@keyframes beltmv{to{background-position:60px 0}}
-.box{position:absolute;top:14px;width:112px;height:112px;margin-left:-56px;background:#ffe8cc;border:3px solid #4a3426;border-radius:12px;display:flex;align-items:center;justify-content:center}.box .it{width:96px;height:96px;pointer-events:none;border:0;background:none}.box.gold{background:#ffe066;box-shadow:0 0 16px #ffd43b}.box.first{outline:4px solid #f783ac}
+.box{position:absolute;left:0;top:14px;width:112px;height:112px;margin-left:-56px;will-change:transform;background:#ffe8cc;border:3px solid #4a3426;border-radius:12px;display:flex;align-items:center;justify-content:center}.box .it{width:96px;height:96px;pointer-events:none;border:0;background:none}.box.gold{background:#ffe066;box-shadow:0 0 16px #ffd43b}.box.first{outline:4px solid #f783ac}
 .box.fly{animation:bfly .3s forwards}@keyframes bfly{to{transform:translateY(160px) scale(.4);opacity:0}}.box.fall{animation:bfall .4s forwards}@keyframes bfall{to{transform:translateY(200px) rotate(60deg);opacity:0}}
 .bin.yes{background:#b2f2bb}.bin.no{background:#ffc9c9;animation:shake .25s}.bins.shuf{animation:shake .4s}
 .play{position:relative;height:min(52vh,440px);max-width:720px;margin:6px auto;background:linear-gradient(#fff0f6,#ffe3ec);border:4px solid #4a3426;border-radius:18px;overflow:hidden;-webkit-user-select:none;user-select:none}
-.bcup{position:absolute;bottom:2%;left:50%;transform:translateX(-50%);font-size:4.4rem;line-height:1;transition:left .05s}.bcup.shk{animation:shake .3s}.fall{position:absolute;font-size:2.2rem;transform:translate(-50%,-50%);pointer-events:none}
+.bcup{position:absolute;bottom:2%;left:50%;transform:translateX(-50%);font-size:4.4rem;line-height:1;transition:left .05s}.bcup.shk{animation:shake .3s}.fall{position:absolute;left:0;top:0;font-size:2.2rem;pointer-events:none;will-change:transform}
 .ovens{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:520px;margin:8px auto}.oven{aspect-ratio:1;border:4px solid #4a3426;border-radius:18px;background:#343a40;font-size:3rem;box-shadow:inset 0 0 0 8px #495057;cursor:pointer}
 .oven.raw span{filter:saturate(.2) brightness(1.4)}.oven.gold{background:#e8590c;box-shadow:inset 0 0 0 8px #495057,0 0 20px #ffd43b}.oven.gold span{filter:drop-shadow(0 0 8px #fff3bf);display:inline-block;animation:twinkle .5s infinite}.oven.burnt span{filter:brightness(.2)}.oven.burnt{background:#212529}
 .needle svg{width:100%;height:100%}.play.needle{background:#fff9db;cursor:pointer}
@@ -289,6 +289,11 @@ body[data-pref="land"] .rot.l{display:none}
 .stackp{background:linear-gradient(#a5d8ff,#e7f5ff 70%,#fff)}
 .ovens{background:linear-gradient(#ffe8cc,#ffd8a8);padding:12px;border:4px solid #a61e4d;border-radius:22px}
 .bcup{filter:drop-shadow(0 4px 0 rgba(0,0,0,.2))}
+.machine.jammed{filter:grayscale(.7) brightness(.85)}.machine.jammed:after{content:'JAMMED!';position:absolute}#career.jolt .sewbox{animation:shake .3s}
+#career{background:linear-gradient(#fff0f6,#f8f0fc 60%,#e7f5ff)!important}
+.play,.belt,.machine,.ovens,.counter,.pairs{contain:layout paint}
+.belt{animation:none;background:#868e96}.belt:before{content:'';position:absolute;inset:0 -60px 0 0;background:repeating-linear-gradient(90deg,#868e96 0 30px,#adb5bd 30px 60px);animation:beltmv2 1s linear infinite;will-change:transform}@keyframes beltmv2{from{transform:translateX(-60px)}to{transform:translateX(0)}}
+.oven.gold span{animation:none}
 
 </style></head><body data-pref="any">
 <div class="app">
@@ -1261,6 +1266,7 @@ $('newTheme').innerHTML='🎲 '+zh('New theme');$('modeBtn').innerHTML='🏠 '+z
 document.querySelector('.rot.l').innerHTML=zh('Turn your phone sideways')+' ↻';document.querySelector('.rot.p').innerHTML=zh('Hold your phone upright')+' ↻';
 fresh();renderTabs();renderItems();renderFig();newTheme();
 const ZT=t=>esc(String(t));
+const TX=(el,v)=>{v=String(v);if(el&&el.textContent!==v)el.textContent=v;};
 
 /* time-based confetti: same speed on any device, never slow-motion */
 confetti=function(){const c=document.createElement('canvas'),W=innerWidth,H=innerHeight,dpr=Math.min(1.5,window.devicePixelRatio||1);c.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60';c.width=W*dpr;c.height=H*dpr;document.body.appendChild(c);
@@ -1499,7 +1505,7 @@ function cafeRush(){const DR=[['tea','Milk tea','#d9a066',4],['coffee','Coffee',
       if(!ok){sfx.boing();combo=0;upd();toast('❌ Not what they ordered!',1400);return;}
       const u=unit(c.o),sub=u*c.qty,tax=Math.round(sub*.1),total=sub+tax,frac=c.p/c.max,tip=Math.max(0,Math.ceil(frac*4)-1)*(c.vip?2:1),need=total+tip,pay=[10,20,50,100].find(b=>b>=need+1)||100;
       paying={name:c.o.size+' '+DR.find(d=>d[0]===c.o.drink)[1],qty:c.qty,unit:u,sub,tax,total,tip,pay,got:0};Q[sel]=null;sel=null;sfx.good();drawQ();drawSt();};};
-  const upd=()=>{s.querySelector('#hT').textContent='⏱ '+Math.ceil(T);s.querySelector('#hM').textContent='💰 '+earn;s.querySelector('#hC').textContent='🔥 x'+Math.max(1,combo);};
+  const upd=()=>{TX(s.querySelector('#hT'),'⏱ '+Math.ceil(T));TX(s.querySelector('#hM'),'💰 '+earn);TX(s.querySelector('#hC'),'🔥 x'+Math.max(1,combo));};
   let spawnIn=0;
   lp(s,'#ctr',dt=>{T-=dt;spawnIn-=dt;if(rush>0){rush-=dt;if(rush<=0)s.querySelector('#rb').innerHTML='';}
     if(!rush&&served>=4&&Math.random()<dt/40){rush=10;s.querySelector('#rb').innerHTML='🚨 RUSH HOUR! Customers are lining up!';tone(1200,.1,'square',.06);}
@@ -1509,7 +1515,7 @@ function cafeRush(){const DR=[['tea','Milk tea','#d9a066',4],['coffee','Coffee',
     upd();if(T<=0){endJob(earn,'🧋 Shop closed! Served '+served,'cash');return false;}});
   drawQ();drawSt();}
 /* 🧵 Sewing machine: hold to sew when the dotted seam is under the needle, let go over pins */
-function sewMachine(){let T=45,earn=0,combo=0,speed=90,x=0,holding=false,stitched=0,snaps=0;
+function sewMachine(){let T=45,earn=0,combo=0,speed=90,x=0,holding=false,stitched=0,snaps=0,jam=0,messy=0;
   const COLS=['#f783ac','#4dabf7','#ffd43b','#69db7c','#9775fa'];let col=pick(COLS);
   const s=cScreen('<h2>🧵 Sewing Machine</h2>'+hud()+'<p class="note">Hold the big button when the <b>dotted seam</b> is under the needle. Let go over <b>📍 pins</b>!</p><div class="machine"><svg id="fab" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid slice"><g id="strip"></g><g id="stitches"></g><path d="M300 0V96" stroke="#868e96" stroke-width="10"/><path id="needle" d="M300 60V120" stroke="#495057" stroke-width="4"/><rect x="250" y="0" width="100" height="40" rx="10" fill="#e64980" stroke="#4a3426" stroke-width="3"/></svg></div><button class="sewbtn" id="hold">HOLD TO SEW</button>');
   const host=s.querySelector('.cin'),strip=s.querySelector('#strip'),sts=s.querySelector('#stitches'),needle=s.querySelector('#needle');
@@ -1520,17 +1526,18 @@ function sewMachine(){let T=45,earn=0,combo=0,speed=90,x=0,holding=false,stitche
     segs.map(g=>g.t==='seam'?'<path d="M'+g.a+' 120H'+g.b+'" stroke="#868e96" stroke-width="3" stroke-dasharray="8 6"/>':'<text x="'+g.a+'" y="132" font-size="28">📍</text>').join('');
   const btn=s.querySelector('#hold');const on=e=>{e.preventDefault();holding=true;btn.classList.add('on');},off=()=>{holding=false;btn.classList.remove('on');};
   btn.addEventListener('pointerdown',on);btn.addEventListener('pointerup',off);btn.addEventListener('pointerleave',off);btn.addEventListener('pointercancel',off);
-  const upd=()=>{s.querySelector('#hT').textContent='⏱ '+Math.ceil(T);s.querySelector('#hM').textContent='💰 '+earn;s.querySelector('#hC').textContent='🔥 x'+Math.max(1,1+Math.floor(combo/20));};
+  const upd=()=>{TX(s.querySelector('#hT'),'⏱ '+Math.ceil(T));TX(s.querySelector('#hM'),'💰 '+earn);TX(s.querySelector('#hC'),'🔥 x'+Math.max(1,1+Math.floor(combo/20)));};
   let last=performance.now(),acc=0,t0=0,cool=0;
   const loop=now=>{if(!s.isConnected||!s.querySelector('#fab'))return;const dt=Math.min(.1,(now-last)/1000);last=now;T-=dt;t0+=dt;speed=90+t0*3;x+=speed*dt;cool-=dt;
     strip.setAttribute('transform','translate('+(-x)+' 0)');sts.setAttribute('transform','translate('+(-x)+' 0)');
     const at=x+300,g=segs.find(g=>at>=g.a&&at<=g.b);
     needle.setAttribute('d',holding?'M300 '+(60+Math.abs(Math.sin(now/40))*40)+'V'+(100+Math.abs(Math.sin(now/40))*24):'M300 60V96');
-    if(holding){acc+=speed*dt;if(acc>=12){acc=0;
-      if(g&&g.t==='seam'){sts.insertAdjacentHTML('beforeend','<path d="M'+(at-5)+' 120h10" stroke="'+col+'" stroke-width="4" stroke-linecap="round"/>');stitched++;combo++;if(stitched%5===0){const m=1+Math.floor(combo/20);earn+=m;popFx(host,host.clientWidth/2,150,'+$'+m);}tone(1600,.015,'square',.03);}
-      else if(g&&g.t==='pin'&&cool<=0){cool=.6;snaps++;combo=0;sfx.boing();popFx(host,host.clientWidth/2,150,'💥 Snap!','#c92a2a');s.querySelector('.machine').classList.add('jolt');setTimeout(()=>s.querySelector('.machine')&&s.querySelector('.machine').classList.remove('jolt'),300);}
-      else {combo=Math.max(0,combo-1);}}}
-    upd();if(T<=0){endJob(earn,'🧵 Done! '+stitched+' stitches, '+snaps+' snapped pins','sew');return;}
+    jam-=dt;if(jam>0){needle.setAttribute('d','M300 60V96');s.querySelector('.machine').classList.add('jammed');}else s.querySelector('.machine').classList.remove('jammed');
+    if(holding&&jam<=0){acc+=speed*dt;if(acc>=12){acc=0;
+      if(g&&g.t==='seam'){if(sts.childNodes.length>70)sts.firstChild.remove();sts.insertAdjacentHTML('beforeend','<path d="M'+(at-5)+' 120h10" stroke="'+col+'" stroke-width="4" stroke-linecap="round"/>');stitched++;combo++;if(stitched%5===0){const m=1+Math.floor(combo/20);earn+=m;popFx(host,host.clientWidth/2,150,'+$'+m);}tone(1600,.015,'square',.03);}
+      else if(g&&g.t==='pin'&&cool<=0){cool=.6;snaps++;combo=0;const lose=Math.min(earn,2);earn-=lose;jam=1.5;T=Math.max(0,T-3);sfx.boing();tone(120,.5,'sawtooth',.08);popFx(host,host.clientWidth/2,150,'💥 Snap! Needle jammed'+(lose?' −$'+lose:'')+' −3s','#c92a2a');s.querySelector('.machine').classList.add('jolt');setTimeout(()=>s.querySelector('.machine')&&s.querySelector('.machine').classList.remove('jolt'),300);}
+      else {combo=0;messy++;sts.insertAdjacentHTML('beforeend','<path d="M'+(at-5)+' '+(110+Math.random()*20)+'l10 '+(Math.random()*12-6)+'" stroke="#e03131" stroke-width="3" stroke-linecap="round"/>');tone(220,.03,'square',.03);if(messy%4===0){const lose=Math.min(earn,1);earn-=lose;popFx(host,host.clientWidth/2,150,'Messy stitches!'+(lose?' −$1':''),'#e8590c');}}}}
+    upd();if(T<=0){endJob(earn,'🧵 Done! '+stitched+' good stitches, '+snaps+' snapped pins, '+messy+' messy','sew');return;}
     requestAnimationFrame(loop);};
   requestAnimationFrame(loop);}
 /* 📦 Stockroom conveyor: tap the right bin before the item rolls off. Speeds up, golden items pay double */
@@ -1543,32 +1550,34 @@ function stockConveyor(){const BINS=['top','bottom','dress','shoes','acc'];let e
     if(b.dataset.c===f.c){const m=(f.gold?2:1)*(1+Math.floor(combo/5));earn+=m;combo++;done++;sfx.good();popFx(host,r.left-hr.left+r.width/2,r.top-hr.top-10,'+$'+m+(f.gold?' ⭐':''));b.classList.add('yes');setTimeout(()=>b.classList.remove('yes'),250);
       f.d.classList.add('fly');setTimeout(()=>f.d.remove(),300);items.shift();if(done%8===0){shuffle();toast('🔀 The bins moved!',1000);}}
     else{combo=0;sfx.boing();b.classList.add('no');setTimeout(()=>b.classList.remove('no'),250);toast('→ '+CATEN[f.c],800);}upd();});
-  const upd=()=>{s.querySelector('#hL').textContent='❤️'.repeat(lives)+'🤍'.repeat(3-lives);s.querySelector('#hM').textContent='💰 '+earn;s.querySelector('#hC').textContent='🔥 x'+(1+Math.floor(combo/5));};
+  const upd=()=>{TX(s.querySelector('#hL'),'❤️'.repeat(lives)+'🤍'.repeat(3-lives));TX(s.querySelector('#hM'),'💰 '+earn);TX(s.querySelector('#hC'),'🔥 x'+(1+Math.floor(combo/5)));};
   let last=performance.now();
   const loop=now=>{if(!s.isConnected||!s.querySelector('#belt'))return;const dt=Math.min(.1,(now-last)/1000);last=now;t+=dt;v=14+t*.35;spawn-=dt;
     if(spawn<=0){add();spawn=Math.max(.9,2.6-t*.04);}
-    items.forEach(o=>{o.x+=v*dt;o.d.style.left=o.x+'%';});
+    const BW=belt.clientWidth;items.forEach(o=>{o.x+=v*dt;o.d.style.transform='translateX('+(o.x*BW/100).toFixed(1)+'px)';});
     if(items[0]&&items[0].x>100){const o=items.shift();o.d.classList.add('fall');setTimeout(()=>o.d.remove(),400);lives--;combo=0;sfx.boing();upd();}
-    items.forEach((o,i)=>o.d.classList.toggle('first',i===0));
+    if(items[0]&&!items[0].d.classList.contains('first'))items[0].d.classList.add('first');
     if(lives<=0){endJob(earn,'📦 Shift over! Sorted '+done,'sort');return;}
     requestAnimationFrame(loop);};
   upd();requestAnimationFrame(loop);}
 
 function sewButtons(){const N=4,COLS=[['pink','#f783ac'],['blue','#4dabf7'],['gold','#ffd43b'],['green','#69db7c'],['purple','#9775fa']],GAR=[['shirt','shirt'],['jacket','jacket'],['dress','dress']];
-  let round=0,earn=0;
+  let round=0,earn=0,fails=0;
   const gsvg=(g,body)=>{const sh={shirt:'M60 40L90 28Q100 38 110 28L140 40L160 80L138 90L134 70L134 190L66 190L66 70L62 90L40 80Z',jacket:'M58 40L90 26L100 44L110 26L142 40L162 110L140 116L136 80L136 196L64 196L64 80L60 116L38 110Z',dress:'M78 30L92 28Q100 40 108 28L122 30L126 80L160 196L40 196L74 80Z'}[g];
     return '<svg viewBox="30 18 140 190" class="garm"><path d="'+sh+'" fill="#f8f9fa" stroke="#4a3426" stroke-width="3" stroke-linejoin="round"/>'+body+'</svg>';};
   const SLOTS=[[100,70],[100,95],[100,120],[100,145],[100,170],[118,84]];
   const next=()=>{if(round>=N){endJob(earn,'🔘 All fixed!','sew');return;}
-    round++;const want={col:pick(COLS),n:2+Math.floor(Math.random()*4),g:pick(GAR)[0]};let col=null,sewn={};
+    round++;fails=0;const want={col:pick(COLS),n:2+Math.floor(Math.random()*4),g:pick(GAR)[0]};let col=null,sewn={};
     const draw=()=>{const body=SLOTS.map(([x,y],i)=>sewn[i]?'<g><circle cx="'+x+'" cy="'+y+'" r="8" fill="'+sewn[i]+'" stroke="#4a3426" stroke-width="2"/><path d="M'+(x-3)+' '+(y-3)+'l6 6M'+(x+3)+' '+(y-3)+'l-6 6" stroke="#4a3426" stroke-width="1.4"/></g>':'<circle class="slot" data-i="'+i+'" cx="'+x+'" cy="'+y+'" r="9" fill="#fff" stroke="#adb5bd" stroke-width="2" stroke-dasharray="3 3"/>').join('');
-      const s=cScreen('<h2>🧵 Sewing Studio '+round+'/'+N+'</h2><div class="ticket">🧾 Sew <b>'+want.n+' '+want.col[0]+'</b> buttons on the '+want.g+'</div><div class="sewbox">'+gsvg(want.g,body)+'</div>'+
+      const s=cScreen('<h2>🧵 Sewing Studio '+round+'/'+N+'</h2><div class="jhud"><span>💰 '+earn+'</span><span>'+'❌'.repeat(fails)+'⬜'.repeat(3-fails)+'</span></div><div class="ticket">🧾 Sew <b>'+want.n+' '+want.col[0]+'</b> buttons on the '+want.g+'</div><div class="sewbox">'+gsvg(want.g,body)+'</div>'+
         '<p>1. Pick the button color. 2. Tap the dotted spots to sew.</p><div class="bb">'+COLS.map(([n,c])=>'<button class="chip'+(col===c?' on':'')+'" data-c="'+c+'"><i class="sw2" style="background:'+c+'"></i>'+n+'</button>').join('')+'</div>'+
         '<div class="row"><button class="btn ghost" id="rip">✂️ Unpick</button><button class="btn pink" id="sdone">Done ✓</button></div>');
       s.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{col=b.dataset.c;tone(800,.05,'triangle',.06);draw();});
       s.querySelectorAll('.slot').forEach(c=>c.onclick=()=>{if(!col){toast('Pick a color first');return;}sewn[c.dataset.i]=col;[0,1,2].forEach(k=>setTimeout(()=>tone(1500+k*200,.03,'square',.04),k*70));draw();});
       s.querySelector('#rip').onclick=()=>{sewn={};draw();};
-      s.querySelector('#sdone').onclick=()=>{const v=Object.values(sewn);if(v.length===want.n&&v.every(c=>c===want.col[1])){sfx.good();earn+=2;seam();}else{sfx.boing();toast('❌ The ticket says '+want.n+' '+want.col[0]+' buttons',2400);}};};
+      s.querySelector('#sdone').onclick=()=>{const v=Object.values(sewn);if(v.length===want.n&&v.every(c=>c===want.col[1])){sfx.good();earn+=2;seam();}else{fails++;sfx.boing();const lose=Math.min(earn,1);earn-=lose;s.classList.add('jolt');setTimeout(()=>s.classList.remove('jolt'),300);
+        if(fails>=3){toast('😤 The customer took her '+want.g+' back! No pay for this one.',2600);setTimeout(next,2200);return;}
+        sewn={};draw();toast('❌ Wrong! The ticket says '+want.n+' '+want.col[0]+' buttons.'+(lose?' −$1':'')+' Strike '+fails+'/3',2600);}};};
     const seam=()=>{const P=[[64,190],[66,160],[66,130],[66,100],[64,72]].map(([x,y])=>[x+0,y]);let hit=0;
       const s=cScreen('<h2>🪡 Sew the seam!</h2><p>Drag along the dotted line from the bottom up.</p><div class="sewbox" id="seamBox">'+gsvg(want.g,'<path d="M64 190L66 72" stroke="#adb5bd" stroke-width="3" stroke-dasharray="5 5" fill="none"/><path id="stitch" d="M64 190" stroke="'+want.col[1]+'" stroke-width="4" fill="none" stroke-dasharray="6 4"/>'+P.map(([x,y],i)=>'<circle class="pt" id="pt'+i+'" cx="'+x+'" cy="'+y+'" r="7" fill="'+(i?'#fff':'#ffd43b')+'" stroke="#4a3426" stroke-width="2"/>').join(''))+'</div>');
       const sv=s.querySelector('.garm');sv.style.touchAction='none';let down=false,d='M64 190';
@@ -1593,13 +1602,13 @@ function bobaCatch(){const GOOD=[['pearl','🟤'],['jelly','🟨'],['berry','�
   newOrder();
   lp(s,'#pl',dt=>{T-=dt;spawn-=dt;if(spawn<=0){spawn=Math.max(.35,.8-lvl*.08);const bad=Math.random()<.25,need=Object.keys(order).filter(k=>order[k]>0),nk=need.length?pick(need):null,g=bad?null:(Math.random()<.7&&nk?GOOD.find(x=>x[0]===nk):pick(GOOD));
       const d=document.createElement('div');d.className='fall';d.textContent=bad?pick(BAD):g[1];pl.appendChild(d);falls.push({d,x:4+Math.random()*92,y:-8,v:28+lvl*6+Math.random()*12,k:bad?null:g[0]});}
-    falls=falls.filter(f=>{f.y+=f.v*dt;f.d.style.left=f.x+'%';f.d.style.top=f.y+'%';
+    const PW=pl.clientWidth,PH=pl.clientHeight;falls=falls.filter(f=>{f.y+=f.v*dt;f.d.style.transform='translate('+(f.x*PW/100).toFixed(1)+'px,'+(f.y*PH/100).toFixed(1)+'px) translate(-50%,-50%)';
       if(f.y>78&&f.y<92&&Math.abs(f.x-cx)<9){f.d.remove();const r=pl.getBoundingClientRect(),hr=host.getBoundingClientRect(),px=r.left-hr.left+cx/100*r.width,py=r.top-hr.top+r.height*.75;
         if(!f.k){lives--;sfx.boing();popFx(host,px,py,'Yuck!','#c92a2a');cup.classList.add('shk');setTimeout(()=>cup.classList.remove('shk'),300);}
         else if(order[f.k]>0){order[f.k]--;tone(1200,.05,'triangle',.08);drawTk();if(Object.values(order).every(n=>n<=0)){earn+=3+lvl;lvl++;sfx.win();popFx(host,px,py-30,'Order up! +$'+(2+lvl));newOrder();}}
         else tone(600,.04,'sine',.05);return false;}
       if(f.y>104){f.d.remove();return false;}return true;});
-    s.querySelector('#hT').textContent='⏱ '+Math.ceil(T);s.querySelector('#hL').textContent='❤️'.repeat(Math.max(0,lives))+'🤍'.repeat(3-Math.max(0,lives));s.querySelector('#hM').textContent='💰 '+earn;
+    TX(s.querySelector('#hT'),'⏱ '+Math.ceil(T));TX(s.querySelector('#hL'),'❤️'.repeat(Math.max(0,lives))+'🤍'.repeat(3-Math.max(0,lives)));TX(s.querySelector('#hM'),'💰 '+earn);
     if(T<=0||lives<=0){endJob(earn,lives<=0?'🧋 Too much yuck! Shift over':'🧋 Shift over!','cash');return false;}});}
 /* ☕ 3: Oven Pop — tap pastries when they turn golden, before they burn */
 function ovenPop(){let T=40,earn=0,combo=0,burnt=0;const P=['🥐','🧁','🍪','🥯','🥧','🍩'];const ov=[...Array(9)].map(()=>null);
@@ -1610,9 +1619,9 @@ function ovenPop(){let T=40,earn=0,combo=0,burnt=0;const P=['🥐','🧁','🍪'
     ov[i]=null;b.className='oven';b.firstChild.textContent='';});
   lp(s,'.ovens',dt=>{T-=dt;
     if(Math.random()<dt*(1.2+ (40-T)*.04)){const free=ov.map((o,i)=>o?null:i).filter(i=>i!==null);if(free.length){const i=pick(free);ov[i]={e:pick(P),t:0,raw:1+Math.random()*1.2,gold:Math.max(.55,1.1-(40-T)*.012)};btns[i].firstChild.textContent=ov[i].e;}}
-    ov.forEach((o,i)=>{if(!o)return;o.t+=dt;const b=btns[i];b.className='oven '+(o.t<o.raw?'raw':o.t<o.raw+o.gold?'gold':'burnt');
+    ov.forEach((o,i)=>{if(!o)return;o.t+=dt;const b=btns[i],cl='oven '+(o.t<o.raw?'raw':o.t<o.raw+o.gold?'gold':'burnt');if(b.className!==cl)b.className=cl;
       if(o.t>o.raw+o.gold+.7){ov[i]=null;b.className='oven';b.firstChild.textContent='';burnt++;combo=0;tone(150,.25,'sawtooth',.05);}});
-    s.querySelector('#hT').textContent='⏱ '+Math.ceil(T);s.querySelector('#hM').textContent='💰 '+earn;s.querySelector('#hC').textContent='🔥 x'+(1+Math.floor(combo/4));
+    TX(s.querySelector('#hT'),'⏱ '+Math.ceil(T));TX(s.querySelector('#hM'),'💰 '+earn);TX(s.querySelector('#hC'),'🔥 x'+(1+Math.floor(combo/4)));
     if(T<=0){endJob(earn,'🥐 Baking done! '+burnt+' burnt','cash');return false;}});}
 /* 🧵 3: Thread the Needle — tap when the needle's eye lines up with the thread */
 function threadNeedle(){let n=0,earn=0,lives=3,t=0,shot=null;const N=12;
@@ -1625,7 +1634,7 @@ function threadNeedle(){let n=0,earn=0,lives=3,t=0,shot=null;const N=12;
       if(shot.x>=(shot.hit?360:290)){const r=pl.getBoundingClientRect(),hr=host.getBoundingClientRect();
         if(shot.hit){n++;const m=shot.perf?3:2;earn+=m;sfx.win();popFx(host,r.left-hr.left+r.width*.75,r.top-hr.top+20,(shot.perf?'Perfect! ':'')+'+$'+m);}else{lives--;sfx.boing();popFx(host,r.left-hr.left+r.width*.75,r.top-hr.top+20,'Missed!','#c92a2a');}
         shot=null;setTimeout(()=>thr.setAttribute('d','M40 130H70'),250);}}
-    s.querySelector('#hN').textContent='🪡 '+n+'/'+N;s.querySelector('#hL').textContent='❤️'.repeat(Math.max(0,lives))+'🤍'.repeat(3-Math.max(0,lives));s.querySelector('#hM').textContent='💰 '+earn;
+    TX(s.querySelector('#hN'),'🪡 '+n+'/'+N);TX(s.querySelector('#hL'),'❤️'.repeat(Math.max(0,lives))+'🤍'.repeat(3-Math.max(0,lives)));TX(s.querySelector('#hM'),'💰 '+earn);
     if(n>=N||lives<=0){setTimeout(()=>endJob(earn,n>=N?'🪡 All threaded!':'🪡 Out of thread!','sew'),500);return false;}});}
 /* 📦 2: Shoe Pairs — flip cards and find matching pairs before time runs out */
 function shoePairs(){let T=70,earn=0,board=0;
@@ -1636,8 +1645,8 @@ function shoePairs(){let T=70,earn=0,board=0;
     pr.querySelectorAll('.card').forEach(c=>c.onclick=()=>{if(lock||c.classList.contains('up'))return;c.classList.add('up');tone(700,.04,'triangle',.05);open.push(c);
       if(open.length===2){lock=true;const [a,b]=open;if(cards[+a.dataset.i]===cards[+b.dataset.i]){setTimeout(()=>{a.classList.add('got');b.classList.add('got');earn+=1;sfx.good();const r=b.getBoundingClientRect(),hr=host.getBoundingClientRect();popFx(host,r.left-hr.left,r.top-hr.top,'+$1');open=[];lock=false;left--;if(!left){earn+=2;sfx.win();popFx(host,host.clientWidth/2,160,'Board clear! +$2');setTimeout(deal,700);}},300);}
         else setTimeout(()=>{a.classList.remove('up');b.classList.remove('up');open=[];lock=false;},700);}});
-    s.querySelector('#hB').textContent='Board '+board;};
-  deal();lp(s,'#pr',dt=>{T-=dt;s.querySelector('#hT').textContent='⏱ '+Math.ceil(T);s.querySelector('#hM').textContent='💰 '+earn;if(T<=0){endJob(earn,'👟 Time! You matched '+earn+' pairs','sort');return false;}});}
+    TX(s.querySelector('#hB'),'Board '+board);};
+  deal();lp(s,'#pr',dt=>{T-=dt;TX(s.querySelector('#hT'),'⏱ '+Math.ceil(T));TX(s.querySelector('#hM'),'💰 '+earn);if(T<=0){endJob(earn,'👟 Time! You matched '+earn+' pairs','sort');return false;}});}
 /* 📦 3: Box Stacker — tap to drop the sliding box; overhang falls off */
 function boxStack(){let earn=0,w=46,x=0,dir=1,v=34,stack=[{x:27,w:46}],perfect=0;const COL=['#ffd8a8','#ffc9c9','#d0bfff','#a5d8ff','#b2f2bb','#ffec99'];
   const s=cScreen('<h2>📦 Box Stacker</h2><div class="jhud"><span id="hN">📦 0</span><span id="hP">✨ 0</span><span id="hM">💰 0</span></div><p class="note">Tap to drop the box. Line it up perfectly to keep it big!</p><div class="play stackp" id="pl"><div id="tower"></div><div class="mov" id="mv"></div></div>');
@@ -1650,7 +1659,7 @@ function boxStack(){let earn=0,w=46,x=0,dir=1,v=34,stack=[{x:27,w:46}],perfect=0
     stack.push(nb);w=nb.w;v+=2.5;x=dir>0?0:100-w;draw();
     if(stack.length>=26){sfx.win();confetti();endJob(earn+5,'📦 Sky-high tower! Bonus +$5','sort');}};
   draw();lp(s,'#mv',dt=>{x+=dir*v*dt;if(x<0){x=0;dir=1;}if(x>100-w){x=100-w;dir=-1;}mv.style.left=x+'%';
-    s.querySelector('#hN').textContent='📦 '+(stack.length-1);s.querySelector('#hP').textContent='✨ '+perfect;s.querySelector('#hM').textContent='💰 '+earn;});}
+    TX(s.querySelector('#hN'),'📦 '+(stack.length-1));TX(s.querySelector('#hP'),'✨ '+perfect);TX(s.querySelector('#hM'),'💰 '+earn);});}
 const JOBGAMES={cash:['cafeRush','bobaCatch','ovenPop'],sew:['sewMachine','sewButtons','threadNeedle'],sort:['stockConveyor','shoePairs','boxStack']};
 const JOBNAMES={cafeRush:'☕ Café Rush',bobaCatch:'🧋 Boba Catch',ovenPop:'🥐 Oven Pop',sewMachine:'🧵 Sewing Machine',sewButtons:'🔘 Button Fix',threadNeedle:'🪡 Thread the Needle',stockConveyor:'📦 Conveyor Belt',shoePairs:'👟 Shoe Pairs',boxStack:'📦 Box Stacker'};
 
