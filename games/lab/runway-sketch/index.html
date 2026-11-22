@@ -145,6 +145,33 @@ body[data-pref="land"] .rot.l{display:none}
 @media (min-width:601px) and (min-height:451px) and (orientation:landscape){.side{padding:4px 8px}}
 @media (min-width:601px) and (max-width:900px) and (orientation:portrait){.stage{height:50vh!important}.side{gap:6px;padding:5px}.theme{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}.theme .zh{font-size:1.4rem}.pics{margin:0}.side .btn{min-height:44px;padding:2px 8px}}
 .album{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;max-height:60vh;overflow:auto;padding:4px}.album .ph{border:2px solid #4a3426;border-radius:10px;padding:0;background:#fff;overflow:hidden;cursor:pointer;min-height:48px}.album img{width:100%;display:block}.album span{display:block;font-size:.8rem;font-weight:700;color:#4a3426}
+#career{position:fixed;inset:0;z-index:35;background:#fbf7ef;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#career .cin{max-width:860px;margin:0 auto;padding:12px 12px 40px;text-align:center}
+#career h2{margin:10px 0 6px}#career h3{text-align:left;margin:12px 4px 4px}
+.chead{background:#fff;border:3px solid #4a3426;border-radius:18px;padding:8px 12px;box-shadow:0 4px 0 #4a3426}
+.cst{display:flex;justify-content:center;gap:24px;font-size:1.5rem;font-weight:900}.clv{font-size:1.3rem;font-weight:800;color:#d6336c}
+.cbar{height:14px;background:#f1e6d8;border-radius:8px;overflow:hidden;margin:4px 0;border:2px solid #4a3426}.cbar i{display:block;height:100%;background:linear-gradient(90deg,#f783ac,#ffd43b)}
+.cnx{font-size:.9rem;color:#6b5a4d}.cgoal{margin:10px 0;font-weight:800;font-size:1.1rem}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:10px 0}
+.cgigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.gig{border:3px solid #4a3426;border-radius:18px;background:#fff;padding:10px;display:flex;flex-direction:column;gap:4px;align-items:center;box-shadow:0 4px 0 #4a3426;min-height:150px;cursor:pointer}
+.gig .e{font-size:2.2rem}.gig .pay{font-weight:800;color:#2b8a3e}.gig.lock,.mode.lock{opacity:.5;filter:grayscale(.6)}
+.cres{font-size:2rem;font-weight:900;margin:8px 0;color:#2b8a3e}
+.shopitems{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;max-height:none!important;overflow:visible!important}
+.shopitems .it{position:relative}.it .pr.no{color:#c92a2a}.ctabs{justify-content:center;flex-wrap:wrap}
+.cust{font-size:2.6rem;background:#fff;border:3px solid #4a3426;border-radius:18px;padding:10px;margin:8px auto;max-width:420px}.cust b{font-size:2rem}.cust .paid{color:#2b8a3e}
+.coins{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:8px 0}
+.coin{width:64px;height:64px;border-radius:50%;border:3px solid #8a6a1a;background:radial-gradient(circle at 35% 30%,#fff3bf,#e0b23a);font-weight:900;font-size:1.3rem;color:#5c4510;box-shadow:0 3px 0 #8a6a1a;cursor:pointer}
+.coin.c1,.coin.c5{width:54px;height:54px;background:radial-gradient(circle at 35% 30%,#fff,#c0c6cf);border-color:#6c757d;color:#343a40;box-shadow:0 3px 0 #6c757d}.coin.c50{width:72px;height:72px}
+.tray{min-height:44px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px}.tray i.coin{width:36px;height:36px;font-size:.85rem;font-style:normal;display:inline-flex;align-items:center;justify-content:center;box-shadow:none}
+.got{font-size:1.4rem;font-weight:800;margin:6px}
+.spools{display:grid;grid-template-columns:repeat(2,minmax(110px,160px));justify-content:center;gap:14px;margin:14px}
+.spool{aspect-ratio:1;border-radius:50%;border:4px solid #4a3426;opacity:.55;box-shadow:0 5px 0 #4a3426;cursor:pointer;transition:.12s}.spool.on{opacity:1;transform:scale(1.08);box-shadow:0 0 24px #fff,0 5px 0 #4a3426}
+.sortbar{height:12px;background:#f1e6d8;border-radius:6px;overflow:hidden;max-width:420px;margin:6px auto;border:2px solid #4a3426}.sortbar i{display:block;height:100%;width:100%;background:#4fc9bd}
+.sortitem{display:flex;justify-content:center;margin:10px}.sortitem .it{width:150px;height:150px;pointer-events:none}.sortitem svg{width:130px!important;height:130px!important}
+.spools{max-width:100%}@media (max-height:450px){.spools{grid-template-columns:repeat(4,80px)}.cust{font-size:1.6rem;padding:4px}.coin{width:50px;height:50px}}
+.bins{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.bin{min-width:96px;min-height:64px;border:3px solid #4a3426;border-radius:14px;background:#fff0f6;font-size:1.1rem;font-weight:800;box-shadow:0 4px 0 #4a3426;cursor:pointer}
+.modal .big{display:flex;justify-content:center}
 
 </style></head><body data-pref="any">
 <div class="app">
@@ -537,7 +564,7 @@ function strike(e){audio();const fg=$('fig');fg.classList.remove('posing');void 
 if(window.ResizeObserver)new ResizeObserver(fitFig).observe(document.getElementById('fig'));document.getElementById('fig').addEventListener('click',e=>strike(e));addEventListener('resize',fitFig);addEventListener('orientationchange',()=>setTimeout(fitFig,300));
 function renderTabs(){$('tabs').innerHTML='';ORDER.forEach(c=>{const b=document.createElement('button');b.className='tab'+(c===tab?' on':'');b.dataset.c=c;b.innerHTML=RB(CAT[c].zh,CAT[c].zy);b.onclick=()=>{tab=c;renderTabs();renderItems();};$('tabs').appendChild(b);});}
 function isOn(cat,id){return cat==='acc'?look.acc.includes(id):look[cat]===id;}
-function renderItems(){const box=$('items');box.innerHTML='';CAT[tab].items.forEach(it=>{const b=document.createElement('button');b.className='it'+(isOn(tab,it.id)?' on':'');
+function renderItems(){const box=$('items');box.innerHTML='';const LIST=itemsFor(tab);if(!LIST.length){box.innerHTML='<p class="note" style="grid-column:1/-1">'+zh('還沒有，去商店買吧！')+'</p>';renderPaint();return;}LIST.forEach(it=>{const b=document.createElement('button');b.className='it'+(isOn(tab,it.id)?' on':'');
   b.innerHTML=thumb(tab,it)+'<span class="nm">'+RB(it.zh.replace('T',''),it.zy.replace('T ',''))+(it.zh[0]==='T'?'':'')+'</span><span class="en">'+it.en+'</span>';
   if(it.zh[0]==='T')b.querySelector('.nm').innerHTML='T'+RB('恤','ㄒㄩˋ');
   if(MODE==='budget')b.insertAdjacentHTML('beforeend','<span class="pr">🪙'+price(it)+'</span>');b.onclick=()=>wear(tab,it);box.appendChild(b);});fitThumbs();renderPaint();}
@@ -564,8 +591,8 @@ const pad2=n=>String(n).padStart(2,'0');
 tick=setInterval(()=>{if(!timerOn||running)return;timeLeft=Math.max(0,timeLeft-1);showTime();if(timeLeft===20){tone(880,.1,'square',.05);toast('⏱ '+zh('還剩')+'20'+zh('秒！'));}
   if(timeLeft===0){toast('⏱ '+zh('時間到！走秀去！'));runway();}},1000);
 $('tmBtn').onclick=()=>{timerOn=!timerOn;$('tmBtn').innerHTML='⏱ '+zh(timerOn?'計時開':'計時關');showTime();};
-$('newTheme').onclick=()=>{audio();if(MODE==='vs'&&(VS.ch||VS.stage===1)){toast(zh('對決中不能換主題'));return;}startRound();};
-$('modeBtn').onclick=()=>{audio();if(!running)showModes();};
+$('newTheme').onclick=()=>{audio();if(MODE==='career'){toast(zh('工作的主題不能換'));return;}if(MODE==='vs'&&(VS.ch||VS.stage===1)){toast(zh('對決中不能換主題'));return;}startRound();};
+$('modeBtn').onclick=()=>{audio();if(running)return;if(MODE==='career')careerHub();else showModes();};
 /* ---------- judging: three judge girls, each explains her score ---------- */
 function worn(){const w=[];if(look.dress)w.push(['dress',look.dress]);else{if(look.top)w.push(['top',look.top]);if(look.bottom)w.push(['bottom',look.bottom]);}
   if(look.shoes)w.push(['shoes',look.shoes]);w.push(['hair',look.hair]);look.acc.forEach(a=>w.push(['acc',a]));return w.map(([c,id])=>[c,find(c,id)]);}
@@ -574,13 +601,13 @@ function judge(){const W=worn(),clothes=W.filter(([c])=>c!=='hair');
   const fit=W.filter(([c,it])=>it.tags.includes(theme.id)),miss=clothes.filter(([c,it])=>!it.tags.includes(theme.id));
   const m=fit.length/W.length,s1=Math.max(1,Math.min(5,1+Math.round(4*m)));
   const r1=(fit.length?fit.slice(0,2).map(([,i])=>itemBoth(i)).join(zh('和'))+zh('很適合')+RB(theme.zh,theme.zy)+zh('！'):zh('嗯，這些不太像')+RB(theme.zh,theme.zy)+zh('喔。'))+(miss.length&&s1<5?zh('不過')+itemBoth(miss[0][1])+zh('不太適合這個主題。'):'');
-  const p1=(fit.length?fit.slice(0,2).map(([,i])=>i.zh+'（'+i.en+'）').join('和')+'很適合'+theme.zh+'！':'嗯，這些不太像'+theme.zh+'喔。')+(miss.length&&s1<5?'不過'+miss[0][1].zh+'（'+miss[0][1].en+'）不太適合這個主題。':'');
+  const p1=(fit.length?fit.slice(0,2).map(([,i])=>'the '+i.en).join(' and ').replace(/^t/,'T')+(fit.length>1||/[^s]s$/.test(fit[0][1].en)?' fit ':' fits ')+theme.en+' perfectly!':'Hmm, this doesn\'t look much like '+theme.en+' yet.')+(miss.length&&s1<5?' But the '+miss[0][1].en+(/[^s]s$/.test(miss[0][1].en)?' don\'t':' doesn\'t')+' quite match the theme.':'');
   const cols=[...new Set(clothes.map(([c,it])=>nameOf(colOf(keyOf(c,it.id),it))))],hits=cols.filter(c=>theme.col.includes(c));
   let s2=2+(hits.length>=1?2:0)+(hits.length>=2?1:0)-(cols.length>4?1:0);s2=Math.max(1,Math.min(5,s2));
-  const p2=hits.length?'顏色好棒！'+hits.map(c=>COLZH[c]).join('和')+'很適合'+theme.zh+'。':'試試看'+theme.col.slice(0,2).map(c=>COLZH[c]).join('或')+'吧！',r2=zh(p2);
+  const p2=hits.length?'Lovely colors! '+hits.map(c=>c[0].toUpperCase()+c.slice(1)).join(' and ')+(hits.length>1?' are':' is')+' perfect for '+theme.en+'.':'Try '+theme.col.slice(0,2).join(' or ')+' for this theme!',r2=esc(p2);
   const pats=Object.entries(look.pat).filter(([k,p])=>p&&p!=='plain'&&clothes.some(([c,it])=>keyOf(c,it.id)===k&&it.dp!==p)).length,custom=Object.keys(look.col).length;
   const s3=Math.max(1,Math.min(5,1+Math.min(2,pats)+(look.acc.length>=2?1:0)+(custom>=2?1:0)));
-  const p3=s3>=4?'好有創意！自己的花紋和顏色讓衣服很特別。':pats?'花紋很漂亮！再加一兩個配件會更閃亮。':'試試加花紋或換顏色，做出自己的風格！',r3=zh(p3);
+  const p3=s3>=4?'So creative! Your own patterns and colors make this outfit special.':pats?'Pretty patterns! Add an accessory or two to make it sparkle.':'Try adding a pattern or changing a color to make it your own!',r3=esc(p3);
   return [['👩🏻‍🦰',zh('艾莉老師'),zh('主題'),s1,r1,'艾莉老師',p1],['👩🏽',zh('可可老師'),zh('顏色'),s2,r2,'可可老師',p2],['👩🏼‍🦱',zh('莉莉老師'),zh('創意'),s3,r3,'莉莉老師',p3]];}
 /* audience: a packed crowd of girls and animal people, holding up phones and cameras */
 const FAN=[['#2b2118','#f7a1c4','#f8dccb'],['#6b4226','#74c0fc','#e8b48f'],['#b5502e','#ffd25e','#f8dccb'],['#2b2118','#7cc47f','#c68b5e'],['#e2b866','#9b7fd4','#f8dccb'],['#3a3a44','#ff8a72','#a86b44']];
@@ -870,13 +897,14 @@ function popLevel(v,dt){const c=audio();if(!c||!POP.master)return;const g=POP.ma
 function popStart(){if(POP.on||!SOUND)return;const c=popGraph();if(!c)return;POP.on=true;POP.next=c.currentTime+.06;POP.step=0;POP.t=setInterval(()=>{try{popTick();}catch(e){}},25);popLevel(POP.vol,.8);}
 function popStop(){if(!POP.on)return;POP.on=false;popLevel(0,.3);clearInterval(POP.t);}
 /* softer under the read-aloud voice */
+function sayEn(t){if(!SOUND||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t));u.lang='en-US';u.rate=.92;u.pitch=1.1;const v=speechSynthesis.getVoices().find(x=>/en[-_]US/i.test(x.lang));if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}}
 const _say=say;say=function(t,r){if(POP.on){popLevel(.05,.2);clearTimeout(POP.duck);POP.duck=setTimeout(()=>popLevel(running?.24:POP.vol,.6),Math.min(7000,1200+String(t).length*65));}if(!SOUND||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t));u.lang='zh-TW';u.rate=.9;u.pitch=1.1;const v=speechSynthesis.getVoices().find(x=>/zh[-_]TW/i.test(x.lang));if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}};
 document.addEventListener('pointerdown',()=>{if(SOUND&&!POP.on)popStart();},true);
 $('snd').addEventListener('click',()=>{if(SOUND)popStart();else popStop();});
 
 /* ---------- Chinese UI: every character gets zhuyin; clothing names stay bilingual ---------- */
 const ZD={};'一ㄧ 上ㄕㄤˋ 下ㄒㄧㄚˋ 不ㄅㄨˋ 主ㄓㄨˇ 之ㄓ 了˙ㄌㄜ 些ㄒㄧㄝ 亮ㄌㄧㄤˋ 人ㄖㄣˊ 今ㄐㄧㄣ 仔ㄗㄞˇ 以ㄧˇ 件ㄐㄧㄢˋ 來ㄌㄞˊ 便ㄅㄧㄢˋ 個˙ㄍㄜ 做ㄗㄨㄛˋ 備ㄅㄟˋ 傳ㄔㄨㄢˊ 像ㄒㄧㄤˋ 先ㄒㄧㄢ 光ㄍㄨㄤ 兩ㄌㄧㄤˇ 再ㄗㄞˋ 出ㄔㄨ 別ㄅㄧㄝˊ 到ㄉㄠˋ 剩ㄕㄥˋ 創ㄔㄨㄤˋ 加ㄐㄧㄚ 午ㄨˇ 去ㄑㄩˋ 又ㄧㄡˋ 可ㄎㄜˇ 吃ㄔ 合ㄏㄜˊ 吧˙ㄅㄚ 和ㄏㄜˊ 喔ㄛ 嗯ㄣ 回ㄏㄨㄟˊ 在ㄗㄞˋ 地ㄉㄧˋ 型ㄒㄧㄥˊ 大ㄉㄚˋ 天ㄊㄧㄢ 太ㄊㄞˋ 她ㄊㄚ 好ㄏㄠˇ 始ㄕˇ 子˙ㄗ 家ㄐㄧㄚ 審ㄕㄣˇ 尚ㄕㄤˋ 巨ㄐㄩˋ 己ㄐㄧˇ 師ㄕ 帶ㄉㄞˋ 平ㄆㄧㄥˊ 幼ㄧㄡˋ 很ㄏㄣˇ 得˙ㄉㄜ 忘ㄨㄤˋ 快ㄎㄨㄞˋ 怕ㄆㄚˋ 意ㄧˋ 感ㄍㄢˇ 我ㄨㄛˇ 或ㄏㄨㄛˋ 手ㄕㄡˇ 打ㄉㄚˇ 扮ㄅㄢˋ 把ㄅㄚˇ 掉ㄉㄧㄠˋ 描ㄇㄧㄠˊ 換ㄏㄨㄢˋ 放ㄈㄤˋ 新ㄒㄧㄣ 方ㄈㄤ 星ㄒㄧㄥ 是ㄕˋ 時ㄕˊ 晴ㄑㄧㄥˊ 暖ㄋㄨㄢˇ 更ㄍㄥˋ 會ㄏㄨㄟˋ 月ㄩㄝˋ 有ㄧㄡˇ 服ㄈㄨˊ 本ㄅㄣˇ 朵ㄉㄨㄛˇ 板ㄅㄢˇ 格ㄍㄜˊ 棒ㄅㄤˋ 棕ㄗㄨㄥ 機ㄐㄧ 橫ㄏㄥˊ 次ㄘˋ 比ㄅㄧˇ 水ㄕㄨㄟˇ 洋ㄧㄤˊ 海ㄏㄞˇ 涼ㄌㄧㄤˊ 準ㄓㄨㄣˇ 溫ㄨㄣ 漂ㄆㄧㄠˋ 牛ㄋㄧㄡˊ 特ㄊㄜˋ 玩ㄨㄢˊ 珊ㄕㄢ 球ㄑㄧㄡˊ 瑚ㄏㄨˊ 白ㄅㄞˊ 的˙ㄉㄜ 直ㄓˊ 看ㄎㄢˋ 秀ㄒㄧㄡˋ 秒ㄇㄧㄠˇ 穿ㄔㄨㄢ 等ㄉㄥˇ 粉ㄈㄣˇ 紅ㄏㄨㄥˊ 紋ㄨㄣˊ 級ㄐㄧˊ 素ㄙㄨˋ 紫ㄗˇ 給ㄍㄟˇ 綠ㄌㄩˋ 繼ㄐㄧˋ 續ㄒㄩˋ 老ㄌㄠˇ 脫ㄊㄨㄛ 自ㄗˋ 舒ㄕㄨ 色ㄙㄜˋ 艾ㄞˋ 花ㄏㄨㄚ 茶ㄔㄚˊ 莉ㄌㄧˋ 華ㄏㄨㄚˊ 藍ㄌㄢˊ 衣ㄧ 裝ㄓㄨㄤ 裡ㄌㄧˇ 要ㄧㄠˋ 計ㄐㄧˋ 設ㄕㄜˋ 評ㄆㄧㄥˊ 試ㄕˋ 讓ㄖㄤˋ 走ㄗㄡˇ 超ㄔㄠ 跑ㄆㄠˇ 跳ㄊㄧㄠˋ 身ㄕㄣ 較ㄐㄧㄠˋ 這ㄓㄜˋ 逛ㄍㄨㄤˋ 進ㄐㄧㄣˋ 運ㄩㄣˋ 過ㄍㄨㄛˋ 適ㄕˋ 選ㄒㄩㄢˇ 還ㄏㄞˊ 邊ㄅㄧㄢ 配ㄆㄟˋ 金ㄐㄧㄣ 銀ㄧㄣˊ 閃ㄕㄢˇ 開ㄎㄞ 間ㄐㄧㄢ 關ㄍㄨㄢ 陽ㄧㄤˊ 雨ㄩˇ 雪ㄒㄩㄝˇ 需ㄒㄩ 鞋ㄒㄧㄝˊ 頭ㄊㄡˊ 題ㄊㄧˊ 顏ㄧㄢˊ 風ㄈㄥ 髮ㄈㄚˇ 麗ㄌㄧˋ 黃ㄏㄨㄤˊ 黑ㄏㄟ 點ㄉㄧㄢˇ'.split(' ').forEach(p=>{ZD[p[0]]=p.slice(1);});
-Object.entries({也:'ㄧㄝˇ',優:'ㄧㄡ',冷:'ㄌㄥˇ',動:'ㄉㄨㄥˋ',嚇:'ㄒㄧㄚˋ',多:'ㄉㄨㄛ',彩:'ㄘㄞˇ',心:'ㄒㄧㄣ',愛:'ㄞˋ',慶:'ㄑㄧㄥˋ',成:'ㄔㄥˊ',整:'ㄓㄥˇ',晚:'ㄨㄢˇ',林:'ㄌㄧㄣˊ',森:'ㄙㄣ',樣:'ㄧㄤˋ',燈:'ㄉㄥ',甜:'ㄊㄧㄢˊ',發:'ㄈㄚ',祝:'ㄓㄨˋ',秋:'ㄑㄧㄡ',精:'ㄐㄧㄥ',累:'ㄌㄟˋ',耐:'ㄋㄞˋ',舞:'ㄨˇ',課:'ㄎㄜˋ',變:'ㄅㄧㄢˋ',越:'ㄩㄝˋ',路:'ㄌㄨˋ',輕:'ㄑㄧㄥ',酷:'ㄎㄨˋ',雅:'ㄧㄚˇ',靈:'ㄌㄧㄥˊ',髒:'ㄗㄤ',齊:'ㄑㄧˊ',相:'ㄒㄧㄤˋ',簿:'ㄅㄨˋ',刪:'ㄕㄢ',除:'ㄔㄨˊ',沒:'ㄇㄟˊ'}).forEach(([k,v])=>{if(!ZD[k])ZD[k]=v;});
+Object.entries({世:'ㄕˋ',作:'ㄗㄨㄛˋ',價:'ㄐㄧㄚˋ',兒:'ㄦˊ',公:'ㄍㄨㄥ',升:'ㄕㄥ',厲:'ㄌㄧˋ',司:'ㄙ',告:'ㄍㄠˋ',咖:'ㄎㄚ',品:'ㄆㄧㄣˇ',商:'ㄕㄤ',啡:'ㄈㄟ',喜:'ㄒㄧˇ',國:'ㄍㄨㄛˊ',城:'ㄔㄥˊ',夠:'ㄍㄡˋ',夢:'ㄇㄥˋ',客:'ㄎㄜˋ',室:'ㄕˋ',害:'ㄏㄞˋ',少:'ㄕㄠˇ',屋:'ㄨ',工:'ㄍㄨㄥ',巴:'ㄅㄚ',市:'ㄕˋ',幣:'ㄅㄧˋ',幻:'ㄏㄨㄢˋ',序:'ㄒㄩˋ',店:'ㄉㄧㄢˋ',廣:'ㄍㄨㄤˇ',後:'ㄏㄡˋ',從:'ㄘㄨㄥˊ',恭:'ㄍㄨㄥ',找:'ㄓㄠˇ',接:'ㄐㄧㄝ',收:'ㄕㄡ',東:'ㄉㄨㄥ',標:'ㄅㄧㄠ',櫃:'ㄍㄨㄟˋ',氣:'ㄑㄧˋ',油:'ㄧㄡˊ',涯:'ㄧㄚˊ',為:'ㄨㄟˊ',班:'ㄅㄢ',理:'ㄌㄧˇ',生:'ㄕㄥ',界:'ㄐㄧㄝˋ',目:'ㄇㄨˋ',硬:'ㄧㄥˋ',禮:'ㄌㄧˇ',答:'ㄉㄚˊ',紀:'ㄐㄧˋ',紉:'ㄖㄣˋ',經:'ㄐㄧㄥ',縫:'ㄈㄥˊ',能:'ㄋㄥˊ',街:'ㄐㄧㄝ',西:'˙ㄒㄧ',記:'ㄐㄧˋ',貨:'ㄏㄨㄛˋ',賺:'ㄓㄨㄢˋ',都:'ㄉㄡ',重:'ㄔㄨㄥˊ',鈕:'ㄋㄧㄡˇ',門:'ㄇㄣˊ',際:'ㄐㄧˋ',順:'ㄕㄨㄣˋ',飾:'ㄕˋ',黎:'ㄌㄧˊ',也:'ㄧㄝˇ',優:'ㄧㄡ',冷:'ㄌㄥˇ',動:'ㄉㄨㄥˋ',嚇:'ㄒㄧㄚˋ',多:'ㄉㄨㄛ',彩:'ㄘㄞˇ',心:'ㄒㄧㄣ',愛:'ㄞˋ',慶:'ㄑㄧㄥˋ',成:'ㄔㄥˊ',整:'ㄓㄥˇ',晚:'ㄨㄢˇ',林:'ㄌㄧㄣˊ',森:'ㄙㄣ',樣:'ㄧㄤˋ',燈:'ㄉㄥ',甜:'ㄊㄧㄢˊ',發:'ㄈㄚ',祝:'ㄓㄨˋ',秋:'ㄑㄧㄡ',精:'ㄐㄧㄥ',累:'ㄌㄟˋ',耐:'ㄋㄞˋ',舞:'ㄨˇ',課:'ㄎㄜˋ',變:'ㄅㄧㄢˋ',越:'ㄩㄝˋ',路:'ㄌㄨˋ',輕:'ㄑㄧㄥ',酷:'ㄎㄨˋ',雅:'ㄧㄚˇ',靈:'ㄌㄧㄥˊ',髒:'ㄗㄤ',齊:'ㄑㄧˊ',相:'ㄒㄧㄤˋ',簿:'ㄅㄨˋ',刪:'ㄕㄢ',除:'ㄔㄨˊ',沒:'ㄇㄟˊ'}).forEach(([k,v])=>{if(!ZD[k])ZD[k]=v;});
 const ZW={'衣服':'ㄧ ˙ㄈㄨ','舒服':'ㄕㄨ ˙ㄈㄨ','涼快':'ㄌㄧㄤˊ ˙ㄎㄨㄞ','漂亮':'ㄆㄧㄠˋ ˙ㄌㄧㄤ'};
 function zh(s){let out='',i=0;const a=[...s];
   while(i<a.length){let hit=null;for(const w in ZW){const L=[...w].length;if(a.slice(i,i+L).join('')===w){hit=[w,ZW[w]];break;}}
@@ -925,9 +953,9 @@ function startRound(keepTheme){fresh();if(!keepTheme)newTheme();timeLeft=120;sho
 /* ---------- mode menu ---------- */
 function modal2(html){const m=document.createElement('div');m.className='modal';m.innerHTML='<div class="mm">'+html+'</div>';document.body.appendChild(m);return m;}
 function showModes(){const m=modal2('<h2>選擇模式</h2><div class="modes">'+
-  [['solo','👗','主題穿搭','選衣服，評審打分數'],['vs','⚔️','時尚對決','跟電腦或朋友比賽'],['budget','🪙','預算挑戰','用預算買衣服，搭出最好的造型']].map(([id,e,t,d])=>'<button class="mode" data-m="'+id+'"><span class="e">'+e+'</span><b>'+t+'</b><span>'+d+'</span></button>').join('')+'</div><div class="row"><button class="btn ghost" id="albM">📒 '+zh('相簿')+'</button></div>');
+  [['solo','👗','主題穿搭','選衣服，評審打分數'],['vs','⚔️','時尚對決','跟電腦或朋友比賽'],['budget','🪙','預算挑戰','用預算買衣服，搭出最好的造型'],['career','👑','模特兒生涯','從新人變成世界超模']].map(([id,e,t,d])=>'<button class="mode" data-m="'+id+'"><span class="e">'+e+'</span><b>'+t+'</b><span>'+d+'</span></button>').join('')+'</div><div class="row"><button class="btn ghost" id="albM">📒 '+zh('相簿')+'</button></div>');
   m.querySelector('#albM').onclick=()=>{m.remove();showAlbum();const w=setInterval(()=>{if(!document.querySelector('.modal')){clearInterval(w);showModes();}},300);};
-  m.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();const id=b.dataset.m;m.remove();if(id==='vs')pickVS();else{MODE=id;VS.kind=null;ME='幼晴';startRound();say(id==='budget'?'預算挑戰！':'主題穿搭！');}});}
+  m.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();const id=b.dataset.m;m.remove();if(id==='career')return careerHub();if(id==='vs')pickVS();else{MODE=id;VS.kind=null;ME='幼晴';startRound();say(id==='budget'?'預算挑戰！':'主題穿搭！');}});}
 function pickVS(){const m=modal2('<h2>時尚對決</h2><div class="modes">'+
   [['cpu','🤖','跟電腦比','跟小星比賽'],['link','🔗','跟朋友比','傳連結給朋友'],['local','📱','同一台輪流','輪流穿搭再比賽']].map(([id,e,t,d])=>'<button class="mode" data-k="'+id+'"><span class="e">'+e+'</span><b>'+t+'</b><span>'+d+'</span></button>').join('')+'</div>');
   m.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();m.remove();MODE='vs';VS.kind=b.dataset.k;VS.stage=0;VS.p1=null;VS.ch=null;ME='幼晴';startRound();
@@ -938,6 +966,7 @@ function ready(){if(running)return;audio();
   if(need){sfx.boing();toast(need[1]+' '+zh(need[2]),2600);say(need[2]);tab=need[0];renderTabs();renderItems();const t=document.querySelector('.tab[data-c="'+need[0]+'"]');if(t){t.classList.add('need');t.scrollIntoView({block:'center',behavior:'smooth'});}return;}
   if(MODE==='budget'&&spentOf(look)>BUDGET){sfx.boing();const m='超過預算了！先脫掉一些衣服。';toast('🪙 '+zh(m),2600);say(m);return;}
   const me={name:ME,look:clone(look)};
+  if(MODE==='career'&&GIG&&GIG.opp)return show([me,GIG.opp]);
   if(MODE==='vs'&&VS.kind==='cpu')return show([me,VS.opp]);
   if(MODE==='vs'&&VS.kind==='local'){if(VS.stage===0){VS.p1=me;VS.stage=1;const m=modal2('<h2>📱 '+zh('換第二位玩家！')+'</h2><p>'+zh(ME+'的衣服先藏起來。')+'</p><p>'+zh('寫下你的名字：')+'</p><input id="p2n" maxlength="8" placeholder="朋友" autocomplete="off"><div class="row"><button class="btn pink" id="p2go">'+zh('開始')+' ▶</button></div>');
       m.querySelector('#p2go').onclick=()=>{ME=(m.querySelector('#p2n').value.trim()||'朋友').slice(0,8);m.remove();startRound(true);say('輪到'+ME+'！');};return;}
@@ -965,7 +994,7 @@ const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 function show(E){running=true;POP.step=0;if(POP.on)popLevel(.26,.6);
   const budgetJ=MODE==='budget',two=E.length===2;
   const JS=E.map(e=>{const j=judgeFor(e.look);if(budgetJ){const s=spentOf(e.look),left=BUDGET-s,st=Math.max(1,Math.min(5,4+(left>=BUDGET*.2?1:0)));
-      j.push(['🧮',zh('金金老師'),zh('預算'),st,'','金金老師','總共花了'+s+'元，預算'+BUDGET+'元，還剩'+left+'元！']);}return j;});
+      j.push(['🧮',zh('金金老師'),zh('預算'),st,'','金金老師','You spent $'+s+' of your $'+BUDGET+' budget, and you still have $'+left+' left!']);}return j;});
   const R=document.createElement('div');R.className='runway'+(two?' two':'');
   R.innerHTML='<div class="cat"><div class="backdrop">'+sceneSVG(theme.id)+'</div><div class="strip"></div>'+E.map((e,i)=>'<div class="model" data-i="'+i+'">'+figureSVG(e.look,true)+'<span class="mtag">'+zh(e.name)+'</span></div>').join('')+'</div><div class="judges" id="jd"></div><div class="total" id="tot"></div>';
   $('main').appendChild(R);say(two?'對決開始！':'走秀開始！');showRunway(R);
@@ -978,9 +1007,11 @@ function show(E){running=true;POP.step=0;if(POP.on)popLevel(.26,.6);
     if(two){const w=tot[0]===tot[1]?null:(tot[0]>tot[1]?0:1);head=(w===null?'🤝 '+zh('平手！'):'🏆 '+zh(E[w].name+'贏了！'))+' &nbsp;'+E.map((e,i)=>zh(e.name)+' '+tot[i]).join(' : ')+' / '+max+' ⭐';
       sfx.win();confetti();say(w===null?'平手！':E[w].name+'贏了！');}
     else{const t=tot[0],r=t/max,title=r>=.93?'👑 '+zh('走秀超級巨星！'):r>=.73?'🌟 '+zh('時尚之星！'):r>=.53?'✨ '+zh('很有型！'):'💡 '+zh('繼續設計！');head=title+' &nbsp;'+t+' / '+max+' ⭐';sfx.win();if(r>=.73)confetti();
-      say(JS[0].map(x=>x[5]+'說：'+x[6].replace(/（[^）]*）/g,'')).join(' '));}
+      sayEn(JS[0].map(x=>x[6]).join(' '));}
     R.querySelectorAll('.model').forEach((x,i)=>{const t=tot[i],st=Math.round(t/max*5),b=document.createElement('div');b.className='bigscore';const ml=parseFloat(x.style.left||'50'),narrow=R.querySelector('.cat').clientWidth<760;b.style.left=(narrow?ml:(two?(i?ml+19:ml-19):ml+24))+'%';if(narrow)b.classList.add('above');
       b.innerHTML='<div class="stars">'+'★'.repeat(st)+'<span>'+'★'.repeat(5-st)+'</span></div><div class="num">'+t+'<small> / '+max+'</small></div>'+(two&&tot[0]!==tot[1]&&t===Math.max(...tot)?'<div class="crown">👑</div>':'');R.querySelector('.cat').appendChild(b);});
+    if(MODE==='career'&&GIG){$('tot').innerHTML=head+careerResult(tot,max,two,E)+'<div class="row"><button class="btn pink" id="snapR">📸 '+zh('拍照')+'</button><button class="btn" id="toCity">🏙️ '+zh('回城市')+' ▶</button></div>';$('snapR').onclick=()=>snap(E,tot,max);
+      $('toCity').onclick=()=>{R.remove();running=false;POP.step=0;if(POP.on)popLevel(POP.vol,.6);GIG=null;careerHub();};return;}
     let extra='';if(MODE==='vs'&&VS.kind==='link'&&VS.ch&&two){const url=baseURL()+'#r='+enc({t:theme.id,a:{n:E[0].name,l:E[0].look},b:{n:E[1].name,l:E[1].look}});
       extra='<button class="btn pink" id="back2">🔗 '+zh('把結果傳回給'+E[0].name)+'</button>';R._url=url;}
     $('tot').innerHTML=head+'<div class="row">'+extra+'<button class="btn pink" id="snapR">📸 '+zh('拍照')+'</button><button class="btn" id="again">'+zh('再玩一次')+' ▶</button>'+(two?'':'<button class="btn ghost" id="keep">'+zh('繼續打扮')+'</button>')+'<button class="btn ghost" id="albR">📒 '+zh('相簿')+'</button><button class="btn ghost" id="modeB">🏠 '+zh('換模式')+'</button></div>';
@@ -1053,6 +1084,113 @@ $('newTheme').innerHTML='🎲 '+zh('換主題');$('modeBtn').innerHTML='🏠 '+z
 {const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Lilita+One&display=swap';document.head.appendChild(l);}$('tmBtn').innerHTML='⏱ '+zh('計時開');$('smallTip').innerHTML=zh('點衣服試穿看看！');
 document.querySelector('.rot.l').innerHTML=zh('把手機橫過來')+' ↻';document.querySelector('.rot.p').innerHTML=zh('手機直放比較好')+' ↻';
 fresh();renderTabs();renderItems();renderFig();newTheme();
+const ZT=t=>esc(String(t));
+/* ---------- career mode: from new model to world supermodel ---------- */
+const CK='rs_career';
+const LV=[[0,'新人模特兒',1],[15,'小有名氣',1.5],[40,'時尚新星',2],[80,'人氣名模',3],[140,'國際名模',4],[220,'世界超模',5]];
+const START={hair:['pony','bun'],top:['tee','tank'],bottom:['skirt','shorts'],dress:[],shoes:['sneakers'],acc:[]};
+let C=null,GIG=null;
+function cLoad(){try{C=JSON.parse(localStorage.getItem(CK)||'null');}catch(e){C=null;}if(!C)C={money:20,stars:0,own:JSON.parse(JSON.stringify(START)),done:0,gigs:null,top:false};return C;}
+function cSave(){try{localStorage.setItem(CK,JSON.stringify(C));}catch(e){}}
+function lvOf(s){let i=0;LV.forEach((l,k)=>{if(s>=l[0])i=k;});return i;}
+const owns=(c,id)=>C&&C.own[c]&&C.own[c].includes(id);
+function itemsFor(c){return MODE==='career'&&C?CAT[c].items.filter(i=>owns(c,i.id)):CAT[c].items;}
+function cScreen(html){let s=document.getElementById('career');if(!s){s=document.createElement('div');s.id='career';document.body.appendChild(s);}s.innerHTML='<div class="cin">'+html+'</div>';s.scrollTop=0;return s;}
+function cClose(){const s=document.getElementById('career');if(s)s.remove();}
+function cHead(){const L=lvOf(C.stars),nx=LV[L+1],p=nx?Math.round((C.stars-LV[L][0])/(nx[0]-LV[L][0])*100):100;
+  return '<div class="chead"><div class="cst"><span>💰 '+C.money+'</span><span>⭐ '+C.stars+'</span></div><div class="clv">'+ZT(LV[L][1])+'</div>'+
+    '<div class="cbar"><i style="width:'+p+'%"></i></div><div class="cnx">'+(nx?ZT('下一級：')+ZT(nx[1])+' ⭐'+nx[0]:'👑 '+ZT('你是世界超模！'))+'</div></div>';}
+function careerHub(){MODE='career';cLoad();ME='幼晴';
+  const n=ORDER.reduce((a,c)=>a+C.own[c].length,0);
+  const s=cScreen(cHead()+'<div class="cgoal">🎯 '+ZT('目標：成為世界超模！')+'</div><div class="cgrid">'+
+    [['agency','🏢','經紀公司','接工作，走秀賺錢'],['work','💼','打工','做小工作賺錢'],['shop','🛍️','逛街','買新衣服'],['closet','👗','我的衣櫃',n+' 件']].map(([k,e,t,d])=>'<button class="mode" data-k="'+k+'"><span class="e">'+e+'</span><b>'+ZT(t)+'</b><span>'+ZT(d)+'</span></button>').join('')+
+    '</div><div class="row"><button class="btn ghost" id="cExit">🏠 '+ZT('換模式')+'</button><button class="btn ghost" id="cReset">'+ZT('重新開始')+'</button></div>');
+  s.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();sfx.good&&tone(700,.06,'triangle',.08);({agency:agency,work:workMenu,shop:shopMenu,closet:myCloset})[b.dataset.k]();});
+  s.querySelector('#cExit').onclick=()=>{cClose();MODE='solo';showModes();};
+  const r=s.querySelector('#cReset');r.onclick=()=>{if(!r.dataset.sure){r.dataset.sure=1;r.innerHTML=ZT('再按一次重新開始');r.classList.add('pink');return;}localStorage.removeItem(CK);C=null;careerHub();};}
+/* agency: modelling gigs. Pay grows with fame */
+function makeGigs(){const L=lvOf(C.stars),ths=THEMES.map(t=>t.id),g=[];
+  const kinds=[['show','走秀',12],['shoot','拍廣告',10],['contest','模特兒比賽',18]];
+  for(let i=0;i<4;i++){const k=kinds[i%3],need=i===3?Math.min(LV.length-1,L+1):0;g.push({k:k[0],zh:k[1],base:k[2]+need*4,t:pick(ths),need:need});}
+  return g;}
+function payOf(g,stars,won){const m=LV[lvOf(C.stars)][2];let p=g.base*stars/15*m;if(g.k==='contest')p*=won?1.6:.6;return Math.max(1,Math.round(p));}
+function agency(){if(!C.gigs){C.gigs=makeGigs();cSave();}const L=lvOf(C.stars),m=LV[L][2];
+  const s=cScreen(cHead()+'<h2>🏢 '+ZT('經紀公司')+'</h2><p class="note">'+ZT('越有名，賺越多！')+' ×'+m+'</p><div class="cgigs">'+
+    C.gigs.map((g,i)=>{const t=THEMES.find(x=>x.id===g.t),lock=g.need>L;return '<button class="gig'+(lock?' lock':'')+'" data-i="'+i+'"><span class="e">'+(g.k==='show'?'💃':g.k==='shoot'?'📸':'🏆')+'</span><b>'+ZT(g.zh)+'</b><span>'+ZT('主題')+'：'+RB(t.zh,t.zy)+' '+[...new Intl.Segmenter().segment(TPICS[t.id]||'')].slice(0,2).map(x=>x.segment).join('')+'</span><span class="pay">💰 '+ZT('最多')+' '+payOf(g,15,true)+'</span>'+(lock?'<span>🔒 '+ZT('需要')+ZT(LV[g.need][1])+'</span>':'')+'</button>';}).join('')+
+    '</div><div class="row"><button class="btn ghost" id="cBack">🏙️ '+ZT('回城市')+'</button></div>');
+  s.querySelector('#cBack').onclick=careerHub;
+  s.querySelectorAll('.gig').forEach(b=>b.onclick=()=>{const g=C.gigs[+b.dataset.i];if(g.need>lvOf(C.stars)){sfx.boing();toast('🔒 '+ZT('還不夠有名'));return;}startGig(g);});}
+function startGig(g){GIG=g;cClose();MODE='career';fresh();setTheme(g.t);timeLeft=120;showTime();
+  GIG.opp=g.k==='contest'?{name:'小星',look:genCPU()}:null;renderTabs();renderFig();renderItems();setBadge(ME);
+  say(g.zh+'！主題是'+THEMES.find(x=>x.id===g.t).zh);}
+function careerResult(tot,max,two,E){const me=tot[0],won=two?tot[0]>tot[1]:true,pay=payOf(GIG,me,won),L0=lvOf(C.stars);
+  C.money+=pay;C.stars+=me;C.done++;C.gigs=null;const L1=lvOf(C.stars);cSave();
+  let h='<div class="cres">💰 +'+pay+' &nbsp; ⭐ +'+me+(two?' &nbsp; '+(won?'🏆 '+ZT('贏了！'):ZT('下次加油！')):'')+'</div>';
+  if(L1>L0)setTimeout(()=>{confetti();sfx.win();const top=L1===LV.length-1&&!C.top;if(top){C.top=true;cSave();}
+    const m=modal2('<h2>'+(top?'👑🌍':'🎉')+' '+ZT(top?'你成為世界超模了！':'升級了！')+'</h2><p style="font-size:1.4rem">'+ZT(LV[L1][1])+'</p><p class="note">'+ZT('以後工作賺更多錢！')+' ×'+LV[L1][2]+'</p><div class="row"><button class="btn pink" id="lvOK">OK</button></div>');
+    m.querySelector('#lvOK').onclick=()=>m.remove();say(top?'恭喜！你成為世界超模了！':'升級了！'+LV[L1][1]);},1200);
+  return h;}
+/* shops: fancier shops open as she gets famous */
+const SHOPS=[['basic','🧺','平價小店',0,1,it=>price(it)<=9],['sport','⚽','運動用品店',0,1,it=>it.tags.some(t=>['sports','camping','beach'].includes(t))],
+  ['sweet','🍭','可愛甜心屋',1,1.2,it=>it.tags.some(t=>['candy','birthday','garden','fairy'].includes(t))],['boutique','👜','精品服飾店',2,1.3,it=>it.tags.some(t=>['school','travel','autumn','concert','night','snow','rain'].includes(t))],
+  ['gown','👑','夢幻禮服店',3,1.5,it=>it.tags.some(t=>['royal','ballet','halloween','newyear'].includes(t))],['paris','🗼','巴黎名店',4,1.8,it=>true]];
+const cPrice=(sh,it)=>Math.round(price(it)*sh[4]);
+function shopMenu(){const L=lvOf(C.stars);const s=cScreen(cHead()+'<h2>🛍️ '+ZT('逛街')+'</h2><div class="cgrid">'+
+    SHOPS.map((sh,i)=>'<button class="mode'+(sh[3]>L?' lock':'')+'" data-i="'+i+'"><span class="e">'+sh[1]+'</span><b>'+ZT(sh[2])+'</b><span>'+(sh[3]>L?'🔒 '+ZT('需要')+ZT(LV[sh[3]][1]):ZT('開門了'))+'</span></button>').join('')+
+    '</div><div class="row"><button class="btn ghost" id="cBack">🏙️ '+ZT('回城市')+'</button></div>');
+  s.querySelector('#cBack').onclick=careerHub;
+  s.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{const sh=SHOPS[+b.dataset.i];if(sh[3]>lvOf(C.stars)){sfx.boing();toast('🔒 '+ZT('還不夠有名'));return;}shop(sh);});}
+function shop(sh,cat){cat=cat||'top';const list=CAT[cat].items.filter(it=>sh[5](it)&&!owns(cat,it.id)).sort((a,b)=>price(a)-price(b));
+  const s=cScreen(cHead()+'<h2>'+sh[1]+' '+ZT(sh[2])+'</h2><div class="tabs ctabs">'+ORDER.map(c=>'<button class="tab'+(c===cat?' on':'')+'" data-c="'+c+'">'+RB(CAT[c].zh,CAT[c].zy)+'</button>').join('')+'</div>'+
+    (list.length?'<div class="items shopitems">'+list.map((it,i)=>'<button class="it" data-i="'+i+'">'+thumb(cat,it)+'<span class="nm">'+RB(it.zh.replace('T',''),it.zy.replace('T ',''))+'</span><span class="en">'+it.en+'</span><span class="pr'+(cPrice(sh,it)>C.money?' no':'')+'">💰'+cPrice(sh,it)+'</span></button>').join('')+'</div>':'<p class="note">'+ZT('這裡的東西你都有了！')+'</p>')+
+    '<div class="row"><button class="btn ghost" id="cBack">🛍️ '+ZT('換一家店')+'</button><button class="btn ghost" id="cHome">🏙️ '+ZT('回城市')+'</button></div>');
+  fitThumbs();s.querySelector('#cBack').onclick=shopMenu;s.querySelector('#cHome').onclick=careerHub;
+  s.querySelectorAll('.ctabs .tab').forEach(b=>b.onclick=()=>shop(sh,b.dataset.c));
+  s.querySelectorAll('.shopitems .it').forEach(b=>b.onclick=()=>{const it=list[+b.dataset.i],p=cPrice(sh,it);
+    if(p>C.money){sfx.boing();toast('💰 '+ZT('錢不夠，去打工或接工作吧！'),2400);return;}
+    const m=modal2('<div class="big">'+thumb(cat,it)+'</div><h2>'+RB(it.zh.replace('T',''),it.zy.replace('T ',''))+' <small>'+it.en+'</small></h2><p style="font-size:1.3rem">💰 '+p+'</p><div class="row"><button class="btn pink" id="buy">'+ZT('買')+'</button><button class="btn ghost" id="nob">'+ZT('不要')+'</button></div>');
+    m.querySelectorAll('svg').forEach(x=>{x.style.width='140px';x.style.height='140px';});try{const sv=m.querySelector('.big svg'),bb=sv.querySelector('.tb').getBBox(),q=Math.max(bb.width,bb.height)*.08;sv.setAttribute('viewBox',(bb.x-q)+' '+(bb.y-q)+' '+(bb.width+2*q)+' '+(bb.height+2*q));}catch(e){}
+    m.querySelector('#nob').onclick=()=>m.remove();
+    m.querySelector('#buy').onclick=()=>{m.remove();C.money-=p;C.own[cat].push(it.id);cSave();sfx.win();tone(1200,.08,'triangle',.1);toast('🛍️ '+ZT('買到了！'));shop(sh,cat);};});}
+function myCloset(){const s=cScreen(cHead()+'<h2>👗 '+ZT('我的衣櫃')+'</h2>'+ORDER.map(c=>'<h3>'+RB(CAT[c].zh,CAT[c].zy)+' '+C.own[c].length+'</h3><div class="items shopitems">'+(C.own[c].length?C.own[c].map(id=>{const it=find(c,id);return it?'<div class="it">'+thumb(c,it)+'<span class="en">'+it.en+'</span></div>':'';}).join(''):'<p class="note">'+ZT('還沒有，去商店買吧！')+'</p>')+'</div>').join('')+
+  '<div class="row"><button class="btn ghost" id="cBack">🏙️ '+ZT('回城市')+'</button></div>');fitThumbs();s.querySelector('#cBack').onclick=careerHub;}
+/* part-time jobs: three mini games */
+function workMenu(){const s=cScreen(cHead()+'<h2>💼 '+ZT('打工')+'</h2><div class="cgrid">'+
+    [['cash','☕','咖啡店收銀','算對找錢'],['sew','🧵','縫紉工作室','記住按鈕的順序'],['sort','📦','服飾店理貨','把衣服放對地方']].map(([k,e,t,d])=>'<button class="mode" data-k="'+k+'"><span class="e">'+e+'</span><b>'+ZT(t)+'</b><span>'+ZT(d)+'</span></button>').join('')+
+    '</div><div class="row"><button class="btn ghost" id="cBack">🏙️ '+ZT('回城市')+'</button></div>');
+  s.querySelector('#cBack').onclick=careerHub;s.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();({cash:jobCash,sew:jobSew,sort:jobSort})[b.dataset.k]();});}
+function payday(earn,title){C.money+=earn;cSave();sfx.win();if(earn>=8)confetti();
+  const s=cScreen(cHead()+'<h2>'+title+'</h2><div class="cres">💰 +'+earn+'</div><div class="row"><button class="btn pink" id="again2">'+ZT('再做一次')+'</button><button class="btn ghost" id="cBack">🏙️ '+ZT('回城市')+'</button></div>');
+  return s;}
+function jobCash(){let round=0,earn=0;const N=6;
+  const next=()=>{if(round>=N){const s=payday(earn,'☕ '+ZT('下班了！'));s.querySelector('#again2').onclick=jobCash;s.querySelector('#cBack').onclick=careerHub;return;}
+    round++;const pay=Math.random()<.6?100:50,cost=pay===100?10+Math.floor(Math.random()*85):6+Math.floor(Math.random()*40),ans=pay-cost;let got=0;
+    const drinks=['🧋','☕','🥤','🍵','🧃','🍰'];
+    const s=cScreen('<h2>☕ '+ZT('咖啡店收銀')+' '+round+'/'+N+'</h2><div class="cust">'+pick(drinks)+' <b>'+cost+' '+ZT('元')+'</b><br>'+ZT('客人給你')+' <b class="paid">'+pay+' '+ZT('元')+'</b></div><p>'+ZT('要找多少錢？點硬幣：')+'</p><div class="tray" id="tray"></div><div class="got">'+ZT('找錢')+'：<b id="got">0</b> '+ZT('元')+'</div><div class="coins">'+[1,5,10,50].map(v=>'<button class="coin c'+v+'" data-v="'+v+'">'+v+'</button>').join('')+'</div><div class="row"><button class="btn ghost" id="clr">'+ZT('重來')+'</button><button class="btn pink" id="give">'+ZT('找錢')+' ✓</button></div>');
+    s.querySelectorAll('.coin').forEach(b=>b.onclick=()=>{got+=+b.dataset.v;tone(1400+(+b.dataset.v)*8,.05,'square',.05);s.querySelector('#got').textContent=got;s.querySelector('#tray').insertAdjacentHTML('beforeend','<i class="coin c'+b.dataset.v+'">'+b.dataset.v+'</i>');});
+    s.querySelector('#clr').onclick=()=>{got=0;s.querySelector('#got').textContent=0;s.querySelector('#tray').innerHTML='';};
+    s.querySelector('#give').onclick=()=>{if(got===ans){earn+=2;sfx.good();toast('✅ '+ZT('答對了！')+' 💰+2',1200);setTimeout(next,900);}
+      else{sfx.boing();toast('❌ '+pay+' − '+cost+' = '+ans,2400);setTimeout(next,2200);}};};
+  next();}
+function jobSew(){const COL=['#e8505b','#ffd25e','#5b8def','#7cc47f'],NOTE=[523,659,784,988];let seq=[],earn=0,inp=0,busy=true;
+  const s=cScreen('<h2>🧵 '+ZT('縫紉工作室')+'</h2><p class="note" id="sm">'+ZT('看好順序！')+'</p><div class="spools">'+COL.map((c,i)=>'<button class="spool" data-i="'+i+'" style="background:'+c+'"></button>').join('')+'</div><div class="got">💰 <b id="se">0</b></div>');
+  const btn=[...s.querySelectorAll('.spool')],lit=i=>{btn[i].classList.add('on');tone(NOTE[i],.25,'triangle',.12);setTimeout(()=>btn[i].classList.remove('on'),320);};
+  const SM=h=>{const e=s.querySelector('#sm');if(e)e.innerHTML=h;};const play=()=>{busy=true;inp=0;SM(ZT('看好順序！'));seq.forEach((v,k)=>setTimeout(()=>{if(btn[0].isConnected)lit(v);},600+k*560));setTimeout(()=>{busy=false;SM(ZT('換你按！'));},600+seq.length*560);};
+  const grow=()=>{seq.push(Math.floor(Math.random()*4));if(seq.length<3)return grow();play();};
+  btn.forEach(b=>b.onclick=()=>{if(busy)return;const i=+b.dataset.i;lit(i);
+    if(i!==seq[inp]){busy=true;sfx.boing();setTimeout(()=>{const p=payday(earn,'🧵 '+ZT('下班了！'));p.querySelector('#again2').onclick=jobSew;p.querySelector('#cBack').onclick=careerHub;},700);return;}
+    inp++;if(inp===seq.length){earn+=seq.length-1;s.querySelector('#se').textContent=earn;sfx.good();busy=true;
+      if(seq.length>=9){setTimeout(()=>{const p=payday(earn,'🧵 '+ZT('太厲害了！'));p.querySelector('#again2').onclick=jobSew;p.querySelector('#cBack').onclick=careerHub;},700);return;}
+      seq.push(Math.floor(Math.random()*4));setTimeout(play,500);}});
+  grow();}
+function jobSort(){const BINS=['top','bottom','dress','shoes','acc'],N=10;let k=0,earn=0,left=30,t;
+  const s=cScreen('<h2>📦 '+ZT('服飾店理貨')+'</h2><div class="sortbar"><i id="sbar"></i></div><div class="sortitem" id="si"></div><div class="bins">'+BINS.map(c=>'<button class="bin" data-c="'+c+'">'+RB(CAT[c].zh,CAT[c].zy)+'</button>').join('')+'</div><div class="got">'+'<b id="sk">0</b>/'+N+' &nbsp; 💰 <b id="se">0</b></div>');
+  let cur;const show1=()=>{if(k>=N)return end();const c=pick(BINS);cur=[c,pick(CAT[c].items)];s.querySelector('#si').innerHTML='<div class="it">'+thumb(c,cur[1])+'</div>';fitThumbs();};
+  const end=()=>{clearInterval(t);const p=payday(earn,'📦 '+ZT('下班了！'));p.querySelector('#again2').onclick=jobSort;p.querySelector('#cBack').onclick=careerHub;};
+  s.querySelectorAll('.bin').forEach(b=>b.onclick=()=>{if(!cur)return;if(b.dataset.c===cur[0]){earn+=1;sfx.good();}else{sfx.boing();toast('→ '+ZT(CAT[cur[0]].zh),900);}k++;s.querySelector('#sk').textContent=k;s.querySelector('#se').textContent=earn;show1();});
+  t=setInterval(()=>{if(!document.getElementById('si')){clearInterval(t);return;}left-=.1;s.querySelector('#sbar').style.width=Math.max(0,left/30*100)+'%';if(left<=0)end();},100);
+  show1();}
+
 setTimeout(()=>{if(!bootLinks())showModes();},50);
 window.__test={pop:()=>({on:POP.on,step:POP.step}),themes:()=>THEMES.length,tagCount:th=>ORDER.reduce((a,c)=>a+CAT[c].items.filter(i=>i.tags.includes(th)).length,0),state:()=>({look:JSON.parse(JSON.stringify(look)),theme:theme.id,running:running}),judge:()=>judge().map(x=>[x[2],x[3],x[4]]),runway:runway,wear:(c,id)=>wear(c,find(c,id)),tab:t=>{tab=t;renderTabs();renderItems();}};
 
