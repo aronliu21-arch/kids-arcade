@@ -125,6 +125,12 @@ h1{font-size:44px;margin:0 0 2px}
 .pair .s svg{width:80px}.sibc{filter:hue-rotate(150deg)}
 @media (max-width:520px){.ch.nest{font-size:24px;min-height:100px}.ch.col{width:88px;height:102px}.movebtn svg{width:140px}.cnt{font-size:44px}.pat{font-size:36px}.pair .m svg{width:150px}.pair .b svg{width:90px}.pair .s svg{width:62px}}
 .cloudnote{font-size:13px;opacity:.7;margin:10px 0 0}
+.gpa{filter:hue-rotate(160deg) saturate(.55) brightness(1.05)}
+.ob.shake{animation:shake .4s}
+.blank{display:inline-block;min-width:.8em;border-bottom:6px solid var(--orange);color:transparent}
+.ch.lower{font-family:'Avenir Next','Helvetica Neue',Arial,sans-serif;text-transform:none}
+.chap{display:inline-block;background:#2E7D32;color:#fff;border-radius:999px;padding:3px 16px;font-size:17px;font-weight:700;margin:2px 0 4px}
+.choices .ch.shp svg{display:block}
 :root{--font-display:"Fredoka","Noto Sans TC","PingFang TC","Heiti TC",system-ui,sans-serif;--font-body:"Noto Sans TC","PingFang TC","Heiti TC","Fredoka",system-ui,sans-serif}
 body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 @keyframes enter{from{opacity:0;transform:translateY(12px)}}
@@ -228,6 +234,16 @@ const LANDS=[
  {n:'Beach',zh:'海邊',icon:'🏖️',bg:['#FFF3CC','#7FD3F0'],deco:['⛱️','🦀','🐚','🐠','🌊','🐚'],obj:'🐚',objN:'shells',fr:['🐉','Puff the Dragon']},
  {n:'Mountain',zh:'高山',icon:'🏔️',bg:['#F2FAFF','#9DC7E8'],deco:['🌲','🐧','❄️','🏔️','🌲','❄️'],obj:'❄️',objN:'snowflakes',fr:['mama','Mama Dino']}
 ];
+const LANDS2=[
+ {n:'Desert',zh:'沙漠',icon:'🏜️',bg:['#FFF0C2','#E9B45C'],deco:['🌵','🐪','☀️','🦂','🌵','🏜️'],obj:'🌵',objN:'cactuses',fr:['🐪','Camila the Camel']},
+ {n:'Night Forest',zh:'夜晚森林',icon:'🌙',bg:['#3B3F7A','#1F5E45'],deco:['🌙','🦉','🍄','⭐','🌲','🍄'],obj:'🍄',objN:'mushrooms',fr:['🦉','Hoot the Owl']},
+ {n:'Ice Cave',zh:'冰洞',icon:'🧊',bg:['#E6F7FF','#7CB8E0'],deco:['🧊','💎','❄️','🦭','🧊','💎'],obj:'💎',objN:'gems',fr:['🦭','Sully the Seal']},
+ {n:'Sky Island',zh:'天空島',icon:'☁️',bg:['#E4F3FF','#B7A6F0'],deco:['☁️','🌈','🎈','⭐','☁️','🪁'],obj:'⭐',objN:'stars',fr:['🦅','Sky the Eagle']},
+ {n:'Dino Valley',zh:'恐龍谷',icon:'🦕',bg:['#E4F7D2','#8BBF5A'],deco:['🌿','🦴','🌋','🥚','🌿','🦴'],obj:'🦴',objN:'bones',fr:['grandpa','Grandpa Dino']}
+];
+const ch2=()=>S.ch===2;
+const curLands=()=>ch2()?LANDS2:LANDS;
+const PLAN4=['countkind','missing','upper','subtract','pattern3','zyfirst','combo','order'];
 const PLAN=['count','letter','add','zy','word','count','zy','add'];
 const START=[56,522],END=[196,52];
 const P=[[150,488],[288,462],[332,384],[204,350],[84,300],[128,218],[270,190],[318,112]];
@@ -236,6 +252,7 @@ const DECO_AT=[[350,520],[40,410],[365,272],[40,165],[95,72],[352,42]];
 const KEY='milo-journey-v1';
 let S={land:0,stop:0,friends:[],journeys:0};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S=Object.assign(S,s);}catch(e){}
+if(S.ch===undefined){S.pos={1:{land:S.land,stop:S.stop}};S.ch=2;S.land=0;S.stop=0;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}cloudPush();}
 
 let voices=[];
@@ -441,8 +458,9 @@ const app=document.getElementById('app');
 const $=s=>document.querySelector(s);
 const rnd=n=>Math.floor(Math.random()*n);
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
-const land=()=>LANDS[S.land%LANDS.length];
-const maxN=()=>Math.min(9,5+(S.land%LANDS.length)+(S.journeys>=5?1:0));
+const land=()=>curLands()[S.land%LANDS.length];
+const maxN=()=>ch2()?Math.min(10,7+Math.floor((S.land%LANDS.length)/2)):Math.min(9,5+(S.land%LANDS.length)+(S.journeys>=5?1:0));
+function switchChapter(){S.pos=S.pos||{};S.pos[S.ch||1]={land:S.land,stop:S.stop};S.ch=ch2()?1:2;const p=S.pos[S.ch]||{land:0,stop:0};S.land=p.land;S.stop=p.stop;save();home();}
 function numChoices(n){const s=new Set([n]);while(s.size<3){const d=n+(rnd(2)?1:-1)*(1+rnd(2));if(d>=1&&d<=10)s.add(d);}return shuffle([...s]);}
 let round=null,busy=false;
 
@@ -453,25 +471,26 @@ function home(){
   closeOv();
   const L=land();
   app.innerHTML=`<div class="homewrap"><div class="hl"><p class="name" data-say="zh"><ruby>洛<rt>ㄌㄨㄛˋ</rt></ruby><ruby>明<rt>ㄇㄧㄥˊ</rt></ruby></p>
-  <h1>Dino Journey</h1>${season()?`<p class="season" data-say="en">⭐ Season ${season()+1} — new games!</p>`:''}
+  <h1>Dino Journey</h1>${ch2()?`<p class="chap">🗺️ Chapter 2 · 第二章 — The Big Adventure!</p>`:season()?`<p class="season" data-say="en">⭐ Season ${season()+1} — new games!</p>`:''}
   <button class="pet" id="pet" aria-label="Tap Little Dino">${DINO}</button>
-  <p class="sub" data-say="en">Help Little Dino find Mama!</p></div><div class="hr">
-  <div class="lands">${LANDS.map((l,i)=>{const cur=i===S.land%LANDS.length;const done=i<S.land%LANDS.length;return `<div class="land${cur?' now':done?' done':''}">${l.icon}<small>${l.n}</small></div>`;}).join('')}</div>
+  <p class="sub" data-say="en">${ch2()?'Help the dino family find Grandpa Dino!':'Help Little Dino find Mama!'}</p></div><div class="hr">
+  <div class="lands">${curLands().map((l,i)=>{const cur=i===S.land%LANDS.length;const done=i<S.land%LANDS.length;return `<div class="land${cur?' now':done?' done':''}">${l.icon}<small>${l.n}</small></div>`;}).join('')}</div>
   <button class="go" id="go">▶ ${S.stop>0?'Keep going':'Go to the '+L.n}</button>
-  ${S.friends.length?`<div class="friends">Friends: ${S.friends.map(f=>`<span>${f==='mama'?'🦕':f==='sib'?'🐣':f==='party'?'🎂':f}</span>`).join('')}</div>`:''}
-  <p class="together">👨‍👩‍👦 One journey is 8 little games — about 10 minutes together.<br>Keys: number keys to answer, spacebar to walk.</p><div class="plinks"><button class="plink" id="report">📊 Parent: progress report</button><button class="plink" id="studio">🎙️ Parent: record your voice</button></div>${cloudNote()}</div></div>`;
+  ${S.friends.length?`<div class="friends">Friends: ${S.friends.map(f=>`<span>${f==='mama'?'🦕':f==='grandpa'?'👴':f==='sib'?'🐣':f==='party'?'🎂':f}</span>`).join('')}</div>`:''}
+  <p class="together">👨‍👩‍👦 One journey is 8 little games — about 10 minutes together.<br>Keys: number keys to answer, spacebar to walk.</p><div class="plinks"><button class="plink" id="report">📊 Parent: progress report</button><button class="plink" id="studio">🎙️ Parent: record your voice</button><button class="plink" id="chsw">🔀 Parent: play Chapter ${ch2()?1:2} instead</button></div>${cloudNote()}</div></div>`;
   $('#pet').onclick=()=>roar($('#pet'));
   $('#go').onclick=map;
   $('#studio').onclick=studio;
   $('#report').onclick=report;
+  $('#chsw').onclick=switchChapter;
 }
 
 /* ---------- MAP ---------- */
 function posFor(i){return i<=0?START:P[i-1];}
 function mapSVG(){
-  const L=land(),reached=false,FR=friendNow(),isMama=FR[0]==='mama'||FR[0]==='sib';
+  const L=land(),reached=false,FR=friendNow(),isMama=FR[0]==='mama'||FR[0]==='sib'||FR[0]==='grandpa';
   const friend=isMama
-    ?`<g id="fr" class="${reached?'':'hid'}"><g class="mama" transform="translate(150,14) scale(.5)">${DINO_IN}</g></g>`
+    ?`<g id="fr" class="${reached?'':'hid'}"><g class="${FR[0]==='grandpa'?'gpa':'mama'}" transform="translate(150,14) scale(.5)">${DINO_IN}</g></g>`
     :`<text id="fr" class="${reached?'':'hid'}" x="${END[0]}" y="${END[1]}" font-size="54" text-anchor="middle" dominant-baseline="central">${FR[0]==='party'?'🎂':FR[0]}</text>`;
   const path='M'+[START,...P,END].map(p=>p.join(' ')).join(' L');
   return `<svg viewBox="0 0 400 560" role="img" aria-label="Journey map through the ${L.n}">
@@ -514,7 +533,7 @@ function walk(){
 const PLAN2=['shape','more','pattern','move','color','sound','number','zyhear'];
 const season=()=>Math.floor(S.journeys/LANDS.length)%3;
 const FR2=[['🐸','Hoppy the Frog'],['🦦','Ollie the Otter'],['🦖','Rex the T. rex'],['🐙','Inky the Octopus'],['sib','a new baby dino']];
-function friendNow(){const i=S.land%LANDS.length,sn=season();return sn===2?FR3[i]:sn===1?FR2[i]:LANDS[i].fr;}
+function friendNow(){const i=S.land%LANDS.length,sn=season();if(ch2())return LANDS2[i].fr;return sn===2?FR3[i]:sn===1?FR2[i]:LANDS[i].fr;}
 const SHAPES=[['circle','圓形','<circle cx="40" cy="40" r="31"/>'],['square','正方形','<rect x="11" y="11" width="58" height="58" rx="4"/>'],['triangle','三角形','<polygon points="40,7 75,71 5,71"/>'],['star','星星','<polygon points="40,5 49,30 76,31 55,47 63,74 40,58 17,74 25,47 4,31 31,30"/>'],['heart','愛心','<path d="M40 72 C10 50 3 30 17 17 C28 8 38 15 40 24 C42 15 52 8 63 17 C77 30 70 50 40 72Z"/>']];
 const COLORS=[['red','紅色','#E8423F'],['blue','藍色','#2F7FE0'],['yellow','黃色','#F6C531'],['green','綠色','#3DAA4A'],['orange','橘色','#FF8C2E'],['purple','紫色','#8E5BD8']];
 const SOUNDW=[['A','apple','🍎'],['B','bee','🐝'],['C','cat','🐱'],['D','dog','🐶'],['F','fish','🐟'],['G','goat','🐐'],['H','hat','🎩'],['M','moon','🌙'],['P','pig','🐷'],['S','sun','☀️'],['T','tree','🌳'],['R','rabbit','🐰'],['B','ball','⚽'],['D','duck','🦆']];
@@ -522,7 +541,7 @@ const MOVES=[['Stomp like a dino','踏步'],['Roar like a dino','吼'],['Jump','
 const PAIRS=[['🦕','🦖'],['🔴','🔵'],['🐸','🐟'],['⭐','🌙']];
 const shapeSVG=(sh,col,sz)=>`<svg viewBox="0 0 80 80" width="${sz||72}" height="${sz||72}" aria-hidden="true"><g fill="${col}">${sh[2]}</g></svg>`;
 const pickOthers=(arr,ans,n,same)=>shuffle(arr.filter(x=>x!==ans&&(!same||!same(x,ans)))).slice(0,n);
-const SAYTYPES=['zy','zyhear','word','letter','sound','animal'];
+const SAYTYPES=['zy','zyhear','word','letter','sound','animal','missing','upper','zyfirst'];
 const PLAN3=['biggest','animal','feel','shadow','odd','where','together','onemore'];
 const FR3=[['🐝','Buzz the Bee'],['🦩','Flora the Flamingo'],['🦔','Spike the Hedgehog'],['🐧','Pip the Penguin'],['party','a surprise birthday party']];
 const ANIMALS=[['cow','moo','🐮','牛','哞'],['dog','woof woof','🐶','狗','汪汪'],['cat','meow','🐱','貓','喵'],['duck','quack','🦆','鴨子','呱呱'],['sheep','baa','🐑','羊','咩'],['pig','oink oink','🐷','豬','噗噗'],['rooster','cock-a-doodle-doo','🐓','公雞','喔喔喔'],['lion','roar','🦁','獅子','吼'],['owl','hoo hoo','🦉','貓頭鷹','咕咕']];
@@ -532,6 +551,10 @@ const ODD_CATS=[['fruits','水果',[['apple','🍎'],['banana','🍌'],['grapes'
   ['animals','動物',[['dog','🐶'],['cat','🐱'],['cow','🐮'],['pig','🐷'],['rabbit','🐰']]],['clothes','衣服',[['shirt','👕'],['pants','👖'],['socks','🧦'],['shoes','👟'],['cap','🧢']]]];
 const WHERE_PAIRS=[['ball','⚽','球','box','📦','箱子'],['bird','🐦','小鳥','tree','🌳','樹'],['cat','🐱','貓','chair','🪑','椅子']];
 const POS=[['on','上面'],['under','下面'],['next to','旁邊']];
+const KINDS=[['🍎','apples','蘋果'],['🍌','bananas','香蕉'],['⭐','stars','星星'],['🐟','fish','魚'],['🍄','mushrooms','香菇'],['💎','gems','寶石'],['🐞','ladybugs','瓢蟲'],['🌸','flowers','花'],['🥚','eggs','蛋']];
+const WORDS2=[['bat','🦇'],['cup','🥤'],['map','🗺️'],['box','📦'],['web','🕸️'],['net','🥅'],['pen','🖊️'],['bag','👜'],['bug','🐛'],['hen','🐔'],['van','🚐'],['log','🪵'],['nut','🥜'],['cap','🧢'],['rat','🐀'],['pin','📌'],['jet','🛩️'],['mug','☕']];
+const TRIOS=[['🍎','🍌','🍇'],['🔴','🟡','🔵'],['🐶','🐱','🐭'],['⭐','🌙','☀️'],['🦕','🦖','🥚'],['🚗','🚌','🚲']];
+const SEQS=[[['egg','🥚'],['chick','🐣'],['hen','🐔']],[['sprout','🌱'],['plant','🌿'],['tree','🌳']],[['morning','🌅'],['day','☀️'],['night','🌙']],[['baby','👶'],['kid','🧒'],['grown-up','🧑']],[['cloud','☁️'],['rain','🌧️'],['rainbow','🌈']]];
 const TOGETHER=[['toothbrush','🪥','tooth','🦷'],['sock','🧦','shoe','👟'],['umbrella','☂️','rain','🌧️'],['spoon','🥄','bowl','🥣'],['key','🔑','lock','🔒'],['pencil','✏️','paper','📄'],['bee','🐝','flower','🌸'],['carrot','🥕','rabbit','🐰'],['bone','🦴','dog','🐶']];
 
 
@@ -551,17 +574,17 @@ function unlockNext(){
 }
 function itemKey(r){switch(r.type){case 'count':return 'count:'+r.ans;case 'add':return 'add:'+r.a+'+'+r.b;case 'letter':return 'letter:'+r.ans;case 'word':return 'word:'+r.ans[0];
   case 'zy':return 'zy:'+r.ans[0];case 'zyhear':return 'hear:'+r.ans[0];case 'shape':return 'shape:'+r.ans[0];case 'color':return 'color:'+r.ans[0];case 'sound':return 'sound:'+r.ans[1];
-  case 'number':return 'number:'+r.ans;case 'more':return 'more:'+(Math.abs(r.a-r.b)<2?'close':'far');case 'pattern':return 'pattern:'+(r.unitLen===3?'AAB':'AB');case 'biggest':return 'big:'+(r.big?'biggest':'smallest');case 'animal':return 'animal:'+r.ans[0];case 'feel':return 'feel:'+r.ans[0];case 'shadow':return 'shadow:'+r.ans[0];case 'odd':return 'odd:'+r.cat[0];case 'where':return 'where:'+r.ans[0];case 'together':return 'together:'+r.ans[0];case 'onemore':return 'onemore:'+(r.more?'more':'less');}return null;}
-function specOf(r){switch(r.type){case 'count':return{type:'count',n:r.ans};case 'add':return{type:'add',a:r.a,b:r.b};case 'letter':return{type:'letter',x:r.ans};case 'word':return{type:'word',w:r.ans[0]};
+  case 'number':return 'number:'+r.ans;case 'more':return 'more:'+(Math.abs(r.a-r.b)<2?'close':'far');case 'pattern':return 'pattern:'+(r.unitLen===3?'AAB':'AB');case 'biggest':return 'big:'+(r.big?'biggest':'smallest');case 'animal':return 'animal:'+r.ans[0];case 'feel':return 'feel:'+r.ans[0];case 'shadow':return 'shadow:'+r.ans[0];case 'odd':return 'odd:'+r.cat[0];case 'where':return 'where:'+r.ans[0];case 'together':return 'together:'+r.ans[0];case 'onemore':return 'onemore:'+(r.more?'more':'less');case 'countkind':return 'countkind:'+r.ans;case 'missing':return 'missing:'+r.w[0];case 'upper':return 'upper:'+r.X;case 'subtract':return 'sub:'+r.n+'-'+r.k;case 'pattern3':return 'pattern3:'+(r.abc?'ABC':'ABB');case 'zyfirst':return 'zyfirst:'+r.ans[0];case 'combo':return 'combo:'+r.ans[1][0]+' '+r.ans[0][0];case 'order':return 'order:'+r.q[0][0];}return null;}
+function specOf(r){const type=r.type;switch(r.type){case 'count':return{type:'count',n:r.ans};case 'add':return{type:'add',a:r.a,b:r.b};case 'letter':return{type:'letter',x:r.ans};case 'word':return{type:'word',w:r.ans[0]};
   case 'zy':return{type:'zy',sym:r.ans[0]};case 'zyhear':return{type:'zyhear',sym:r.ans[0]};case 'shape':return{type:'shape',name:r.ans[0]};case 'color':return{type:'color',name:r.ans[0]};
-  case 'sound':return{type:'sound',w:r.ans[1]};case 'number':return{type:'number',n:r.ans};case 'animal':case 'feel':case 'shadow':case 'together':return{type:r.type,name:r.ans[0]};case 'where':return{type:'where',name:r.ans[0]};default:return{type:r.type};}}
+  case 'sound':return{type:'sound',w:r.ans[1]};case 'number':return{type:'number',n:r.ans};case 'animal':case 'feel':case 'shadow':case 'together':return{type:r.type,name:r.ans[0]};case 'where':return{type:'where',name:r.ans[0]};case 'countkind':return{type,n:r.ans};case 'missing':return{type,w:r.w[0]};case 'upper':return{type,x:r.X};case 'subtract':return{type,n:r.n,k:r.k};case 'zyfirst':return{type,sym:r.ans[0]};case 'order':return{type,name:r.q[0][0]};default:return{type:r.type};}}
 function record(r,first){
   ensure();const key=itemKey(r);if(!key)return;
   const e=S.log[key]||[0,0,0];e[0]++;if(first)e[1]++;S.log[key]=e;
   const ix=S.review.findIndex(x=>x.k===key);
   if(first){if(ix>=0)S.review.splice(ix,1);}
-  else if(ix<0){S.review.push({...specOf(r),k:key});if(S.review.length>8)S.review.shift();}
-  if(r.type==='zy'||r.type==='zyhear'){
+  else if(ix<0){S.review.push({...specOf(r),k:key,j:S.journeys});if(S.review.length>8)S.review.shift();}
+  if(r.type==='zy'||r.type==='zyhear'||r.type==='zyfirst'){
     if(first){S.zstreak++;if(S.zstreak>=3){S.zstreak=0;r.newSym=unlockNext();}}else S.zstreak=0;
   }
   save();
@@ -590,12 +613,23 @@ function makeRound(type,spec){
   if(type==='where'){const pr=WHERE_PAIRS[rnd(WHERE_PAIRS.length)],p=(spec.name&&POS.find(x=>x[0]===spec.name))||POS[rnd(POS.length)];return{type,pr,ans:p,opts:shuffle([...POS]),story:`Find the ${pr[0]} ${p[0].toUpperCase()} the ${pr[3]}!`};}
   if(type==='together'){const t=(spec.name&&TOGETHER.find(x=>x[0]===spec.name))||TOGETHER[rnd(TOGETHER.length)];return{type,ans:t,opts:shuffle([t,...pickOthers(TOGETHER,t,2)]),story:`What goes with the ${t[0]}?`};}
   if(type==='onemore'){const more=Math.random()<.5;const n=more?1+rnd(Math.min(8,M)):2+rnd(Math.min(8,M)-1);const ans=more?n+1:n-1;return{type,n,more,ans,opts:numChoices(ans),story:more?`${n} ${L.objN}. One more comes!`:`${n} ${L.objN}. One goes away!`};}
+  if(type==='countkind'){const ks=shuffle(KINDS);const t=ks[0],d=ks[1];const n=spec.n||3+rnd(Math.min(8,M)-2);const m=2+rnd(3);const items=shuffle([...Array(n).fill(1),...Array(m).fill(0)]);return{type,t,d,items,ans:n,opts:numChoices(n),story:`Count only the ${t[1]}!`};}
+  if(type==='missing'){const w=(spec.w&&WORDS2.find(x=>x[0]===spec.w))||weightPick(WORDS2,x=>'missing:'+x[0]);const i=rnd(3),c=w[0][i];const src=i===1?'aeiou':'bcdfghjklmnprstvwz';const o=shuffle([...src].filter(x=>x!==c)).slice(0,2);return{type,w,i,ans:c,opts:shuffle([c,...o]),story:'Which letter is missing?'};}
+  if(type==='upper'){const X=spec.x||ABC[rnd(26)],x=X.toLowerCase();const conf={B:'dp',D:'bq',P:'qb',Q:'pd',M:'nw',N:'mh',W:'mv',U:'nv',H:'nk',G:'qj',I:'lj',L:'it'};const o=[...new Set([...(conf[X]||''),...shuffle([...'abcdefghijklmnopqrstuvwxyz'])])].filter(c=>c!==x).slice(0,2);return{type,X,ans:x,opts:shuffle([x,...o]),story:`Big ${X}. Find little ${x}!`};}
+  if(type==='subtract'){let n=spec.n,k=spec.k;if(!n||!k){n=3+rnd(Math.min(8,M)-2);k=1+rnd(Math.min(3,n-1));}return{type,n,k,ans:n-k,opts:numChoices(n-k),story:`${n} ${L.objN}. ${k} ${k===1?'goes':'go'} away!`};}
+  if(type==='pattern3'){const tr=shuffle(TRIOS[rnd(TRIOS.length)]);const abc=rnd(2)===0;const unit=abc?tr:[tr[0],tr[1],tr[1]];const len=4+rnd(3);const seq=Array.from({length:len},(_,k)=>unit[k%3]);return{type,seq,abc,ans:unit[len%3],opts:shuffle(tr),story:'What comes next?'};}
+  if(type==='zyfirst'){const pool=zyPool();const z=(spec.sym&&ZY.find(y=>y[0]===spec.sym))||weightPick(pool,x=>'zyfirst:'+x[0]);const base=pool.includes(z)?pool:[...pool,z];return{type,ans:z,opts:shuffle([z,...pickOthers(base,z,2)]),story:'Which sound does it start with?'};}
+  if(type==='combo'){const sh=SHAPES[rnd(SHAPES.length)],c=COLORS[rnd(COLORS.length)];const s2=pickOthers(SHAPES,sh,2),c2=pickOthers(COLORS,c,2);const ans=[sh,c];const opts=shuffle([ans,[sh,c2[0]],[s2[0],c],[s2[1],c2[1]]]);return{type,ans,opts,story:`Find the ${c[0]} ${sh[0]}!`};}
+  if(type==='order'){const q=(spec.name&&SEQS.find(x=>x[0][0]===spec.name))||SEQS[rnd(SEQS.length)];const other=shuffle(SEQS.filter(x=>x!==q))[0][2];return{type,q,ans:q[2],opts:shuffle([q[2],q[0],other]),story:`First the ${q[0][0]}, then the ${q[1][0]}. What comes next?`};}
   const pool=zyhPool();const z=(spec.sym&&ZYALL.find(y=>y[0]===spec.sym))||weightPick(pool,x=>'hear:'+x[0]);
   const o=pickOthers(pool.includes(z)?pool:[...pool,z],z,1)[0];
   return{type:'zyhear',ans:z,opts:shuffle([z,o]),story:'Listen! Which sound is it?'};
 }
+const ASK2={countkind:r=>[[r.story,'en'],['只數'+r.t[2]+'！','zh']],missing:r=>[[r.w[0],'en'],['Which letter is missing?','en']],upper:r=>[[`Big ${r.X}.`,'en'],[`Find little ${r.ans}!`,'en']],
+  subtract:r=>[[r.story+' How many are left?','en'],['還剩幾個？','zh']],pattern3:r=>[[r.story,'en'],['下一個是什麼？','zh']],zyfirst:r=>[['Listen!','en'],[r.ans[2],'zh'],['Which sound does it start with?','en']],
+  combo:r=>[[r.story,'en'],[`找到${r.ans[1][1]}的${r.ans[0][1]}`,'zh']],order:r=>[[r.story,'en']]};
 function ask(){
-  const r=round;
+  const r=round;if(ASK2[r.type]){say(ASK2[r.type](r));return;}
   const t={count:[[r.story,'en'],['一個一個點點看！','zh']],add:[[r.story+' Tap each one to count!','en']],zy:[['Listen!','en'],[r.type==='zy'?ZYS[r.ans[0]]:'','zh']],
     shape:[[r.story,'en'],[r.ans&&r.ans[1]?'找到'+r.ans[1]:'','zh']],more:[[r.story,'en'],['哪一個比較多？','zh']],pattern:[[r.story,'en'],['下一個是什麼？','zh']],
     move:[[r.story,'en'],[r.m?r.m[1]+ZH_NUM[r.n]+'下！':'','zh']],color:[[r.story,'en'],[r.ans&&r.ans[1]?r.ans[1]:'','zh']],sound:[[r.story,'en']],
@@ -609,12 +643,12 @@ function obs(n,start){return Array.from({length:n},(_,i)=>`<button class="ob" da
 const WARM={j:-1,active:false,left:0,queue:[]};
 function challenge(){
   ensure();
-  const planned=[PLAN,PLAN2,PLAN3][season()][S.stop];
-  let r=null;const rv=reviewPool();
-  if(planned!=='move'&&rv.length&&Math.random()<.35){const sp=rv[rnd(rv.length)];r=makeRound(sp.type,sp);r.isReview=true;}
+  const planned=ch2()?PLAN4[S.stop]:[PLAN,PLAN2,PLAN3][season()][S.stop];
+  let r=null;const rv=reviewPool().filter(x=>!ch2()||x.j!==S.journeys);
+  if(planned!=='move'&&rv.length&&Math.random()<(ch2()?.2:.35)){const sp=rv[rnd(rv.length)];r=makeRound(sp.type,sp);r.isReview=true;}
   round=r||makeRound(planned);startRound();
 }
-function reviewPool(){ensure();return season()===2?S.review.filter(x=>x.type!=='zy'&&x.type!=='zyhear'):S.review;}
+function reviewPool(){ensure();if(ch2())return S.review.filter(x=>PLAN4.includes(x.type));return season()===2?S.review.filter(x=>x.type!=='zy'&&x.type!=='zyhear'):S.review;}
 function startRound(){round.wrong=[];round.counted=0;round.first=true;renderCard();ask();}
 function warmup(){
   ensure();WARM.j=S.journeys;WARM.active=true;WARM.queue=reviewPool().slice(0,2);WARM.left=WARM.queue.length;
@@ -629,7 +663,7 @@ function nextWarm(){
 function renderCard(){
   const r=round,L=land();let stage='',ch='';
   const btn=(k,inner,extra,label)=>`<button class="ch${extra?' '+extra:''}" data-k="${k}"${label?` aria-label="${label}"`:''}${r.wrong.includes(k)?' disabled':''}>${inner}</button>`;
-  const total=r.type==='count'?r.ans:r.type==='add'?r.a+r.b:0;
+  const total=(r.type==='count'||r.type==='countkind')?r.ans:r.type==='add'?r.a+r.b:0;
   const locked=total&&r.counted<total;
   switch(r.type){
     case 'count':stage=`<div class="objs">${obs(r.ans,0)}</div><p class="prompt" id="cprompt">👆 Tap each one to count!</p>`;ch=r.opts.map((o,k)=>btn(k,o)).join('');break;
@@ -652,6 +686,14 @@ function renderCard(){
     case 'odd':stage=`<p class="prompt">👆 Tap the one that doesn’t belong!</p>`;ch=r.opts.map((o,k)=>btn(k,o[1],'emo',o[0])).join('');break;
     case 'where':stage=`<p class="prompt">${r.pr[2]}在${r.pr[5]}${r.ans[1]}</p>`;ch=r.opts.map((o,k)=>btn(k,`<span class="wb">${r.pr[4]}</span><span class="ws w-${o[0].replace(' ','')}">${r.pr[1]}</span>`,'where',o[0])).join('');break;
     case 'together':stage=`<div class="big">${r.ans[1]}</div><p class="prompt">➕ ❓</p>`;ch=r.opts.map((o,k)=>btn(k,`${o[3]}<small>${o[2]}</small>`,'',o[2])).join('');break;
+    case 'countkind':stage=`<div class="objs">${r.items.map(t=>`<button class="ob"${t?'':' data-no="1"'} aria-label="${t?r.t[1]:r.d[1]}"><span class="n"></span>${t?r.t[0]:r.d[0]}</button>`).join('')}</div><p class="prompt" id="cprompt">👆 Tap only the ${r.t[0]} ${r.t[1]}!</p>`;ch=r.opts.map((o,k)=>btn(k,o)).join('');break;
+    case 'missing':stage=`<div class="big">${r.w[1]}</div><div class="word">${[...r.w[0]].map((c,j)=>j===r.i?'<span class="blank">?</span>':c).join('')}</div>`;ch=r.opts.map((o,k)=>btn(k,o,'lower',o)).join('');break;
+    case 'upper':stage=`<div class="big">${r.X}</div><p class="prompt">👆 Find little ${r.ans}</p>`;ch=r.opts.map((o,k)=>btn(k,o,'lower',o)).join('');break;
+    case 'subtract':stage=`<div class="eggs pat">${Array.from({length:r.n},(_,i)=>`<span class="${i>=r.n-r.k?'gone':''}">${L.obj}</span>`).join('')}</div><p class="prompt">💨 ${r.k} went away. How many are left?</p>`;ch=r.opts.map((o,k)=>btn(k,o)).join('');break;
+    case 'pattern3':stage=`<div class="pat">${r.seq.map(x=>`<span>${x}</span>`).join('')}<span class="qm">❓</span></div>`;ch=r.opts.map((o,k)=>btn(k,o,'emo',o)).join('');break;
+    case 'zyfirst':stage=`<div class="big">${r.ans[1]}</div><p class="prompt">👂 It starts with…</p>`;ch=r.opts.map((o,k)=>btn(k,o[0],'sym',o[0])).join('');break;
+    case 'combo':stage=`<div class="prop">🔍</div>`;ch=r.opts.map((o,k)=>btn(k,shapeSVG(o[0],o[1][2]),'shp',o[1][0]+' '+o[0][0])).join('');break;
+    case 'order':stage=`<div class="pat"><span>${r.q[0][1]}</span><span>➡️</span><span>${r.q[1][1]}</span><span>➡️</span><span class="qm">❓</span></div>`;ch=r.opts.map((o,k)=>btn(k,`${o[1]}<small>${o[0]}</small>`,'',o[0])).join('');break;
     case 'onemore':stage=`<div class="eggs">${Array.from({length:r.n},(_,i)=>`<span class="${!r.more&&i===r.n-1?'gone':''}">${L.obj}</span>`).join('')}${r.more?`<span class="arrive">${L.obj}</span>`:''}</div>`;ch=r.opts.map((o,k)=>btn(k,o)).join('');break;
   }
   const tag=r.isReview?`<p class="again">🔁 Let’s try this one again!</p>`:'';
@@ -659,6 +701,7 @@ function renderCard(){
   $('#sp').onclick=ask;
   document.querySelectorAll('.ob').forEach(b=>b.onclick=()=>{
     if(b.classList.contains('lit'))return;
+    if(b.dataset.no){SND.wrong();b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');say([[`That’s not one of the ${r.t[1]}. Count only the ${r.t[1]}!`,'en']]);return;}
     r.counted++;b.classList.add('lit');b.querySelector('.n').textContent=r.counted;SND.pop();
     if(total&&r.counted>=total){$('#chs').classList.remove('locked');const p=$('#cprompt');if(p)p.textContent='👇 How many?';say([[EN_NUM[r.counted],'en'],['How many?','en']]);}
     else say([[EN_NUM[r.counted],'en']]);
@@ -678,18 +721,20 @@ function tap(k,btn){
   const r=round,o=r.opts[k];
   if(btn.disabled||(document.getElementById('chs')||{}).classList?.contains('locked'))return;
   if(r.type==='zy'&&o!==r.ans)say([[o[2],'zh']]);
-  if(r.type==='zyhear'&&o!==r.ans)say([[ZYS[o[0]],'zh']]);
+  if((r.type==='zyhear'||r.type==='zyfirst')&&o!==r.ans)say([[ZYS[o[0]],'zh']]);
   if(r.type==='sound'&&o!==r.ans)say([[o[1]+' starts with '+o[0],'en']]);
   if(o===r.ans){SND.correct();record(r,r.first);setTimeout(success,250);return;}
   r.first=false;SND.wrong();r.wrong.push(k);btn.classList.add('shake');btn.disabled=true;
-  if(r.type==='count'||r.type==='add')countAlong();
+  if(r.type==='count'||r.type==='add'||r.type==='countkind')countAlong();
+  else if(r.type==='missing')say([[r.w[0],'en'],['Listen again. Try again!','en']]);
+  else if(r.type==='subtract')say([[`Count the ones that are left!`,'en']]);
   else if(r.type==='more')say([['Let’s count them!','en'],[`This nest has ${[r.a,r.b][k]}. That nest has ${[r.a,r.b][1-k]}.`,'en']]);
   else if(r.type==='animal')say([[`The ${o[0]} says ${o[1]}. Try again!`,'en']]);
   else if(r.type==='feel')say([[`That dino feels ${o[0]}. Try again!`,'en']]);
-  else if(!['zy','zyhear','sound'].includes(r.type))say([['Try again!','en']]);
+  else if(!['zy','zyhear','sound','zyfirst'].includes(r.type))say([['Try again!','en']]);
 }
 function countAlong(){
-  const r=round,eggs=[...document.querySelectorAll('.ob')];
+  const r=round,eggs=[...document.querySelectorAll('.ob:not([data-no])')];
   eggs.forEach(e=>{e.classList.remove('lit');e.querySelector('.n').textContent='';});r.counted=eggs.length;
   say([['Let’s count together!','en'],[eggs.map((_,i)=>EN_NUM[i+1]).join('. '),'en']]);
   eggs.forEach((e,i)=>setTimeout(()=>{e.classList.add('lit');e.querySelector('.n').textContent=i+1;},1500+i*750));
@@ -716,6 +761,14 @@ function success(){
     case 'odd':show=`<div class="big">${r.ans[1]}</div>`;voice=[[`Yes! The ${r.ans[0]} is not one of the ${r.cat[0]}!`,'en']];prompt=`The others are ${r.cat[0]} — ${r.cat[1]}`;break;
     case 'where':show=`<div class="ch where" style="margin:6px auto;pointer-events:none"><span class="wb">${r.pr[4]}</span><span class="ws w-${r.ans[0].replace(' ','')}">${r.pr[1]}</span></div>`;voice=[[`Yes! The ${r.pr[0]} is ${r.ans[0]} the ${r.pr[3]}!`,'en'],[`${r.pr[2]}在${r.pr[5]}${r.ans[1]}`,'zh']];prompt=`Say it: “${r.ans[0]}” — ${r.ans[1]}`;break;
     case 'together':show=`<div class="big">${r.ans[1]} ${r.ans[3]}</div>`;voice=[[`Yes! The ${r.ans[0]} and the ${r.ans[2]} go together!`,'en']];prompt=`Say it: “${r.ans[0]} and ${r.ans[2]}”`;break;
+    case 'countkind':show=`<div class="big">${r.ans} ${r.t[0]}</div>`;voice=[[`Yes! ${r.ans} ${r.t[1]}!`,'en'],[ZH_NUM[r.ans]+r.t[2],'zh']];prompt=`Say it together: ${r.ans} — ${ZH_NUM[r.ans]}`;break;
+    case 'missing':show=`<div class="big">${r.w[1]}</div><div class="word">${[...r.w[0]].map((c,j)=>j===r.i?`<span style="color:var(--orange)">${c}</span>`:c).join('')}</div>`;voice=[[`Yes! ${[...r.w[0]].join(', ')}. ${r.w[0]}!`,'en']];prompt=`Sound it out: “${[...r.w[0]].join(' – ')}… ${r.w[0]}”`;break;
+    case 'upper':show=`<div class="big">${r.X} <span style="font-family:Avenir Next,Arial,sans-serif">${r.ans}</span></div>`;voice=[[`Yes! Big ${r.X}, little ${r.ans}!`,'en']];prompt=`Say it: “${r.X}”`;break;
+    case 'subtract':show=`<div class="big">${r.n} − ${r.k} = ${r.ans}</div>`;voice=[[`Yes! ${r.n} take away ${r.k} is ${r.ans}!`,'en'],[ZH_NUM[r.ans],'zh']];prompt=`${r.n} take away ${r.k} → ${r.ans} — ${ZH_NUM[r.ans]}`;break;
+    case 'pattern3':show=`<div class="pat">${[...r.seq,r.ans].map(x=>`<span>${x}</span>`).join('')}</div>`;voice=[['Yes! The pattern keeps going!','en']];prompt='Read the pattern out loud together!';break;
+    case 'zyfirst':show=`<div class="big">${r.ans[1]}</div><div class="word">${r.ans[0]} ${r.ans[2]}</div>`;voice=[[r.ans[2],'zh'],[ZYS[r.ans[0]],'zh']];prompt=`跟恐龍說：${r.ans[2]} — ${r.ans[0]}`;break;
+    case 'combo':show=`<div style="margin:6px 0">${shapeSVG(r.ans[0],r.ans[1][2],110)}</div><div class="word">${r.ans[1][0]} ${r.ans[0][0]}</div>`;voice=[[`Yes! The ${r.ans[1][0]} ${r.ans[0][0]}!`,'en'],[`${r.ans[1][1]}的${r.ans[0][1]}`,'zh']];prompt=`Say it: “${r.ans[1][0]} ${r.ans[0][0]}” — ${r.ans[1][1]}的${r.ans[0][1]}`;break;
+    case 'order':show=`<div class="pat">${r.q.map(x=>`<span>${x[1]}</span>`).join('<span>➡️</span>')}</div>`;voice=[[`Yes! ${r.q[0][0]}, then ${r.q[1][0]}, then ${r.q[2][0]}!`,'en']];prompt=`Tell the story: “first… then… last…”`;break;
     case 'onemore':show=`<div class="big">${r.ans}</div>`;voice=[[`Yes! ${r.n} ${r.more?'and one more':'take away one'} is ${r.ans}!`,'en'],[ZH_NUM[r.ans],'zh']];prompt=`${r.more?'One more':'One less'}: ${r.n} → ${r.ans}`;break;
   }
   const newBadge=r.newSym?`<p class="newsym">⭐ New sound unlocked: <b>${r.newSym}</b></p>`:'';
@@ -741,7 +794,7 @@ function report(){
   const label=k=>{const[t,v]=k.split(':');return t==='more'?(v==='close'?'close amounts':'clear amounts'):v;};
   const need=items.filter(([,e])=>e[0]>=2&&pct(e)<60).sort((a,b)=>pct(a[1])-pct(b[1])).slice(0,8);
   const good=items.filter(([,e])=>e[0]>=2&&pct(e)>=80).sort((a,b)=>b[1][0]-a[1][0]).slice(0,10);
-  const G=[['注音 — sound to picture','zy:'],['注音 — hear the sound','hear:'],['Counting','count:'],['Adding','add:'],['Numbers','number:'],['Letters','letter:'],['English words','word:'],['First sounds','sound:'],['Shapes','shape:'],['Colors','color:'],['More or fewer','more:'],['Patterns','pattern:'],['Biggest & smallest','big:'],['Animal sounds','animal:'],['Feelings','feel:'],['Shadows','shadow:'],['Which one is different','odd:'],['On / under / next to','where:'],['What goes together','together:'],['One more / one less','onemore:']];
+  const G=[['注音 — sound to picture','zy:'],['注音 — hear the sound','hear:'],['Counting','count:'],['Adding','add:'],['Numbers','number:'],['Letters','letter:'],['English words','word:'],['First sounds','sound:'],['Shapes','shape:'],['Colors','color:'],['More or fewer','more:'],['Patterns','pattern:'],['Biggest & smallest','big:'],['Animal sounds','animal:'],['Feelings','feel:'],['Shadows','shadow:'],['Which one is different','odd:'],['On / under / next to','where:'],['What goes together','together:'],['One more / one less','onemore:'],['Ch.2 — count only some','countkind:'],['Ch.2 — missing letter','missing:'],['Ch.2 — big & little letters','upper:'],['Ch.2 — take away','sub:'],['Ch.2 — 3-part patterns','pattern3:'],['Ch.2 — 注音 first sound','zyfirst:'],['Ch.2 — color + shape','combo:'],['Ch.2 — what comes next','order:']];
   const chip=([k,e])=>`<span class="rchip">${label(k)} <small>${e[1]}/${e[0]}</small></span>`;
   app.innerHTML=`<section class="studio report">
   <div class="top"><button id="h" aria-label="Home">🏠</button><b>📊 Milo’s progress</b><span></span></div>
@@ -757,14 +810,14 @@ function report(){
 
 /* ---------- ARRIVAL ---------- */
 function arrive(){
-  const L=land(),FR=friendNow(),isMama=FR[0]==='mama',isSib=FR[0]==='sib',isParty=FR[0]==='party';
+  const L=land(),FR=friendNow(),isGpa=FR[0]==='grandpa',isMama=FR[0]==='mama'||isGpa,isSib=FR[0]==='sib',isParty=FR[0]==='party';
   if(!S.friends.includes(FR[0]))S.friends.push(FR[0]);
   S.journeys++;S.land=(S.land+1)%LANDS.length;S.stop=0;save();
   const fr=$('#fr');if(fr)fr.classList.remove('hid');SND.win();say([['Look!','en']]);
   setTimeout(()=>{
-  const partyPic=`<div class="big">🎂🎈</div><div class="pfr">${S.friends.filter(f=>!['mama','sib','party'].includes(f)).join(' ')}</div>`;
-  const pic=isParty?partyPic:isMama||isSib?`<div class="pair"><span class="m"><span class="mama" style="display:inline-block">${DINO}</span></span><span class="b">${DINO}</span>${isSib?`<span class="s"><span class="sibc" style="display:inline-block">${DINO}</span></span>`:''}</div>`:`<div class="big">${FR[0]}</div>`;
-  const line=isParty?'Surprise! It’s Little Dino’s birthday party — all the friends came!':isSib?'Surprise! Mama’s egg hatched — a new baby dino! Little Dino is a big sibling now!':isMama?'Little Dino found Mama! Hooray!':`You found ${FR[1]}! A new friend!`;
+  const partyPic=`<div class="big">🎂🎈</div><div class="pfr">${S.friends.filter(f=>!['mama','sib','party','grandpa'].includes(f)).join(' ')}</div>`;
+  const pic=isParty?partyPic:isMama||isSib?`<div class="pair"><span class="m"><span class="${isGpa?'gpa':'mama'}" style="display:inline-block">${DINO}</span></span><span class="b">${DINO}</span>${isSib?`<span class="s"><span class="sibc" style="display:inline-block">${DINO}</span></span>`:''}</div>`:`<div class="big">${FR[0]}</div>`;
+  const line=isGpa?'Little Dino found Grandpa Dino! Now the whole family is together! Hooray!':isParty?'Surprise! It’s Little Dino’s birthday party — all the friends came!':isSib?'Surprise! Mama’s egg hatched — a new baby dino! Little Dino is a big sibling now!':isMama?'Little Dino found Mama! Hooray!':`You found ${FR[1]}! A new friend!`;
   openOv(`${pic}<p class="story" data-say="en">${line}</p><button class="go" id="nx">Yay! ➜</button>`);
   say([[line,'en']]);
   $('#nx').onclick=nap;
@@ -795,6 +848,8 @@ document.addEventListener('keydown',e=>{
     const btn=[...document.querySelectorAll('.ov .ch')].find(b=>b.textContent.trim()===e.key.toUpperCase());if(btn)btn.click();}
 });
 
+window.__test={state:()=>({screen:$('.ov .ch,#mv')?'play':$('#pet')?'home':'other',type:round&&round.type,stop:S.stop,land:S.land,ch:S.ch}),
+  solve:()=>{const r=round;if(!r)return;const c=$('#chs');if(c)c.classList.remove('locked');const k=r.opts.indexOf(r.ans);const b=document.querySelector(`.ov .ch[data-k="${k}"]`);if(b)b.click();}};
 home();
 cloudInit();
 voiceLoad();
