@@ -172,6 +172,17 @@ body[data-pref="land"] .rot.l{display:none}
 .spools{max-width:100%}@media (max-height:450px){.spools{grid-template-columns:repeat(4,80px)}.cust{font-size:1.6rem;padding:4px}.coin{width:50px;height:50px}}
 .bins{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.bin{min-width:96px;min-height:64px;border:3px solid #4a3426;border-radius:14px;background:#fff0f6;font-size:1.1rem;font-weight:800;box-shadow:0 4px 0 #4a3426;cursor:pointer}
 .modal .big{display:flex;justify-content:center}
+ #dlg{position:fixed;inset:0;z-index:38;background:rgba(10,5,20,.25);cursor:pointer;overflow:hidden;-webkit-user-select:none;user-select:none}
+#dlg .dp{position:absolute;left:1%;bottom:0;height:min(74vh,560px);width:min(46vw,380px);display:flex;align-items:flex-end;pointer-events:none}
+#dlg .dp.in{animation:dpin .35s ease-out}@keyframes dpin{from{transform:translateX(-30%);opacity:0}to{transform:none;opacity:1}}
+#dlg .ptr{width:100%;height:100%;filter:drop-shadow(4px 0 0 rgba(0,0,0,.25))}
+#dlg .dband{position:absolute;left:0;right:0;bottom:0;min-height:30vh;background:linear-gradient(rgba(25,12,35,0),rgba(25,12,35,.82) 22%,rgba(25,12,35,.92));padding:5vh 5vw 3vh;color:#fff}
+#dlg .dname{margin:0 auto 10px;max-width:640px;text-align:center;background:linear-gradient(90deg,rgba(60,30,70,0),rgba(60,30,70,.95) 20%,rgba(60,30,70,.95) 80%,rgba(60,30,70,0));padding:6px;font-size:1.35rem;font-weight:700;letter-spacing:.03em}
+#dlg .dtxt{font-size:clamp(1.05rem,2.6vh,1.5rem);line-height:1.5;text-shadow:0 2px 2px rgba(0,0,0,.6);max-width:900px;margin:0 auto;min-height:3em}
+#dlg .dnext{position:absolute;right:4vw;bottom:2.5vh;color:#ffd43b;font-size:1.3rem;animation:dblink 1s infinite}@keyframes dblink{50%{opacity:.2}}
+#dlg .dskip{position:absolute;right:10px;top:10px;min-height:44px;padding:4px 14px;border-radius:22px;border:2px solid #fff;background:rgba(0,0,0,.35);color:#fff;font-weight:700}
+@media (max-height:450px){#dlg .dp{height:92vh;width:30vw}#dlg .dband{padding:3vh 4vw 2vh 30vw;min-height:40vh}#dlg .dname{font-size:1.05rem;margin-bottom:4px}#dlg .dtxt{font-size:1rem}}
+@media (max-width:600px){#dlg .dp{height:56vh;width:80vw;left:-6vw;bottom:24vh}#dlg .dband{min-height:30vh}}
 
 </style></head><body data-pref="any">
 <div class="app">
@@ -588,7 +599,7 @@ function newTheme(){let seen=[];try{seen=JSON.parse(localStorage.getItem('rs_see
   timeLeft=120;showTime();renderScene();say('Today\'s theme is '+t.en+'. '+(t.he||''));}
 function showTime(){$('timer').textContent=timerOn?'⏱ '+Math.floor(timeLeft/60)+':'+pad2(timeLeft%60):'⏱ '+'—';$('timer').style.background=timerOn&&timeLeft<=20?'#ffe3e3':'#fff';}
 const pad2=n=>String(n).padStart(2,'0');
-tick=setInterval(()=>{if(!timerOn||running)return;timeLeft=Math.max(0,timeLeft-1);showTime();if(timeLeft===20){tone(880,.1,'square',.05);toast('⏱ 20 seconds left!');}
+tick=setInterval(()=>{if(!timerOn||running||DLG)return;timeLeft=Math.max(0,timeLeft-1);showTime();if(timeLeft===20){tone(880,.1,'square',.05);toast('⏱ 20 seconds left!');}
   if(timeLeft===0){toast('⏱ '+zh('Time’s up! To the runway!'));runway();}},1000);
 $('tmBtn').onclick=()=>{timerOn=!timerOn;$('tmBtn').innerHTML='⏱ '+zh(timerOn?'Timer on':'Timer off');showTime();};
 $('newTheme').onclick=()=>{audio();if(MODE==='career'){toast(zh('Job themes can’t be changed'));return;}if(MODE==='vs'&&(VS.ch||VS.stage===1)){toast(zh('Can’t change the theme in a face-off'));return;}startRound();};
@@ -1087,6 +1098,77 @@ $('newTheme').innerHTML='🎲 '+zh('New theme');$('modeBtn').innerHTML='🏠 '+z
 document.querySelector('.rot.l').innerHTML=zh('Turn your phone sideways')+' ↻';document.querySelector('.rot.p').innerHTML=zh('Hold your phone upright')+' ↻';
 fresh();renderTabs();renderItems();renderFig();newTheme();
 const ZT=t=>esc(String(t));
+/* ---------- story dialog: big painted portrait + dark name band, tap to continue ---------- */
+const CAST={
+ nora:{name:'Nora',hair:'#2b2118',style:'pony',skin:'#f8dccb',iris:'#7a4a2a',top:'#d6336c',trim:'#ffd43b'},
+ mia:{name:'Agent Mia',hair:'#6b4226',style:'bob',skin:'#f1c9a8',iris:'#3a6b8a',top:'#3b3b58',trim:'#f4f1ea',glasses:1},
+ stella:{name:'Stella',hair:'#e8c063',style:'curls',skin:'#fbe3d3',iris:'#7048e8',top:'#9b7fd4',trim:'#f7d6e6'},
+ rose:{name:'Madame Rose',hair:'#d9d4cf',style:'bun',skin:'#f3d2bc',iris:'#8a5a7a',top:'#c2255c',trim:'#ffd43b',pearls:1},
+ bea:{name:'Ms. Bea',hair:'#a0522d',style:'bun',skin:'#e8b48f',iris:'#2f6b3a',top:'#2f9e44',trim:'#f4f1ea',apron:1},
+ sue:{name:'Grandma Sue',hair:'#e9ecef',style:'bob',skin:'#f6d7c3',iris:'#5b6b8a',top:'#7048e8',trim:'#ffd25e',glasses:1},
+ kay:{name:'Ms. Kay',hair:'#3a3a44',style:'pony',skin:'#c68b5e',iris:'#3a2618',top:'#e8793a',trim:'#fff'}};
+function portrait(k,mood){const c=CAST[k],O='stroke="#2d1f1a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"',dk='rgba(60,30,40,.18)';mood=mood||'happy';
+  const sh=c=>'<path d="M60 400Q60 300 150 286Q240 300 240 400Z" fill="'+c.top+'" '+O+'/><path d="M60 400Q66 320 120 300L150 340L180 300Q234 320 240 400Z" fill="'+dk+'"/>'+
+    (c.apron?'<path d="M112 320L188 320L196 400L104 400Z" fill="#f4f1ea" '+O+'/>':'')+'<path d="M118 296L150 330L182 296" fill="none" stroke="'+c.trim+'" stroke-width="7"/>'+
+    (c.pearls?[0,1,2,3,4,5,6].map(i=>'<circle cx="'+(122+i*9.5)+'" cy="'+(300+Math.sin(i/6*Math.PI)*14)+'" r="4.5" fill="#fff" stroke="#bbb"/>').join(''):'');
+  let back='',front='';
+  if(c.style==='pony'){back='<path d="M196 70Q262 50 262 130Q264 200 232 236Q246 190 232 160Q224 120 200 108Z" fill="'+c.hair+'" '+O+'/><path d="M238 224q-12 18 6 22" fill="none" stroke="#2d1f1a" stroke-width="3"/><path d="M90 120Q84 50 150 44Q216 50 210 120L214 210Q200 160 196 140L104 140Q100 160 86 210Z" fill="'+c.hair+'" '+O+'/>';
+    front='<path d="M88 130Q86 60 150 54Q212 58 214 128Q196 92 160 86Q170 104 150 116Q132 96 120 90Q102 104 88 130Z" fill="'+c.hair+'" '+O+'/><path d="M108 70Q140 56 176 66" fill="none" stroke="#fff" stroke-width="5" opacity=".35"/>'+
+      (k==='nora'?'<circle cx="203" cy="80" r="9" fill="#f783ac" '+O+'/><path d="M100 98l4 9 10 1-8 6 3 10-9-6-9 6 3-10-8-6 10-1z" fill="#ffd43b" stroke="#2d1f1a" stroke-width="2"/>':'');}
+  else if(c.style==='bob'){back='<path d="M84 130Q76 50 150 44Q224 50 216 130L222 200Q190 210 186 160L114 160Q110 210 78 200Z" fill="'+c.hair+'" '+O+'/>';
+    front='<path d="M88 132Q86 58 150 52Q214 58 212 132Q200 98 150 92Q106 96 88 132Z" fill="'+c.hair+'" '+O+'/>';}
+  else if(c.style==='curls'){back='<path d="M76 150Q58 110 84 80Q90 40 140 38Q196 30 214 72Q244 100 226 150Q248 190 222 226Q196 240 186 200L114 200Q100 240 76 226Q52 190 76 150Z" fill="'+c.hair+'" '+O+'/>';
+    front='<path d="M88 130Q84 60 150 52Q216 60 212 130Q200 96 176 90Q168 108 146 100Q126 92 112 98Q98 108 88 130Z" fill="'+c.hair+'" '+O+'/><path d="M118 66Q150 54 186 68" fill="none" stroke="#fff" stroke-width="5" opacity=".45"/>';}
+  else {back='<circle cx="150" cy="40" r="30" fill="'+c.hair+'" '+O+'/>';front='<path d="M90 128Q88 58 150 52Q212 58 210 128Q190 86 150 84Q110 86 90 128Z" fill="'+c.hair+'" '+O+'/>';}
+  const face='<path d="M150 270" fill="none"/><path d="M134 250L134 292Q150 300 166 292L166 250Z" fill="'+c.skin+'" '+O+'/><path d="M92 120Q92 236 150 262Q208 236 208 120Q208 70 150 68Q92 70 92 120Z" fill="'+c.skin+'" '+O+'/>'+
+    '<path d="M96 160Q104 228 150 258Q122 222 116 168Z" fill="'+dk+'"/>';
+  const ey=(x,f)=>{const iris=c.iris;
+    if(mood==='laugh'&&f)return '<path d="M'+(x-18)+' 166Q'+x+' 146 '+(x+18)+' 166" fill="none" stroke="#2d1f1a" stroke-width="5"/>';
+    const ry=mood==='surprised'?22:mood==='sad'?15:mood==='proud'?12:19,top=mood==='proud'?160:152;
+    return '<ellipse cx="'+x+'" cy="168" rx="15" ry="'+ry+'" fill="#fff" stroke="#2d1f1a" stroke-width="2"/><ellipse cx="'+x+'" cy="'+(170+(mood==='sad'?3:0))+'" rx="11" ry="'+(ry-3)+'" fill="'+iris+'"/><ellipse cx="'+x+'" cy="'+(162)+'" rx="11" ry="6" fill="rgba(0,0,0,.25)"/><circle cx="'+x+'" cy="171" r="5" fill="#1a1010"/><circle cx="'+(x+4)+'" cy="162" r="4.5" fill="#fff"/><circle cx="'+(x-5)+'" cy="178" r="2.2" fill="#fff"/>'+
+      '<path d="M'+(x-18)+' '+(168-ry+2)+'Q'+x+' '+(168-ry-6)+' '+(x+19)+' '+(168-ry+4)+'" fill="none" stroke="#1a1010" stroke-width="5"/>'+(mood==='proud'?'<path d="M'+(x-16)+' '+top+'L'+(x+16)+' '+top+'" stroke="'+c.skin+'" stroke-width="9"/><path d="M'+(x-17)+' '+(top+3)+'Q'+x+' '+(top-1)+' '+(x+17)+' '+(top+3)+'" stroke="#1a1010" stroke-width="4" fill="none"/>':'');};
+  const brow=mood==='sad'?'<path d="M108 136Q122 128 136 140M164 140Q178 128 192 136" fill="none" stroke="#2d1f1a" stroke-width="3.5"/>':mood==='surprised'?'<path d="M108 126Q122 116 136 124M164 124Q178 116 192 126" fill="none" stroke="#2d1f1a" stroke-width="3.5"/>':mood==='angry'?'<path d="M108 128L136 140M164 140L192 128" fill="none" stroke="#2d1f1a" stroke-width="4"/>':'<path d="M108 134Q122 126 136 132M164 132Q178 126 192 134" fill="none" stroke="#2d1f1a" stroke-width="3.5"/>';
+  const mouth=mood==='happy'?'<path d="M130 212Q150 236 170 212Q150 220 130 212Z" fill="#c2255c" stroke="#2d1f1a" stroke-width="2.5"/><path d="M136 214Q150 220 164 214" stroke="#fff" stroke-width="4" fill="none"/>':
+    mood==='surprised'?'<ellipse cx="150" cy="220" rx="9" ry="12" fill="#8a1c3c" stroke="#2d1f1a" stroke-width="2.5"/>':mood==='sad'?'<path d="M136 224Q150 212 164 224" fill="none" stroke="#2d1f1a" stroke-width="3"/>':
+    mood==='proud'?'<path d="M132 214Q154 226 170 208" fill="none" stroke="#2d1f1a" stroke-width="3"/>':mood==='angry'?'<path d="M136 222Q150 214 164 222" fill="none" stroke="#2d1f1a" stroke-width="3"/>':'<path d="M136 214Q150 224 164 214" fill="none" stroke="#2d1f1a" stroke-width="3"/>';
+  const extra='<ellipse cx="114" cy="200" rx="12" ry="6" fill="#ff8fab" opacity=".55"/><ellipse cx="186" cy="200" rx="12" ry="6" fill="#ff8fab" opacity=".55"/><path d="M148 192q3 4 6 0" fill="none" stroke="#2d1f1a" stroke-width="2"/>'+
+    (c.glasses?'<g fill="none" stroke="#2d1f1a" stroke-width="3"><rect x="100" y="148" width="38" height="34" rx="10"/><rect x="162" y="148" width="38" height="34" rx="10"/><path d="M138 162h24"/></g>':'')+(mood==='sad'?'<path d="M178 190q-4 10 2 14q6-4 2-14z" fill="#74c0fc"/>':'')+(mood==='surprised'?'<path d="M214 100l10-8M220 116l14-2" stroke="#2d1f1a" stroke-width="3"/>':'');
+  return '<svg viewBox="40 20 230 380" preserveAspectRatio="xMidYMax meet" class="ptr">'+back+sh(c)+face+ey(124,1)+ey(176,0)+brow+mouth+extra+front+'</svg>';}
+let DLG=null;
+function dlg(lines,done){if(!Array.isArray(lines)||!lines.length){done&&done();return;}
+  let i=0,typing=null,full='';const el=document.createElement('div');el.id='dlg';
+  el.innerHTML='<div class="dp" id="dp"></div><div class="dband"><div class="dname" id="dn"></div><div class="dtxt" id="dt"></div><span class="dnext">▶</span></div><button class="dskip" id="dsk">Skip ⏭</button>';
+  document.body.appendChild(el);DLG=el;
+  const show=()=>{const [who,mood,text]=lines[i],c=CAST[who];const dp=el.querySelector('#dp');
+    if(dp.dataset.who!==who){dp.dataset.who=who;dp.classList.remove('in');void dp.offsetWidth;dp.classList.add('in');}
+    dp.innerHTML=portrait(who,mood);el.querySelector('#dn').textContent=c.name;full=text.replace(/\{n\}/g,ME||'Nora');const dt=el.querySelector('#dt');dt.textContent='';let k=0;clearInterval(typing);
+    typing=setInterval(()=>{k+=2;dt.textContent=full.slice(0,k);if(k%6===0&&SOUND)tone(who==='nora'?880:who==='stella'?990:660,.02,'square',.025);if(k>=full.length){clearInterval(typing);typing=null;}},28);
+    say(full);};
+  const end=()=>{clearInterval(typing);el.remove();DLG=null;try{speechSynthesis.cancel();}catch(e){}done&&done();};
+  el.onclick=e=>{if(e.target.id==='dsk')return end();if(typing){clearInterval(typing);typing=null;el.querySelector('#dt').textContent=full;return;}i++;if(i>=lines.length)end();else show();};
+  show();}
+/* the story beats */
+const STORY={
+ intro:[['mia','happy','Hi {n}! I\'m Mia, your new agent. Welcome to the fashion world!'],['nora','surprised','Wow, my very own agent? This is so exciting!'],
+  ['mia','neutral','You\'re just starting out, so your closet is tiny. Do part-time jobs to earn money, then shop for new clothes.'],
+  ['mia','happy','Come to my agency for modeling gigs. Every star the judges give you makes you more famous, and famous models earn more!'],
+  ['stella','proud','Hmph. A new model? Cute. But I\'m Stella, and I\'m going to be the World Supermodel.'],['nora','angry','We\'ll see about that, Stella!'],['mia','happy','That\'s the spirit! Your goal: become the World Supermodel. Let\'s go!']],
+ job:{cash:[['bea','happy','Welcome to my café! Customers pay, you give the right change. Count carefully, {n}!']],
+  sew:[['sue','happy','Hello dear. Watch my spools light up, then press them in the same order. Every stitch counts!']],
+  sort:[['kay','neutral','Boxes everywhere! Put each piece in the right bin before the timer runs out.']]},
+ shop:[['rose','happy','Bonjour, {n}! I\'m Madame Rose. The more famous you get, the fancier the shops that let you in.'],['rose','proud','Start small, dream big. Every great model began with a T-shirt!']],
+ gig:{show:[['mia','happy','A runway show! The theme is {t}. Dress to match it and add some color and patterns.']],
+  shoot:[['mia','happy','Photo shoot day! The theme is {t}. Make the camera love you!']],
+  contest:[['stella','proud','Oh, it\'s you again. This contest is {t}. Try not to cry when I win.'],['nora','angry','Bring it on, Stella!']]},
+ win:[[['mia','happy','Amazing walk, {n}! The crowd loved you.']],[['mia','proud','Look at those stars! Your fans are growing.']]],
+ lose:[[['mia','sad','Not your best day, but every model has those. Try matching the theme more closely next time.']]],
+ cwin:[['stella','surprised','What?! You beat me?'],['nora','happy','Good game, Stella!'],['stella','angry','Next time I won\'t lose!']],
+ close:[['stella','proud','Ha! Better luck next time, newbie.'],['nora','sad','Aw... I\'ll practice and get better!']],
+ level:[['mia','surprised','{n}, everyone is talking about you! You\'re now a {l}!'],['mia','happy','Bigger gigs pay more now, and new shops will let you in.']],
+ ending:[['mia','surprised','{n}... the magazines just announced it.'],['mia','happy','You are the WORLD SUPERMODEL!'],['stella','sad','I can\'t believe it... you really did it.'],['stella','happy','Okay, okay. You earned it. Congratulations, {n}.'],
+  ['rose','happy','Magnifique! I always knew that T-shirt girl would shine.'],['nora','happy','Thank you everyone! I couldn\'t have done it without you!']]};
+const fillS=(L,v)=>L.map(([w,m,t])=>[w,m,t.replace('{t}',v.t||'').replace('{l}',v.l||'')]);
+
 /* ---------- career mode: from new model to world supermodel ---------- */
 const CK='rs_career';
 const LV=[[0,'New Model',1],[15,'Rising Face',1.5],[40,'Fashion Star',2],[80,'Top Model',3],[140,'International Model',4],[220,'World Supermodel',5]];
@@ -1109,6 +1191,7 @@ function careerHub(){MODE='career';cLoad();ME='Nora';
     '</div><div class="row"><button class="btn ghost" id="cExit">🏠 '+ZT('Modes')+'</button><button class="btn ghost" id="cReset">'+ZT('Start over')+'</button></div>');
   s.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();sfx.good&&tone(700,.06,'triangle',.08);({agency:agency,work:workMenu,shop:shopMenu,closet:myCloset})[b.dataset.k]();});
   s.querySelector('#cExit').onclick=()=>{cClose();MODE='solo';showModes();};
+  C.met=C.met||{};if(!C.intro){C.intro=1;cSave();setTimeout(()=>dlg(STORY.intro),300);}else if(C.pending){const p=C.pending;C.pending=null;cSave();setTimeout(()=>dlg(p),300);}
   const r=s.querySelector('#cReset');r.onclick=()=>{if(!r.dataset.sure){r.dataset.sure=1;r.innerHTML=ZT('Tap again to start over');r.classList.add('pink');return;}localStorage.removeItem(CK);C=null;careerHub();};}
 /* agency: modelling gigs. Pay grows with fame */
 function makeGigs(){const L=lvOf(C.stars),ths=THEMES.map(t=>t.id),g=[];
@@ -1124,20 +1207,20 @@ function agency(){if(!C.gigs){C.gigs=makeGigs();cSave();}const L=lvOf(C.stars),m
   s.querySelectorAll('.gig').forEach(b=>b.onclick=()=>{const g=C.gigs[+b.dataset.i];if(g.need>lvOf(C.stars)){sfx.boing();toast('🔒 '+ZT('Not famous enough yet'));return;}startGig(g);});}
 function startGig(g){GIG=g;cClose();MODE='career';fresh();setTheme(g.t);timeLeft=120;showTime();
   GIG.opp=g.k==='contest'?{name:'Stella',look:genCPU()}:null;renderTabs();renderFig();renderItems();setBadge(ME);
-  say((g.en||g.zh)+'! The theme is '+THEMES.find(x=>x.id===g.t).en);}
+  dlg(fillS(STORY.gig[g.k],{t:THEMES.find(x=>x.id===g.t).en}));}
 function careerResult(tot,max,two,E){const me=tot[0],won=two?tot[0]>tot[1]:true,pay=payOf(GIG,me,won),L0=lvOf(C.stars);
   C.money+=pay;C.stars+=me;C.done++;C.gigs=null;const L1=lvOf(C.stars);cSave();
   let h='<div class="cres">💰 +'+pay+' &nbsp; ⭐ +'+me+(two?' &nbsp; '+(won?'🏆 '+ZT('You won!'):ZT('Better luck next time!')):'')+'</div>';
-  if(L1>L0)setTimeout(()=>{confetti();sfx.win();const top=L1===LV.length-1&&!C.top;if(top){C.top=true;cSave();}
-    const m=modal2('<h2>'+(top?'👑🌍':'🎉')+' '+ZT(top?'You are the World Supermodel!':'Level up!')+'</h2><p style="font-size:1.4rem">'+ZT(LV[L1][1])+'</p><p class="note">'+ZT('You’ll earn more from now on!')+' ×'+LV[L1][2]+'</p><div class="row"><button class="btn pink" id="lvOK">OK</button></div>');
-    m.querySelector('#lvOK').onclick=()=>m.remove();say(top?'Congratulations! You are the world supermodel!':'Level up! '+LV[L1][1]);},1200);
+  let P=two?(won?STORY.cwin:STORY.close):(me>=9?pick(STORY.win):pick(STORY.lose));
+  if(L1>L0){setTimeout(()=>{confetti();sfx.win();},900);const top=L1===LV.length-1&&!C.top;if(top){C.top=true;P=P.concat(STORY.ending);}else P=P.concat(fillS(STORY.level,{l:LV[L1][1]}));}
+  C.pending=P;cSave();
   return h;}
 /* shops: fancier shops open as she gets famous */
 const SHOPS=[['basic','🧺','Budget Shop',0,1,it=>price(it)<=9],['sport','⚽','Sports Shop',0,1,it=>it.tags.some(t=>['sports','camping','beach'].includes(t))],
   ['sweet','🍭','Sweetie House',1,1.2,it=>it.tags.some(t=>['candy','birthday','garden','fairy'].includes(t))],['boutique','👜','Boutique',2,1.3,it=>it.tags.some(t=>['school','travel','autumn','concert','night','snow','rain'].includes(t))],
   ['gown','👑','Dream Gowns',3,1.5,it=>it.tags.some(t=>['royal','ballet','halloween','newyear'].includes(t))],['paris','🗼','Paris Couture',4,1.8,it=>true]];
 const cPrice=(sh,it)=>Math.round(price(it)*sh[4]);
-function shopMenu(){const L=lvOf(C.stars);const s=cScreen(cHead()+'<h2>🛍️ '+ZT('Shopping')+'</h2><div class="cgrid">'+
+function shopMenu(){const L=lvOf(C.stars);C.met=C.met||{};if(!C.met.shop){C.met.shop=1;cSave();setTimeout(()=>dlg(STORY.shop),250);}const s=cScreen(cHead()+'<h2>🛍️ '+ZT('Shopping')+'</h2><div class="cgrid">'+
     SHOPS.map((sh,i)=>'<button class="mode'+(sh[3]>L?' lock':'')+'" data-i="'+i+'"><span class="e">'+sh[1]+'</span><b>'+ZT(sh[2])+'</b><span>'+(sh[3]>L?'🔒 '+ZT('Needs ')+ZT(LV[sh[3]][1]):ZT('Open'))+'</span></button>').join('')+
     '</div><div class="row"><button class="btn ghost" id="cBack">🏙️ '+ZT('Back to town')+'</button></div>');
   s.querySelector('#cBack').onclick=careerHub;
@@ -1160,7 +1243,7 @@ function myCloset(){const s=cScreen(cHead()+'<h2>👗 '+ZT('My Closet')+'</h2>'+
 function workMenu(){const s=cScreen(cHead()+'<h2>💼 '+ZT('Part-time Jobs')+'</h2><div class="cgrid">'+
     [['cash','☕','Café Cashier','Give the right change'],['sew','🧵','Sewing Studio','Remember the button order'],['sort','📦','Stockroom Sorting','Put clothes in the right bins']].map(([k,e,t,d])=>'<button class="mode" data-k="'+k+'"><span class="e">'+e+'</span><b>'+ZT(t)+'</b><span>'+ZT(d)+'</span></button>').join('')+
     '</div><div class="row"><button class="btn ghost" id="cBack">🏙️ '+ZT('Back to town')+'</button></div>');
-  s.querySelector('#cBack').onclick=careerHub;s.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();({cash:jobCash,sew:jobSew,sort:jobSort})[b.dataset.k]();});}
+  s.querySelector('#cBack').onclick=careerHub;s.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();const k=b.dataset.k,go=({cash:jobCash,sew:jobSew,sort:jobSort})[k];C.met=C.met||{};if(!C.met[k]){C.met[k]=1;cSave();dlg(STORY.job[k],go);}else go();});}
 function payday(earn,title){C.money+=earn;cSave();sfx.win();if(earn>=8)confetti();
   const s=cScreen(cHead()+'<h2>'+title+'</h2><div class="cres">💰 +'+earn+'</div><div class="row"><button class="btn pink" id="again2">'+ZT('Work again')+'</button><button class="btn ghost" id="cBack">🏙️ '+ZT('Back to town')+'</button></div>');
   return s;}
