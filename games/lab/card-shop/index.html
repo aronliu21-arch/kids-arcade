@@ -233,8 +233,58 @@ const C=[ // id,name,type,body,hp,[atk,cost,dmg],[atk,cost,dmg],rarity,[main,lig
 [19,'Starmane','spark','lion',140,['Star Claw',2,60],['Supernova',3,130],'promo',['#ffe066','#fab005'],'king'],
 [20,'Solaris','fire','phoenix',150,['Sun Wing',2,60],['Phoenix Blaze',3,140],'promo',['#ff6b6b','#ffd43b']],
 [21,'Tidal King','water','serpent',140,['Crown Wave',2,60],['Tsunami Roar',3,130],'promo',['#4263eb','#99e9f2'],'king'],
-[22,'Aurorax','sky','dino',150,['Aurora Horn',2,60],['Galaxy Crash',3,140],'promo',['#9c36b5','#eebefa'],'crystal']
-].map(a=>({id:a[0],name:a[1],type:a[2],tpl:a[3],hp:a[4],atk:[{n:a[5][0],c:a[5][1],d:a[5][2]},{n:a[6][0],c:a[6][1],d:a[6][2]}],r:a[7],pal:a[8],v:a[9]||''}));
+[22,'Aurorax','sky','dino',150,['Aurora Horn',2,60],['Galaxy Crash',3,140],'promo',['#9c36b5','#eebefa'],'crystal'],
+[23,'Puddlehop','water','frog',60,['Splash Kick',1,20],['Bubble Burp',2,40],'common',['#4dabf7','#e7f5ff'],'','||spots'],
+[24,'Flarefrog','fire','frog',60,['Hot Hop',1,20],['Ember Tongue',2,40],'common',['#ff8787','#ffe066'],'','flamehair||stripes'],
+[25,'Scorchion','fire','scorpion',70,['Pinch',1,20],['Burning Sting',3,60],'common',['#f76707','#ffd8a8'],'','||'],
+[26,'Sandsting','rock','scorpion',70,['Sand Toss',1,20],['Dune Sting',2,40],'common',['#c19a6b','#f3e5ab'],'','||spots'],
+[27,'Leafhopper','leaf','mantis',60,['Leaf Cut',1,20],['Grass Slash',2,40],'common',['#82c91e','#d8f5a2'],'','||'],
+[28,'Voltblade','spark','mantis',60,['Zap Chop',1,20],['Shock Slash',2,40],'common',['#fab005','#fff3bf'],'','antenna||bolt'],
+[29,'Hootling','sky','owl',60,['Peck',1,10],['Night Gust',2,40],'common',['#9775fa','#e5dbff'],'','||'],
+[30,'Cinderowl','fire','owl',60,['Ash Peck',1,20],['Ember Hoot',2,40],'common',['#e03131','#ffc9c9'],'','flamehair||'],
+[31,'Dashclaw','spark','raptor',60,['Quick Claw',1,20],['Thunder Dash',2,40],'common',['#ffd43b','#fff9db'],'','||bolt'],
+[32,'Ferntooth','leaf','raptor',70,['Leaf Bite',1,20],['Jungle Run',2,40],'common',['#37b24d','#b2f2bb'],'','crest||stripes'],
+[33,'Bumpram','rock','ram',70,['Head Bump',1,20],['Rock Charge',2,40],'common',['#868e96','#f8f9fa'],'','||'],
+[34,'Driftray','water','manta',60,['Glide',1,20],['Wave Wing',2,40],'common',['#1c7ed6','#a5d8ff'],'','||spots'],
+[35,'Windglide','sky','manta',60,['Swoosh',1,20],['Cloud Wing',2,40],'common',['#b197fc','#f3f0ff'],'','||stripes'],
+[36,'Frostfuzz','water','yeti',70,['Snowball',1,20],['Ice Hug',2,40],'common',['#e7f5ff','#a5d8ff'],'','||'],
+[37,'Boltbot','spark','robot',70,['Zap Punch',1,20],['Laser Beam',3,60],'common',['#ffd43b','#495057'],'','||'],
+[38,'Glowjelly','water','jelly',50,['Tickle',1,10],['Glow Sting',2,40],'common',['#74c0fc','#d0ebff'],'','||'],
+[39,'Zapjelly','spark','jelly',50,['Buzz',1,20],['Shock Wave',2,40],'common',['#ffe066','#fab005'],'','||bolt'],
+[40,'Mossmite','leaf','beetle',70,['Moss Pinch',1,20],['Horn Toss',2,40],'common',['#2f9e44','#c0eb75'],'','||spots'],
+[41,'Stonehoot','rock','owl',70,['Pebble Peck',1,20],['Rock Dive',2,40],'common',['#a9805b','#e6d5c3'],'','horn||'],
+[42,'Coalbot','fire','robot',70,['Steam Punch',1,20],['Fire Cannon',3,60],'common',['#495057','#ff922b'],'','||'],
+[43,'Tidetoad','water','frog',80,['Tidal Tongue',1,30],['Water Cannon',2,50],'rare',['#1971c2','#99e9f2'],'','horns||spots'],
+[44,'Blazetoad','fire','frog',80,['Fire Tongue',1,30],['Volcano Belly',3,70],'rare',['#c92a2a','#ffa94d'],'','crest|flames|'],
+[45,'Thornsting','leaf','scorpion',80,['Vine Pinch',1,20],['Poison Thorn',2,50],'rare',['#2b8a3e','#d3f9d8'],'','crest||stripes'],
+[46,'Bladewing','sky','mantis',80,['Air Slash',1,30],['Sky Scythe',2,50],'rare',['#7048e8','#e5dbff'],'','|wings|'],
+[47,'Nightwing','sky','owl',80,['Shadow Peck',1,30],['Moon Dive',3,70],'rare',['#364fc7','#bac8ff'],'','crest|batwings|'],
+[48,'Voltraptor','spark','raptor',80,['Shock Bite',1,30],['Lightning Leap',3,70],'rare',['#f59f00','#ffe066'],'','crest||bolt'],
+[49,'Ramquake','rock','ram',90,['Horn Bash',1,30],['Earthquake',3,70],'rare',['#5c5f66','#ced4da'],'','||stripes'],
+[50,'Stormray','sky','manta',80,['Gale Wing',1,30],['Thunderstorm',2,50],'rare',['#5f3dc4','#d0bfff'],'','|aura|bolt'],
+[51,'Blizzaryeti','water','yeti',90,['Ice Punch',1,30],['Blizzard',3,70],'rare',['#d0ebff','#4dabf7'],'','crystal||'],
+[52,'Turbobot','spark','robot',90,['Turbo Punch',1,30],['Mega Laser',3,70],'rare',['#1c7ed6','#ffd43b'],'','|jets|'],
+[53,'Stingjelly','water','jelly',70,['Sting',1,30],['Jelly Storm',2,50],'rare',['#d6336c','#fcc2d7'],'','crown||'],
+[54,'Rhinorock','rock','rhino',90,['Horn Jab',1,30],['Stampede',3,70],'rare',['#868e96','#dee2e6'],'','||'],
+[55,'Blazehorn','fire','rhino',90,['Hot Horn',1,30],['Fire Charge',3,70],'rare',['#e8590c','#ffd8a8'],'','|flames|'],
+[56,'Mosshorn','leaf','rhino',90,['Moss Ram',1,30],['Forest Charge',3,70],'rare',['#5c940d','#d8f5a2'],'','antlers||spots'],
+[57,'Infernosting','fire','scorpion',110,['Lava Pinch',2,40],['Magma Sting',3,90],'holo',['#c92a2a','#ffd43b'],'','crown|flames|'],
+[58,'Thunderhorn','spark','rhino',110,['Volt Horn',2,50],['Thunder Stampede',3,90],'holo',['#fab005','#495057'],'','|aura|bolt'],
+[59,'Junglescythe','leaf','mantis',100,['Twin Slash',2,40],['Jungle Fury',3,80],'holo',['#2b8a3e','#ffe066'],'','crest|wings|'],
+[60,'Tidalram','water','ram',110,['Tide Bash',2,40],['Tsunami Charge',3,90],'holo',['#1864ab','#e7f5ff'],'','crystal||rings'],
+[61,'Titanbot','rock','robot',120,['Rock Fist',2,50],['Titan Cannon',3,90],'holo',['#5c5f66','#ffa94d'],'','horns|jets|'],
+[62,'Tempestowl','sky','owl',110,['Storm Talon',2,40],['Tempest',3,90],'holo',['#5f3dc4','#ffe066'],'','crown|wings|'],
+[63,'Frostfang','water','raptor',110,['Ice Fang',2,50],['Frozen Rush',3,90],'holo',['#4dabf7','#e7f5ff'],'','crystal||stripes'],
+[64,'Avalanche','rock','yeti',120,['Boulder Fist',2,50],['Avalanche Smash',3,90],'holo',['#adb5bd','#495057'],'','horns|spikes|'],
+[65,'Pyrohydra','fire','hydra',130,['Triple Flame',2,50],['Inferno Storm',3,110],'legend',['#e8590c','#ffd43b'],'','|flames|'],
+[66,'Leviathray','water','manta',130,['Deep Wave',2,50],['Leviathan Crash',3,110],'legend',['#0b7285','#99e9f2'],'','crown|aura|rings'],
+[67,'Omegabot','spark','robot',130,['Omega Punch',2,50],['Omega Blaster',3,110],'legend',['#212529','#ffd43b'],'','crown|jets|bolt'],
+[68,'Verdantrex','leaf','raptor',130,['Fang Vine',2,50],['Jungle King',3,110],'legend',['#2b8a3e','#ffd43b'],'','crown|spikes|stripes'],
+[69,'Cyclonehydra','sky','hydra',130,['Triple Gust',2,50],['Cyclone',3,110],'legend',['#7048e8','#d0bfff'],'','|wings|'],
+[70,'Prismhydra','rock','hydra',150,['Prism Bite',2,60],['Rainbow Quake',3,140],'promo',['#ced4da','#a5d8ff'],'','crown|crystals|star'],
+[71,'Astrowl','spark','owl',140,['Star Talon',2,60],['Cosmic Dive',3,130],'promo',['#1b1f3b','#ffd43b'],'','crown|aura|star'],
+[72,'Emperhorn','leaf','rhino',150,['Royal Horn',2,60],['Earth Emperor',3,140],'promo',['#2b8a3e','#ffd43b'],'','crown|crystals|star']
+].map(a=>({id:a[0],name:a[1],type:a[2],tpl:a[3],hp:a[4],atk:[{n:a[5][0],c:a[5][1],d:a[5][2]},{n:a[6][0],c:a[6][1],d:a[6][2]}],r:a[7],pal:a[8],v:a[9]||'',ad:a[10]||''}));
 const byId=id=>C.find(c=>c.id===id);
 const ofR=r=>C.filter(c=>c.r===r);
 function rollR(w){let x=Math.random()*w.reduce((a,b)=>a+b[1],0);for(const [r,n] of w){if((x-=n)<0)return r;}return w[0][0];}
@@ -269,7 +319,77 @@ function flourish(t,x,y){
 /* creatures in a 148x92 box: every card gets its own original creature */
 function crown(x,y,k){k=k||1;return `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-14 6L-16 -10L-7 -2L0 -14L7 -2L16 -10L14 6Z" fill="#ffd43b" ${SW}/><circle cx="0" cy="-1" r="2.6" fill="#e03131"/><circle cx="-9" cy="2" r="1.8" fill="#339af0"/><circle cx="9" cy="2" r="1.8" fill="#339af0"/></g>`;}
 function spikyRing(cx,cy,r1,r2,n,fill){let p='';for(let i=0;i<n*2;i++){const r=i%2?r1:r2,a=i*Math.PI/n-Math.PI/2;p+=(i?'L':'M')+(cx+r*Math.cos(a)).toFixed(1)+' '+(cy+r*Math.sin(a)).toFixed(1);}return `<path d="${p}Z" fill="${fill}" ${SW}/>`;}
-function creature(c){const [a,b]=c.pal,t=c.type,g=c.r==='legend'||c.r==='promo',v=c.v||'';let s='';
+/* ---- extra bodies for the expansion ---- */
+function eyesK(x1,x2,y,g,k){const cx=(x1+x2)/2;return `<g transform="translate(${cx} ${y}) scale(${k}) translate(${-cx} ${-y})">${eyes(x1,x2,y,g)}</g>`;}
+function body2(c,a,b,g){const t=c.type;switch(c.tpl){
+ case 'frog':return `<ellipse cx="38" cy="80" rx="15" ry="9" fill="${a}" ${SW}/><ellipse cx="110" cy="80" rx="15" ry="9" fill="${a}" ${SW}/><path d="M30 88h14M104 88h14" stroke="${O}" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="74" cy="64" rx="35" ry="23" fill="${a}" ${SW}/><ellipse cx="74" cy="72" rx="22" ry="12" fill="${b}"/><circle cx="56" cy="38" r="13" fill="${a}" ${SW}/><circle cx="92" cy="38" r="13" fill="${a}" ${SW}/>`+eyes(56,92,39,g)+
+  `<path d="M48 56Q74 70 100 56Q74 64 48 56Z" fill="#a61e4d" ${SW}/><path d="M66 60Q74 76 80 60" fill="#ff8787" ${SW}/><path d="M52 57L55 62L58 58M90 58L93 62L96 57" fill="#fff" stroke="${O}" stroke-width="1"/>`;
+ case 'scorpion':return [[56,64,30,70,24,84],[56,70,32,80,30,92],[92,64,118,70,124,84],[92,70,116,80,118,92]].map(([x1,y1,x2,y2,x3,y3])=>`<path d="M${x1} ${y1}L${x2} ${y2}L${x3} ${y3}" fill="none" stroke="${O}" stroke-width="4"/>`).join('')+
+  `<path d="M80 70Q128 84 124 44Q122 14 100 12" stroke="${O}" stroke-width="13" fill="none" stroke-linecap="round"/><path d="M80 70Q128 84 124 44Q122 14 100 12" stroke="${a}" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M104 6L88 12L102 20Z" fill="${b}" ${SW}/>
+  <path d="M54 52L36 40M94 52L112 40" stroke="${O}" stroke-width="8" stroke-linecap="round"/><path d="M54 52L36 40M94 52L112 40" stroke="${a}" stroke-width="4" stroke-linecap="round"/>
+  <path d="M18 36Q20 20 36 22L32 32L42 34Q38 48 24 46Z" fill="${a}" ${SW}/><path d="M130 36Q128 20 112 22L116 32L106 34Q110 48 124 46Z" fill="${a}" ${SW}/>
+  <ellipse cx="74" cy="66" rx="24" ry="15" fill="${a}" ${SW}/><path d="M58 64H90M60 72H88" stroke="${b}" stroke-width="2.5"/><ellipse cx="74" cy="50" rx="17" ry="12" fill="${a}" ${SW}/>`+eyesK(67,81,48,g,.8)+fangMouth(74,55,5);
+ case 'mantis':return `<path d="M66 84L58 92M82 84L90 92M64 76L46 90M84 76L102 90" stroke="${O}" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="74" cy="74" rx="14" ry="17" fill="${a}" ${SW}/><path d="M64 70H84M64 78H84" stroke="${b}" stroke-width="2.5"/>
+  <path d="M64 50L40 34L22 8L44 28L66 42Z" fill="${b}" ${SW}/><path d="M84 50L108 34L126 8L104 28L82 42Z" fill="${b}" ${SW}/><path d="M28 14L34 18M36 22L42 26M120 14L114 18M112 22L106 26" stroke="${O}" stroke-width="1.6"/>
+  <ellipse cx="74" cy="52" rx="11" ry="13" fill="${a}" ${SW}/><path d="M56 22L92 22L74 46Z" fill="${a}" ${SW}/><path d="M60 22L52 4M88 22L96 4" stroke="${O}" stroke-width="2"/><ellipse cx="62" cy="26" rx="7" ry="8" fill="#fff" ${SW}/><ellipse cx="86" cy="26" rx="7" ry="8" fill="#fff" ${SW}/><circle cx="64" cy="27" r="3.4" fill="${g?'#ffd43b':O}"/><circle cx="84" cy="27" r="3.4" fill="${g?'#ffd43b':O}"/><path d="M54 16L68 22M94 16L80 22" stroke="${O}" stroke-width="3.2" stroke-linecap="round"/><path d="M70 38L74 44L78 38" fill="#fff" stroke="${O}" stroke-width="1.2"/>`;
+ case 'owl':return `<path d="M64 84L58 92M70 86L68 92M80 86L82 92M86 84L92 92" stroke="#f08c00" stroke-width="3" stroke-linecap="round"/><path d="M46 46Q30 66 48 86L56 60ZM102 46Q118 66 100 86L92 60Z" fill="${b}" ${SW}/><ellipse cx="74" cy="56" rx="28" ry="32" fill="${a}" ${SW}/>
+  <path d="M52 30L46 8L62 24ZM96 30L102 8L86 24Z" fill="${a}" ${SW}/><circle cx="62" cy="44" r="13" fill="${b}" ${SW}/><circle cx="86" cy="44" r="13" fill="${b}" ${SW}/><path d="M64 70L70 76L74 70L78 76L84 70" fill="none" stroke="${b}" stroke-width="2.5"/>`+eyes(62,86,44,g)+`<path d="M70 52H78L74 60Z" fill="#ffa94d" ${SW}/>`;
+ case 'raptor':return `<path d="M98 54Q130 46 146 26Q132 54 100 64Z" fill="${a}" ${SW}/><path d="M80 64L84 84L76 92H90L92 82L88 64ZM64 62L62 84L54 92H68L70 82L72 64Z" fill="${a}" ${SW}/>`+claws(58,92,3,-1)+claws(80,92,3,1)+
+  `<ellipse cx="78" cy="54" rx="26" ry="15" fill="${a}" ${SW}/><path d="M62 50Q78 42 96 50" stroke="${b}" stroke-width="4" fill="none"/><path d="M58 56L48 66L54 68Z" fill="${a}" ${SW}/>
+  <path d="M60 48Q52 34 46 28L34 34Q44 42 52 54Z" fill="${a}" ${SW}/><path d="M50 22Q34 14 14 22L10 32Q26 40 50 36Z" fill="${a}" ${SW}/><path d="M12 30L48 34" stroke="${O}" stroke-width="1.6"/><path d="M14 29L16 33L19 29L21 33L24 29L26 33L29 30" fill="#fff" stroke="${O}" stroke-width=".9"/>`+eyesK(32,44,22,g,.75);
+ case 'ram':return `<path d="M52 84L50 92H62L62 84ZM86 84L86 92H98L96 84Z" fill="${O}"/>`+spikyRing(74,68,22,28,14,b)+`<ellipse cx="74" cy="68" rx="24" ry="18" fill="${b}"/>
+  <circle cx="74" cy="42" r="16" fill="${a}" ${SW}/><circle cx="50" cy="38" r="13" fill="${a}" ${SW}/><circle cx="98" cy="38" r="13" fill="${a}" ${SW}/><path d="M50 38m-8 0a8 8 0 1 0 8-8M98 38m8 0a8 8 0 1 1 -8-8" fill="none" stroke="${O}" stroke-width="2.2"/>`+eyes(67,81,40,g)+`<ellipse cx="74" cy="52" rx="7" ry="4" fill="${b}" ${SW}/>`;
+ case 'manta':return `<path d="M74 70Q80 86 104 92" stroke="${O}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M74 30Q100 30 144 52Q112 62 92 70Q74 78 56 70Q36 62 4 52Q48 30 74 30Z" fill="${a}" ${SW}/><path d="M46 52Q74 66 102 52Q74 74 46 52Z" fill="${b}"/>
+  <path d="M58 32L52 14L66 30ZM90 32L96 14L82 30Z" fill="${a}" ${SW}/>`+eyesK(64,84,42,g,.85)+fangMouth(74,52,6);
+ case 'yeti':return spikyRing(74,58,30,37,18,a)+`<path d="M30 52Q14 66 20 88L36 86Q32 70 42 62Z" fill="${a}" ${SW}/><path d="M118 52Q134 66 128 88L112 86Q116 70 106 62Z" fill="${a}" ${SW}/><circle cx="28" cy="88" r="9" fill="${b}" ${SW}/><circle cx="120" cy="88" r="9" fill="${b}" ${SW}/>
+  <path d="M54 30Q74 22 94 30Q98 50 88 58Q74 64 60 58Q50 50 54 30Z" fill="${b}" ${SW}/><path d="M56 22L50 8L62 18ZM92 22L98 8L86 18Z" fill="#f8f9fa" ${SW}/>`+eyes(66,82,38,g)+fangMouth(74,48,7);
+ case 'robot':return `<path d="M60 80L56 92H70L68 80ZM80 80L80 92H94L90 80Z" fill="${b}" ${SW}/><rect x="50" y="46" width="48" height="36" rx="6" fill="${a}" ${SW}/><circle cx="74" cy="62" r="8" fill="${b}" ${SW}/><circle cx="74" cy="62" r="3.5" fill="#ffe066"/>
+  <rect x="24" y="48" width="22" height="12" rx="4" fill="${a}" ${SW}/><rect x="16" y="44" width="12" height="20" rx="3" fill="${b}" ${SW}/><rect x="102" y="48" width="22" height="12" rx="4" fill="${a}" ${SW}/><path d="M120 42L136 36V68L120 62Z" fill="${b}" ${SW}/>
+  <path d="M74 18V6" stroke="${O}" stroke-width="2.5"/><circle cx="74" cy="5" r="3.5" fill="#ff6b6b" ${SW}/><rect x="54" y="16" width="40" height="28" rx="6" fill="${a}" ${SW}/><rect x="58" y="24" width="32" height="10" rx="4" fill="${O}"/>
+  <path d="M61 26L71 30L61 32ZM87 26L77 30L87 32Z" fill="${g?'#ffd43b':'#ff6b6b'}"/><path d="M62 39H86" stroke="${O}" stroke-width="2"/><path d="M66 39v3M72 39v3M78 39v3M84 39v3" stroke="${O}" stroke-width="1.2"/>`;
+ case 'jelly':return [44,58,74,90,104].map((x,i)=>`<path d="M${x} 46Q${x+(i%2?8:-8)} 62 ${x} 74T${x} 94" stroke="${O}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M${x} 46Q${x+(i%2?8:-8)} 62 ${x} 74T${x} 94" stroke="${b}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`).join('')+
+  `<path d="M40 50Q38 10 74 8Q110 10 108 50Q100 44 92 50Q84 44 74 50Q64 44 56 50Q48 44 40 50Z" fill="${a}" ${SW} opacity=".95"/><ellipse cx="62" cy="18" rx="8" ry="4" fill="#fff" opacity=".6"/>`+eyes(63,85,30,g)+fangMouth(74,38,5);
+ case 'rhino':return `<path d="M100 74L100 90H112L110 74ZM70 76L68 90H80L80 78Z" fill="${a}" ${SW}/><ellipse cx="88" cy="60" rx="34" ry="22" fill="${a}" ${SW}/><path d="M70 46Q88 38 110 46M72 56Q90 50 116 56" stroke="${b}" stroke-width="4" fill="none"/>
+  <path d="M120 54Q136 52 140 40" stroke="${O}" stroke-width="3" fill="none"/><ellipse cx="44" cy="54" rx="24" ry="18" fill="${a}" ${SW}/><path d="M28 48L14 18L36 42Z" fill="#f8f9fa" ${SW}/><path d="M40 40L38 26L48 38Z" fill="#f8f9fa" ${SW}/>
+  <path d="M54 36L58 24L64 38Z" fill="${a}" ${SW}/>`+eyesK(42,58,48,g,.8)+`<path d="M24 64Q36 70 50 64" fill="none" stroke="${O}" stroke-width="2.4"/>`;
+ case 'hydra':return `<path d="M60 70Q40 50 36 30M74 66V20M88 70Q108 50 112 30" stroke="${O}" stroke-width="14" fill="none" stroke-linecap="round"/><path d="M60 70Q40 50 36 30M74 66V20M88 70Q108 50 112 30" stroke="${a}" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M60 86L58 92H70L70 86ZM80 86L80 92H92L90 86Z" fill="${a}" ${SW}/><ellipse cx="74" cy="74" rx="28" ry="15" fill="${a}" ${SW}/><path d="M58 76Q74 84 90 76" stroke="${b}" stroke-width="4" fill="none"/>`+
+  [[36,28],[74,16],[112,28]].map(([x,y])=>`<path d="M${x-8} ${y-8}L${x-10} ${y-18}L${x-2} ${y-10}ZM${x+8} ${y-8}L${x+10} ${y-18}L${x+2} ${y-10}Z" fill="${b}" ${SW}/><circle cx="${x}" cy="${y}" r="12" fill="${a}" ${SW}/>`+eyesK(x-6,x+6,y-2,g,.6)+fangMouth(x,y+4,4)).join('');
+ } return null;}
+const ANCH={frog:[74,26,74,46,74,66],scorpion:[74,38,74,60,74,68],mantis:[74,18,74,56,74,74],owl:[74,14,74,50,74,70],raptor:[34,12,80,40,78,56],ram:[74,24,74,58,74,72],manta:[74,28,74,48,74,58],
+ yeti:[74,14,74,50,74,72],robot:[74,14,74,56,74,62],jelly:[74,8,74,28,74,34],rhino:[50,32,90,40,88,62],hydra:[74,2,74,56,74,74],
+ wolf:[66,20,76,52,76,64],lion:[62,14,84,52,84,66],turtle:[74,48,74,40,74,60],sprout:[74,30,74,54,74,66],golem:[74,26,74,48,74,72],hawk:[74,26,74,50,74,62],beetle:[74,28,74,56,74,66],shark:[80,30,70,44,70,60],bat:[74,30,74,46,74,62],dino:[44,18,78,46,78,64],croc:[56,40,86,54,86,68],kraken:[74,6,74,30,74,40],bull:[74,14,74,60,74,66],gorilla:[74,18,74,52,74,62],wyvern:[74,6,74,40,74,64],phoenix:[74,26,74,44,74,56],serpent:[116,22,60,60,64,72]};
+function addHead(k,x,y,b){switch(k){
+ case 'horn':return `<path d="M${x-5} ${y+6}L${x+2} ${y-18}L${x+5} ${y+6}Z" fill="#f8f9fa" ${SW}/>`;
+ case 'horns':return `<path d="M${x-14} ${y+6}Q${x-24} ${y-6} ${x-18} ${y-18}Q${x-14} ${y-6} ${x-6} ${y+4}ZM${x+14} ${y+6}Q${x+24} ${y-6} ${x+18} ${y-18}Q${x+14} ${y-6} ${x+6} ${y+4}Z" fill="#f8f9fa" ${SW}/>`;
+ case 'crown':return crown(x,y-2,.8);
+ case 'antlers':return `<path d="M${x-8} ${y+4}L${x-18} ${y-14}M${x-14} ${y-6}L${x-24} ${y-8}M${x-16} ${y-11}L${x-12} ${y-20}M${x+8} ${y+4}L${x+18} ${y-14}M${x+14} ${y-6}L${x+24} ${y-8}M${x+16} ${y-11}L${x+12} ${y-20}" stroke="${O}" stroke-width="5" stroke-linecap="round"/><path d="M${x-8} ${y+4}L${x-18} ${y-14}M${x-14} ${y-6}L${x-24} ${y-8}M${x-16} ${y-11}L${x-12} ${y-20}M${x+8} ${y+4}L${x+18} ${y-14}M${x+14} ${y-6}L${x+24} ${y-8}M${x+16} ${y-11}L${x+12} ${y-20}" stroke="#c19a6b" stroke-width="2.6" stroke-linecap="round"/>`;
+ case 'crest':return `<path d="M${x-10} ${y+4}L${x-8} ${y-12}L${x-3} ${y}L${x} ${y-18}L${x+3} ${y}L${x+8} ${y-12}L${x+10} ${y+4}Z" fill="${b}" ${SW}/>`;
+ case 'crystal':return `<path d="M${x-8} ${y+4}L${x-10} ${y-10}L${x-4} ${y+2}ZM${x-3} ${y+4}L${x} ${y-20}L${x+4} ${y+4}ZM${x+5} ${y+3}L${x+11} ${y-12}L${x+9} ${y+4}Z" fill="#a5d8ff" ${SW}/>`;
+ case 'antenna':return `<path d="M${x-5} ${y+4}Q${x-12} ${y-10} ${x-16} ${y-14}M${x+5} ${y+4}Q${x+12} ${y-10} ${x+16} ${y-14}" stroke="${O}" stroke-width="2.2" fill="none"/><circle cx="${x-16}" cy="${y-14}" r="3.5" fill="#ffe066" ${SW}/><circle cx="${x+16}" cy="${y-14}" r="3.5" fill="#ffe066" ${SW}/>`;
+ case 'flamehair':return flourish('fire',x,y);
+ } return '';}
+function addBack(k,x,y,a,b){switch(k){
+ case 'batwings':return `<path d="M${x-10} ${y}Q${x-40} ${y-34} ${x-70} ${y-24}Q${x-60} ${y-14} ${x-64} ${y-4}Q${x-50} ${y-8} ${x-48} ${y+4}Q${x-36} ${y} ${x-12} ${y+10}Z" fill="${b}" ${SW}/><path d="M${x+10} ${y}Q${x+40} ${y-34} ${x+70} ${y-24}Q${x+60} ${y-14} ${x+64} ${y-4}Q${x+50} ${y-8} ${x+48} ${y+4}Q${x+36} ${y} ${x+12} ${y+10}Z" fill="${b}" ${SW}/>`;
+ case 'wings':return `<path d="M${x-8} ${y}L${x-64} ${y-30}L${x-52} ${y-16}L${x-70} ${y-10}L${x-50} ${y-2}L${x-62} ${y+8}L${x-10} ${y+10}Z" fill="#fff" ${SW}/><path d="M${x+8} ${y}L${x+64} ${y-30}L${x+52} ${y-16}L${x+70} ${y-10}L${x+50} ${y-2}L${x+62} ${y+8}L${x+10} ${y+10}Z" fill="#fff" ${SW}/>`;
+ case 'flames':return [[-34,-6],[34,-6],[-22,-24],[22,-24],[0,-34]].map(([dx,dy])=>flourish('fire',x+dx,y+dy)).join('');
+ case 'crystals':return [[-36,0,18],[36,0,18],[-24,-22,22],[24,-22,22]].map(([dx,dy,k])=>`<path d="M${x+dx} ${y+dy-k}L${x+dx+k*.35} ${y+dy}L${x+dx} ${y+dy+k*.4}L${x+dx-k*.35} ${y+dy}Z" fill="#a5d8ff" ${SW}/>`).join('');
+ case 'spikes':return spikyRing(x,y,24,40,12,O);
+ case 'jets':return `<rect x="${x-34}" y="${y-6}" width="12" height="22" rx="3" fill="#868e96" ${SW}/><rect x="${x+22}" y="${y-6}" width="12" height="22" rx="3" fill="#868e96" ${SW}/>`+flourish('fire',x-28,y+30).replace('M','M')+`<path d="M${x-32} ${y+16}Q${x-28} ${y+34} ${x-24} ${y+16}ZM${x+24} ${y+16}Q${x+28} ${y+34} ${x+32} ${y+16}Z" fill="#ff922b" ${SW}/>`;
+ case 'aura':return `<circle cx="${x}" cy="${y}" r="44" fill="none" stroke="#ffe066" stroke-width="5" opacity=".8"/><circle cx="${x}" cy="${y}" r="36" fill="none" stroke="#fff" stroke-width="2" opacity=".8"/>`;
+ case 'shell':return `<path d="M${x-30} ${y+14}Q${x-30} ${y-24} ${x} ${y-26}Q${x+30} ${y-24} ${x+30} ${y+14}Z" fill="${b}" ${SW}/><path d="M${x-16} ${y-14}L${x-22} ${y-34}L${x-6} ${y-22}ZM${x+16} ${y-14}L${x+22} ${y-34}L${x+6} ${y-22}Z" fill="#f8f9fa" ${SW}/>`;
+ } return '';}
+function addMark(k,x,y,col){switch(k){
+ case 'stripes':return `<path d="M${x-12} ${y-6}L${x-6} ${y+4}M${x-2} ${y-8}L${x+2} ${y+4}M${x+8} ${y-6}L${x+12} ${y+4}" stroke="${col}" stroke-width="3.2" stroke-linecap="round"/>`;
+ case 'spots':return `<circle cx="${x-8}" cy="${y-2}" r="3.5" fill="${col}"/><circle cx="${x+6}" cy="${y-5}" r="2.6" fill="${col}"/><circle cx="${x+3}" cy="${y+5}" r="3" fill="${col}"/>`;
+ case 'bolt':return `<path d="M${x+2} ${y-10}L${x-6} ${y+1}H${x}L${x-3} ${y+10}L${x+7} ${y-2}H${x+1}Z" fill="#ffe066" stroke="${O}" stroke-width="1.4"/>`;
+ case 'star':return `<path d="M${x} ${y-8}L${x+2.4} ${y-2.5}L${x+8} ${y-2.5}L${x+3.5} ${y+1.5}L${x+5} ${y+7.5}L${x} ${y+4}L${x-5} ${y+7.5}L${x-3.5} ${y+1.5}L${x-8} ${y-2.5}L${x-2.4} ${y-2.5}Z" fill="#ffe066" stroke="${O}" stroke-width="1.4"/>`;
+ case 'rings':return `<circle cx="${x}" cy="${y}" r="9" fill="none" stroke="${col}" stroke-width="2.5"/><circle cx="${x}" cy="${y}" r="4" fill="${col}"/>`;
+ } return '';}
+function creature(c){const [a,b]=c.pal,g=c.r==='legend'||c.r==='promo',an=ANCH[c.tpl]||[74,20,74,50,74,66],[h,bk,mk]=(c.ad||'||').split('|');
+ return addBack(bk,an[2],an[3],a,b)+(body2(c,a,b,g)||creatureCore(c))+addMark(mk,an[4],an[5],b)+addHead(h,an[0],an[1],b);}
+function creatureCore(c){const [a,b]=c.pal,t=c.type,g=c.r==='legend'||c.r==='promo',v=c.v||'';let s='';
  switch(c.tpl){
  case 'wolf':
   if(v==='fluffy')s+=[[100,58,132,22],[102,62,140,44],[100,66,134,66]].map(([x1,y1,x2,y2])=>`<path d="M${x1} ${y1}Q${x2-14} ${y2+14} ${x2} ${y2}" stroke="${O}" stroke-width="13" fill="none" stroke-linecap="round"/><path d="M${x1} ${y1}Q${x2-14} ${y2+14} ${x2} ${y2}" stroke="${b}" stroke-width="8" fill="none" stroke-linecap="round"/>`).join('')+flourish(t,136,24);
@@ -390,9 +510,9 @@ const ABIL={fire:{n:'Blazing Heart',k:'plus',t:['This card’s attacks do','10 m
  water:{n:'Bubble Shield',k:'shield',t:['This card takes 10 less','damage from attacks.']},rock:{n:'Stone Skin',k:'shield',t:['This card takes 10 less','damage from attacks.']},
  leaf:{n:'Regrow',k:'heal',t:['At the start of your turn,','heal 10 HP from this card.']},sky:{n:'Tailwind',k:'wind',t:['When you draw energy,','get 1 more.']}};
 const abil=c=>c&&c.r!=='common'?ABIL[c.type]:null;
-const EVO={9:1,10:2,11:4,12:6,13:8,14:11,15:5};
+const EVO={9:1,10:2,11:4,12:6,13:8,14:11,15:5,43:23,44:24,45:26,46:27,47:29,48:31,49:33,50:35,51:36,52:37,53:38,57:25,58:54,59:46,60:49,62:47,63:32,64:51};
 const stage=c=>c.r==='legend'||c.r==='promo'?'BOSS':EVO[c.id]?(EVO[EVO[c.id]]?'STAGE 2':'STAGE 1'):'BASIC';
-const FLAV={wolf:'It howls before battle so its friends feel brave.',lion:'Its mane glows brighter every time it wins.',sprout:'It drinks sunshine and grows a new leaf each day.',golem:'It loves to wrestle. Nobody has ever pushed it over.',hawk:'It dives faster than a race car to catch the wind.',beetle:'Its horn is hot enough to cook an egg in a second.',shark:'It can smell a snack from ten miles away.',bat:'It sleeps upside down inside thunder clouds.',croc:'It hides in tall grass and waits very patiently.',kraken:'Sailors say it can hug a whole ship.',bull:'When it stomps, flowers pop up from the ground.',gorilla:'It pounds its chest so hard that rocks fall.',wyvern:'Lightning follows it wherever it flies.',phoenix:'It is reborn from its own flames, again and again.',dino:'Its roar can be heard on the other side of the mountain.',blob:'It loves to wrestle. Nobody has ever pushed it over.',
+const FLAV={frog:'It can jump over a house in one hop.',scorpion:'Its tail is always ready for a surprise.',mantis:'It practices sword moves all day long.',owl:'It sees in the dark and never misses a thing.',raptor:'It runs so fast that its footprints smoke.',ram:'It never backs down from a head-to-head.',manta:'It glides like a giant kite through the waves.',yeti:'It gives bear hugs that can freeze a lake.',robot:'Built to protect, it never runs out of battery.',jelly:'It glows at night like a floating lantern.',rhino:'Its horn can push a train off the tracks.',hydra:'Three heads means three times the roar.',wolf:'It howls before battle so its friends feel brave.',lion:'Its mane glows brighter every time it wins.',sprout:'It drinks sunshine and grows a new leaf each day.',golem:'It loves to wrestle. Nobody has ever pushed it over.',hawk:'It dives faster than a race car to catch the wind.',beetle:'Its horn is hot enough to cook an egg in a second.',shark:'It can smell a snack from ten miles away.',bat:'It sleeps upside down inside thunder clouds.',croc:'It hides in tall grass and waits very patiently.',kraken:'Sailors say it can hug a whole ship.',bull:'When it stomps, flowers pop up from the ground.',gorilla:'It pounds its chest so hard that rocks fall.',wyvern:'Lightning follows it wherever it flies.',phoenix:'It is reborn from its own flames, again and again.',dino:'Its roar can be heard on the other side of the mountain.',blob:'It loves to wrestle. Nobody has ever pushed it over.',
  bird:'It dives faster than a race car to catch the wind.',turtle:'Its spiky shell is harder than steel.',serpent:'It guards the deep places where the light never reaches.'};
 let UID=0;
 function cardSVG(c){const t=T[c.type],u='k'+(++UID),wt=WEAK[c.type],ab=abil(c),boss=c.r==='legend'||c.r==='promo',st=stage(c),ev=EVO[c.id]?byId(EVO[c.id]):null;
@@ -404,7 +524,7 @@ function cardSVG(c){const t=T[c.type],u='k'+(++UID),wt=WEAK[c.type],ab=abil(c),b
  if(ab){body+=`<rect x="14" y="${panelY+4}" width="30" height="10" rx="3" fill="#e03131" stroke="#fff" stroke-width=".8"/><text x="29" y="${panelY+11.5}" font-size="7" font-weight="900" fill="#fff" text-anchor="middle" font-style="italic">Ability</text>
   <text x="48" y="${panelY+12.5}" font-size="10" font-weight="900" fill="#c92a2a">${ab.n}</text>
   <text x="15" y="${panelY+22}" font-size="6.4" font-weight="700" fill="${O}">${ab.t[0]}</text><text x="15" y="${panelY+29}" font-size="6.4" font-weight="700" fill="${O}">${ab.t[1]}</text>`;panelY+=34;}
- c.atk.forEach((a,i)=>{const y=panelY+12+i*(ab?24:30),x=16+a.c*11+2,avail=166-x-(a.d>=100?22:16),fs=Math.min(11.5,avail/(a.n.length*.55));
+ c.atk.forEach((a,i)=>{const y=panelY+12+i*(ab?24:30),x=16+a.c*11+2,avail=166-x-(a.d>=100?22:16),fs=Math.min(11.5,avail/(a.n.length*.64));
   body+=`${cost(a.c,18,y-4)}<text x="${x}" y="${y}" font-size="${fs.toFixed(1)}" font-weight="900" fill="${O}">${a.n}</text><text x="164" y="${y+1}" font-size="14" font-weight="900" fill="${O}" text-anchor="end">${a.d}</text>`;});
  return `<svg viewBox="0 0 180 252" xmlns="http://www.w3.org/2000/svg" font-family="Arial Rounded MT Bold,ui-rounded,system-ui,sans-serif"><defs>
 <linearGradient id="${u}s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8f9fa"/><stop offset=".5" stop-color="#adb5bd"/><stop offset="1" stop-color="#e9ecef"/></linearGradient>
@@ -479,10 +599,10 @@ function parentGate(){const a=ri(101,999),b=ri(11,99);
   else{parentGate();m.remove();}};}
 
 function starter(){
- setScreen('starter',`<div class="hub"><div class="hero"><div class="av me">${LUCAS}<span class="badge">Lucas</span></div><div class="goal"><b>Welcome, Lucas! Here is your starter deck.</b>${zh([['新','ㄒㄧㄣ'],['手','ㄕㄡˇ'],['牌','ㄆㄞˊ'],['組','ㄗㄨˇ']])}<div>One card of every type, plus <b>$2.00</b> to start.</div></div></div>
+ setScreen('starter',`<div class="hub"><div class="hero"><div class="av me">${LUCAS}<span class="badge">Lucas</span></div><div class="goal"><b>Welcome, Lucas! Here is your starter deck.</b>${zh([['新','ㄒㄧㄣ'],['手','ㄕㄡˇ'],['牌','ㄆㄞˊ'],['組','ㄗㄨˇ']])}<div>One card of every type, plus <b>5 free packs</b> to rip open and <b>$2.00</b>!</div></div></div>
  <div class="cgrid">${STARTER.map(i=>cardHTML(byId(i))).join('')}</div><div class="row"><button class="btn gold" data-a="ok">Add to my binder ▶</button></div></div>`);
  say('Welcome Lucas! Here is your starter deck. One card of every type.');
- bindAll({ok(){STARTER.forEach(i=>S.owned[i]=(S.owned[i]||0)+1);S.started=true;S.cents=200;restock();save();sfx.good();hub();}});}
+ bindAll({ok(){STARTER.forEach(i=>S.owned[i]=(S.owned[i]||0)+1);S.started=true;S.cents=200;S.freePacks=5;restock();save();sfx.good();openPack(true);}});}
 
 function restock(){S.shelf=[0,1,2].map(i=>randCard(i===2?[['rare',6],['holo',3],['legend',1]]:[['common',6],['rare',4]]).id);}
 const GOAL=1500;
@@ -497,12 +617,13 @@ function hub(fromAct){
  ${T2('🗂️','Sorting job',[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],'sort','Earn 50¢ a row')}
  ${T2('⚔️','Battle',[['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']],'battle','Win $1.50')}
  ${T2('🏆','Tournament',[['錦','ㄐㄧㄣˇ'],['標','ㄅㄧㄠ'],['賽','ㄙㄞˋ']],'tour','Entry $1 · win $5 + prize','hot')}
+ ${S.freePacks>0?T2('🎁','Free packs',[['免','ㄇㄧㄢˇ'],['費','ㄈㄟˋ'],['卡','ㄎㄚˇ'],['包','ㄅㄠ']],'free',S.freePacks+' left to rip!','hot'):''}
  ${T2('🛒','Card store',[['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['店','ㄉㄧㄢˋ']],'store','Packs and single cards')}
  ${T2('📒','My binder',[['收','ㄕㄡ'],['藏','ㄘㄤˊ'],['冊','ㄘㄜˋ']],'binder',owned+' of '+C.length)}
  ${S.shopOpen?T2('🏪','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'myshop','Keep the whole price','hot'):
   T2(S.cents>=GOAL?'🔑':'🔒','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'open',S.cents>=GOAL?'Ready to open!':'Needs '+money(GOAL),S.cents>=GOAL?'hot':'lock')}
  </div></div>`);
- bindAll({cash:()=>cashier(false),sort:sortJob,battle:()=>teamPick('friendly'),tour:tourStart,store,binder,myshop:()=>cashier(true),
+ bindAll({free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,battle:()=>teamPick('friendly'),tour:tourStart,store,binder,myshop:()=>cashier(true),
   open(){if(S.cents<GOAL){toast('🔒 Save '+money(GOAL-S.cents)+' more!');sfx.bad();return;}
    modal(`<div class="big">🏪</div><h2>Open your own shop?</h2><p>It costs <b>${money(GOAL)}</b>. You will have ${money(S.cents-GOAL)} left.</p>`,[['Open it! 🎉',()=>{S.cents-=GOAL;S.shopOpen=true;save();confetti();sfx.win();say('Your shop is open! Now customers pay you the whole price.');hub();}],['Not yet',null,'ghost']]);}});
  if(fromAct)maybeMaster();}
@@ -565,14 +686,15 @@ function store(){
  bindAll({home:()=>hub(),pack(){if(S.cents<200){sfx.bad();toast('You need $2.00. Try a job! 🧾');return;}S.cents-=200;save();sfx.coin();openPack();},
   buy(i){const c=byId(S.shelf[i]),p=R[c.r].p;if(S.cents<p){sfx.bad();toast('You need '+money(p-S.cents)+' more');return;}
    S.cents-=p;S.owned[c.id]=(S.owned[c.id]||0)+1;S.shelf.splice(+i,1);save();sfx.coin();if(c.r==='holo'||c.r==='legend')sfx.shimmer();toast('📒 '+c.name+' added to your binder!');store();}});}
-function openPack(){const cards=[0,1,2].map(()=>randCard([['common',7],['rare',3]])).concat([randCard([['rare',70],['holo',22],['legend',8]])]);
- setScreen('pack',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">Tap the pack to rip it open!</h2><div class="row" id="pk"><button class="pack" id="pb"><span class="e">🎁</span>Mystery pack</button></div><p id="pm" style="font-weight:800"></p><div class="row" id="pdone"></div></div></div>`);
+function openPack(free){if(free){if(!(S.freePacks>0))return hub();S.freePacks--;save();}const cards=[0,1,2].map(()=>randCard([['common',7],['rare',3]])).concat([randCard([['rare',70],['holo',22],['legend',8]])]);
+ setScreen('pack',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">${free?`🎁 Free pack ${5-S.freePacks} of 5!`:''} Tap the pack to rip it open!</h2><div class="row" id="pk"><button class="pack" id="pb"><span class="e">🎁</span>Mystery pack</button></div><p id="pm" style="font-weight:800"></p><div class="row" id="pdone"></div></div></div>`);
  $('pb').onclick=()=>{audio();$('pb').classList.add('tear');tone(300,.3,'sawtooth',.06);setTimeout(()=>{
   $('pk').innerHTML=cards.map((c,i)=>`<button class="flip" data-i="${i}"><div class="in"><div>${backSVG()}</div><div class="front">${cardHTML(c)}</div></div></button>`).join('');$('pm').textContent='Tap each card to flip it!';
   let left=4;$('pk').querySelectorAll('.flip').forEach(f=>f.onclick=()=>{if(f.classList.contains('open'))return;f.classList.add('open');const c=cards[+f.dataset.i];
    if(c.r==='holo'||c.r==='legend'){sfx.shimmer();toast((c.r==='legend'?'🌟 LEGEND! ':'✨ Holo! ')+c.name,1800);}else sfx.flip();
    if(--left===0){cards.forEach(c=>S.owned[c.id]=(S.owned[c.id]||0)+1);save();$('pm').textContent='All 4 cards went into your binder!';
-    $('pdone').innerHTML='<button class="btn gold" id="again">Another pack ($2.00)</button><button class="btn ghost" id="hm">🏠 Home</button>';$('again').onclick=()=>{if(S.cents<200){sfx.bad();toast('You need $2.00');return;}S.cents-=200;save();openPack();};$('hm').onclick=()=>hub();}});},550);};}
+    if(S.freePacks>0){$('pdone').innerHTML=`<button class="btn gold" id="again">Rip the next free pack ▶ (${S.freePacks} left)</button>`;$('again').onclick=()=>openPack(true);}
+    else{$('pdone').innerHTML=(free?'<button class="btn green" id="hm">📒 All done! Go to town ▶</button>':'<button class="btn gold" id="again">Another pack ($2.00)</button><button class="btn ghost" id="hm">🏠 Home</button>');const ag=$('again');if(ag)ag.onclick=()=>{if(S.cents<200){sfx.bad();toast('You need $2.00');return;}S.cents-=200;save();openPack();};$('hm').onclick=()=>hub();}}});},550);};}
 
 /* ---------- binder ---------- */
 function binder(){
