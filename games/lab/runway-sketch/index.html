@@ -329,6 +329,9 @@ body:has(#career) .main,body:has(#maker) .main{visibility:hidden}
 #fig>svg{will-change:transform;transform-origin:50% 100%;animation:sway 5s ease-in-out infinite}
 #fig.lk .hd{animation:look 1.8s ease-in-out}#fig.bl .ey{animation:blink2 .2s}@keyframes blink2{50%{transform:scaleY(.12)}}
 @media (prefers-reduced-motion:reduce){#fig>svg{animation:none}}
+.bcup{left:0!important;transition:none!important;filter:none!important;will-change:transform;text-shadow:0 4px 0 rgba(0,0,0,.18)}
+.mov{left:0!important;will-change:transform}.sb{transition:none!important}
+.play{contain:strict}
 
 </style></head><body data-pref="any">
 <div class="app">
@@ -1493,7 +1496,7 @@ function cSave(){try{localStorage.setItem(CK,JSON.stringify(C));}catch(e){}}
 function lvOf(s){let i=0;LV.forEach((l,k)=>{if(s>=l[0])i=k;});return i;}
 const owns=(c,id)=>C&&C.own[c]&&C.own[c].includes(id);
 function itemsFor(c){return MODE==='career'&&C?CAT[c].items.filter(i=>owns(c,i.id)):CAT[c].items;}
-function cScreen(html,town){let s=document.getElementById('career');if(!s){s=document.createElement('div');s.id='career';document.body.appendChild(s);}s.innerHTML='<div class="cin">'+html+'</div>'+(town?'':'<button class="cquit" aria-label="Leave">🏙️ Leave</button>');s.scrollTop=0;const q=s.querySelector('.cquit');if(q)q.onclick=()=>{audio();careerHub();};return s;}
+function cScreen(html,town){const old=document.getElementById('career');const s=document.createElement('div');s.id='career';if(old)old.replaceWith(s);else document.body.appendChild(s);s.innerHTML='<div class="cin">'+html+'</div>'+(town?'':'<button class="cquit" aria-label="Leave">🏙️ Leave</button>');s.scrollTop=0;const q=s.querySelector('.cquit');if(q)q.onclick=()=>{audio();careerHub();};return s;}
 function cClose(){const s=document.getElementById('career');if(s)s.remove();}
 function cHead(){const L=lvOf(C.stars),nx=LV[L+1],p=nx?Math.round((C.stars-LV[L][0])/(nx[0]-LV[L][0])*100):100;
   return '<div class="chead"><div class="cst"><span>💰 '+C.money+'</span><span>⭐ '+C.stars+'</span></div><div class="clv">'+ZT(LV[L][1])+'</div>'+
@@ -1687,9 +1690,9 @@ function bobaCatch(){const GOOD=[['pearl','🟤'],['jelly','🟨'],['berry','�
   const pl=s.querySelector('#pl'),cup=s.querySelector('#cup'),host=s.querySelector('.cin');
   const newOrder=()=>{order={};const a=pick(GOOD),b=pick(GOOD.filter(g=>g!==a));order[a[0]]=3+lvl;order[b[0]]=2+lvl;drawTk();};
   const drawTk=()=>{s.querySelector('#tk').innerHTML='🧾 Catch '+Object.entries(order).map(([k,n])=>'<b>'+n+'</b> '+GOOD.find(g=>g[0]===k)[1]).join(' + ');};
-  const mv=e=>{const r=pl.getBoundingClientRect();cx=Math.max(6,Math.min(94,(e.clientX-r.left)/r.width*100));cup.style.left=cx+'%';};
-  pl.style.touchAction='none';pl.addEventListener('pointerdown',e=>{pl.setPointerCapture(e.pointerId);mv(e);});pl.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch')mv(e);});
-  newOrder();
+  let PR=null;const mv=e=>{const r=PR||(PR=pl.getBoundingClientRect());cx=Math.max(6,Math.min(94,(e.clientX-r.left)/r.width*100));cup.style.transform='translate3d('+(cx/100*r.width).toFixed(1)+'px,0,0) translateX(-50%)';};addEventListener('resize',()=>PR=null);;
+  pl.style.touchAction='none';pl.addEventListener('pointerdown',e=>{PR=pl.getBoundingClientRect();pl.setPointerCapture(e.pointerId);mv(e);});pl.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch')mv(e);});
+  newOrder();requestAnimationFrame(()=>{PR=pl.getBoundingClientRect();cup.style.transform='translate3d('+(PR.width/2)+'px,0,0) translateX(-50%)';});
   lp(s,'#pl',dt=>{T-=dt;spawn-=dt;if(spawn<=0){spawn=Math.max(.35,.8-lvl*.08);const bad=Math.random()<.25,need=Object.keys(order).filter(k=>order[k]>0),nk=need.length?pick(need):null,g=bad?null:(Math.random()<.7&&nk?GOOD.find(x=>x[0]===nk):pick(GOOD));
       const d=document.createElement('div');d.className='fall';d.textContent=bad?pick(BAD):g[1];pl.appendChild(d);falls.push({d,x:4+Math.random()*92,y:-8,v:28+lvl*6+Math.random()*12,k:bad?null:g[0]});}
     const PW=pl.clientWidth,PH=pl.clientHeight;falls=falls.filter(f=>{f.y+=f.v*dt;f.d.style.transform='translate('+(f.x*PW/100).toFixed(1)+'px,'+(f.y*PH/100).toFixed(1)+'px) translate(-50%,-50%)';
@@ -1748,7 +1751,7 @@ function boxStack(){let earn=0,w=46,x=0,dir=1,v=34,stack=[{x:27,w:46}],perfect=0
       const cut=document.createElement('div');cut.className='sb cut';cut.style.width=(w-ov)+'%';cut.style.left=(x<top.x?x:r)+'%';cut.style.bottom=mv.style.bottom;cut.style.background=mv.style.background;pl.appendChild(cut);setTimeout(()=>cut.remove(),700);}
     stack.push(nb);w=nb.w;v+=2.5;x=dir>0?0:100-w;draw();
     if(stack.length>=26){sfx.win();confetti();endJob(earn+5,'📦 Sky-high tower! Bonus +$5','sort');}};
-  draw();lp(s,'#mv',dt=>{x+=dir*v*dt;if(x<0){x=0;dir=1;}if(x>100-w){x=100-w;dir=-1;}mv.style.left=x+'%';
+  draw();let PWc=pl.clientWidth,fr=0;lp(s,'#mv',dt=>{if(++fr%30===0)PWc=pl.clientWidth;x+=dir*v*dt;if(x<0){x=0;dir=1;}if(x>100-w){x=100-w;dir=-1;}mv.style.transform='translate3d('+(x*PWc/100).toFixed(1)+'px,0,0)';
     TX(s.querySelector('#hN'),'📦 '+(stack.length-1));TX(s.querySelector('#hP'),'✨ '+perfect);TX(s.querySelector('#hM'),'💰 '+earn);});}
 const JOBGAMES={cash:['cafeRush','bobaCatch','ovenPop'],sew:['sewMachine','sewButtons','threadNeedle'],sort:['stockConveyor','shoePairs','boxStack']};
 const JOBNAMES={cafeRush:'☕ Café Rush',bobaCatch:'🧋 Boba Catch',ovenPop:'🥐 Oven Pop',sewMachine:'🧵 Sewing Machine',sewButtons:'🔘 Button Fix',threadNeedle:'🪡 Thread the Needle',stockConveyor:'📦 Conveyor Belt',shoePairs:'👟 Shoe Pairs',boxStack:'📦 Box Stacker'};
