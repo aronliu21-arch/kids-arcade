@@ -314,6 +314,21 @@ body[data-pref="land"] .rot.l{display:none}
  .jd{padding:4px 6px}.jd .f{float:left;width:38px;height:38px;margin-right:6px}.jd .f svg{width:38px;height:38px}.jd>b{display:block;text-align:left;line-height:38px;font-size:.95rem}
  .jd .pc{clear:both;margin-top:4px}.jd .pc .r{font-size:.8rem!important}
 }
+/* ---- iPad performance ---- */
+#career [filter],.runway [filter],#tnora [filter],.pairs [filter],.belt [filter]{filter:none!important}
+body:has(#career) .main,body:has(#maker) .main{visibility:hidden}
+.main:has(.runway) .studio{visibility:hidden}
+.cat .crowd{will-change:transform}.cat.cheer .crowd{animation:cheerL .44s ease-in-out infinite alternate}.cat.clapping .crowd{animation-duration:.28s}
+.cat .crowd.l1{animation-delay:-.11s}.cat .crowd.l2{animation-delay:-.22s}.cat .crowd.l3{animation-delay:-.33s}
+@keyframes cheerL{from{transform:translateY(0)}to{transform:translateY(-1.6%)}}
+.cat.cheer .crowd .fi,.cat.clapping .pg .cam{animation:none!important}
+.machine{position:relative;aspect-ratio:600/220;contain:strict;width:100%}.fabw{position:absolute;left:0;top:0;height:100%;will-change:transform}.fabw svg{display:block}.machine .ndl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.town .cl1,.town .cl2,.town .star{animation:none!important}
+.townbox{container-type:inline-size}.walker{left:0!important;animation-name:wlk2!important;will-change:transform}@keyframes wlk2{from{transform:translateX(-10cqw)}to{transform:translateX(104cqw)}}
+#fig .wgt,#fig .hd,#fig .ey{animation:none}
+#fig>svg{will-change:transform;transform-origin:50% 100%;animation:sway 5s ease-in-out infinite}
+#fig.lk .hd{animation:look 1.8s ease-in-out}#fig.bl .ey{animation:blink2 .2s}@keyframes blink2{50%{transform:scaleY(.12)}}
+@media (prefers-reduced-motion:reduce){#fig>svg{animation:none}}
 
 </style></head><body data-pref="any">
 <div class="app">
@@ -839,15 +854,14 @@ function scoreFX(sc,R){const c=R.querySelector('.cat');
   if(sc<=3)setTimeout(()=>tone(180,.4,'sawtooth',.05),400);}
 function showRunway(R){const cat=R.querySelector('.cat'),MS=[...R.querySelectorAll('.model')],m=MS[0];MS.forEach((x,i)=>{if(MS.length===2)x.style.left=(i?68:32)+'%';});const fitM=()=>{const h=Math.floor(cat.clientHeight*(MS.length===2?.8:.92));MS.forEach(x=>{const sv=x.querySelector('svg');sv.setAttribute('height',h);sv.setAttribute('width',Math.floor(h/2));sv.style.height=h+'px';sv.style.width=Math.floor(h/2)+'px';x.style.width=Math.floor(h/2)+'px';});};fitM();addEventListener('resize',fitM);if(window.ResizeObserver)new ResizeObserver(fitM).observe(cat);
   // a packed crowd on both sides of the catwalk: far rows small and high, near rows big and low
-  const cams=[],ROWS=8,cw=cat.clientWidth||600,chh=cat.clientHeight||600,narrow=cw<500;let n=0,gs='';
+  const cams=[],ROWS=8,cw=cat.clientWidth||600,chh=cat.clientHeight||600,narrow=cw<500;let n=0,gs='',LY=['','','',''],lyr=0;
   const inner=i=>fan(i).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');
   const put=(xPct,topPct,wPx,flip,op)=>{const x=xPct/100*cw,y=topPct/100*chh,sc=wPx/60,tx=flip?cw-x:x;
-    gs+='<g transform="translate('+tx.toFixed(1)+' '+y.toFixed(1)+') scale('+(flip?-sc:sc).toFixed(3)+' '+sc.toFixed(3)+')"'+(op<1?' opacity="'+op.toFixed(2)+'"':'')+'><g class="fi" style="animation-delay:'+(-Math.random()*.6).toFixed(2)+'s">'+inner(n++)+'</g></g>';};
-  { const wPx=chh*.045,wPct=wPx/cw*100;for(let x=-2;x<102;x+=wPct*.62)put(x,0,wPx,false,.8);}
+    LY[lyr]+='<g transform="translate('+tx.toFixed(1)+' '+y.toFixed(1)+') scale('+(flip?-sc:sc).toFixed(3)+' '+sc.toFixed(3)+')"'+(op<1?' opacity="'+op.toFixed(2)+'"':'')+'>'+inner(n++)+'</g>';};
+  { const wPx=chh*.045,wPct=wPx/cw*100;let q=0;for(let x=-2;x<102;x+=wPct*.62){lyr=q++%4;put(x,0,wPx,false,.8);}}
   for(let r=0;r<ROWS;r++){const t=r/(ROWS-1),wPx=chh*(.055+t*.12),wPct=wPx/cw*100,inn=(narrow?34:40)-t*(narrow?31:35),cols=Math.max(2,Math.ceil(inn/(wPct*.6))+1);
-    for(const left of [true,false])for(let k=0;k<cols;k++){const x=inn-wPct*(.6*k+.5)+(r%2?wPct*.3:0);if(x<-wPct*.7)continue;put(x,6+t*80,wPx,!left,t<.3?.85:1);}}
-  const cs=document.createElementNS('http://www.w3.org/2000/svg','svg');cs.setAttribute('class','crowd');cs.setAttribute('viewBox','0 0 '+cw+' '+chh);cs.setAttribute('preserveAspectRatio','none');cs.innerHTML=gs;cat.appendChild(cs);
-  cs.querySelectorAll('.cam').forEach(c=>cams.push(c));
+    for(const left of [true,false])for(let k=0;k<cols;k++){const x=inn-wPct*(.6*k+.5)+(r%2?wPct*.3:0);if(x<-wPct*.7)continue;lyr=(r%2)*2+(k%2);put(x,6+t*80,wPx,!left,t<.3?.85:1);}}
+  LY.forEach((g,i)=>{const cs=document.createElementNS('http://www.w3.org/2000/svg','svg');cs.setAttribute('class','crowd l'+i);cs.setAttribute('viewBox','0 0 '+cw+' '+chh);cs.setAttribute('preserveAspectRatio','none');cs.innerHTML=g;cat.appendChild(cs);cs.querySelectorAll('.cam').forEach(c=>cams.push(c));});
   const fl=document.createElement('div');fl.className='bigflash';cat.appendChild(fl);
   const flash=(n)=>{for(let k=0;k<(n||1);k++){const cam=pick(cams),r=cam.getBoundingClientRect(),cr=cat.getBoundingClientRect(),f=document.createElement('div');f.className='flash';
       f.style.left=(r.left-cr.left+r.width/2-20)+'px';f.style.top=(r.top-cr.top+r.height/2-20)+'px';cat.appendChild(f);setTimeout(()=>f.remove(),500);}
@@ -1592,19 +1606,20 @@ function cafeRush(){const DR=[['tea','Milk tea','#d9a066',4],['coffee','Coffee',
 /* 🧵 Sewing machine: hold to sew when the dotted seam is under the needle, let go over pins */
 function sewMachine(){let T=45,earn=0,combo=0,speed=90,x=0,holding=false,stitched=0,snaps=0,jam=0,messy=0;
   const COLS=['#f783ac','#4dabf7','#ffd43b','#69db7c','#9775fa'];let col=pick(COLS);
-  const s=cScreen('<h2>🧵 Sewing Machine</h2>'+hud()+'<p class="note">Hold the big button when the <b>dotted seam</b> is under the needle. Let go over <b>📍 pins</b>!</p><div class="machine"><svg id="fab" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid slice"><g id="strip"></g><g id="stitches"></g><path d="M300 0V96" stroke="#868e96" stroke-width="10"/><path id="needle" d="M300 60V120" stroke="#495057" stroke-width="4"/><rect x="250" y="0" width="100" height="40" rx="10" fill="#e64980" stroke="#4a3426" stroke-width="3"/></svg></div><button class="sewbtn" id="hold">HOLD TO SEW</button>');
+  const s=cScreen('<h2>🧵 Sewing Machine</h2>'+hud()+'<p class="note">Hold the big button when the <b>dotted seam</b> is under the needle. Let go over <b>📍 pins</b>!</p><div class="machine"><div class="fabw" id="fabw"><svg id="fab" viewBox="0 0 600 220"><g id="strip"></g><g id="stitches"></g></svg></div><svg class="ndl" viewBox="0 0 600 220"><path d="M300 0V96" stroke="#868e96" stroke-width="10"/><path id="needle" d="M300 60V120" stroke="#495057" stroke-width="4"/><rect x="250" y="0" width="100" height="40" rx="10" fill="#e64980" stroke="#4a3426" stroke-width="3"/></svg></div><button class="sewbtn" id="hold">HOLD TO SEW</button>');
   const host=s.querySelector('.cin'),strip=s.querySelector('#strip'),sts=s.querySelector('#stitches'),needle=s.querySelector('#needle');
   // course: alternating seam segments, gaps and pins
   const segs=[];let p=380;for(let i=0;i<60;i++){const r=Math.random();if(r<.62){const L=60+Math.random()*120;segs.push({t:'seam',a:p,b:p+L});p+=L+30+Math.random()*40;}else{segs.push({t:'pin',a:p,b:p+26});p+=60+Math.random()*40;}}
   const bg=['#ffe3ec','#e7f5ff','#fff3bf','#ebfbee','#f3f0ff'];
   strip.innerHTML='<rect x="0" y="40" width="'+(p+600)+'" height="160" fill="'+pick(bg)+'"/>'+[...Array(Math.ceil((p+600)/40))].map((_,i)=>'<circle cx="'+(i*40+20)+'" cy="'+(60+(i%3)*50)+'" r="4" fill="#fff" opacity=".7"/>').join('')+
     segs.map(g=>g.t==='seam'?'<path d="M'+g.a+' 120H'+g.b+'" stroke="#868e96" stroke-width="3" stroke-dasharray="8 6"/>':'<text x="'+g.a+'" y="132" font-size="28">📍</text>').join('');
+  const fab=s.querySelector('#fab'),fabw=s.querySelector('#fabw'),mach=s.querySelector('.machine');let sc=1;const size=()=>{sc=mach.clientHeight/220;fab.setAttribute('viewBox','0 0 '+(p+600)+' 220');fab.style.width=((p+600)*sc)+'px';fab.style.height=mach.clientHeight+'px';};size();
   const btn=s.querySelector('#hold');const on=e=>{e.preventDefault();holding=true;btn.classList.add('on');},off=()=>{holding=false;btn.classList.remove('on');};
   btn.addEventListener('pointerdown',on);btn.addEventListener('pointerup',off);btn.addEventListener('pointerleave',off);btn.addEventListener('pointercancel',off);
   const upd=()=>{TX(s.querySelector('#hT'),'⏱ '+Math.ceil(T));TX(s.querySelector('#hM'),'💰 '+earn);TX(s.querySelector('#hC'),'🔥 x'+Math.max(1,1+Math.floor(combo/20)));};
   let last=performance.now(),acc=0,t0=0,cool=0;
   const loop=now=>{if(!s.isConnected||!s.querySelector('#fab'))return;const dt=Math.min(.1,(now-last)/1000);last=now;T-=dt;t0+=dt;speed=90+t0*3;x+=speed*dt;cool-=dt;
-    strip.setAttribute('transform','translate('+(-x)+' 0)');sts.setAttribute('transform','translate('+(-x)+' 0)');
+    if(Math.abs(mach.clientHeight/220-sc)>.01)size();fabw.style.transform='translate3d('+(-x*sc).toFixed(1)+'px,0,0)';
     const at=x+300,g=segs.find(g=>at>=g.a&&at<=g.b);
     needle.setAttribute('d',holding?'M300 '+(60+Math.abs(Math.sin(now/40))*40)+'V'+(100+Math.abs(Math.sin(now/40))*24):'M300 60V96');
     jam-=dt;if(jam>0){needle.setAttribute('d','M300 60V96');s.querySelector('.machine').classList.add('jammed');}else s.querySelector('.machine').classList.remove('jammed');
@@ -1739,6 +1754,10 @@ const JOBGAMES={cash:['cafeRush','bobaCatch','ovenPop'],sew:['sewMachine','sewBu
 const JOBNAMES={cafeRush:'☕ Café Rush',bobaCatch:'🧋 Boba Catch',ovenPop:'🥐 Oven Pop',sewMachine:'🧵 Sewing Machine',sewButtons:'🔘 Button Fix',threadNeedle:'🪡 Thread the Needle',stockConveyor:'📦 Conveyor Belt',shoePairs:'👟 Shoe Pairs',boxStack:'📦 Box Stacker'};
 
 
+
+/* idle life: blink and glance now and then (cheap: only animates for a moment) */
+setInterval(()=>{const f=document.getElementById('fig');if(!f||document.hidden)return;f.classList.add('bl');setTimeout(()=>f.classList.remove('bl'),220);},4300);
+setInterval(()=>{const f=document.getElementById('fig');if(!f||document.hidden)return;f.classList.add('lk');setTimeout(()=>f.classList.remove('lk'),1850);},7000);
 setTimeout(()=>{if(!bootLinks())showModes();},50);
 window.__test={pop:()=>({on:POP.on,step:POP.step}),themes:()=>THEMES.length,tagCount:th=>ORDER.reduce((a,c)=>a+CAT[c].items.filter(i=>i.tags.includes(th)).length,0),state:()=>({look:JSON.parse(JSON.stringify(look)),theme:theme.id,running:running}),judge:()=>judge().map(x=>[x[2],x[3],x[4]]),runway:runway,wear:(c,id)=>wear(c,find(c,id)),tab:t=>{tab=t;renderTabs();renderItems();}};
 
