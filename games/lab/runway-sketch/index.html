@@ -297,6 +297,11 @@ body[data-pref="land"] .rot.l{display:none}
 #oppst{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:30;background:#fff;border:3px solid #f783ac;border-radius:20px;padding:4px 14px;font-weight:700;box-shadow:0 3px 0 #d6336c;white-space:nowrap;font-size:.95rem}
 .rcode{font-size:3.4rem;font-weight:900;letter-spacing:.35em;color:#d6336c;background:#fff0f6;border:4px dashed #f783ac;border-radius:18px;padding:6px 6px 6px .5em;margin:8px auto;display:inline-block}
 .dots{display:flex;gap:8px;justify-content:center;margin:10px}.dots i{width:14px;height:14px;border-radius:50%;background:#f783ac;animation:dotb 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}@keyframes dotb{50%{transform:translateY(-10px)}}
+.jd .pc{border-radius:12px;padding:5px 8px;margin-top:6px;text-align:left;border:2px solid}
+.jd .pc.p0{background:#f3f0ff;border-color:#7048e8}.jd .pc.p1{background:#fff4e6;border-color:#e8590c}
+.jd .pch{display:flex;align-items:center;gap:6px}.jd .pc .mini{width:30px;height:28px;border-radius:50%;overflow:hidden;background:#fff;border:2px solid;flex:none;display:block}.jd .pc .mini svg{width:100%;height:100%}
+.jd .pc.p0 .mini{border-color:#7048e8}.jd .pc.p1 .mini{border-color:#e8590c}.jd .pc .pn{font-weight:900;color:#fff;border-radius:999px;padding:0 9px;font-size:.85rem}.jd .pc.p0 .pn{background:#7048e8}.jd .pc.p1 .pn{background:#e8590c}
+.jd .pc .s{margin-left:auto;font-size:1rem}.jd .pc .r{font-size:.85rem!important;text-align:left!important;margin-top:2px}
 
 </style></head><body data-pref="any">
 <div class="app">
@@ -1238,7 +1243,7 @@ function show(E){running=true;POP.step=0;if(POP.on)popLevel(.26,.6);
   $('main').appendChild(R);say(two?'Face-off time!':'Runway time!');showRunway(R);
   const jd=R.querySelector('#jd'),nJ=JS[0].length;
   for(let k=0;k<nJ;k++){const j=JS[0][k];jd.insertAdjacentHTML('beforeend','<div class="jd"><div class="f">'+judgeFace(k)+'</div><b>'+j[1]+' · '+j[2]+'</b>'+
-    E.map((e,i)=>{const x=JS[i][k];return (two?'<div class="who">'+zh(e.name)+'</div>':'')+'<div class="s">'+'★'.repeat(x[3])+'☆'.repeat(5-x[3])+'</div><div class="r plain">'+esc(x[6])+'</div>';}).join('<hr>')+'</div>');}
+    E.map((e,i)=>{const x=JS[i][k];return two?'<div class="pc p'+i+'"><div class="pch"><span class="mini">'+headView(figureSVG(e.look))+'</span><span class="pn">'+esc(e.name)+'</span><span class="s">'+'★'.repeat(x[3])+'☆'.repeat(5-x[3])+'</span></div><div class="r plain">'+esc(x[6])+'</div></div>':'<div class="s">'+'★'.repeat(x[3])+'☆'.repeat(5-x[3])+'</div><div class="r plain">'+esc(x[6])+'</div>';}).join('')+'</div>');}
   [...jd.children].forEach((c,i)=>setTimeout(()=>{c.classList.add('show');tone(660+i*120,.15,'triangle',.12);},WALK*1000+i*700));
   const tot=JS.map(j=>j.reduce((a,x)=>a+x[3],0)),max=nJ*5;
   setTimeout(()=>{let head='';
