@@ -294,6 +294,9 @@ body[data-pref="land"] .rot.l{display:none}
 .play,.belt,.machine,.ovens,.counter,.pairs{contain:layout paint}
 .belt{animation:none;background:#868e96}.belt:before{content:'';position:absolute;inset:0 -60px 0 0;background:repeating-linear-gradient(90deg,#868e96 0 30px,#adb5bd 30px 60px);animation:beltmv2 1s linear infinite;will-change:transform}@keyframes beltmv2{from{transform:translateX(-60px)}to{transform:translateX(0)}}
 .oven.gold span{animation:none}
+#oppst{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:30;background:#fff;border:3px solid #f783ac;border-radius:20px;padding:4px 14px;font-weight:700;box-shadow:0 3px 0 #d6336c;white-space:nowrap;font-size:.95rem}
+.rcode{font-size:3.4rem;font-weight:900;letter-spacing:.35em;color:#d6336c;background:#fff0f6;border:4px dashed #f783ac;border-radius:18px;padding:6px 6px 6px .5em;margin:8px auto;display:inline-block}
+.dots{display:flex;gap:8px;justify-content:center;margin:10px}.dots i{width:14px;height:14px;border-radius:50%;background:#f783ac;animation:dotb 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}@keyframes dotb{50%{transform:translateY(-10px)}}
 
 </style></head><body data-pref="any">
 <div class="app">
@@ -759,9 +762,9 @@ function newTheme(){let seen=[];try{seen=JSON.parse(localStorage.getItem('rs_see
 function showTime(){$('timer').textContent=timerOn?'⏱ '+Math.floor(timeLeft/60)+':'+pad2(timeLeft%60):'⏱ '+'—';$('timer').style.background=timerOn&&timeLeft<=20?'#ffe3e3':'#fff';}
 const pad2=n=>String(n).padStart(2,'0');
 tick=setInterval(()=>{if(!timerOn||running||DLG)return;timeLeft=Math.max(0,timeLeft-1);showTime();if(timeLeft===20){tone(880,.1,'square',.05);toast('⏱ 20 seconds left!');}
-  if(timeLeft===0){toast('⏱ '+zh('Time’s up! To the runway!'));runway();}},1000);
+  if(timeLeft===0){toast('⏱ '+zh('Time’s up! To the runway!'));if(MODE==='vs'&&VS.kind==='room'){roomSubmit(true);return;}runway();}},1000);
 $('tmBtn').onclick=()=>{timerOn=!timerOn;$('tmBtn').innerHTML='⏱ '+zh(timerOn?'Timer on':'Timer off');showTime();};
-$('newTheme').onclick=()=>{audio();if(MODE==='career'){toast(zh('Job themes can’t be changed'));return;}if(MODE==='vs'&&(VS.ch||VS.stage===1)){toast(zh('Can’t change the theme in a face-off'));return;}startRound();};
+$('newTheme').onclick=()=>{audio();if(MODE==='vs'&&VS.kind==='room'){toast('Both players share the same theme');return;}if(MODE==='career'){toast(zh('Job themes can’t be changed'));return;}if(MODE==='vs'&&(VS.ch||VS.stage===1)){toast(zh('Can’t change the theme in a face-off'));return;}startRound();};
 $('modeBtn').onclick=()=>{audio();if(running)return;if(MODE==='career')careerHub();else showModes();};
 /* ---------- judging: three judge girls, each explains her score ---------- */
 function worn(){const w=[];if(look.dress)w.push(['dress',look.dress]);else{if(look.top)w.push(['top',look.top]);if(look.bottom)w.push(['bottom',look.bottom]);}
@@ -1130,6 +1133,59 @@ function setTheme(id){theme=THEMES.find(t=>t.id===id)||theme;$('thZh').innerHTML
 function setBadge(n){$('badge').innerHTML=zh(n)||n;}
 function startRound(keepTheme){fresh();if(!keepTheme)newTheme();timeLeft=120;showTime();if(MODE==='budget'){BUDGET=makeBudget();toast('🪙 Budget: '+BUDGET+' coins',2200);}
   if(MODE==='vs'&&VS.kind==='cpu')VS.opp={name:'Stella',look:genCPU()};renderFig();renderItems();updBudget();setBadge(ME);}
+/* ---------- live room: one makes a room, the other joins; same theme, same timer, walk together ---------- */
+const ROOM={conn:null,peer:null,host:false,code:'',opp:'Friend',mine:null,their:null,oppReady:false,wait:null};
+const rCode=()=>{const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';return [...Array(4)].map(()=>A[Math.floor(Math.random()*A.length)]).join('');};
+const LOCALNET=/localnet/.test(location.search);
+function loadPeer(){return new Promise((ok,no)=>{if(LOCALNET||window.Peer)return ok();const s=document.createElement('script');s.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';s.onload=ok;s.onerror=()=>no(new Error('net'));document.head.appendChild(s);});}
+/* tiny transport: PeerJS on the web; BroadcastChannel when testing on one computer */
+function mkConn(send,close){const h={data:[],close:[]};return {send,close,on:(e,f)=>h[e].push(f),_emit:(e,v)=>h[e].forEach(f=>f(v))};}
+function netHost(code,onConn,onErr){if(LOCALNET){const bc=new BroadcastChannel('rs-'+code);let c=null;bc.onmessage=e=>{const m=e.data;if(m.to!=='host')return;if(!c){c=mkConn(o=>bc.postMessage({to:'guest',o}),()=>bc.close());onConn(c);}if(m.bye)c._emit('close');else c._emit('data',m.o);};return {destroy:()=>bc.close()};}
+  const p=new Peer('runwaysk-'+code);p.on('connection',k=>{const c=mkConn(o=>k.send(o),()=>k.close());k.on('data',d=>c._emit('data',d));k.on('close',()=>c._emit('close'));k.on('open',()=>onConn(c));});p.on('error',e=>onErr(e));return p;}
+function netJoin(code,onOpen,onErr){if(LOCALNET){const bc=new BroadcastChannel('rs-'+code);const c=mkConn(o=>bc.postMessage({to:'host',o}),()=>{bc.postMessage({to:'host',bye:1});bc.close();});bc.onmessage=e=>{if(e.data.to==='guest')c._emit('data',e.data.o);};setTimeout(()=>onOpen(c),50);return {destroy:()=>bc.close()};}
+  const p=new Peer();p.on('open',()=>{const k=p.connect('runwaysk-'+code,{reliable:true});const c=mkConn(o=>k.send(o),()=>k.close());k.on('open',()=>onOpen(c));k.on('data',d=>c._emit('data',d));k.on('close',()=>c._emit('close'));});p.on('error',e=>onErr(e));return p;}
+function roomLeave(){try{ROOM.conn&&ROOM.conn.send({t:'bye'});}catch(e){}try{ROOM.conn&&ROOM.conn.close();}catch(e){}try{ROOM.peer&&ROOM.peer.destroy();}catch(e){}ROOM.conn=null;ROOM.peer=null;if(ROOM.wait){ROOM.wait.remove();ROOM.wait=null;}const b=document.getElementById('oppst');if(b)b.remove();}
+function roomMenu(pre){const nm=(()=>{try{return localStorage.getItem('rs_name')||'Nora';}catch(e){return 'Nora';}})();
+  const m=modal2('<h2>🏠 Play with a friend</h2><p>Each of you plays on your own device. Same theme, same timer, then you walk the runway together!</p><p><b>Your name</b></p><input id="rn" maxlength="10" value="'+esc(nm)+'" autocomplete="off">'+
+    '<div class="modes"><button class="mode" id="rMake"><span class="e">✨</span><b>Make a room</b><span>Get a code for your friend</span></button><button class="mode" id="rJoin"><span class="e">🚪</span><b>Join a room</b><span>Type your friend’s code</span></button></div>'+
+    '<div id="rj" style="display:'+(pre?'block':'none')+'"><p><b>Room code</b></p><input id="rc" maxlength="4" value="'+esc(pre||'')+'" autocomplete="off" style="text-transform:uppercase;font-size:2rem;letter-spacing:.4em;text-align:center;max-width:220px"><div class="row"><button class="btn pink" id="rGo">Join ▶</button></div></div><div class="row"><button class="btn ghost" id="rX">Back</button></div>');
+  const nameOf=()=>{const n=(m.querySelector('#rn').value.trim()||'Nora').slice(0,10);try{localStorage.setItem('rs_name',n);}catch(e){}return n;};
+  m.querySelector('#rX').onclick=()=>{m.remove();roomLeave();history.replaceState(null,'',baseURL());pickVS();};
+  m.querySelector('#rMake').onclick=()=>{const n=nameOf();m.remove();roomCreate(n);};
+  m.querySelector('#rJoin').onclick=()=>{m.querySelector('#rj').style.display='block';m.querySelector('#rc').focus();};
+  m.querySelector('#rGo').onclick=()=>{const c=m.querySelector('#rc').value.trim().toUpperCase();if(c.length!==4){toast('Type the 4-letter code');return;}const n=nameOf();m.remove();roomJoin(c,n);};}
+function wire(c){ROOM.conn=c;c.on('data',roomMsg);c.on('close',()=>{if(!ROOM.conn)return;ROOM.conn=null;sfx.boing();toast('😢 '+ROOM.opp+' left the room',3000);});}
+async function roomCreate(name){ME=name;ROOM.host=true;ROOM.code=rCode();const url=baseURL()+'#room='+ROOM.code;
+  const m=modal2('<h2>✨ Your room</h2><p>Tell your friend this code, or send the link:</p><div class="rcode">'+ROOM.code+'</div><div class="row"><button class="btn pink" id="rShare">🔗 Send link</button><button class="btn ghost" id="rCancel">Cancel</button></div><p id="rst" class="note">⏳ Waiting for your friend to join…</p><div id="rgo"></div>');
+  m.querySelector('#rCancel').onclick=()=>{m.remove();roomLeave();pickVS();};
+  m.querySelector('#rShare').onclick=async()=>{try{await navigator.share({title:'Runway Sketchbook',text:name+' made a fashion room! Code: '+ROOM.code,url});}catch(e){try{await navigator.clipboard.writeText(url);toast('✅ Link copied');}catch(e2){prompt('Copy this link',url);}}};
+  try{await loadPeer();}catch(e){m.querySelector('#rst').textContent='⚠️ Can’t reach the internet. Check Wi-Fi and try again.';return;}
+  ROOM.peer=netHost(ROOM.code,c=>{if(ROOM.conn){c.send({t:'full'});return;}wire(c);},e=>{m.querySelector('#rst').textContent='⚠️ '+(String(e.type||e).includes('unavailable-id')?'That code is busy. Cancel and try again.':'Connection problem. Cancel and try again.');});
+  ROOM.onHi=(n)=>{ROOM.opp=n;sfx.win();m.querySelector('#rst').innerHTML='🎉 <b>'+esc(n)+'</b> joined!';m.querySelector('#rgo').innerHTML='<div class="row"><button class="btn pink" id="rStart">Start dressing ▶</button></div>';m.querySelector('#rStart').onclick=()=>{m.remove();roomGo();};say(n+' joined your room!');};}
+async function roomJoin(code,name){ME=name;ROOM.host=false;ROOM.code=code;const m=modal2('<h2>🚪 Joining room '+esc(code)+'</h2><p id="rst" class="note">⏳ Connecting…</p><div class="row"><button class="btn ghost" id="rCancel">Cancel</button></div>');
+  m.querySelector('#rCancel').onclick=()=>{m.remove();roomLeave();history.replaceState(null,'',baseURL());pickVS();};
+  try{await loadPeer();}catch(e){m.querySelector('#rst').textContent='⚠️ Can’t reach the internet. Check Wi-Fi and try again.';return;}
+  const to=setTimeout(()=>{if(!ROOM.conn)m.querySelector('#rst').textContent='⚠️ Can’t find room '+code+'. Check the code with your friend.';},9000);
+  ROOM.peer=netJoin(code,c=>{clearTimeout(to);wire(c);c.send({t:'hi',n:name});m.querySelector('#rst').innerHTML='✅ Connected! Waiting for the room owner to start…';ROOM.joinModal=m;},e=>{clearTimeout(to);m.querySelector('#rst').textContent='⚠️ '+(String(e.type||e).includes('peer-unavailable')?'Can’t find room '+code+'. Check the code with your friend.':'Connection problem. Try again.');});}
+function roomGo(){newTheme();ROOM.conn&&ROOM.conn.send({t:'go',th:theme.id,n:ME});roomRound(theme.id);}
+function roomRound(th){document.querySelectorAll('.modal').forEach(x=>x.remove());if(ROOM.wait){ROOM.wait.remove();ROOM.wait=null;}
+  MODE='vs';VS.kind='room';ROOM.mine=null;ROOM.their=null;ROOM.oppReady=false;fresh();setTheme(th);timeLeft=120;timerOn=true;showTime();renderFig();renderItems();setBadge(ME);
+  let b=document.getElementById('oppst');if(!b){b=document.createElement('div');b.id='oppst';document.body.appendChild(b);}b.innerHTML='👀 <b>'+esc(ROOM.opp)+'</b> is dressing… no peeking!';
+  sfx.win();say('Ready, set, dress! The theme is '+theme.en);}
+function roomSubmit(force){if(ROOM.mine)return;const me={name:ME,look:clone(look)};ROOM.mine=me;ROOM.conn&&ROOM.conn.send({t:'look',me});
+  if(ROOM.host&&ROOM.their)return roomShow();
+  ROOM.wait=modal2('<h2>✅ You’re ready!</h2><p>Waiting for <b>'+esc(ROOM.opp)+'</b> to finish…</p><p class="note">'+(ROOM.oppReady?'They’re ready too!':'The timer keeps going for them.')+'</p><div class="dots"><i></i><i></i><i></i></div>');}
+function roomShow(){if(!ROOM.mine||!ROOM.their)return;const E=ROOM.host?[ROOM.mine,ROOM.their]:[ROOM.their,ROOM.mine];if(ROOM.host)ROOM.conn&&ROOM.conn.send({t:'show',E});
+  if(ROOM.wait){ROOM.wait.remove();ROOM.wait=null;}const b=document.getElementById('oppst');if(b)b.remove();show(E);}
+function roomMsg(d){if(!d||!d.t)return;
+  if(d.t==='hi'){ROOM.opp=String(d.n||'Friend').slice(0,10);ROOM.onHi&&ROOM.onHi(ROOM.opp);}
+  else if(d.t==='full'){toast('That room is already full',2500);}
+  else if(d.t==='go'){ROOM.opp=String(d.n||ROOM.opp).slice(0,10);if(ROOM.joinModal){ROOM.joinModal.remove();ROOM.joinModal=null;}if(running){const r=document.querySelector('.runway');if(r)r.remove();running=false;}roomRound(d.th);}
+  else if(d.t==='look'){ROOM.their=d.me;ROOM.oppReady=true;const b=document.getElementById('oppst');if(b)b.innerHTML='✅ <b>'+esc(ROOM.opp)+'</b> is ready!';tone(1320,.08,'triangle',.08);
+    if(ROOM.wait){const n=ROOM.wait.querySelector('.note');if(n)n.textContent='They’re ready too!';}if(ROOM.host&&ROOM.mine)roomShow();}
+  else if(d.t==='show'){if(!ROOM.mine)ROOM.mine={name:ME,look:clone(look)};if(ROOM.wait){ROOM.wait.remove();ROOM.wait=null;}const b=document.getElementById('oppst');if(b)b.remove();show(d.E);}
+  else if(d.t==='bye'){const c=ROOM.conn;ROOM.conn=null;try{c&&c.close();}catch(e){}sfx.boing();toast('😢 '+ROOM.opp+' left the room',3000);}}
+
 /* ---------- mode menu ---------- */
 function modal2(html){const m=document.createElement('div');m.className='modal';m.innerHTML='<div class="mm">'+html+'</div>';document.body.appendChild(m);return m;}
 function showModes(){const m=modal2('<h2>Choose a mode</h2><div class="modes">'+
@@ -1138,14 +1194,15 @@ function showModes(){const m=modal2('<h2>Choose a mode</h2><div class="modes">'+
   m.querySelector('#albM').onclick=()=>{m.remove();showAlbum();const w=setInterval(()=>{if(!document.querySelector('.modal')){clearInterval(w);showModes();}},300);};
   m.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();const id=b.dataset.m;m.remove();if(id==='career')return careerHub();if(id==='vs')pickVS();else{MODE=id;VS.kind=null;ME='Nora';startRound();say(id==='budget'?'Budget challenge!':'Theme dress-up!');}});}
 function pickVS(){const m=modal2('<h2>Fashion Face-off</h2><div class="modes">'+
-  [['cpu','🤖','Vs computer','Compete with Stella'],['link','🔗','Vs a friend','Send a link to a friend'],['local','📱','Same device','Take turns, then compete']].map(([id,e,t,d])=>'<button class="mode" data-k="'+id+'"><span class="e">'+e+'</span><b>'+t+'</b><span>'+d+'</span></button>').join('')+'</div>');
-  m.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();m.remove();MODE='vs';VS.kind=b.dataset.k;VS.stage=0;VS.p1=null;VS.ch=null;ME='Nora';startRound();
+  [['room','🏠','Play with a friend','Make a room or join one'],['cpu','🤖','Vs computer','Compete with Stella'],['local','📱','Same device','Take turns, then compete'],['link','🔗','Challenge link','Send your outfit; they play later']].map(([id,e,t,d])=>'<button class="mode" data-k="'+id+'"><span class="e">'+e+'</span><b>'+t+'</b><span>'+d+'</span></button>').join('')+'</div>');
+  m.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{audio();m.remove();if(b.dataset.k==='room')return roomMenu();MODE='vs';VS.kind=b.dataset.k;VS.stage=0;VS.p1=null;VS.ch=null;ME='Nora';startRound();
     say(VS.kind==='cpu'?'Compete with Stella!':VS.kind==='local'?'Player one, dress up first!':'When you’re done, send the link to your friend!');});}
 /* ---------- ready: check the outfit, then the show ---------- */
 function ready(){if(running)return;audio();
   const need=!look.dress&&!look.top&&!look.bottom?['top','👗','Pick a dress, or a top and a bottom!']:!look.dress&&!look.top?['top','👚','You still need a top! (or a dress)']:!look.dress&&!look.bottom?['bottom','👖','You still need a bottom! (or a dress)']:!look.shoes?['shoes','👟','Don’t forget shoes!']:null;
   if(need){sfx.boing();toast(need[1]+' '+zh(need[2]),2600);say(need[2]);tab=need[0];renderTabs();renderItems();const t=document.querySelector('.tab[data-c="'+need[0]+'"]');if(t){t.classList.add('need');t.scrollIntoView({block:'center',behavior:'smooth'});}return;}
   if(MODE==='budget'&&spentOf(look)>BUDGET){sfx.boing();const m='Over budget! Take something off first.';toast('🪙 '+zh(m),2600);say(m);return;}
+  if(MODE==='vs'&&VS.kind==='room')return roomSubmit();
   const me={name:ME,look:clone(look)};
   if(MODE==='career'&&GIG&&GIG.opp)return show([me,GIG.opp]);
   if(MODE==='vs'&&VS.kind==='cpu')return show([me,VS.opp]);
@@ -1199,11 +1256,12 @@ function show(E){running=true;POP.step=0;if(POP.on)popLevel(.26,.6);
     $('snapR').onclick=()=>snap(E,tot,max);$('albR').onclick=showAlbum;
     const close=()=>{R.remove();running=false;POP.step=0;if(POP.on)popLevel(POP.vol,.6);};
     if($('back2'))$('back2').onclick=async()=>{try{await navigator.share({title:'Runway Sketchbook',url:R._url});}catch(e){try{await navigator.clipboard.writeText(R._url);toast('✅ '+zh('Copied'));}catch(e2){prompt('',R._url);}}};
-    $('again').onclick=()=>{close();if(MODE==='vs'&&VS.kind==='link'&&VS.ch){VS.ch=null;history.replaceState(null,'',baseURL());ME='Nora';}VS.stage=0;VS.p1=null;if(MODE==='vs'&&VS.kind==='local')ME='Nora';startRound();};
+    $('again').onclick=()=>{close();if(MODE==='vs'&&VS.kind==='room'){if(ROOM.host){if(ROOM.conn)roomGo();else toast('Your friend left the room',2500);}else{ROOM.wait=modal2('<h2>⏳ Next round</h2><p>Waiting for <b>'+esc(ROOM.opp)+'</b> to start…</p><div class="dots"><i></i><i></i><i></i></div>');}return;}if(MODE==='vs'&&VS.kind==='link'&&VS.ch){VS.ch=null;history.replaceState(null,'',baseURL());ME='Nora';}VS.stage=0;VS.p1=null;if(MODE==='vs'&&VS.kind==='local')ME='Nora';startRound();};
     if($('keep'))$('keep').onclick=()=>{close();timeLeft=Math.max(timeLeft,60);showTime();};
-    $('modeB').onclick=()=>{close();history.replaceState(null,'',baseURL());showModes();};},WALK*1000+nJ*700);}
+    $('modeB').onclick=()=>{close();if(VS.kind==='room')roomLeave();history.replaceState(null,'',baseURL());showModes();};},WALK*1000+nJ*700);}
 /* ---------- opening a friend's link ---------- */
 function bootLinks(){const h=location.hash;
+  if(h.startsWith('#room=')){const c=h.slice(6,10).toUpperCase();setTimeout(()=>roomMenu(c),100);return true;}
   if(h.startsWith('#c=')){const d=dec(h.slice(3));if(!d||!d.l)return false;MODE='vs';VS.kind='link';VS.ch={name:String(d.n||'Friend').slice(0,8),look:d.l};setTheme(d.t);fresh();renderFig();renderItems();
     const m=modal2('<h2>⚔️ '+esc(VS.ch.name)+' invites you to a face-off!'+'</h2><p>Theme: '+theme.en+' '+[...new Intl.Segmenter().segment(TPICS[theme.id])].map(x=>x.segment).join('')+'</p><p>'+zh('Write your name:')+'</p><input id="fn" maxlength="8" placeholder="Friend" autocomplete="off"><div class="row"><button class="btn pink" id="fgo">'+zh('Start')+' ▶</button></div>');
     m.querySelector('#fgo').onclick=()=>{ME=(m.querySelector('#fn').value.trim()||'Friend').slice(0,8);m.remove();setBadge(ME);timeLeft=120;showTime();say(VS.ch.name+' invites you to a face-off! The theme is '+theme.en);};return true;}
