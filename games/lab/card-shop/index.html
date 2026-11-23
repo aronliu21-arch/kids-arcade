@@ -176,7 +176,7 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 .vs.out{animation:vso .35s forwards}
 @keyframes vsl{from{transform:translateX(-100%)}}@keyframes vsr{from{transform:translateX(100%)}}@keyframes vsb{from{transform:translate(-50%,-50%) scale(4);opacity:0}to{transform:translate(-50%,-50%) scale(1)}}@keyframes vso{to{opacity:0}}
 .banner{position:fixed;inset:0;z-index:69;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none;overflow:hidden}
-.banner .rays{position:absolute;width:220vmax;height:220vmax;left:50%;top:50%;margin:-110vmax 0 0 -110vmax;background:repeating-conic-gradient(rgba(255,212,59,.5) 0 8deg,transparent 8deg 18deg);animation:spin 10s linear infinite}
+.banner .rays{pointer-events:none;position:absolute;width:220vmax;height:220vmax;left:50%;top:50%;margin:-110vmax 0 0 -110vmax;background:repeating-conic-gradient(rgba(255,212,59,.5) 0 8deg,transparent 8deg 18deg);animation:spin 10s linear infinite}
 .banner h1{position:relative;margin:0;font-size:clamp(3rem,13vw,7rem);font-style:italic;color:#ffd43b;text-shadow:5px 5px 0 #1b1f3b,-3px -3px 0 #1b1f3b,3px -3px 0 #1b1f3b,-3px 3px 0 #1b1f3b;animation:titlepop .6s cubic-bezier(.2,1.6,.4,1) both}
 .banner.lose .rays{background:repeating-conic-gradient(rgba(116,192,252,.4) 0 8deg,transparent 8deg 18deg)}.banner.lose h1{color:#fff;font-size:clamp(2.2rem,9vw,5rem)}
 .banner.out{animation:vso .5s forwards}
@@ -184,7 +184,7 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 .enpool.pulse{animation:pls .5s}@keyframes pls{40%{transform:scale(1.25);color:#f08c00}}
 /* pack */
 .stage{position:relative;min-height:clamp(330px,62vh,560px);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 50% 45%,#364fc7,#1b1f3b 70%);border:4px solid var(--ink);padding:10px}
-.stage .rays{position:absolute;width:300%;height:300%;left:-100%;top:-100%;background:repeating-conic-gradient(rgba(255,255,255,.13) 0 7deg,transparent 7deg 16deg);animation:spin 18s linear infinite;opacity:.5;transition:opacity .4s}
+.stage .row{position:relative;z-index:2}.stage .rays{pointer-events:none;position:absolute;width:300%;height:300%;left:-100%;top:-100%;background:repeating-conic-gradient(rgba(255,255,255,.13) 0 7deg,transparent 7deg 16deg);animation:spin 18s linear infinite;opacity:.5;transition:opacity .4s}
 .stage.boom .rays{opacity:1;background:repeating-conic-gradient(var(--glow,rgba(255,212,59,.45)) 0 7deg,transparent 7deg 16deg);animation-duration:6s}
 .stage h2{position:relative;color:#fff;margin:0 0 6px;text-shadow:2px 2px 0 #1b1f3b;text-align:center}
 .stage p{position:relative;color:#fff;font-weight:800;margin:6px 0;text-align:center}
@@ -1028,7 +1028,7 @@ function openPack(free){if(free){if(!(S.freePacks>0))return hub();S.freePacks--;
    if(last&&!RM){f.classList.add('tense');$('pm').textContent='The special card… 🥁';drumroll(1400);setTimeout(reveal,1500);}
    else if(rk>=1&&!quick){f.classList.add('wob');riser(450);setTimeout(reveal,500);}else reveal();});
   pk.querySelectorAll('.flip').forEach(f=>f.onclick=()=>{audio();flipOne(f);});
-  $('fa').onclick=async()=>{$('fa').remove();const fs=[...pk.querySelectorAll('.flip')];for(const f of fs){const c=cards[+f.dataset.i];await flipOne(f,!f.classList.contains('last')&&RK[c.r]<1);await new Promise(r=>setTimeout(r,250));}};
+  $('fa').onclick=async()=>{$('fa').remove();const fs=[...pk.querySelectorAll('.flip')];for(const f of fs){const c=cards[+f.dataset.i];await flipOne(f,!f.classList.contains('last')&&RK[c.r]<2);await new Promise(r=>setTimeout(r,250));}};
   function allDone(){const nn=cards.filter(isNew).length;setTimeout(()=>{$('pm').innerHTML=`All 4 cards went into your binder! ${nn?`<b style="color:#69db7c">${nn} NEW</b>`:''}`;const fa=$('fa');if(fa)fa.remove();
    if(S.freePacks>0){$('pdone').innerHTML=`<button class="btn gold" id="again">Rip the next free pack ▶ (${S.freePacks} left)</button>`;$('again').onclick=()=>openPack(true);}
    else{$('pdone').innerHTML=(free?'<button class="btn green" id="hm">📒 All done! Go to town ▶</button>':'<button class="btn gold" id="again">Another pack ($2.00)</button><button class="btn ghost" id="hm">🏠 Home</button>');const ag=$('again');if(ag)ag.onclick=()=>{if(S.cents<200){sfx.bad();toast('You need $2.00');return;}S.cents-=200;save();openPack();};$('hm').onclick=()=>hub();}},500);}}}
