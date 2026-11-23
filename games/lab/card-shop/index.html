@@ -72,6 +72,7 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px 10px}
 @media (max-width:420px){.cgrid{grid-template-columns:repeat(3,1fr);gap:10px 6px}}
 .pickc{border:none;background:none;padding:0;position:relative;border-radius:8px}
+.x2tag{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);z-index:3;background:#2f9e44;color:#fff;border:2px solid var(--ink);border-radius:999px;padding:0 7px;font-weight:900;font-size:.8rem;white-space:nowrap}
 .pickc.sel{outline:5px solid var(--blue);outline-offset:2px}
 .pickc.sel::before{content:"✓";position:absolute;z-index:3;left:-6px;top:-8px;background:var(--blue);color:#fff;border:3px solid var(--ink);border-radius:50%;width:30px;height:30px;display:grid;place-items:center;font-weight:900}
 .ghostc{opacity:.35;filter:grayscale(1)}
@@ -136,7 +137,9 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 .slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:60px}
 .slots .s{width:clamp(56px,15vw,110px);aspect-ratio:180/252;border:3px dashed var(--ink);border-radius:8px;display:grid;place-items:center;font-weight:900;color:var(--muted);background:#fff}
 .sortc{width:clamp(80px,17vw,140px)}
-.sortc.used{visibility:hidden;pointer-events:none}.sortc.hint{outline:5px solid var(--gold);outline-offset:2px;border-radius:8px}
+.sortc{display:flex;flex-direction:column;align-items:center;gap:4px}.sbadge{background:#fff;border:3px solid var(--ink);border-radius:10px;padding:2px 8px;font-weight:900;font-size:clamp(1rem,3.6vw,1.3rem);white-space:nowrap;color:var(--ink)}
+.slots .s{position:relative}.sbadge.sm{position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);font-size:.8rem;padding:0 5px;border-width:2px}
+.slots{margin-bottom:14px}.sortc.used{visibility:hidden;pointer-events:none}.sortc.hint{outline:5px solid var(--gold);outline-offset:2px;border-radius:8px}
 .tip{background:#e6fcf5;border:3px solid #0ca678;border-radius:14px;padding:6px 10px;font-weight:700;margin:6px 0}
 .big{font-size:3rem;line-height:1}
 .reveal{position:fixed;inset:0;z-index:70;background:#0b1026;display:flex;flex-direction:column;align-items:center;justify-content:safe center;overflow-y:auto;gap:10px;color:#fff;overflow:hidden;text-align:center;padding:12px}
@@ -232,6 +235,7 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 .ub{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;box-shadow:0 4px 0 var(--ink)}
 .ub .e{font-size:2rem}.ub small{color:var(--muted);font-weight:700}.ub.own{background:#ebfbee;box-shadow:none}
 @media (max-width:420px){.mshelf{gap:6px;padding:6px}.mslot .btn.small{font-size:.75rem;padding:2px 6px}}
+.w{cursor:pointer;border-radius:5px;transition:background .15s}.w:hover{background:rgba(255,224,102,.5)}.w.lit{background:#ffe066;box-shadow:0 0 0 2px #ffe066}
 </style></head><body>
 <div class="app">
   <div class="top"><a href="../../../#tester" aria-label="Back to arcade">←</a><div class="ttl">🃏 Lucas’s Card Shop<span class="tag">sample</span></div><button class="ico" id="homeb" aria-label="Home" style="display:none">🏠</button><span class="pill" id="wal">💵 $0.00</span><span class="pill" id="str">⭐ 0</span><button class="ico" id="snd" aria-label="Sound">🔊</button></div>
@@ -723,13 +727,13 @@ let UID=0;
 function cardSVG(c){const t=T[c.type],u='k'+(++UID),wt=WEAK[c.type],ab=abil(c),boss=c.r==='legend'||c.r==='promo',st=stage(c),ev=EVO[c.id]?byId(EVO[c.id]):null;
  const frame={common:'#adb5bd',rare:'#ced4da',holo:`url(#${u}s)`,legend:`url(#${u}o)`,promo:`url(#${u}r)`}[c.r];
  const cost=(n,x,y)=>Array.from({length:n},(_,i)=>ticon(c.type,x+i*11,y,4.8)).join('');
- const nameX=st.length*4.6+21,nameFs=Math.min(14,(112-nameX)/(c.name.length*.62));
+ const nameX=st.length*4.6+21,nameFs=Math.min(14,(108-nameX)/(c.name.length*.68));
  const retreat=c.hp<=70?1:c.hp<=100?2:3;
  let panelY=ab?126:134,body='';
  if(ab){body+=`<rect x="14" y="${panelY+4}" width="30" height="10" rx="3" fill="#e03131" stroke="#fff" stroke-width=".8"/><text x="29" y="${panelY+11.5}" font-size="7" font-weight="900" fill="#fff" text-anchor="middle" font-style="italic">Ability</text>
   <text x="48" y="${panelY+12.5}" font-size="10" font-weight="900" fill="#c92a2a">${ab.n}</text>
   <text x="15" y="${panelY+22}" font-size="6.4" font-weight="700" fill="${O}">${ab.t[0]}</text><text x="15" y="${panelY+29}" font-size="6.4" font-weight="700" fill="${O}">${ab.t[1]}</text>`;panelY+=34;}
- c.atk.forEach((a,i)=>{const y=panelY+12+i*(ab?24:30),x=16+a.c*11+2,avail=166-x-(a.d>=100?22:16),fs=Math.min(11.5,avail/(a.n.length*.64));
+ c.atk.forEach((a,i)=>{const y=panelY+12+i*(ab?24:30),x=16+a.c*11+2,avail=166-x-(a.d>=100?30:22),fs=Math.min(11.5,avail/(a.n.length*.68));
   body+=`${cost(a.c,18,y-4)}<text x="${x}" y="${y}" font-size="${fs.toFixed(1)}" font-weight="900" fill="${O}">${a.n}</text><text x="164" y="${y+1}" font-size="14" font-weight="900" fill="${O}" text-anchor="end">${a.d}</text>`;});
  return `<svg viewBox="0 0 180 252" xmlns="http://www.w3.org/2000/svg" font-family="Arial Rounded MT Bold,ui-rounded,system-ui,sans-serif"><defs>
 <linearGradient id="${u}s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8f9fa"/><stop offset=".5" stop-color="#adb5bd"/><stop offset="1" stop-color="#e9ecef"/></linearGradient>
@@ -758,7 +762,7 @@ ${ev?`<text x="${st.length*4.6+22}" y="31" font-size="5.8" font-weight="800" fon
 <text x="14" y="225.5" font-size="5.8" font-weight="800" fill="${O}">weakness</text>${ticon(wt,50,223,3.6)}<text x="55" y="225.8" font-size="6.5" font-weight="900" fill="${O}">×2</text>
 <text x="72" y="225.5" font-size="5.8" font-weight="800" fill="${O}">resistance</text><text x="114" y="225.5" font-size="5.8" fill="${O}">—</text>
 <text x="128" y="225.5" font-size="5.8" font-weight="800" fill="${O}">retreat</text>${Array.from({length:retreat},(_,i)=>`<circle cx="${153+i*6}" cy="223" r="2.3" fill="#fff" stroke="${O}" stroke-width=".8"/>`).join('')}
-${boss?`<rect x="20" y="231" width="140" height="12" rx="6" fill="url(#${u}o)" stroke="${O}" stroke-width=".8"/><text x="90" y="239.3" font-size="6.3" font-weight="900" fill="${O}" text-anchor="middle" font-style="italic">★ BOSS card · super strong! ★</text>`:
+${boss?`<text x="12" y="240" font-size="5.5" font-weight="900" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke">CQ ${String(c.id).padStart(3,'0')}/${C.length} ${R[c.r].m}</text><rect x="58" y="231" width="112" height="12" rx="6" fill="url(#${u}o)" stroke="${O}" stroke-width=".8"/><text x="114" y="239.3" font-size="6" font-weight="900" fill="${O}" text-anchor="middle" font-style="italic">★ BOSS card · super strong! ★</text>`:
  `<text x="12" y="236" font-size="5" font-weight="700" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke">Illus. Card Quest Studio</text><text x="12" y="243" font-size="5.5" font-weight="900" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke">CQ ${String(c.id).padStart(3,'0')}/${C.length} ${R[c.r].m}</text>
  <text x="168" y="236" font-size="5" font-weight="700" font-style="italic" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke" text-anchor="end">${FLAV[c.tpl].slice(0,FLAV[c.tpl].indexOf(' ',26))}</text><text x="168" y="243" font-size="5" font-weight="700" font-style="italic" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke" text-anchor="end">${FLAV[c.tpl].slice(FLAV[c.tpl].indexOf(' ',26)+1)}</text>`}
 </svg>`;}
@@ -804,7 +808,7 @@ function parentGate(){const a=ri(101,999),b=ri(11,99);
   else{parentGate();m.remove();}};}
 
 function starter(){
- setScreen('starter',`<div class="hub"><div class="hero"><div class="av me">${LUCAS}<span class="badge">Lucas</span></div><div class="goal"><b>Welcome, Lucas! Here is your starter deck.</b>${zh([['新','ㄒㄧㄣ'],['手','ㄕㄡˇ'],['牌','ㄆㄞˊ'],['組','ㄗㄨˇ']])}<div>One card of every type, plus <b>5 free packs</b> to rip open and <b>$2.00</b>!</div></div></div>
+ setScreen('starter',`<div class="hub"><div class="hero"><div class="av me">${LUCAS}<span class="badge">Lucas</span></div><div class="goal"><b>Welcome, Lucas! Here is your starter deck.</b><div style="font-size:.9rem;color:var(--muted)">Tip: tap any word to hear it 🔈</div>${zh([['新','ㄒㄧㄣ'],['手','ㄕㄡˇ'],['牌','ㄆㄞˊ'],['組','ㄗㄨˇ']])}<div>One card of every type, plus <b>5 free packs</b> to rip open and <b>$2.00</b>!</div></div></div>
  <div class="cgrid">${STARTER.map(i=>cardHTML(byId(i))).join('')}</div><div class="row"><button class="btn gold" data-a="ok">Add to my binder ▶</button></div></div>`);
  say('Welcome Lucas! Here is your starter deck. One card of every type.');
  bindAll({ok(){STARTER.forEach(i=>S.owned[i]=(S.owned[i]||0)+1);S.started=true;S.cents=200;S.freePacks=5;restock();save();sfx.good();openPack(true);}});}
@@ -817,6 +821,7 @@ function hub(fromAct){
  const T2=(e,en,z,a,sub,cls)=>`<button class="tile ${cls||''}" data-a="${a}"><span class="e">${e}</span><span class="en">${en}</span>${zh(z)}${sub?`<small>${sub}</small>`:''}</button>`;
  setScreen('hub',`<div class="hub"><div class="hero"><div class="av me">${LUCAS}<span class="badge">Lucas</span></div><div class="goal">
  ${S.shopOpen?`<b>🏪 Lucas’s Cards is open!</b><div>🏆 ×${S.trophies} · 📒 ${owned}/${C.length} cards</div>`:`<b>To open your own shop: save ${money(GOAL)} and win ${TITLES} tournament titles!</b><div>💵 ${money(S.cents)} of ${money(GOAL)}</div><div class="bar"><i style="width:${Math.min(100,S.cents/GOAL*100)}%"></i></div><div style="margin-top:4px;font-size:1.3rem">${Array.from({length:TITLES},(_,i)=>i<S.trophies?'🏆':'<span style="filter:grayscale(1);opacity:.35">🏆</span>').join(' ')} <span style="font-size:.95rem">${Math.min(S.trophies,TITLES)}/${TITLES} titles · 📒 ${owned}/${C.length}</span></div>`}</div></div>
+ <div style="text-align:center;font-size:.9rem;color:var(--muted);font-weight:700">🔈 Tap any word to hear it</div>
  <div class="tiles">
  ${T2('🧾','Cashier job',[['收','ㄕㄡ'],['銀','ㄧㄣˊ'],['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],'cash','Earn 35–50¢ a customer')}
  ${T2('🗂️','Sorting job',[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],'sort','Earn 50¢ a row')}
@@ -1081,22 +1086,22 @@ function step(ms){setTimeout(()=>{if(CJ.own&&(++CJ.n>=CJ.total||!S.stock.length)
 
 /* ---------- sorting job ---------- */
 let SJ=null;
-const SORTS=[{k:c=>c.hp,d:1,t:'from <b>smallest HP</b> to <b>biggest HP</b>',s:'from smallest HP to biggest HP',h:c=>c.hp+' HP'},
- {k:c=>c.hp,d:-1,t:'from <b>biggest HP</b> to <b>smallest HP</b>',s:'from biggest HP to smallest HP',h:c=>c.hp+' HP'},
- {k:c=>c.id,d:1,t:'in <b>card number order</b> (No.), smallest first',s:'in card number order, smallest first',h:c=>'No. '+c.id},
- {k:c=>c.atk[1].d,d:-1,t:'by their <b>strongest attack</b>, biggest damage first',s:'by their strongest attack, biggest damage first',h:c=>c.atk[1].n+' '+c.atk[1].d},
- {k:c=>c.atk[0].d+c.atk[1].d,d:1,t:'by <b>both attacks added together</b>, smallest total first',s:'by both attacks added together, smallest total first',h:c=>c.atk[0].d+' + '+c.atk[1].d+' = '+(c.atk[0].d+c.atk[1].d)},
- {k:c=>c.hp-c.atk[1].d,d:1,t:'by <b>HP minus strongest attack</b>, smallest first',s:'by HP minus strongest attack, smallest first',h:c=>c.hp+' − '+c.atk[1].d+' = '+(c.hp-c.atk[1].d)}];
+const SORTS=[{k:c=>c.hp,d:1,t:'from <b>smallest HP</b> to <b>biggest HP</b>',s:'from smallest HP to biggest HP',h:c=>c.hp+' HP',b:c=>c.hp+' HP'},
+ {k:c=>c.hp,d:-1,t:'from <b>biggest HP</b> to <b>smallest HP</b>',s:'from biggest HP to smallest HP',h:c=>c.hp+' HP',b:c=>c.hp+' HP'},
+ {k:c=>c.id,d:1,t:'in <b>card number order</b> (No.), smallest first',s:'in card number order, smallest first',h:c=>'No. '+c.id,b:c=>'No. '+c.id},
+ {k:c=>c.atk[1].d,d:-1,t:'by their <b>strongest attack</b>, biggest damage first',s:'by their strongest attack, biggest damage first',h:c=>c.atk[1].n+' '+c.atk[1].d,b:c=>'⚔️ '+c.atk[1].d},
+ {k:c=>c.atk[0].d+c.atk[1].d,d:1,t:'by <b>both attacks added together</b>, smallest total first',s:'by both attacks added together, smallest total first',h:c=>c.atk[0].d+' + '+c.atk[1].d+' = '+(c.atk[0].d+c.atk[1].d),b:c=>c.atk[0].d+' + '+c.atk[1].d},
+ {k:c=>c.hp-c.atk[1].d,d:1,t:'by <b>HP minus strongest attack</b>, smallest first',s:'by HP minus strongest attack, smallest first',h:c=>c.hp+' − '+c.atk[1].d+' = '+(c.hp-c.atk[1].d),b:c=>c.hp+' − '+c.atk[1].d}];
 function sortJob(){const L=qLv(),pool=SORTS.slice(0,L===1?4:L===2?5:6);SJ={round:0,earn:0,rules:shuffle(pool).slice(0,2)};sortRound();}
 function sortRound(){const R0=SJ.rules[SJ.round];let cs;do{cs=shuffle(C).slice(0,5);}while(new Set(cs.map(R0.k)).size<5);
  SJ.cards=cs;SJ.order=cs.slice().sort((a,b)=>(R0.k(a)-R0.k(b))*R0.d).map(c=>c.id);SJ.pos=0;SJ.miss=0;SJ.perfect=true;SJ.rule=R0;
  setScreen('sort',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🗂️ Sorting job ${SJ.round+1}/2</h2><p style="font-size:1.15rem;font-weight:700;margin:4px 0">Tap the cards ${R0.t}.</p>
  <div class="slots" id="sl">${cs.map((_,i)=>`<div class="s">${i+1}</div>`).join('')}</div></div>
- <div class="row" id="sc">${cs.map(c=>`<button class="pickc sortc" data-a="t" data-v="${c.id}">${cardHTML(c)}</button>`).join('')}</div></div>`);
+ <div class="row" id="sc">${cs.map(c=>`<button class="pickc sortc" data-a="t" data-v="${c.id}">${cardHTML(c)}<span class="sbadge">${R0.b(c)}</span></button>`).join('')}</div></div>`);
  say('Tap the cards '+R0.s+'.');
  bindAll({t(id,b){id=+id;if(b.classList.contains('used'))return;if(id===SJ.order[SJ.pos]){place(b);}else{sfx.bad();b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),450);SJ.perfect=false;
   if(++SJ.miss>=2){const rb=main.querySelector(`.sortc[data-v="${SJ.order[SJ.pos]}"]`);rb.classList.add('hint');const c=byId(SJ.order[SJ.pos]);toast(`Next is <b>${c.name}</b> (${R0.h(c)})`,2400);}}}});}
-function place(b){sfx.pop();SJ.miss=0;const slot=$('sl').children[SJ.pos];slot.innerHTML=b.innerHTML;slot.style.border='none';b.classList.add('used');b.classList.remove('hint');
+function place(b){sfx.pop();SJ.miss=0;const slot=$('sl').children[SJ.pos];slot.innerHTML=b.querySelector('.cardw').outerHTML+'<span class="sbadge sm">'+b.querySelector('.sbadge').textContent+'</span>';slot.style.border='none';b.classList.add('used');b.classList.remove('hint');
  if(++SJ.pos===5){const pay=50;SJ.earn+=pay;S.cents+=pay;S.stars+=SJ.perfect?2:1;save();sfx.good();toast('📦 Sorted! +50¢');
   setTimeout(()=>{if(++SJ.round<2)sortRound();else result('sort','🗂️ Cards sorted!',`<div class="big">📦</div><p style="font-size:1.3rem;font-weight:800">You earned ${money(SJ.earn)}</p><p>Wallet: ${money(S.cents)}</p>`,'Sort your real cards by number to spot doubles you can trade.');},1300);}}
 
@@ -1110,14 +1115,17 @@ function oppTeam(kind,round){const mine=Object.keys(S.owned).map(Number).map(byI
  return best[1].map(c=>c.id);}
 function teamPick(kind,round){
  const foe=PEND&&PEND.kind===kind&&PEND.round===round?PEND.foe:pick(FOES);const opp=PEND&&PEND.kind===kind&&PEND.round===round?PEND.opp:oppTeam(kind,round||0);
- PEND={kind,round,foe,opp};
- const mine=Object.keys(S.owned).map(Number).sort((a,b)=>a-b),need=Math.min(3,mine.length);let sel=[];
+ const keep=(PEND&&PEND.kind===kind&&PEND.round===round&&PEND.sel)||[];PEND={kind,round,foe,opp,sel:keep};
+ const mode=S.pickSort||'power',mine=Object.keys(S.owned).map(Number).sort((a,b)=>mode==='power'?pw(byId(b))-pw(byId(a))||a-b:a-b),need=Math.min(3,mine.length);let sel=(PEND.sel||[]).filter(x=>mine.includes(x));
+ const beats=c=>opp.filter(i=>WEAK[byId(i).type]===c.type).map(i=>byId(i));
  setScreen('pick',`<div class="hub"><div class="panel"><div class="who" style="justify-content:center"><div class="mini">${kidSVG(foe[1],foe[2])}</div><span>${foe[0]}’s team: ${opp.map(i=>{const t=T[byId(i).type];return `<span title="${t.n}" style="font-size:1.6rem">${t.i}</span>`;}).join(' ')}</span></div>
  <p style="text-align:center;font-weight:700;margin:6px 0">Pick <b>${need}</b> cards for your team. Tip: check what ${foe[0]}’s cards are weak to!</p>
  <div class="row" style="font-weight:800">${opp.map(i=>{const c=byId(i);return `<span>${T[c.type].i} is weak to ${T[WEAK[c.type]].i}</span>`;}).join(' · ')}</div></div>
- <div class="cgrid">${mine.map(id=>`<button class="pickc" data-a="p" data-v="${id}">${cardHTML(byId(id))}</button>`).join('')}</div>
+ <div class="row" style="margin:4px 0"><span style="font-weight:800">Sort:</span><button class="btn small ${mode==='power'?'gold':'ghost'}" data-a="srt" data-v="power">💪 Strongest first</button><button class="btn small ${mode==='num'?'gold':'ghost'}" data-a="srt" data-v="num">🔢 Card number</button></div>
+ <div class="cgrid">${mine.map(id=>{const c=byId(id),bt=beats(c);return `<button class="pickc ${sel.includes(id)?'sel':''}" data-a="p" data-v="${id}">${cardHTML(c)}${bt.length?`<span class="x2tag">×2 vs ${bt.map(x=>T[x.type].i).join('')}</span>`:''}</button>`;}).join('')}</div>
  <div class="row" style="position:sticky;bottom:0;padding:6px;background:var(--bg)"><button class="btn gold" id="fight" disabled>⚔️ Battle! (<span id="pc">0</span>/${need})</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div>`);
- bindAll({home:()=>{PEND=null;hub();},p(id,b){id=+id;if(sel.includes(id)){sel=sel.filter(x=>x!==id);b.classList.remove('sel');}else{if(sel.length>=need){sfx.bad();toast('Only '+need+' cards!');return;}sel.push(id);b.classList.add('sel');}sfx.pop();$('pc').textContent=sel.length;$('fight').disabled=sel.length!==need;}});
+ bindAll({srt(v){S.pickSort=v;save();PEND.sel=sel;teamPick(kind,round);},home:()=>{PEND=null;hub();},p(id,b){id=+id;if(sel.includes(id)){sel=sel.filter(x=>x!==id);b.classList.remove('sel');}else{if(sel.length>=need){sfx.bad();toast('Only '+need+' cards!');return;}sel.push(id);b.classList.add('sel');}sfx.pop();$('pc').textContent=sel.length;$('fight').disabled=sel.length!==need;}});
+ $('pc').textContent=sel.length;$('fight').disabled=sel.length!==need;
  $('fight').onclick=()=>{audio();startBattle(sel,PEND);};}
 
 /* ---------- battle ---------- */
@@ -1230,5 +1238,16 @@ window.__test={
   if(SCREEN==='sort'&&SJ){const b=main.querySelector(`.sortc[data-v="${SJ.order[SJ.pos]}"]:not(.used)`);return b&&b.click();}
   if(REV){REV.querySelector('.flip').click();return REV.querySelector('.row .btn').click();}
   if(SCREEN==='master'){const b=[...main.querySelectorAll('[data-a="o"]')].find(x=>x.dataset.v===String(window.__mans));b&&b.click();}}};
+/* ---------- tap any word to hear it (reading help) ---------- */
+const SKIPW='button,svg,script,style,.zh,.w,input,textarea,.toast,.stamp,.dmg,.coin,.bill,.logo';
+function wordify(root){if(!root||root.nodeType!==1)return;if(root.closest&&root.closest(SKIPW))return;const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>/[A-Za-z]/.test(n.nodeValue)&&!(n.parentElement&&n.parentElement.closest(SKIPW))?1:2});
+ const ns=[];while(tw.nextNode())ns.push(tw.currentNode);
+ ns.forEach(n=>{const f=document.createDocumentFragment();n.nodeValue.split(/([A-Za-z][A-Za-z’'-]*)/).forEach((part,i)=>{if(!part)return;if(i%2){const sp=document.createElement('span');sp.className='w';sp.textContent=part;f.appendChild(sp);}else f.appendChild(document.createTextNode(part));});n.parentNode.replaceChild(f,n);});}
+let wq=null;new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1)(wq=wq||new Set()).add(n);else if(n.nodeType===3&&n.parentElement)(wq=wq||new Set()).add(n.parentElement);}));
+ if(wq&&!wq.raf){wq.raf=requestAnimationFrame(()=>{const q=wq;wq=null;q.forEach(el=>{if(el.isConnected)wordify(el);});});}}).observe(document.body,{childList:true,subtree:true});
+document.addEventListener('click',e=>{const w=e.target.closest&&e.target.closest('.w');if(!w)return;e.stopPropagation();e.preventDefault();
+ const word=w.textContent.replace(/[’']s$/,'');w.classList.add('lit');setTimeout(()=>w.classList.remove('lit'),700);
+ if('speechSynthesis' in window){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word);u.lang='en-US';u.rate=.75;speechSynthesis.speak(u);}catch(err){}}},true);
+wordify(document.body);
 hud();title();
 </script></body></html>
