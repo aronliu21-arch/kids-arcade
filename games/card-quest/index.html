@@ -1314,7 +1314,8 @@ function maybeMaster(then){if(then===undefined){if(Math.random()>=masterChance()
  let tries=0;window.__mans=ans;
  const gift=(good)=>{const c=prizeCard(good?[['promo',4],['legend',3],['holo',3]]:[['holo',7],['legend',3]]);
   setTimeout(()=>bigReveal(c,'✨ A gift from '+nm+'!',good?'“You solved my riddle. Take this special card!”':'“Keep practicing. This card will help you!”',then),900);};
- bindAll({o(v,b){if(tries<0)return;if(String(v)===String(ans)){qScore(tries===0);tries===0?S.stars+=2:S.stars+=1;save();sfx.good();b.classList.add('green');$('mm').textContent='“Well done!”';tries=-1;gift(true);}
+ kaShown();
+ bindAll({o(v,b){if(tries<0)return;kaAns(q,v,ans,String(v)===String(ans),tries+1,'Card Master: '+skName(R0.kind));if(String(v)===String(ans)){qScore(tries===0);tries===0?S.stars+=2:S.stars+=1;save();sfx.good();b.classList.add('green');$('mm').textContent='“Well done!”';tries=-1;gift(true);}
   else{tries++;sfx.bad();b.disabled=true;if(tries>=2){qScore(false);$('mm').innerHTML='The answer is <b>'+ans+'</b>. '+why;tries=-1;gift(false);}else $('mm').textContent='“Hmm, think again…”';}}});}
 
 /* ---------- store ---------- */
@@ -1476,7 +1477,7 @@ function giveTip(tip,why){if(SCREEN!=='cash')return;FX.stamp(`TIP! +${tip}¢`,'s
 function shiftDone(){const out=!S.stock.length&&CJ.n<CJ.total;result('myshop','🏪 Shop day done!',`<div class="big">💰</div><p style="font-size:1.3rem;font-weight:800">You sold ${CJ.sold} card${CJ.sold===1?'':'s'} and earned ${money(CJ.earn)}</p>
  ${CJ.walk?`<p style="color:#e03131;font-weight:800">😤 ${CJ.walk} customer${CJ.walk>1?'s':''} walked out. A price was too high!</p>`:''}${CJ.tips?`<p>🎵 Tips: ${money(CJ.tips)}</p>`:''}${out?'<p style="font-weight:800">📦 Your shelf is empty! Restock it with extra cards.</p>':''}<p>Wallet: ${money(S.cents)}</p>`,
  'Real shops look at what similar things cost, then pick a price close to that.');}
-function giveChange(){audio();if($('give').disabled)return;const g=trayTotal(),want=CJ.pay-CJ.price;
+function giveChange(){audio();if($('give').disabled)return;const g=trayTotal(),want=CJ.pay-CJ.price;kaAns(`Give change: paid ${money(CJ.pay)} for ${money(CJ.price)}`,money(g),money(want),g===want,CJ.tries+1,'Money: making change');
  if(g===want){$('give').disabled=true;sfx.good();track('change',CJ.tries===0);if(CJ.own){shopSell(CJ.tries===0);S.stars+=CJ.tries?1:2;save();toast(`😄 Right! ${CJ.pay}¢ − ${CJ.price}¢ = ${want}¢<br>+${money(CJ.price)} for your shop!`);}else{const pay=CJ.wage||35,tip=CJ.tries===0&&Math.random()<.45?pick([5,10,10,15,25]):0;CJ.earn+=pay+tip;CJ.tips+=tip;S.cents+=pay+tip;S.stars+=CJ.tries?1:2;save();toast(`😄 Right! ${money(CJ.pay)} − ${money(CJ.price)} = ${money(want)}<br>+${pay}¢ for you`);jarAdd(pay,false);if(tip)setTimeout(()=>giveTip(tip,'You got it right the first time!'),1100);}step(2600);}
  else{CJ.tries++;sfx.bad();if(CJ.tries>=2){$('give').disabled=true;track('change',false,`Change: pay ${money(CJ.pay)} for ${money(CJ.price)}`,money(want));if(CJ.own)shopSell(false);toast(`The change is <b>${money(want)}</b>: ${money(CJ.pay)} − ${money(CJ.price)} = ${money(want)}`,2800);say('The change is '+money(want).replace('$','')+' dollars.');step(2600);}
   else{const m=g<want?'Hmm, I think I need more change.':'Whoa, that’s too much change!';toast('😕 '+m+'<br>You gave '+money(g));say(m);}}}
@@ -1516,9 +1517,9 @@ function inspNext(){padClear();const L=qLv(),c=pick(C),fake=Math.random()<.42;le
  <div class="row" id="ibtn"><button class="btn green" data-a="real">✅ Real</button><button class="btn" style="background:#e03131" data-a="fake">🚫 Fake</button></div></div></div>`);
  lensSetup();
  bindAll({peek(){const c=IJ.c;IJ.peek=true;IJ.peeked=true;$('ref').innerHTML=`<div class="lbl">📒 Real card</div>${cardHTML(c)}`;sfx.flip();},
-  real(){const F=IJ.F;if(IJ.phase!=='judge')return;if(!F){inspGood(40,`Correct, it’s a real card! +40¢`);}else{const pen=Math.min(25,S.cents);S.cents-=pen;save();sfx.bad();IJ.phase='done';
+  real(){const F=IJ.F;if(IJ.phase!=='judge')return;kaAns('Real or fake card?','real',F?'fake':'real',!F,1,'Puzzles: spot the fake');if(!F){inspGood(40,`Correct, it’s a real card! +40¢`);}else{const pen=Math.min(25,S.cents);S.cents-=pen;save();sfx.bad();IJ.phase='done';
     $('imsg').innerHTML=`😱 Oh no, it was a <b>fake</b>! ${F.why.join(' ')} ${pen?`You lose ${pen}¢.`:''}`;F.reg.forEach(r=>markRegion(r,'#e03131'));inspNextBtn();}},
-  fake(){const F=IJ.F;if(IJ.phase!=='judge')return;if(!F){sfx.bad();IJ.phase='done';$('imsg').innerHTML='🤔 Actually, this card was <b>real</b>. Nothing was wrong with it. No pay this time.';inspNextBtn();}
+  fake(){const F=IJ.F;if(IJ.phase!=='judge')return;kaAns('Real or fake card?','fake',F?'fake':'real',!!F,1,'Puzzles: spot the fake');if(!F){sfx.bad();IJ.phase='done';$('imsg').innerHTML='🤔 Actually, this card was <b>real</b>. Nothing was wrong with it. No pay this time.';inspNextBtn();}
    else{IJ.phase='find';sfx.good();$('ibtn').innerHTML='';$('imsg').innerHTML=`🕵️ You’re right, it’s fake! Now <b>tap the mistake</b> on the card${F.reg.length>1?` (there are <b>${F.reg.length}</b>!)`:''}.`;}}});
  $('ccard').addEventListener('click',e=>{if(IJ.phase!=='find'||e.target.closest('.lens'))return;const r=$('ccard').getBoundingClientRect();inspTap((e.clientX-r.left)/r.width*180,(e.clientY-r.top)/r.height*252);});}
 function inHit(c,reg,x,y){const r=region(c,reg),p=8;if(r==='edge')return x<14||x>166||y<14||y>238;return x>=r[0]-p&&x<=r[2]+p&&y>=r[1]-p&&y<=r[3]+p;}
@@ -1557,7 +1558,7 @@ function sortRound(){const R0=SJ.rules[SJ.round];let cs;do{cs=shuffle(C).slice(0
  <div class="slots" id="sl">${cs.map((_,i)=>`<div class="s">${i+1}</div>`).join('')}</div></div>
  <div class="row" id="sc">${cs.map(c=>`<button class="pickc sortc" data-a="t" data-v="${c.id}">${cardHTML(c)}<span class="sbadge">${R0.b(c)}</span></button>`).join('')}</div></div>`);
  say('Tap the cards '+R0.s+'.');
- bindAll({t(id,b){id=+id;if(b.classList.contains('used'))return;if(id===SJ.order[SJ.pos]){place(b);}else{sfx.bad();b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),450);SJ.perfect=false;
+ bindAll({t(id,b){id=+id;if(b.classList.contains('used'))return;kaAns('Sort cards '+R0.s,byId(id).name,byId(SJ.order[SJ.pos]).name,id===SJ.order[SJ.pos],SJ.miss+1,'Numbers: sorting');if(id===SJ.order[SJ.pos]){place(b);}else{sfx.bad();b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),450);SJ.perfect=false;
   if(++SJ.miss>=2){const rb=main.querySelector(`.sortc[data-v="${SJ.order[SJ.pos]}"]`);rb.classList.add('hint');const c=byId(SJ.order[SJ.pos]);toast(`Next is <b>${c.name}</b> (${R0.h(c)})`,2400);}}}});}
 function place(b){sfx.pop();SJ.miss=0;const slot=$('sl').children[SJ.pos];slot.innerHTML=b.querySelector('.cardw').outerHTML+'<span class="sbadge sm">'+b.querySelector('.sbadge').textContent+'</span>';slot.style.border='none';b.classList.add('used');b.classList.remove('hint');
  if(++SJ.pos===5){track('compare',SJ.perfect);const pay=50;SJ.earn+=pay;S.cents+=pay;S.stars+=SJ.perfect?2:1;save();sfx.good();toast('📦 Sorted! +50¢');
@@ -1627,7 +1628,8 @@ function ask(h,ans,opts,why,then,ops){padClear();deskClose();ans=String(ans);opt
  $('mid').innerHTML=`<div>${h}</div><div class="opts">${opts.map(o=>`<button class="btn" data-q="${o}">${o}</button>`).join('')}</div>${(ops&&ops.length)?'<button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button>':''}`;say(h.replace(/<[^>]+>/g,' ').replace(/▢/g,'blank').replace(/−/g,'minus').replace(/×/g,'times'));
  const pu=!!B.pu;B.pu=false;const fin=()=>{B.q=null;const ft=first;if(!pu)track('damage',ft,ft?'':h,ans);setTimeout(()=>then(ft),900);};
  B.q.go=()=>{const b=$('mid').querySelector(`[data-q="${ans}"]`);b&&b.click();};
- $('mid').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{if(tries<0)return;if(b.dataset.q===ans){first=tries===0;B.stars+=tries?1:2;S.stars+=tries?1:2;save();sfx.good();b.classList.add('green');tries=-1;fin();}
+ kaShown();const kaTopic=pu?'Battle power-up':'Battle math';
+ $('mid').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{if(tries<0)return;kaAns(h,b.dataset.q,ans,b.dataset.q===ans,tries+1,kaTopic);if(b.dataset.q===ans){first=tries===0;B.stars+=tries?1:2;S.stars+=tries?1:2;save();sfx.good();b.classList.add('green');tries=-1;fin();}
   else{sfx.bad();b.disabled=true;first=false;if(++tries>=2){tries=-1;$('mid').querySelector(`[data-q="${ans}"]`).classList.add('green');$('mid').insertAdjacentHTML('beforeend',`<div>👉 ${why}</div>`);say(why.replace('−','minus').replace('×','times'));setTimeout(fin,1800);}}});}
 function floatDmg(el,t){const r=el.getBoundingClientRect(),d=document.createElement('div');d.className='dmg';d.textContent=t;d.style.left=(r.left+r.width/2-40)+'px';d.style.top=(r.top+r.height/3)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1200);}
 function hit2(target,dmg,label,info){const atkSide=target==='op'?'me':'op',P=B[target],as=$('slot-'+atkSide),ts=$('slot-'+target);
@@ -1878,8 +1880,14 @@ function practice(k,i,earn){const sk=SKILLS.find(s=>s.k===k);if(i>=5){return res
  <p class="pq">${R0.q}</p>${R0.extra||''}<div class="opts">${R0.opts.map(o=>`<button class="btn" data-a="o" data-v="${o}">${o}</button>`).join('')}</div>${(R0.ops&&R0.ops.length)?'<button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button>':''}
  <p id="pm" style="font-weight:800;min-height:1.3em"></p><div class="row"><button class="btn ghost small" data-a="home">🏠 Stop</button></div></div></div>`);
  const next=ms=>setTimeout(()=>{if(SCREEN==='practice')practice(k,i+1,earn);},ms);
- bindAll({home:()=>skillPath(),o(v,b){if(tries<0)return;if(String(v)===String(R0.ans)){const ft=tries===0;qScore(ft);S.stars+=ft?2:1;if(ft){S.cents+=5;earn+=5;}save();sfx.good();b.classList.add('green');$('pm').textContent=ft?'Right! +5¢':'Right on the second try!';tries=-1;next(1100);}
+ kaShown();
+ bindAll({home:()=>skillPath(),o(v,b){if(tries<0)return;kaAns(R0.q,v,R0.ans,String(v)===String(R0.ans),tries+1,skName(R0.kind));if(String(v)===String(R0.ans)){const ft=tries===0;qScore(ft);S.stars+=ft?2:1;if(ft){S.cents+=5;earn+=5;}save();sfx.good();b.classList.add('green');$('pm').textContent=ft?'Right! +5¢':'Right on the second try!';tries=-1;next(1100);}
   else{tries++;sfx.bad();b.disabled=true;if(tries>=2){qScore(false);$('pm').innerHTML='The answer is <b>'+R0.ans+'</b>. '+R0.why;main.querySelector(`[data-a=o][data-v="${R0.ans}"]`).classList.add('green');tries=-1;next(2600);}else $('pm').textContent='Not quite. Try again!';}}});}
+/* shared arcade progress tracker (weekly report): one row per tap */
+const kaTxt=v=>String(v==null?'':v).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+function kaAns(q,given,expected,ok,tryNo,topic,qid){try{if(window.KA){KA.setKid('lucas');KA.answer({q:kaTxt(q),qid:qid?kaTxt(qid):undefined,given:kaTxt(given),expected:kaTxt(expected),correct:!!ok,tryNo:tryNo||1,topic:topic||''});}}catch(e){}}
+function kaShown(){try{if(window.KA){KA.setKid('lucas');KA.shown();}}catch(e){}}
+const skName=kind=>{const s=SKILLS.find(x=>x.q.includes(kind));return s?s.n:kind;};
 /* ---------- Achievements: checked on every screen change; each pays 25¢ once ---------- */
 const own=()=>Object.keys(S.owned).map(Number);
 const ACH=[
@@ -1915,4 +1923,4 @@ function achRoom(){S.ach=S.ach||{};const got=ACH.filter(a=>S.ach[a.k]).length;
 /* ---------- start (keep this file last) ---------- */
 hud();title();
 
-</script></body></html>
+</script><script src="../../tracker.js" data-game="card-quest"></script></body></html>

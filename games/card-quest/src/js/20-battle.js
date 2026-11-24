@@ -39,7 +39,8 @@ function ask(h,ans,opts,why,then,ops){padClear();deskClose();ans=String(ans);opt
  $('mid').innerHTML=`<div>${h}</div><div class="opts">${opts.map(o=>`<button class="btn" data-q="${o}">${o}</button>`).join('')}</div>${(ops&&ops.length)?'<button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button>':''}`;say(h.replace(/<[^>]+>/g,' ').replace(/▢/g,'blank').replace(/−/g,'minus').replace(/×/g,'times'));
  const pu=!!B.pu;B.pu=false;const fin=()=>{B.q=null;const ft=first;if(!pu)track('damage',ft,ft?'':h,ans);setTimeout(()=>then(ft),900);};
  B.q.go=()=>{const b=$('mid').querySelector(`[data-q="${ans}"]`);b&&b.click();};
- $('mid').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{if(tries<0)return;if(b.dataset.q===ans){first=tries===0;B.stars+=tries?1:2;S.stars+=tries?1:2;save();sfx.good();b.classList.add('green');tries=-1;fin();}
+ kaShown();const kaTopic=pu?'Battle power-up':'Battle math';
+ $('mid').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{if(tries<0)return;kaAns(h,b.dataset.q,ans,b.dataset.q===ans,tries+1,kaTopic);if(b.dataset.q===ans){first=tries===0;B.stars+=tries?1:2;S.stars+=tries?1:2;save();sfx.good();b.classList.add('green');tries=-1;fin();}
   else{sfx.bad();b.disabled=true;first=false;if(++tries>=2){tries=-1;$('mid').querySelector(`[data-q="${ans}"]`).classList.add('green');$('mid').insertAdjacentHTML('beforeend',`<div>👉 ${why}</div>`);say(why.replace('−','minus').replace('×','times'));setTimeout(fin,1800);}}});}
 function floatDmg(el,t){const r=el.getBoundingClientRect(),d=document.createElement('div');d.className='dmg';d.textContent=t;d.style.left=(r.left+r.width/2-40)+'px';d.style.top=(r.top+r.height/3)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1200);}
 function hit2(target,dmg,label,info){const atkSide=target==='op'?'me':'op',P=B[target],as=$('slot-'+atkSide),ts=$('slot-'+target);

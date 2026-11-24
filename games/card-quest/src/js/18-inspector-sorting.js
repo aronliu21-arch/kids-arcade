@@ -32,9 +32,9 @@ function inspNext(){padClear();const L=qLv(),c=pick(C),fake=Math.random()<.42;le
  <div class="row" id="ibtn"><button class="btn green" data-a="real">✅ Real</button><button class="btn" style="background:#e03131" data-a="fake">🚫 Fake</button></div></div></div>`);
  lensSetup();
  bindAll({peek(){const c=IJ.c;IJ.peek=true;IJ.peeked=true;$('ref').innerHTML=`<div class="lbl">📒 Real card</div>${cardHTML(c)}`;sfx.flip();},
-  real(){const F=IJ.F;if(IJ.phase!=='judge')return;if(!F){inspGood(40,`Correct, it’s a real card! +40¢`);}else{const pen=Math.min(25,S.cents);S.cents-=pen;save();sfx.bad();IJ.phase='done';
+  real(){const F=IJ.F;if(IJ.phase!=='judge')return;kaAns('Real or fake card?','real',F?'fake':'real',!F,1,'Puzzles: spot the fake');if(!F){inspGood(40,`Correct, it’s a real card! +40¢`);}else{const pen=Math.min(25,S.cents);S.cents-=pen;save();sfx.bad();IJ.phase='done';
     $('imsg').innerHTML=`😱 Oh no, it was a <b>fake</b>! ${F.why.join(' ')} ${pen?`You lose ${pen}¢.`:''}`;F.reg.forEach(r=>markRegion(r,'#e03131'));inspNextBtn();}},
-  fake(){const F=IJ.F;if(IJ.phase!=='judge')return;if(!F){sfx.bad();IJ.phase='done';$('imsg').innerHTML='🤔 Actually, this card was <b>real</b>. Nothing was wrong with it. No pay this time.';inspNextBtn();}
+  fake(){const F=IJ.F;if(IJ.phase!=='judge')return;kaAns('Real or fake card?','fake',F?'fake':'real',!!F,1,'Puzzles: spot the fake');if(!F){sfx.bad();IJ.phase='done';$('imsg').innerHTML='🤔 Actually, this card was <b>real</b>. Nothing was wrong with it. No pay this time.';inspNextBtn();}
    else{IJ.phase='find';sfx.good();$('ibtn').innerHTML='';$('imsg').innerHTML=`🕵️ You’re right, it’s fake! Now <b>tap the mistake</b> on the card${F.reg.length>1?` (there are <b>${F.reg.length}</b>!)`:''}.`;}}});
  $('ccard').addEventListener('click',e=>{if(IJ.phase!=='find'||e.target.closest('.lens'))return;const r=$('ccard').getBoundingClientRect();inspTap((e.clientX-r.left)/r.width*180,(e.clientY-r.top)/r.height*252);});}
 function inHit(c,reg,x,y){const r=region(c,reg),p=8;if(r==='edge')return x<14||x>166||y<14||y>238;return x>=r[0]-p&&x<=r[2]+p&&y>=r[1]-p&&y<=r[3]+p;}
@@ -73,7 +73,7 @@ function sortRound(){const R0=SJ.rules[SJ.round];let cs;do{cs=shuffle(C).slice(0
  <div class="slots" id="sl">${cs.map((_,i)=>`<div class="s">${i+1}</div>`).join('')}</div></div>
  <div class="row" id="sc">${cs.map(c=>`<button class="pickc sortc" data-a="t" data-v="${c.id}">${cardHTML(c)}<span class="sbadge">${R0.b(c)}</span></button>`).join('')}</div></div>`);
  say('Tap the cards '+R0.s+'.');
- bindAll({t(id,b){id=+id;if(b.classList.contains('used'))return;if(id===SJ.order[SJ.pos]){place(b);}else{sfx.bad();b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),450);SJ.perfect=false;
+ bindAll({t(id,b){id=+id;if(b.classList.contains('used'))return;kaAns('Sort cards '+R0.s,byId(id).name,byId(SJ.order[SJ.pos]).name,id===SJ.order[SJ.pos],SJ.miss+1,'Numbers: sorting');if(id===SJ.order[SJ.pos]){place(b);}else{sfx.bad();b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),450);SJ.perfect=false;
   if(++SJ.miss>=2){const rb=main.querySelector(`.sortc[data-v="${SJ.order[SJ.pos]}"]`);rb.classList.add('hint');const c=byId(SJ.order[SJ.pos]);toast(`Next is <b>${c.name}</b> (${R0.h(c)})`,2400);}}}});}
 function place(b){sfx.pop();SJ.miss=0;const slot=$('sl').children[SJ.pos];slot.innerHTML=b.querySelector('.cardw').outerHTML+'<span class="sbadge sm">'+b.querySelector('.sbadge').textContent+'</span>';slot.style.border='none';b.classList.add('used');b.classList.remove('hint');
  if(++SJ.pos===5){track('compare',SJ.perfect);const pay=50;SJ.earn+=pay;S.cents+=pay;S.stars+=SJ.perfect?2:1;save();sfx.good();toast('📦 Sorted! +50¢');

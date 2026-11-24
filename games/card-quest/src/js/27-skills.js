@@ -33,5 +33,11 @@ function practice(k,i,earn){const sk=SKILLS.find(s=>s.k===k);if(i>=5){return res
  <p class="pq">${R0.q}</p>${R0.extra||''}<div class="opts">${R0.opts.map(o=>`<button class="btn" data-a="o" data-v="${o}">${o}</button>`).join('')}</div>${(R0.ops&&R0.ops.length)?'<button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button>':''}
  <p id="pm" style="font-weight:800;min-height:1.3em"></p><div class="row"><button class="btn ghost small" data-a="home">🏠 Stop</button></div></div></div>`);
  const next=ms=>setTimeout(()=>{if(SCREEN==='practice')practice(k,i+1,earn);},ms);
- bindAll({home:()=>skillPath(),o(v,b){if(tries<0)return;if(String(v)===String(R0.ans)){const ft=tries===0;qScore(ft);S.stars+=ft?2:1;if(ft){S.cents+=5;earn+=5;}save();sfx.good();b.classList.add('green');$('pm').textContent=ft?'Right! +5¢':'Right on the second try!';tries=-1;next(1100);}
+ kaShown();
+ bindAll({home:()=>skillPath(),o(v,b){if(tries<0)return;kaAns(R0.q,v,R0.ans,String(v)===String(R0.ans),tries+1,skName(R0.kind));if(String(v)===String(R0.ans)){const ft=tries===0;qScore(ft);S.stars+=ft?2:1;if(ft){S.cents+=5;earn+=5;}save();sfx.good();b.classList.add('green');$('pm').textContent=ft?'Right! +5¢':'Right on the second try!';tries=-1;next(1100);}
   else{tries++;sfx.bad();b.disabled=true;if(tries>=2){qScore(false);$('pm').innerHTML='The answer is <b>'+R0.ans+'</b>. '+R0.why;main.querySelector(`[data-a=o][data-v="${R0.ans}"]`).classList.add('green');tries=-1;next(2600);}else $('pm').textContent='Not quite. Try again!';}}});}
+/* shared arcade progress tracker (weekly report): one row per tap */
+const kaTxt=v=>String(v==null?'':v).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+function kaAns(q,given,expected,ok,tryNo,topic,qid){try{if(window.KA){KA.setKid('lucas');KA.answer({q:kaTxt(q),qid:qid?kaTxt(qid):undefined,given:kaTxt(given),expected:kaTxt(expected),correct:!!ok,tryNo:tryNo||1,topic:topic||''});}}catch(e){}}
+function kaShown(){try{if(window.KA){KA.setKid('lucas');KA.shown();}}catch(e){}}
+const skName=kind=>{const s=SKILLS.find(x=>x.q.includes(kind));return s?s.n:kind;};

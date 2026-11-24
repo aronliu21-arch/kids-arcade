@@ -11,6 +11,7 @@ function maybeMaster(then){if(then===undefined){if(Math.random()>=masterChance()
  let tries=0;window.__mans=ans;
  const gift=(good)=>{const c=prizeCard(good?[['promo',4],['legend',3],['holo',3]]:[['holo',7],['legend',3]]);
   setTimeout(()=>bigReveal(c,'✨ A gift from '+nm+'!',good?'“You solved my riddle. Take this special card!”':'“Keep practicing. This card will help you!”',then),900);};
- bindAll({o(v,b){if(tries<0)return;if(String(v)===String(ans)){qScore(tries===0);tries===0?S.stars+=2:S.stars+=1;save();sfx.good();b.classList.add('green');$('mm').textContent='“Well done!”';tries=-1;gift(true);}
+ kaShown();
+ bindAll({o(v,b){if(tries<0)return;kaAns(q,v,ans,String(v)===String(ans),tries+1,'Card Master: '+skName(R0.kind));if(String(v)===String(ans)){qScore(tries===0);tries===0?S.stars+=2:S.stars+=1;save();sfx.good();b.classList.add('green');$('mm').textContent='“Well done!”';tries=-1;gift(true);}
   else{tries++;sfx.bad();b.disabled=true;if(tries>=2){qScore(false);$('mm').innerHTML='The answer is <b>'+ans+'</b>. '+why;tries=-1;gift(false);}else $('mm').textContent='“Hmm, think again…”';}}});}
 
