@@ -3,8 +3,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <title>Milo's Dino World · 洛明的恐龍世界</title>
 <style>
-:root{--ink:#1b1f3b;--bg:#e9f7ef;--card:#fff;--muted:#5b6782;--ok:#2b8a3e;--bad:#e03131;--gold:#ffd43b;--milo:#2f9e44;--blue:#1c7ed6;color-scheme:light;
---font:"Arial Rounded MT Bold",ui-rounded,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
+:root{--ink:#4a3426;--bg:#fbf3e4;--card:#fff;--muted:#5b6782;--ok:#2b8a3e;--bad:#e03131;--gold:#ffd43b;--milo:#2f9e44;--blue:#1c7ed6;color-scheme:light;
+--font:"Chalkboard SE","Comic Sans MS","Arial Rounded MT Bold",ui-rounded,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
 *{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-tap-highlight-color:transparent;overflow:hidden;user-select:none;-webkit-user-select:none}
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-spacing:0}
@@ -179,6 +179,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
  .say{min-height:70px;padding:6px 10px}.say .nx{width:52px;height:52px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body data-pref="port">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hat" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><path d="M0 0V6" stroke="#000" stroke-width="1.5" opacity=".14"/></pattern><pattern id="skyh" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-25)"><path d="M0 0V9" stroke="#74c0fc" stroke-width="1.6" opacity=".55"/></pattern></defs></svg>
 <div class="app">
   <div class="top"><a id="back" href="../../../#tester" aria-label="Back to arcade">←</a>
     <div class="ttl">🦕 <span class="en" lang="en">Milo's Dino World</span><span class="tag">sample</span></div>
@@ -254,6 +255,7 @@ const SHAPES=['sq','rect','tri','circ','semi'];
 function fresh(){return {bin:{sq:[],rect:[],tri:[],circ:[],semi:[]},snacks:0,dinos:[],ch:0,done:{},goal:{},seen:{},areas:['home'],plays:{},voice:'both',snd:true};}
 function load(k){try{const s=JSON.parse(localStorage.getItem(skey(k))||'null');if(s&&typeof s==='object'){const f=fresh();const o=Object.assign(f,s);o.bin=Object.assign(fresh().bin,s.bin||{});return o;}}catch(e){}return fresh();}
 let S=load(KID);
+function migrate(){(S.dinos||[]).forEach(d=>{if(d.t==='trike'&&d.name==='PIP'){d.t='babytrike';d.c=PIPC;}else if(d.t==='trike'&&d.name==='MOM'){d.c=MOMC;}else if(d.t==='trike'&&d.c.length<12){d.c=d.c.concat(Array(12).fill(d.c[0]||'green')).slice(0,12);}});}
 function save(){try{localStorage.setItem(skey(KID),JSON.stringify(S));}catch(e){}}
 const streakKey='dinoworld.streak.'+KID;
 function streak(v){try{if(v===undefined)return +(sessionStorage.getItem(streakKey)||0);sessionStorage.setItem(streakKey,String(v));}catch(e){}return 0;}
@@ -335,7 +337,7 @@ function draggable(el,onEnd){el.classList.add('drag');el.addEventListener('point
 const COL={red:['#ff6b6b','red','紅色'],blue:['#4dabf7','blue','藍色'],yellow:['#ffd43b','yellow','黃色'],green:['#69db7c','green','綠色'],orange:['#ffa94d','orange','橘色'],purple:['#b197fc','purple','紫色']};
 const CK=Object.keys(COL);
 const SH={oval:['oval','ovals','橢圓形'],pent:['pentagon','pentagons','五邊形'],hex:['hexagon','hexagons','六邊形'],sq:['square','squares','正方形'],rect:['rectangle','rectangles','長方形'],tri:['triangle','triangles','三角形'],circ:['circle','circles','圓形'],semi:['half circle','half circles','半圓形'],star:['star','stars','星形'],heart:['heart','hearts','心形'],dia:['diamond','diamonds','菱形']};
-const ST='stroke="#1b1f3b" stroke-width="2.4" stroke-linejoin="round"';
+const ST='stroke="#4a3426" stroke-width="2.4" stroke-linejoin="round"';
 function shade(h,f){const n=parseInt(h.slice(1),16);const g=x=>Math.max(0,Math.min(255,Math.round(f>1?x+(255-x)*(f-1):x*f)));return '#'+[g(n>>16),g(n>>8&255),g(n&255)].map(x=>x.toString(16).padStart(2,'0')).join('');}
 function geoSVG(s,g,fill,cls,extra){cls=cls?` class="${cls}"`:'';extra=extra||'';
  if(s==='tri')return `<polygon${cls} points="${g.p.map(q=>q.join(',')).join(' ')}" fill="${fill}" ${ST} ${extra}/>`;
@@ -343,23 +345,26 @@ function geoSVG(s,g,fill,cls,extra){cls=cls?` class="${cls}"`:'';extra=extra||''
  if(s==='semi')return `<path${cls} d="M${g.x},${g.y+g.h} A${g.w/2},${g.h} 0 0 1 ${g.x+g.w},${g.y+g.h} Z" fill="${fill}" ${ST} ${extra}/>`;
  return `<rect${cls} x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" rx="2.5" fill="${fill}" ${ST} ${extra}/>`;}
 // lego-like brick: studs, a darker lower band for depth, and a shine
-function brick(s,g,hex){let o='';const dk=shade(hex,.78);
- if((s==='rect'||s==='sq')&&g.w>=10){const n=Math.max(1,Math.floor(g.w/10)),gap=g.w/n;for(let i=0;i<n;i++)o+=`<rect x="${(g.x+gap*i+gap/2-3).toFixed(1)}" y="${g.y-3.6}" width="6" height="4.4" rx="1.2" fill="${dk}" ${ST}/>`;}
- if(s==='semi')o+=`<ellipse cx="${g.x+g.w/2}" cy="${g.y+2}" rx="3.2" ry="2.4" fill="${dk}" ${ST}/>`;
- o+=geoSVG(s,g,hex);
- if(s==='rect'||s==='sq'){o+=`<rect x="${g.x+1.2}" y="${g.y+g.h*.68}" width="${g.w-2.4}" height="${g.h*.3}" rx="2" fill="${dk}" opacity=".45"/><rect x="${g.x+2.5}" y="${g.y+2.5}" width="${Math.max(2,g.w-5)}" height="2.6" rx="1.3" fill="#fff" opacity=".5"/>`;}
- if(s==='circ')o+=`<ellipse cx="${g.x+g.w*.35}" cy="${g.y+g.h*.3}" rx="${g.w*.12}" ry="${g.h*.08}" fill="#fff" opacity=".55"/>`;
- if(s==='semi')o+=`<path d="M${g.x+g.w*.2},${g.y+g.h*.55} Q${g.x+g.w*.3},${g.y+g.h*.2} ${g.x+g.w*.5},${g.y+g.h*.15}" stroke="#fff" stroke-width="2.4" fill="none" opacity=".5" stroke-linecap="round"/>`;
- if(s==='tri'){const p=g.p,cx=(p[0][0]+p[1][0]+p[2][0])/3,cy=(p[0][1]+p[1][1]+p[2][1])/3;o+=`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="1.6" fill="#fff" opacity=".5"/>`;}
+// ---- crayon kit: wobbly (but stable) lines, hatch texture, double ink outline ----
+const INK='#5c3d2e';
+function jit(x,y,k){const v=Math.sin(x*12.9898+y*78.233+k*37.719)*43758.5453;return v-Math.floor(v)-.5;}
+function wob(pts,a,k){k=k||0;return 'M'+pts.map(([x,y],i)=>`${(x+jit(x,y,k+i)*a).toFixed(1)} ${(y+jit(y,x,k+i+7)*a).toFixed(1)}`).join(' L')+'Z';}
+function subdiv(pts,n){const o=[];for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];for(let k=0;k<n;k++)o.push([a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n]);}return o;}
+const ellPts=(cx,cy,rx,ry,n=22)=>Array.from({length:n},(_,i)=>[cx+rx*Math.cos(i/n*6.2832),cy+ry*Math.sin(i/n*6.2832)]);
+const semiPts=(x,y,w,h)=>Array.from({length:15},(_,i)=>[x+w/2-w/2*Math.cos(i/14*3.1416),y+h-h*Math.sin(i/14*3.1416)]).concat([[x+w*.66,y+h],[x+w*.33,y+h]]);
+function shapePts(s,g){if(s==='tri')return subdiv(g.p,2);if(s==='circ')return ellPts(g.x+g.w/2,g.y+g.h/2,g.w/2,g.h/2);if(s==='semi')return semiPts(g.x,g.y,g.w,g.h);
+ return subdiv([[g.x,g.y],[g.x+g.w,g.y],[g.x+g.w,g.y+g.h],[g.x,g.y+g.h]],3);}
+function crayon(pts,hex,sw){sw=sw||2.2;const k=Math.round(pts[0][0]*3+pts[0][1]);const a=wob(pts,.7,k);
+ return `<path d="${a}" fill="${hex}"/><path d="${a}" fill="url(#hat)"/><path d="${wob(pts,1.3,k+3)}" fill="none" stroke="${INK}" stroke-width="${sw}" stroke-linejoin="round"/><path d="${wob(pts,1.9,k+9)}" fill="none" stroke="${INK}" stroke-width="${sw*.4}" opacity=".5"/>`;}
+function brick(s,g,hex){let o=crayon(shapePts(s,g),hex);
+ if(s==='rect'||s==='sq')o+=`<path d="M${g.x+3} ${g.y+4} l${Math.min(g.w-6,12)} -1" stroke="#fff" stroke-width="2" opacity=".6" stroke-linecap="round"/>`;
+ if(s==='circ'||s==='semi')o+=`<path d="M${g.x+g.w*.25} ${g.y+(s==='semi'?g.h*.5:g.h*.35)} q${g.w*.08} -${g.h*.15} ${g.w*.22} -${g.h*.18}" stroke="#fff" stroke-width="2" fill="none" opacity=".6" stroke-linecap="round"/>`;
  return o;}
 function iconGeo(s){return {sq:{x:12,y:12,w:36,h:36},rect:{x:4,y:18,w:52,h:26},tri:{p:[[30,6],[56,52],[4,52]]},circ:{x:8,y:8,w:44,h:44},semi:{x:4,y:22,w:52,h:28}}[s];}
-function shapeIcon(s,hex){if(s==='star')return `<svg viewBox="0 0 60 60"><polygon points="30,4 37,22 57,23 41,35 47,55 30,43 13,55 19,35 3,23 23,22" fill="${hex}" ${ST}/></svg>`;
- if(s==='heart')return `<svg viewBox="0 0 60 60"><path d="M30 54C8 38 2 28 6 17c4-10 18-11 24-1 6-10 20-9 24 1 4 11-2 21-24 37z" fill="${hex}" ${ST}/></svg>`;
- if(s==='dia')return `<svg viewBox="0 0 60 60"><polygon points="30,3 54,30 30,57 6,30" fill="${hex}" ${ST}/></svg>`;
- if(s==='oval')return `<svg viewBox="0 0 60 60"><ellipse cx="30" cy="30" rx="27" ry="17" fill="${hex}" ${ST}/></svg>`;
- if(s==='pent')return `<svg viewBox="0 0 60 60"><polygon points="30,4 56,23 46,55 14,55 4,23" fill="${hex}" ${ST}/></svg>`;
- if(s==='hex')return `<svg viewBox="0 0 60 60"><polygon points="16,6 44,6 58,30 44,54 16,54 2,30" fill="${hex}" ${ST}/></svg>`;
- return `<svg viewBox="-2 -6 64 64">${brick(s,iconGeo(s),hex)}</svg>`;}
+const heartPts=()=>Array.from({length:28},(_,i)=>{const t=i/28*6.2832;return [30+1.65*16*Math.pow(Math.sin(t),3),28-1.65*(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))];});
+const EXTRA={star:()=>subdiv([[30,4],[37,22],[57,23],[41,35],[47,55],[30,43],[13,55],[19,35],[3,23],[23,22]],1),heart:heartPts,dia:()=>subdiv([[30,3],[54,30],[30,57],[6,30]],2),
+ oval:()=>ellPts(30,30,27,17),pent:()=>subdiv([[30,4],[56,23],[46,55],[14,55],[4,23]],2),hex:()=>subdiv([[16,6],[44,6],[58,30],[44,54],[16,54],[2,30]],2)};
+function shapeIcon(s,hex){if(EXTRA[s])return `<svg viewBox="-2 -2 64 64">${crayon(EXTRA[s](),hex)}</svg>`;return `<svg viewBox="-2 -6 64 64">${brick(s,iconGeo(s),hex)}</svg>`;}
 const TPL={
  rex:{en:'T-Rex',zh:'暴龍',eye:[76,12],mouth:'M70 22h12',steps:[
   {s:'tri',g:[{p:[[2,38],[34,30],[34,50]]}]},{s:'rect',g:[{x:30,y:28,w:36,h:24}]},{s:'sq',g:[{x:58,y:4,w:26,h:24}]},
@@ -370,9 +375,15 @@ const TPL={
  stego:{en:'Stego',zh:'劍龍',eye:[82,52],steps:[
   {s:'semi',g:[{x:16,y:36,w:60,h:28}]},{s:'tri',g:[{p:[[22,48],[30,22],[38,48]],z:-1},{p:[[38,42],[46,14],[54,42]],z:-1},{p:[[54,48],[62,22],[70,48]],z:-1}]},
   {s:'sq',g:[{x:72,y:46,w:16,h:16}]},{s:'rect',g:[{x:24,y:64,w:10,h:16,leg:0},{x:56,y:64,w:10,h:16,leg:1}]}]},
- trike:{en:'Tricera',zh:'三角龍',eye:[69,30],steps:[
-  {s:'rect',g:[{x:16,y:32,w:46,h:26}]},{s:'circ',g:[{x:52,y:16,w:30,h:30}]},{s:'tri',g:[{p:[[74,22],[98,12],[80,30]]},{p:[[76,36],[100,38],[78,44]]}]},
-  {s:'rect',g:[{x:20,y:58,w:10,h:22,leg:0},{x:46,y:58,w:10,h:22,leg:1}]}]},
+ trike:{en:'Tricera',zh:'三角龍',eye:[74,35],mouth:'M78 42q4 2 7-1',steps:[
+  {s:'semi',g:[{x:14,y:26,w:58,h:32}]},{s:'tri',g:[{p:[[0,46],[22,40],[22,54]],z:-1}]},
+  {s:'rect',g:[{x:18,y:52,w:10,h:28,z:-2,leg:0},{x:52,y:52,w:10,h:28,z:-2,leg:1},{x:26,y:56,w:10,h:24,leg:1},{x:58,y:56,w:10,h:24,leg:0}]},
+  {s:'circ',g:[{x:45,y:5,w:38,h:38,z:-1}]},{s:'sq',g:[{x:64,y:26,w:21,h:21}]},{s:'tri',g:[{p:[[85,30],[98,38],[85,44]]}]},
+  {s:'tri',g:[{p:[[66,28],[90,10],[74,30]]},{p:[[72,30],[98,14],[80,32]]},{p:[[83,30],[87,20],[89,30]]}]}]},
+ babytrike:{en:'Baby Tricera',zh:'三角龍寶寶',nobuild:true,eye:[66,45],eyeR:6,mouth:'M72 53q4 3 8-1',steps:[
+  {s:'semi',g:[{x:18,y:44,w:44,h:24}]},{s:'rect',g:[{x:24,y:66,w:10,h:14,leg:0},{x:46,y:66,w:10,h:14,leg:1}]},
+  {s:'circ',g:[{x:36,y:10,w:44,h:44,z:-1}]},{s:'sq',g:[{x:54,y:32,w:28,h:28}]},{s:'tri',g:[{p:[[82,42],[93,49],[82,55]]}]},
+  {s:'tri',g:[{p:[[58,34],[62,24],[66,34]]},{p:[[70,34],[74,24],[78,34]]}]}]},
  ptero:{en:'Ptero',zh:'翼龍',fly:true,eye:[64,22],steps:[
   {s:'circ',g:[{x:36,y:30,w:28,h:28}]},{s:'tri',g:[{p:[[40,40],[0,20],[22,54]],z:-1,wing:1},{p:[[60,40],[100,20],[78,54]],z:-1,wing:1}]},
   {s:'circ',g:[{x:52,y:12,w:20,h:20}]},{s:'tri',g:[{p:[[68,18],[94,24],[68,30]],z:-1}]}]},
@@ -387,42 +398,47 @@ function stepCols(t){const c=shuffle(CK);return pieces(t).map(p=>c[p.step%c.leng
 function solid(t,c){return pieces(t).map(()=>c);}
 // a whole dino. cols = one color per piece. opts.built = pieces done (blueprint), opts.cur = piece being asked for
 function dinoSVG(t,cols,opts){opts=opts||{};const T=TPL[t];const items=[];const all=opts.built===undefined;
- pieces(t).forEach((p,k)=>{const built=all||k<opts.built;let svg=built?brick(p.s,p.g,COL[cols[k]]?COL[cols[k]][0]:cols[k]):geoSVG(p.s,p.g,'',`slot${opts.cur===k?' now':''}`);
+ pieces(t).forEach((p,k)=>{const built=all||k<opts.built;const ck=cols[k]||'green';let svg=built?brick(p.s,p.g,COL[ck]?COL[ck][0]:ck):geoSVG(p.s,p.g,'',`slot${opts.cur===k?' now':''}`);
   if(built&&opts.popIdx===k)svg=`<g class="pop">${svg}</g>`;
   if(p.g.leg!==undefined)svg=`<g data-leg="${p.g.leg}">${svg}</g>`;else if(p.g.wing)svg=`<g data-wing="1">${svg}</g>`;
   items.push({z:p.g.z||0,svg});});
  items.sort((a,b)=>a.z-b.z);let o=items.map(x=>x.svg).join('');
- if(all||opts.built>=pieceCount(t)){const [ex,ey]=T.eye;o+=`<g class="eye"><circle cx="${ex}" cy="${ey}" r="4.6" fill="#fff" ${ST}/><circle cx="${ex+1}" cy="${ey}" r="2.3" fill="#1b1f3b"/><circle cx="${ex+1.9}" cy="${ey-1.1}" r=".9" fill="#fff"/></g>`;
+ if(all||opts.built>=pieceCount(t)){const [ex,ey]=T.eye,er=T.eyeR||4.6;o+=`<g class="eye"><circle cx="${ex}" cy="${ey}" r="${er}" fill="#fff" ${ST}/><circle cx="${ex+1}" cy="${ey}" r="${er*.5}" fill="${INK}"/><circle cx="${ex+er*.4}" cy="${ey-er*.25}" r="${er*.2}" fill="#fff"/></g>`;
   o+=`<ellipse cx="${ex-3}" cy="${ey+8}" rx="3" ry="1.6" fill="#ff8787" opacity=".7"/>`;
-  if(T.mouth)o+=`<path d="${T.mouth}" stroke="#1b1f3b" stroke-width="2" stroke-linecap="round" fill="none"/>`;}
+  if(T.mouth)o+=`<path d="${T.mouth}" stroke="${INK}" stroke-width="2" stroke-linecap="round" fill="none"/>`;}
  return o;}
 const dinoBox=(t,cols,cls)=>`<svg class="${cls||''}" viewBox="-6 -14 112 98" style="overflow:visible">${dinoSVG(t,cols)}</svg>`;
 
 /* ---------- regions (zoo areas + station scenes) ---------- */
 // draws a background into a W×H box; returns svg markup
-let GID=0;
-function areaArt(key,W,H){const sky=H*.36;const gid='sk'+(++GID);const m=Math.min(W,H);let o='';
- const pal={home:['#a5d8ff','#e7f5ff','#69db7c','#8ce99a'],jungle:['#8ce99a','#d3f9d8','#2f9e44','#51cf66'],beach:['#74c0fc','#e7f5ff','#ffe8a3','#ffec99'],snow:['#a5d8ff','#f1f3f5','#dee2e6','#f8f9fa'],volcano:['#ffa94d','#ffe8cc','#868e96','#adb5bd']}[key];
- o+=`<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${pal[0]}"/><stop offset="1" stop-color="${pal[1]}"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#${gid})"/>`;
- if(key==='home'){o+=`<circle cx="${W*.12}" cy="${sky*.4}" r="${m*.07}" fill="#ffe066" ${ST}/><g fill="#fff" opacity=".9"><ellipse cx="${W*.42}" cy="${sky*.3}" rx="${W*.07}" ry="${sky*.1}"/><ellipse cx="${W*.48}" cy="${sky*.24}" rx="${W*.05}" ry="${sky*.12}"/></g>`;}
- if(key==='jungle'){for(let i=0;i<5;i++){const x=W*(.08+i*.22),h=sky*(.62+(i%2)*.18);o+=`<path d="M${x} ${sky+12} q${m*.02} ${-h*.5} 0 ${-h}" stroke="#8b5a2b" stroke-width="${m*.025}" fill="none" stroke-linecap="round"/>`;
-  for(let a=0;a<5;a++){const ang=-2.6+a*.55;o+=`<path d="M${x} ${sky+12-h} q${Math.cos(ang)*m*.08} ${Math.sin(ang)*m*.08-10} ${Math.cos(ang)*m*.14} ${Math.sin(ang)*m*.05+12}" stroke="#2b8a3e" stroke-width="${m*.03}" fill="none" stroke-linecap="round"/>`;}}}
- if(key==='beach'){o+=`<circle cx="${W*.85}" cy="${sky*.4}" r="${m*.07}" fill="#ffd43b" ${ST}/><rect y="${sky-6}" width="${W}" height="${H*.18}" fill="#339af0"/><path d="M0 ${sky+H*.12} q${W*.1} -10 ${W*.2} 0 t${W*.2} 0 t${W*.2} 0 t${W*.2} 0 t${W*.2} 0" stroke="#fff" stroke-width="4" fill="none"/>`;}
- if(key==='snow'){o+=`<path d="M${W*.05} ${sky+10} L${W*.25} ${sky*.15} L${W*.45} ${sky+10}Z" fill="#ced4da" ${ST}/><path d="M${W*.19} ${sky*.4} L${W*.25} ${sky*.15} L${W*.31} ${sky*.4} l-${W*.03} 8 -${W*.03} -6z" fill="#fff"/><path d="M${W*.5} ${sky+10} L${W*.72} ${sky*.05} L${W*.95} ${sky+10}Z" fill="#adb5bd" ${ST}/><path d="M${W*.655} ${sky*.35} L${W*.72} ${sky*.05} L${W*.785} ${sky*.35} l-${W*.03} 8 -${W*.03} -6z" fill="#fff"/>`;
-  for(let i=0;i<24;i++)o+=`<circle cx="${(i*97)%W}" cy="${(i*53)%(H*.9)}" r="${2+i%3}" fill="#fff" opacity=".9"/>`;}
- if(key==='volcano'){o+=`<path d="M${W*.45} ${sky+12} L${W*.62} ${sky*.2} H${W*.74} L${W*.92} ${sky+12}Z" fill="#5c4033" ${ST}/><path d="M${W*.62} ${sky*.2} q${W*.06} 18 ${W*.12} 0" fill="#ff6b6b" ${ST}/><path d="M${W*.64} ${sky*.25} q-10 30 4 60 M${W*.71} ${sky*.25} q14 30 0 60" stroke="#fa5252" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="#868e96" opacity=".75"><circle cx="${W*.68}" cy="${sky*.05}" r="${m*.05}"/><circle cx="${W*.74}" cy="${-sky*.06}" r="${m*.06}"/></g>`;}
- o+=`<path d="M0 ${sky+10} Q ${W*.25} ${sky-30} ${W*.5} ${sky+6} T ${W} ${sky}" fill="${pal[2]}" ${ST}/><rect y="${sky+6}" width="${W}" height="${H}" fill="${pal[3]}"/>`;
- if(key==='home')o+=`<ellipse cx="${W*.2}" cy="${H*.62}" rx="${W*.12}" ry="${H*.07}" fill="#74c0fc" ${ST}/><g fill="#2f9e44" ${ST}><circle cx="${W*.63}" cy="${sky-6}" r="${H*.07}"/><circle cx="${W*.71}" cy="${sky-12}" r="${H*.08}"/></g>`;
+function areaArt(key,W,H){const sky=H*.36,m=Math.min(W,H);let o='';
+ const pal={home:['#a5d8ff','#b2f2bb','#d3f9d8'],jungle:['#b2f2bb','#69db7c','#a9e34b'],beach:['#a5d8ff','#ffe8a3','#fff3bf'],snow:['#d0ebff','#e9ecef','#f8f9fa'],volcano:['#ffc078','#adb5bd','#ced4da']}[key];
+ o+=`<rect width="${W}" height="${H}" fill="#fbf3e4"/><rect width="${W}" height="${sky+20}" fill="${pal[0]}" opacity=".55"/><rect width="${W}" height="${sky+20}" fill="url(#skyh)"/>`;
+ const cr=(pts,c,sw)=>crayon(pts,c,sw||2.4);
+ if(key==='home'||key==='beach'){o+=cr(ellPts(W*.86,sky*.42,m*.07,m*.07),'#ffd43b');o+=cr(ellPts(W*.4,sky*.3,W*.07,sky*.1),'#fff',1.6)+cr(ellPts(W*.47,sky*.25,W*.05,sky*.12),'#fff',1.6);}
+ if(key==='beach')o+=`<rect y="${sky-4}" width="${W}" height="${H*.16}" fill="#74c0fc"/><rect y="${sky-4}" width="${W}" height="${H*.16}" fill="url(#hat)"/>`+Array.from({length:6},(_,i)=>`<path d="M${W*(.05+i*.17)} ${sky+H*.06} q${W*.03} -8 ${W*.06} 0 t${W*.06} 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>`).join('');
+ if(key==='snow'){o+=cr([[W*.04,sky+12],[W*.24,sky*.12],[W*.44,sky+12]],'#ced4da')+cr([[W*.18,sky*.42],[W*.24,sky*.12],[W*.3,sky*.42],[W*.24,sky*.36]],'#fff',1.6);
+  o+=cr([[W*.48,sky+12],[W*.72,sky*.02],[W*.96,sky+12]],'#adb5bd')+cr([[W*.65,sky*.35],[W*.72,sky*.02],[W*.79,sky*.35],[W*.72,sky*.28]],'#fff',1.6);
+  for(let i=0;i<22;i++)o+=`<path d="M${(i*97)%W} ${(i*53)%(H*.85)} l3 3 m0 -3 l-3 3" stroke="#74c0fc" stroke-width="1.6"/>`;}
+ if(key==='volcano'){o+=cr([[W*.44,sky+14],[W*.61,sky*.22],[W*.75,sky*.22],[W*.93,sky+14]],'#8d6e63')+cr([[W*.61,sky*.22],[W*.68,sky*.34],[W*.75,sky*.22]],'#ff6b6b',1.8);
+  o+=`<path d="M${W*.64} ${sky*.28} q-8 30 3 60 M${W*.72} ${sky*.28} q12 30 0 60" stroke="#fa5252" stroke-width="4" fill="none" stroke-linecap="round"/>`+cr(ellPts(W*.68,sky*.02,m*.05,m*.04),'#ced4da',1.6)+cr(ellPts(W*.75,-sky*.06,m*.06,m*.05),'#ced4da',1.6);}
+ const hill=[];for(let i=0;i<=12;i++){const x=W*i/12;hill.push([x,sky+8-Math.sin(i/12*3.1416*1.3)*H*.06]);}hill.push([W,H],[0,H]);
+ o+=`<path d="${wob(hill,2.5,4)}" fill="${pal[1]}"/><path d="${wob(hill,2.5,4)}" fill="url(#hat)"/><path d="${wob(hill.slice(0,13),2,5).replace(/Z$/,'')}" stroke="${INK}" stroke-width="2.2" fill="none"/>`;
+ o+=`<rect y="${sky+18}" width="${W}" height="${H}" fill="${pal[2]}" opacity=".7"/>`;
+ if(key==='jungle'||key==='home'){for(let x=4;x<W;x+=9)o+=`<path d="M${x} ${H} q2 -${8+(x*7)%10} ${2+(x%3)} -${14+(x*13)%10}" stroke="${key==='jungle'?'#2f9e44':'#51cf66'}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".8"/>`;}
+ if(key==='jungle')for(let i=0;i<5;i++){const x=W*(.08+i*.22),h=sky*(.62+(i%2)*.18),b=sky+12;o+=`<path d="M${x} ${b} q${m*.02} ${-h*.5} 0 ${-h}" stroke="#8b5e34" stroke-width="${m*.022}" fill="none" stroke-linecap="round"/><path d="M${x} ${b} q${m*.02} ${-h*.5} 0 ${-h}" stroke="${INK}" stroke-width="1.4" fill="none" transform="translate(${m*.011},0)"/>`;
+  for(let a=0;a<5;a++){const an=-2.6+a*.55;o+=`<path d="M${x} ${b-h} q${Math.cos(an)*m*.08} ${Math.sin(an)*m*.08-10} ${Math.cos(an)*m*.14} ${Math.sin(an)*m*.05+12}" stroke="#2b8a3e" stroke-width="${m*.026}" fill="none" stroke-linecap="round"/>`;}}
+ if(key==='home')o+=cr(ellPts(W*.2,H*.64,W*.12,H*.07),'#74c0fc')+cr(ellPts(W*.64,sky-6,H*.07,H*.07),'#40c057')+cr(ellPts(W*.72,sky-12,H*.08,H*.08),'#2f9e44');
  if(key==='beach')o+=`<text x="${W*.15}" y="${H*.9}" font-size="${m*.08}">🐚</text><text x="${W*.8}" y="${H*.75}" font-size="${m*.07}">⭐</text>`;
- if(key==='jungle')o+=`<g fill="#37b24d" ${ST}><ellipse cx="${W*.1}" cy="${H*.92}" rx="${W*.08}" ry="${H*.06}"/><ellipse cx="${W*.9}" cy="${H*.88}" rx="${W*.08}" ry="${H*.07}"/></g>`;
  if(key==='volcano')o+=`<path d="M${W*.1} ${H*.8} q${W*.1} -12 ${W*.2} 0" stroke="#fa5252" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"/>`;
  return o;}
 const AREAS={home:['🏞','Home','家園'],jungle:['🌴','Jungle','叢林'],beach:['🏖','Beach','海灘'],snow:['❄️','Snow','雪山'],volcano:['🌋','Volcano','火山']};
 
 /* ---------- the story ---------- */
-const PIPC=['green','yellow','orange','orange','green','green'];
-const CAST={pip:{t:'trike',c:PIPC,sz:.6,em:'🦕',pitch:1.6},nar:{em:'⭐'},
- mom:{t:'trike',c:PIPC,sz:1.15,em:'🦖',pitch:1},neckmom:{t:'brachio',c:solid('brachio','yellow'),sz:1.1,em:'🦕',pitch:1.05},
+const PIPC=['green','green','green','#ffa8a8','#b2f2bb','orange','#fff4e6','#fff4e6'];
+const MOMC=['green','green','#40c057','#40c057','green','green','orange','yellow','orange','#fff4e6','#fff4e6','#fff4e6'];
+const CAST={pip:{t:'babytrike',c:PIPC,sz:.6,em:'🦕',pitch:1.6},nar:{em:'⭐'},
+ mom:{t:'trike',c:MOMC,sz:1.15,em:'🦖',pitch:1},neckmom:{t:'brachio',c:solid('brachio','yellow'),sz:1.1,em:'🦕',pitch:1.05},
  ptmom:{t:'ptero',c:solid('ptero','blue'),sz:1,em:'🪽',pitch:1.25},ankmom:{t:'ankylo',c:solid('ankylo','orange'),sz:1,em:'🛡️',pitch:.95}};
 const CH=[
  {key:'jungle',em:'🌴',en:'Jungle Station',zh:'叢林站',friend:'neckmom',goal:'rex',baby:{t:'brachio',c:solid('brachio','yellow')},
@@ -468,7 +484,7 @@ function viewSVG(v,spk,W,H){const base=Math.min(H*.55,W*.3);let o='';const pr=v.
  if(pr&&pr[0]==='bridge')o+=propSVG('bridge',W*pr[1],W,H,pr[2],base);
  v.items.forEach(([k,xf,sc,left])=>{const c=CAST[k];if(!c)return;const sz=base*sc/100;const x=W*xf-50*sz;const fly=TPL[c.t].fly;const y=(fly?H*.55:H*.9)-80*sz;
   o+=`<g transform="translate(${left?x+100*sz:x},${y}) scale(${left?-sz:sz},${sz})"><g class="${k===spk?'talk':''}">${dinoSVG(c.t,c.c)}</g></g>`;
-  if(k==='goal'&&c.name)o+=`<g><rect x="${W*xf-26}" y="${H*.9+2}" width="52" height="20" rx="7" fill="#fff" ${ST} stroke-width="2"/><text x="${W*xf}" y="${H*.9+17}" text-anchor="middle" font-size="14" font-weight="900" fill="#1b1f3b">${c.name}</text></g>`;});
+  if(k==='goal'&&c.name)o+=`<g><rect x="${W*xf-26}" y="${H*.9+2}" width="52" height="20" rx="7" fill="#fff" ${ST} stroke-width="2"/><text x="${W*xf}" y="${H*.9+17}" text-anchor="middle" font-size="14" font-weight="900" fill="#4a3426">${c.name}</text></g>`;});
  if(pr&&pr[0]!=='bridge')o+=propSVG(pr[0],W*pr[1],W,H,pr[2],base);
  if(v.hearts)for(let k=0;k<5;k++)o+=`<text x="${W*(.3+k*.1)}" y="${H*(.18+(k%2)*.08)}" font-size="${Math.min(W,H)*.08}">❤️</text>`;
  return o;}
@@ -491,7 +507,7 @@ $('introZh').innerHTML=zh('洛明的恐龍世界');$('startZh').innerHTML=zh('�
 $('zZoo').innerHTML=zh('我的動物園');$('zBuild').innerHTML=zh('蓋恐龍');$('zBuild2').innerHTML=zh('蓋恐龍');$('zFeed').querySelector('small').innerHTML=zh('餵寶寶');$('zTrain').innerHTML=zh('火車');
 (function introArt(){const T=pieces('rex');const cols=['green','orange','blue','purple','purple'];let o='';
  T.forEach((p,k)=>{o+=`<g class="fall" style="animation-delay:${k*.35}s">${brick(p.s,p.g,COL[cols[k]][0])}</g>`;});
- o+=`<g class="fall" style="animation-delay:${T.length*.35}s"><circle cx="76" cy="12" r="4.6" fill="#fff" ${ST}/><circle cx="77" cy="12" r="2.3" fill="#1b1f3b"/><path d="M70 22h12" stroke="#1b1f3b" stroke-width="2" stroke-linecap="round"/></g>`;
+ o+=`<g class="fall" style="animation-delay:${T.length*.35}s"><circle cx="76" cy="12" r="4.6" fill="#fff" ${ST}/><circle cx="77" cy="12" r="2.3" fill="#4a3426"/><path d="M70 22h12" stroke="#4a3426" stroke-width="2" stroke-linecap="round"/></g>`;
  $('introSvg').innerHTML=o;})();
 let introTimer=null;
 $('start').onclick=()=>{ac();musicOn();say("Welcome to Milo's Dino World!",'歡迎來到洛明的恐龍世界!');
@@ -518,8 +534,8 @@ function stationPts(W,H){const land=W/H>=1;
  return land?[[.1,.72],[.3,.38],[.5,.7],[.7,.36],[.89,.62]].map(([x,y])=>[x*W,y*H]):[[.3,.88],[.7,.71],[.3,.54],[.7,.38],[.36,.22]].map(([x,y])=>[x*W,y*H]);}
 function trainSVG(s){return `<g transform="scale(${s})"><rect x="-34" y="-30" width="44" height="26" rx="5" fill="#e03131" ${ST}/><rect x="4" y="-46" width="26" height="42" rx="4" fill="#1c7ed6" ${ST}/><rect x="9" y="-40" width="16" height="12" rx="2" fill="#d0ebff" ${ST}/><rect x="-28" y="-44" width="9" height="15" fill="#495057" ${ST}/><circle cx="-24" cy="-52" r="5" fill="#fff" opacity=".85"/><circle cx="-18" cy="-62" r="6" fill="#fff" opacity=".7"/><rect x="-38" y="-8" width="72" height="6" rx="3" fill="#ffd43b" ${ST}/><circle cx="-22" cy="2" r="8" fill="#343a40" ${ST}/><circle cx="2" cy="2" r="8" fill="#343a40" ${ST}/><circle cx="22" cy="2" r="8" fill="#343a40" ${ST}/></g>`;}
 function mapDraw(){const r=$('mapBox').getBoundingClientRect();const W=Math.max(260,r.width),H=Math.max(240,r.height);const m=Math.min(W,H);const pts=stationPts(W,H);
- let o=`<rect width="${W}" height="${H}" fill="#74c0fc"/><path d="M${W*.04} ${H*.2} Q${W*.02} ${H*.02} ${W*.3} ${H*.06} T${W*.96} ${H*.12} Q${W*.99} ${H*.6} ${W*.92} ${H*.92} T${W*.1} ${H*.94} Q${W*.01} ${H*.6} ${W*.04} ${H*.2}Z" fill="#b2f2bb" ${ST} stroke-width="4"/>`;
- o+=`<text x="${W*.5}" y="${H*.08+14}" text-anchor="middle" font-size="${Math.max(15,m*.045)}" font-weight="900" fill="#1b1f3b">Dino Island · 恐龍島</text>`;
+ let o=`<rect width="${W}" height="${H}" fill="#a5d8ff"/><rect width="${W}" height="${H}" fill="url(#skyh)"/>`+crayon(ellPts(W/2,H/2,W*.46,H*.44,40),'#c3fae8',3);
+ o+=`<text x="${W*.5}" y="${W/H>=1?H*.08+14:H*.97}" text-anchor="middle" font-size="${Math.max(15,m*.045)}" font-weight="900" fill="#4a3426">Dino Island · 恐龍島</text>`;
  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(0)+' '+p[1].toFixed(0)).join(' ');
  o+=`<path d="${d}" stroke="#8b5a2b" stroke-width="${m*.035}" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path d="${d}" stroke="#fff" stroke-width="${m*.008}" stroke-dasharray="${m*.02} ${m*.02}" fill="none"/>`;
  const R=Math.max(30,m*.085);
@@ -527,10 +543,10 @@ function mapDraw(){const r=$('mapBox').getBoundingClientRect();const W=Math.max(
  pts.forEach((p,i)=>{const open=i===0||i-1<=S.ch,done=i>0&&i-1<S.ch,cur=i>0&&i-1===S.ch;
   o+=`<g class="stn" data-i="${i}" transform="translate(${p[0]},${p[1]})" opacity="${open?1:.55}">
    ${cur?`<circle r="${R*1.25}" fill="#ffd43b" opacity=".6"><animate attributeName="r" values="${R*1.1};${R*1.35};${R*1.1}" dur="1.4s" repeatCount="indefinite"/></circle>`:''}
-   <circle r="${R}" fill="${open?'#fff':'#dee2e6'}" ${ST} stroke-width="4"/><text y="${R*.32}" text-anchor="middle" font-size="${R*.95}">${open?info[i][0]:'🔒'}</text>
+   ${crayon(ellPts(0,0,R,R,18),open?'#fff':'#dee2e6',3)}<text y="${R*.32}" text-anchor="middle" font-size="${R*.95}">${open?info[i][0]:'🔒'}</text>
    ${done?`<text x="${R*.7}" y="${-R*.55}" font-size="${R*.6}">✅</text>`:''}
    <rect x="${-Math.max(R*1.6,info[i][1].length*R*.11+8)}" y="${R*1.08}" width="${Math.max(R*3.2,info[i][1].length*R*.22+16)}" height="${R*.62}" rx="${R*.25}" fill="#fff" ${ST} stroke-width="2"/>
-   <text y="${R*1.55}" text-anchor="middle" font-size="${Math.max(12,R*.36)}" font-weight="900" fill="#1b1f3b">${info[i][1]}</text></g>`;});
+   <text y="${R*1.55}" text-anchor="middle" font-size="${Math.max(12,R*.36)}" font-weight="900" fill="#4a3426">${info[i][1]}</text></g>`;});
  const tp=pts[Math.min(trainAt,4)];o+=`<g id="train" transform="translate(${tp[0]},${tp[1]-R*.9})">${trainSVG(m/420)}</g>`;
  $('mapSvg').setAttribute('viewBox',`0 0 ${W} ${H}`);$('mapSvg').innerHTML=o;
  $('mapSvg').querySelectorAll('.stn').forEach(g=>g.addEventListener('click',()=>tapStation(+g.dataset.i)));
@@ -580,7 +596,7 @@ function finale(ci){const c=CH[ci];
  const cast=c.key==='volcano'?['pip','mom']:['pip',c.friend];
  scene(c.key,cast,lines,()=>{SFX.fanfare();confetti(60);
   const finish=()=>{S.ch=Math.max(S.ch,ci+1);S.snacks+=2;save();showWallet(true);
-   if(ci===3){unlockArea('home');S.dinos.push({t:'trike',c:PIPC,name:'PIP',area:'volcano',stage:0,hearts:0});S.dinos.push({t:'trike',c:PIPC,name:'MOM',area:'volcano',stage:2,hearts:0});save();
+   if(ci===3){unlockArea('home');S.dinos.push({t:'babytrike',c:PIPC,name:'PIP',area:'volcano',stage:0,hearts:0});S.dinos.push({t:'trike',c:MOMC,name:'MOM',area:'volcano',stage:2,hearts:0});save();
     toast('🎉 THE END 🎉',2500);say('Pip and Mommy moved into your zoo! Feed Pip to help him grow!','皮皮和媽媽搬進你的動物園了!餵皮皮讓他長大!');Z.area='volcano';setTimeout(()=>{musicOn();show('zoo');},400);return;}
    trainAt=ci+1;goMap();toast(`${CH[ci+1].em} ${bi(CH[ci+1].en+' is open!',CH[ci+1].zh+'開放了!')}`,2200);};
   if(c.baby){say('Give the baby a name!','幫寶寶取名字!');nameDino(c.baby.t,c.baby.c,true,name=>{S.dinos.push({t:c.baby.t,c:c.baby.c,name,area:c.key,stage:0,hearts:0});save();afterName(`Baby ${name} moves to your zoo! Feed ${name} to help her grow.`,`${name}寶寶搬進你的動物園了!餵牠讓牠長大。`,finish,'🚂');});}
@@ -598,9 +614,9 @@ $('mapBuild').onclick=()=>{ac();BACK=goMap;openPick();};$('zBuildB').onclick=()=
 function openPick(star){musicOn();if(CUR!==null&&SCREEN==='station')BACK=()=>openStation(CUR);show('pick');const goal=star||(CUR!==null&&!S.goal[CUR]?CH[CUR].goal:null);
  $('pickBin').innerHTML=binHTML();
  $('pickTxt').innerHTML=bi('Pick a dino to build!','選一隻恐龍來蓋!');
- const ok=Object.keys(TPL).filter(canBuild);
+ const ok=Object.keys(TPL).filter(k=>!TPL[k].nobuild&&canBuild(k));
  say(ok.length?'Pick a dino to build!':'You need more bricks! Play a job to earn bricks.',ok.length?'選一隻恐龍來蓋!':'積木不夠!去玩任務賺積木吧!');
- $('pickGrid').innerHTML=Object.keys(TPL).map(k=>{const T=TPL[k];const can=canBuild(k);return `<button class="pickc${can?'':' no'}${k===goal?' star':''}" data-t="${k}">${k===goal?'<span class="flag">⭐ Goal</span>':''}<svg class="d" viewBox="-6 -14 112 98">${dinoSVG(k,can?stepCols(k):solid(k,'#dee2e6'))}</svg><span class="en">${T.en}</span><span class="zh">${zh(T.zh)}</span>${needChips(k)}</button>`;}).join('');
+ $('pickGrid').innerHTML=Object.keys(TPL).filter(k=>!TPL[k].nobuild).map(k=>{const T=TPL[k];const can=canBuild(k);return `<button class="pickc${can?'':' no'}${k===goal?' star':''}" data-t="${k}">${k===goal?'<span class="flag">⭐ Goal</span>':''}<svg class="d" viewBox="-6 -14 112 98">${dinoSVG(k,can?stepCols(k):solid(k,'#dee2e6'))}</svg><span class="en">${T.en}</span><span class="zh">${zh(T.zh)}</span>${needChips(k)}</button>`;}).join('');
  $('pickGrid').querySelectorAll('.pickc').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(!canBuild(t)){SFX.boing();const n=needOf(t);const miss=SHAPES.filter(s=>(n[s]||0)>S.bin[s].length).map(s=>[n[s]-S.bin[s].length,s]);const [k,s]=miss[0];say(`You need ${k} more ${k>1?SH[s][1]:SH[s][0]}!`,`還需要${k}個${SH[s][2]}!`);return;}startBuild(t);});
  SOLVE=()=>{const t=goal&&canBuild(goal)?goal:ok[0];if(t)startBuild(t);};}
 let B=null,buildBusy=false;
@@ -668,11 +684,11 @@ function zooStart(){if(!S.areas.includes(Z.area))Z.area='home';zooTabs();$('zFee
  const r=$('field').getBoundingClientRect();Z.W=Math.max(200,r.width);Z.H=Math.max(200,r.height);const W=Z.W,H=Z.H,svg=$('fieldSvg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
  let o=areaArt(Z.area,W,H);o+=`<path d="M0 ${H-14} H${W}" stroke="#8b5a2b" stroke-width="5"/>`;for(let x=10;x<W;x+=40)o+=`<rect x="${x}" y="${H-30}" width="8" height="30" rx="2" fill="#c08552" ${ST}/>`;
  o+=`<g id="dinoLayer"></g>`;const here=S.dinos.map((d,i)=>[d,i]).filter(([d])=>(d.area||'home')===Z.area);
- if(!here.length)o+=`<g><rect x="${W/2-150}" y="${H*.42}" width="300" height="74" rx="16" fill="#fff" ${ST}/><text x="${W/2}" y="${H*.42+32}" text-anchor="middle" font-size="21" font-weight="800" fill="#1b1f3b">No dinos here yet!</text><text x="${W/2}" y="${H*.42+60}" text-anchor="middle" font-size="18" font-weight="700" fill="#1b1f3b">這裡還沒有恐龍!</text></g>`;
+ if(!here.length)o+=`<g><rect x="${W/2-150}" y="${H*.42}" width="300" height="74" rx="16" fill="#fff" ${ST}/><text x="${W/2}" y="${H*.42+32}" text-anchor="middle" font-size="21" font-weight="800" fill="#4a3426">No dinos here yet!</text><text x="${W/2}" y="${H*.42+60}" text-anchor="middle" font-size="18" font-weight="700" fill="#4a3426">這裡還沒有恐龍!</text></g>`;
  svg.innerHTML=o;const base=Math.min(H*.26,W*.22,150)/100;const layer=svg.querySelector('#dinoLayer');
  Z.ds=here.map(([d,idx])=>{const stg=d.stage===undefined?2:d.stage;const size=base*STAGE_SZ[stg];const fly=TPL[d.t].fly;const g=document.createElementNS(NS,'g');g.setAttribute('class','dino');
   const hearts=stg<2?`<text x="${50*size}" y="${80*size+40}" text-anchor="middle" font-size="13">${'❤️'.repeat(d.hearts||0)}${'🤍'.repeat(3-(d.hearts||0))}</text>`:'';
-  g.innerHTML=`<g class="body"><g class="sc">${dinoSVG(d.t,d.c)}</g></g>${stg<2?`<text class="bottle" x="${50*size}" y="-6" text-anchor="middle" font-size="18">🍼</text>`:''}<g><rect x="${50*size-28}" y="${80*size+4}" width="56" height="22" rx="8" fill="#fff" ${ST} stroke-width="2"/><text x="${50*size}" y="${80*size+20}" text-anchor="middle" font-size="15" font-weight="900" fill="#1b1f3b" letter-spacing="1">${d.name}</text></g>${hearts}`;
+  g.innerHTML=`<g class="body"><g class="sc">${dinoSVG(d.t,d.c)}</g></g>${stg<2?`<text class="bottle" x="${50*size}" y="-6" text-anchor="middle" font-size="18">🍼</text>`:''}<g><rect x="${50*size-28}" y="${80*size+4}" width="56" height="22" rx="8" fill="#fff" ${ST} stroke-width="2"/><text x="${50*size}" y="${80*size+20}" text-anchor="middle" font-size="15" font-weight="900" fill="#4a3426" letter-spacing="1">${d.name}</text></g>${hearts}`;
   layer.appendChild(g);const o={d,idx,g,body:g.querySelector('.body'),legs:[...g.querySelectorAll('[data-leg]')],wings:[...g.querySelectorAll('[data-wing]')],s:size,fly,stg,
    x:Math.random()*(W-100*size),y:fly?H*(.08+Math.random()*.12):H*(.42+Math.random()*.3),vx:(20+Math.random()*25)*(stg<2?.7:1)*(Math.random()<.5?-1:1),ph:Math.random()*6,jump:0,vj:0,pause:0};
   g.addEventListener('pointerdown',ev=>{ev.preventDefault();ac();tapDino(o);});return o;});
@@ -757,10 +773,12 @@ const WORDS=[['CAT','🐱'],['DOG','🐶'],['SUN','☀️'],['BUG','🐛'],['PIG
 const WORDS4=[['FROG','🐸'],['DUCK','🦆'],['FISH','🐟'],['STAR','⭐'],['CRAB','🦀'],['DRUM','🥁'],['NEST','🪺'],['TENT','⛺'],['MILK','🥛'],['BELL','🔔'],['SHIP','🚢'],['CAKE','🎂']];
 const FIRST=[['DOG','🐶'],['CAT','🐱'],['SUN','☀️'],['BUS','🚌'],['PIG','🐷'],['MOON','🌙'],['FISH','🐟'],['TREE','🌳'],['RAIN','🌧️'],['LION','🦁'],['KITE','🪁'],['HAT','🎩'],['NOSE','👃'],['GOAT','🐐'],['WOLF','🐺'],['APPLE','🍎']];
 const smallDino=(t,cols)=>`<svg viewBox="-6 -14 112 98">${dinoSVG(t,cols||stepCols(t))}</svg>`;
-const eggSVG=(fill,mark)=>`<svg viewBox="0 0 60 76"><path d="M30 4C14 4 4 30 4 46c0 16 12 26 26 26s26-10 26-26C56 30 46 4 30 4z" fill="${fill}" ${ST} stroke-width="3"/><ellipse cx="20" cy="24" rx="5" ry="8" fill="#fff" opacity=".5"/>${mark?`<g transform="translate(14,30) scale(.53)">${mark}</g>`:''}</svg>`;
+const eggPts=Array.from({length:26},(_,i)=>{const t=i/26*6.2832,c=Math.cos(t);return [30+26*Math.sin(t)*(c>0?.82:1),40-34*c];});
+const eggSVG=(fill,mark)=>`<svg viewBox="0 0 60 76">${crayon(eggPts,fill,2.6)}<path d="M18 26q2-8 8-12" stroke="#fff" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/>${mark?`<g transform="translate(14,30) scale(.53)">${mark}</g>`:''}</svg>`;
 const nestSVG=inner=>`<svg viewBox="0 0 100 70"><path d="M6 30c4 30 84 30 88 0z" fill="#b0763c" ${ST} stroke-width="3"/><path d="M10 32c20 8 60 8 80 0M14 42c20 8 52 8 72 0" stroke="#7a4b16" stroke-width="3" fill="none"/>${inner||''}</svg>`;
-const iconInner=(s,hex)=>shapeIcon(s,hex||'#1b1f3b').replace(/^<svg[^>]*>|<\/svg>$/g,'');
-const foot=hex=>`<svg viewBox="0 0 60 60"><path d="M30 58c-12 0-18-8-16-18 1-6 6-9 6-9l-8-20c-1-4 4-6 6-2l8 15 4-20c1-4 6-4 6 0l1 20 8-15c2-4 7-2 6 2l-8 20s5 3 6 9c2 10-4 18-16 18z" fill="${hex}" ${ST} stroke-width="3"/></svg>`;
+const iconInner=(s,hex)=>shapeIcon(s,hex||'#4a3426').replace(/^<svg[^>]*>|<\/svg>$/g,'');
+const FOOTD='M30 58c-12 0-18-8-16-18 1-6 6-9 6-9l-8-20c-1-4 4-6 6-2l8 15 4-20c1-4 6-4 6 0l1 20 8-15c2-4 7-2 6 2l-8 20s5 3 6 9c2 10-4 18-16 18z';
+const foot=hex=>`<svg viewBox="0 0 60 60"><path d="${FOOTD}" fill="${hex}"/><path d="${FOOTD}" fill="url(#hat)"/><path d="${FOOTD}" fill="none" ${ST} stroke-width="2.6"/><path d="${FOOTD}" fill="none" stroke="${INK}" stroke-width="1" opacity=".5" transform="translate(1.2,-.8)"/></svg>`;
 function optsHTML(list){return `<div class="opts">${list.map((h,i)=>`<button class="opt" data-i="${i}" data-drop="${i}">${h}</button>`).join('')}</div>`;}
 const shakeIt=b=>{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),450);};
 const nm=(n,f)=>n===1?f[1]:f[2];
@@ -902,6 +920,7 @@ const MG={
 };
 
 /* ---------- boot ---------- */
+migrate();
 showWallet();
 if('speechSynthesis' in window)try{speechSynthesis.onvoiceschanged=()=>{for(const k in vcache)delete vcache[k];};}catch(e){}
 try{window.KA&&KA.setKid&&KA.setKid(KID);}catch(e){}
