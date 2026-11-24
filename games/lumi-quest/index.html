@@ -300,6 +300,7 @@ button.armed { outline: 4px solid var(--gold); outline-offset: 3px; animation: a
     <div id="rotate" hidden><div>📱↻<p>Turn your phone sideways</p></div></div>
   </div>
 </div>
+<script src="../../tracker.js" data-game="lumi-quest"></script>
 <script>
 // Question engine. Every world has its own subject and its own style of question.
 // Each question: {id, type:'mc'|'tf'|'order', q, choices?, answer?, items?, correct?, why, big?, sub?}
@@ -2381,7 +2382,7 @@ let QS = null;
 function askQuestion(subject) {
   return new Promise(res => {
     const q = Q.next(subject, S.kid, S.seen); S.stats.asked++;
-    QS = { q, tries: 0, res, seq: [], done: false };
+    QS = { q, tries: 0, res, seq: [], done: false }; if (window.KA) { KA.setKid(S.kid); KA.shown(); }
     const sub = Q.SUBJECTS[q.subject];
     $('qStyle').textContent = `${sub.style} · ${sub.name}`;
     wordify($('qText'), q.q); $('qWhy').hidden = true; $('qNext').hidden = true; $('qMsg').textContent = q.type === 'order' ? 'Tap them one by one' : 'Tap a word to hear it';
@@ -2396,14 +2397,17 @@ function askQuestion(subject) {
 function drawTries() { $('qTries').textContent = QS.tries === 0 ? '● ●' : '● ○'; }
 function pickAnswer(i) {
   if (!QS || QS.done) return; const q = QS.q, btns = [...$('qChoices').children];
+  const _ka = (ok, given) => { try { try{window.KA && KA.answer({ q: String(q.q), qid: q.id, given, expected: q.type === 'order' ? q.correct.map(j => q.items[j]).join(' → ') : q.choices[q.answer], correct: ok, tryNo: QS.tries + 1, topic: q.type });}catch(e){} } catch (e) {} };
   if (q.type === 'order') {
     if (btns[i].classList.contains('locked')) return;
-    if (i === q.correct[QS.seq.length]) { QS.seq.push(i); btns[i].classList.add('locked'); btns[i].dataset.n = QS.seq.length; Snd.play('tap'); if (QS.seq.length === q.correct.length) finishQ(true); return; }
-    QS.tries++; drawTries(); Snd.play('bad'); QS.seq = []; btns.forEach(b => { b.classList.remove('locked'); delete b.dataset.n; }); shake($('qCard'));
+    if (i === q.correct[QS.seq.length]) { if (QS.seq.length + 1 === q.correct.length) _ka(true, q.correct.map(j => q.items[j]).join(' → '));
+      QS.seq.push(i); btns[i].classList.add('locked'); btns[i].dataset.n = QS.seq.length; Snd.play('tap'); if (QS.seq.length === q.correct.length) finishQ(true); return; }
+    _ka(false, QS.seq.map(j => q.items[j]).concat([q.items[i]]).join(' → ')); QS.tries++; drawTries(); Snd.play('bad'); QS.seq = []; btns.forEach(b => { b.classList.remove('locked'); delete b.dataset.n; }); shake($('qCard'));
     if (QS.tries >= 2) finishQ(false); else $('qMsg').textContent = 'Not quite. Start again from the smallest!';
     return;
   }
   if (btns[i].disabled) return;
+  _ka(i === q.answer, q.choices[i]);
   if (i === q.answer) { finishQ(true); return; }
   QS.tries++; drawTries(); Snd.play('bad'); btns[i].classList.add('wrong'); btns[i].disabled = true; shake($('qCard'));
   if (QS.tries >= 2) { finishQ(false); return; }

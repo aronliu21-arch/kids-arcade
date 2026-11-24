@@ -294,6 +294,7 @@ table.mini{width:100%; border-collapse:collapse; font-size:15px} table.mini td,t
 <div id="overlay" class="overlay"></div>
 <canvas id="confetti"></canvas>
 <div id="toast" role="status" aria-live="polite"></div>
+<script src="../../tracker.js" data-game="cursive-quest"></script>
 <script>
 // ===== Cursive letterforms (original, Zaner-Bloser-inspired beginner style) =====
 // Units: baseline y=0, midline y=1, top line y=2, descender y=-1. y points UP.
@@ -1483,6 +1484,7 @@ function runQuiz(cfg) {
     };
     const choose = (key, btn) => {
       if (locked) return;
+      try{window.KA && KA.answer({ q: 'read cursive: ' + qq.answer, qid: 'read:' + qq.answer, given: key, expected: qq.answer, correct: key === qq.answer, tryNo: (qq.tries || 0) + 1, topic: 'reading cursive' });}catch(e){}
       if (key === qq.answer) {
         btn.classList.add('ok'); Snd.play('ok'); const pts = cfg.speed ? 2 : (qq.tries === 0 ? 2 : 1);
         done(pts); if (!cfg.speed) Voice.say(pick(PRAISE)); setTimeout(next, cfg.speed ? 350 : 1000);
@@ -1517,6 +1519,7 @@ function runQuiz(cfg) {
       if (!pad.hasInk()) { toast('Write the letter first ✏️'); return; }
       const r = pad.score(); qq.tries++;
       const ok = r.stars >= 1 && r.checks.recog !== false;
+      try{window.KA && KA.answer({ q: 'write in cursive: ' + qq.answer, qid: 'write:' + qq.answer, given: ok ? qq.answer : '(not readable yet)', expected: qq.answer, correct: ok, tryNo: qq.tries, topic: 'writing cursive' });}catch(e){}
       if (ok) { Snd.play('ok'); pad.showModelOverlay = true; pad.draw(); finishQ(qq.tries === 1 ? 2 : 1); Voice.say(pick(PRAISE) + ' I can read your ' + qq.answer + '!'); toast('✅ ' + pick(PRAISE) + ' Green dashes show the model.'); setTimeout(next, 1700); return; }
       Snd.play('no');
       if (qq.tries < 2) { const tip = r.tips[0] || 'Try once more!'; toast(tip, 3000); Voice.say('Almost! ' + tip); setTimeout(() => pad.clear(), 900); return; }
@@ -1811,6 +1814,7 @@ function runSteps(cfg) {
       const b = h('button', { class: 'opt', 'data-key': o.key, html: o.html });
       b.onclick = () => {
         if (locked) return;
+        try{window.KA && KA.answer({ q: 'word: ' + (it.text || qq.answer), qid: 'word:' + (it.text || qq.answer), given: o.key, expected: qq.answer, correct: o.key === qq.answer, tryNo: tries + 1, topic: 'cursive words' });}catch(e){}
         if (o.key === qq.answer) { b.classList.add('ok'); Snd.play('ok'); Voice.say(pick(PRAISE)); fin(true); setTimeout(() => { k++; go(); }, 1000); }
         else { b.classList.add('no'); Snd.play('no'); tries++; if (tries < 2) { Voice.say(pick(RETRY)); setTimeout(() => b.classList.add('dim'), 400); } else { fin(false); $$('.opt', opts).forEach(x => x.dataset.key === qq.answer ? x.classList.add('ok') : x.classList.add('dim')); reveal.append(h('div', {}, h('b', {}, 'Here it is! '), qq.explain)); reveal.classList.add('on'); nb.style.display = ''; Voice.say('Here it is. ' + qq.explain); } }
       };

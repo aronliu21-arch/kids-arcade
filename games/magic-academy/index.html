@@ -373,6 +373,7 @@ body{font-family:var(--font-body)}
 </head>
 <body>
 <main id="app"></main>
+<script src="../../tracker.js" data-game="magic-academy"></script>
 <script>
 const CASES=[
 {icon:'🪜',place:'魔法塔',title:'爬樓梯',
@@ -1113,6 +1114,7 @@ function renderCase(){
 
 function answer(k){
   const c=CC();
+  try{const t=v=>{const d=document.createElement('div');d.innerHTML=String(v);return d.textContent.trim()};window.KA&&KA.answer({q:t(c.title),qid:c.title,given:t(c.opts[k]),expected:t(c.opts[c.ans]),correct:k===c.ans,tryNo:tries+1,topic:'math case'});}catch(e){}
   if(k===c.ans){SND.correct();const f=tries===0;logAns(f,hintOn);pickSpell(f?'first':'retry',e=>battleHit(f?'first':'retry',e,()=>solved(true)));return;}
   SND.wrong();const sh=comboBreak();tries++;wrong.push(k);
   if(tries===1){note=sh?`${sh.e} ${sh.n}的保護罩擋住了！連擊沒有中斷。再看一次線索！`:'咒語差一點點！再看一次線索，你可以的。';renderCase();}

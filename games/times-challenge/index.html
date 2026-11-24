@@ -102,6 +102,7 @@ ul.wrong li{padding:8px 0;border-top:1px solid var(--line)}
 </section>
 </main>
 
+<script src="../../tracker.js" data-game="times-challenge"></script>
 <script>
 const D='零一二三四五六七八九';
 function num(n){if(n<10)return D[n];if(n===10)return '一十';if(n<20)return '十'+(n%10?D[n%10]:'');return D[Math.floor(n/10)]+'十'+(n%10?D[n%10]:'');}
@@ -145,7 +146,7 @@ function start(){
   show();
 }
 function stopTimer(){clearInterval(timer);timer=null;}
-function show(){
+function show(){window.KA&&KA.shown();
   const q=qs[i];locked=false;
   rail.forEach((e,k)=>{if(k===i)e.className='now'});
   $('qn').textContent='第 '+(i+1)+' / '+TOTAL+' 題　可錯 '+Math.max(0,1-wrongs.length)+' 題';
@@ -160,6 +161,7 @@ function show(){
 function answer(v){
   if(locked)return;locked=true;stopTimer();
   const q=qs[i],ok=v===q.ans;
+  try{window.KA&&KA.answer({q:q.a+' × '+q.b,given:v===null?'(time up)':v,expected:q.ans,correct:ok,tryNo:1,topic:q.a+'s times table'});}catch(e){}
   document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;if(+b.dataset.v===q.ans)b.classList.add('ok');else if(+b.dataset.v===v)b.classList.add('no');});
   rail[i].className=ok?'ok':'no';
   if(ok){right++;streak++;score+=10+Math.min(streak-1,5)*2;}

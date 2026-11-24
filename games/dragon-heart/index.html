@@ -117,6 +117,7 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
   <main id="panel"></main>
   </div>
 </div>
+<script src="../../tracker.js" data-game="dragon-heart"></script>
 <script>
 "use strict";
 const $=s=>document.querySelector(s);
@@ -632,6 +633,7 @@ function ask(q,hooks){
     const hint=panel.querySelector(".hint");let busy=false,wrongs=0;
     panel.querySelectorAll(".opt").forEach(b=>{b.onclick=async()=>{
       if(busy||b.disabled||id!==runId)return;busy=true;
+      try{window.KA&&(KA.setKid(P&&P.id),KA.answer({q:strip((q.big?q.big+' ':'')+q.text).replace(/&nbsp;/g,'_'),qid:q.id,given:strip(q.o[+b.dataset.k]),expected:strip(q.o[0]),correct:b.dataset.k==="0",tryNo:wrongs+1,topic:q.tag}));}catch(e){}
       if(b.dataset.k==="0"){
         b.classList.add("ok");panel.querySelectorAll(".opt").forEach(x=>x.disabled=true);
         await hooks.right(wrongs);res({ok:true});

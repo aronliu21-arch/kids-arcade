@@ -441,6 +441,7 @@ button.pill{cursor:pointer}
   <div id="turn"><span data-i="rotate"></span>Turn your phone sideways</div>
 </div>
 
+<script src="../../tracker.js" data-game="family-zoo"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
@@ -1564,7 +1565,7 @@ function openBooth(msg){$('#booth').classList.remove('playing');closeSign();if(!
   $('#booth').hidden=false;speak(lead);}
 function startRound(g){const G=QB.GAMES[g];let qs=[];try{qs=G.make(G.n,S.profile);}catch(e){qs=[];}
   if(!qs.length){toast("Those questions didn't load. Pick another game");return;}Q={g,qs,i:0,tries:0,earned:0,done:false,hero:heroPick()};save();renderQ();}
-function renderQ(){$('#booth').classList.add('playing');const q=Q.qs[Q.i],G=QB.GAMES[Q.g],k=S.profile;Q.tries=0;Q.done=false;const body=$('#boothBody');const m=MECH[Q.g]||'balloons';$('#boothTitle').textContent=MNAME[m]+' · '+G.title;
+function renderQ(){window.KA&&KA.shown();$('#booth').classList.add('playing');const q=Q.qs[Q.i],G=QB.GAMES[Q.g],k=S.profile;Q.tries=0;Q.done=false;const body=$('#boothBody');const m=MECH[Q.g]||'balloons';$('#boothTitle').textContent=MNAME[m]+' · '+G.title;
   body.innerHTML='<div class="quiz arena m-'+m+(k==='milo'?' milo':'')+'"><div class="qtop"><div class="qdots">'+Q.qs.map((_,i)=>'<i class="'+(i<Q.i?'on':i===Q.i?'cur':'')+'"></i>').join('')+'</div><span class="pill sm" id="qTk">'+icon('ticket')+'<span>'+tickets()+'</span></span></div>'+
     '<div class="qbox">'+(q.lvl?'<div class="qlvl">'+esc(q.lvl)+'</div>':'')+q.prompt+'</div><div class="afield">'+fieldHTML(m,q.choices)+
     '</div><div class="qfb" id="qfb">'+(k==='milo'?'':'Tap the right answer.')+'</div></div>';
@@ -1572,6 +1573,7 @@ function renderQ(){$('#booth').classList.add('playing');const q=Q.qs[Q.i],G=QB.G
   if(q.say)speak(q.say,false,q.lang);}
 function rightIndex(q){return q.choices.findIndex(x=>String(x.val)===String(q.answer));}
 function pickAns(i,btn){if(!Q||Q.done)return;const q=Q.qs[Q.i],c=q.choices[i];if(!c||btn.classList.contains('dead'))return;const k=S.profile,fb=$('#qfb'),body=$('#boothBody');
+  try{const t=v=>{const d=document.createElement('div');d.innerHTML=String(v==null?'':v);return d.textContent.trim()};const ri=rightIndex(q),cc=q.choices[ri];window.KA&&(KA.setKid(k),KA.answer({q:t(q.prompt),qid:q.id,given:t(c.label!=null?c.label:(c.txt!=null?c.txt:c.val)),expected:t(cc&&(cc.label!=null?cc.label:(cc.txt!=null?cc.txt:cc.val))),correct:String(c.val)===String(q.answer),tryNo:Q.tries+1,topic:QB.GAMES[Q.g]&&QB.GAMES[Q.g].title}));}catch(e){}
   if(String(c.val)===String(q.answer)){Q.done=true;const got=Q.tries===0?2:1;Q.earned+=got;earn(got);btn.classList.add('right');mechFx(btn,true);SFX.place();
     if(k==='nora'){const sd=S.seen.nora[Q.g]=S.seen.nora[Q.g]||[];if(!sd.includes(q.id))sd.push(q.id);save();}
     fb.className='qfb good';fb.innerHTML='<span class="grow"><b>Yes! +'+got+' ticket'+(got>1?'s':'')+'</b> '+esc(q.final||'')+'</span><button class="next" id="qNext">Next</button>';

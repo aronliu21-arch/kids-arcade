@@ -204,6 +204,7 @@ h1{font-weight:700;color:#fff;letter-spacing:.01em;text-shadow:3px 0 #2E7D32,-3p
 </head>
 <body>
 <main id="app"></main>
+<script src="../../tracker.js" data-game="dino-journey"></script>
 <script>
 const DINO_IN=`
 <path d="M40 122 Q12 116 4 86 Q26 106 52 104Z" fill="#5DBB63"/>
@@ -723,6 +724,7 @@ function tap(k,btn){
   if(r.type==='zy'&&o!==r.ans)say([[o[2],'zh']]);
   if((r.type==='zyhear'||r.type==='zyfirst')&&o!==r.ans)say([[ZYS[o[0]],'zh']]);
   if(r.type==='sound'&&o!==r.ans)say([[o[1]+' starts with '+o[0],'en']]);
+  try{const lb=v=>Array.isArray(v)?v[0]:(v&&typeof v==='object'?(v.n||v.name||JSON.stringify(v)):v);window.KA&&KA.answer({q:(r.story||itemKey(r)||r.type),qid:itemKey(r),given:lb(o),expected:lb(r.ans),correct:o===r.ans,tryNo:r.wrong.length+1,topic:r.type});}catch(e){}
   if(o===r.ans){SND.correct();record(r,r.first);setTimeout(success,250);return;}
   r.first=false;SND.wrong();r.wrong.push(k);btn.classList.add('shake');btn.disabled=true;
   if(r.type==='count'||r.type==='add'||r.type==='countkind')countAlong();

@@ -253,6 +253,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 <div id="rotate"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M3 9a9 9 0 0 1 3-5"/><path d="M3 4v5h5"/></svg><div class="disp">Turn your phone sideways</div><div style="color:var(--muted)" id="rotP"></div></div>
 </div>
 
+<script src="../../tracker.js" data-game="spelling-bees"></script>
 <script>
 "use strict";
 // ==== Word banks. word|sentence|note(optional)
@@ -1125,7 +1126,7 @@ $('#intro').addEventListener('click',()=>{if(introRunning)endIntro()});
 // ==== Who's playing
 function mastered(k){const keep=KID;KID=k;const n=ALLW(k).filter(isMastered).length;KID=keep;return n}
 function openPick(){$('#pickNora').textContent=`${mastered('nora')} of ${ALLW('nora').length} words mastered`;$('#pickLucas').textContent=`${mastered('lucas')} of ${ALLW('lucas').length} words mastered`;show('pick')}
-document.querySelectorAll('.who').forEach(b=>b.addEventListener('click',()=>{audioInit();unlockSpeech();KID=b.dataset.kid;buildKidArt();openMenu()}));
+document.querySelectorAll('.who').forEach(b=>b.addEventListener('click',()=>{audioInit();unlockSpeech();KID=b.dataset.kid;window.KA&&KA.setKid(KID);buildKidArt();openMenu()}));
 
 // ==== Menu
 function mStat(i){const w=BANK()[i].words;return {total:w.length,mastered:w.filter(isMastered).length,learning:w.filter(isLearning).length,due:w.filter(isDue).length,fresh:w.filter(isNew).length}}
@@ -1224,6 +1225,7 @@ function submit(){
  if(!G||G.stage!=='kick'||G.busy)return;
  if(!complete()){const a=$('#answer');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake');return}
  const c=cur(),ok=norm(value())===norm(c.w.w),myPlay=play;G.busy=true;renderPanel();
+ try{window.KA&&KA.answer({q:'spell: '+c.w.w,qid:c.w.id,given:value(),expected:c.w.w,correct:ok,tryNo:G.tries+1,topic:'spelling'});}catch(e){}
  if(ok){const first=G.tries===0,pts=first?2:1;G.score+=pts;G.max+=2;const clean=first&&!G.hinted;record(c,clean);G.marks[G.i]=clean?'g':'h';
   kickAnim(true,()=>{if(myPlay!==play)return;burst('GOAL!','+'+pts);sfx.goal();renderPanel();setTimeout(()=>{if(myPlay===play)nextKick()},650)})}
  else{G.tries++;

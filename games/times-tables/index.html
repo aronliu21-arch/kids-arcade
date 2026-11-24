@@ -89,6 +89,7 @@ ul.w li{padding:8px 0;border-top:3px dotted var(--line)}
 <div id="hud" hidden></div>
 <div id="view"></div>
 </main>
+<script src="../../tracker.js" data-game="times-tables"></script>
 <script>
 /* ---------- helpers ---------- */
 const $=id=>document.getElementById(id);
@@ -378,7 +379,7 @@ function startTest(n){
   T={n,i:0,w:[],res:[],lock:false,qs:shuffle([1,2,3,4,5,6,7,8,9]).map(b=>Math.random()<.5?{a:b,b:n}:{a:n,b})};
   tq();
 }
-function tq(){
+function tq(){window.KA&&KA.shown();
   const n=T.n,q=T.qs[T.i],ans=q.a*q.b;head(n,2);T.lock=false;
   $('body').innerHTML=`<div class="card"><div class="rail">${T.qs.map((_,k)=>`<i class="${k===T.i?'now':k<T.i?(T.res[k]?'ok':'no'):''}" id="r${k}"></i>`).join('')}</div>
   <div class="stat"><span>第 ${T.i+1} / 9 題</span><span>可錯 ${Math.max(0,1-T.w.length)} 題</span></div>
@@ -387,7 +388,7 @@ function tq(){
   options(ans,q.a,q.b).forEach(v=>{
     const o=document.createElement('button');o.className='opt';o.textContent=v;o.dataset.v=v;
     o.onclick=()=>{
-      if(T.lock)return;T.lock=true;const ok=v===ans;
+      if(T.lock)return;T.lock=true;const ok=v===ans;try{window.KA&&KA.answer({q:q.a+' × '+q.b,given:v,expected:ans,correct:ok,tryNo:1,topic:T.n+'s times table'});}catch(e){}
       document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.v===ans)x.classList.add('ok');else if(x===o)x.classList.add('no');});
       T.res[T.i]=ok;$('r'+T.i).className=ok?'ok':'no';if(!ok)T.w.push(q);else earn(5);
       $('fb').innerHTML=`${ok?'答對了！':'答錯了。'}<br><strong>${kou(q.a,q.b)}</strong>　${q.a} × ${q.b} = ${ans}<br>${plus(ok?5:0)}`;
@@ -426,7 +427,7 @@ function startReview(n){
   R={n,i:0,w:[],res:[],lock:false,qs:shuffle(pool).slice(0,5).map(([a,b])=>Math.random()<.5?{a:b,b:a}:{a,b})};
   rq();
 }
-function rq(){
+function rq(){window.KA&&KA.shown();
   const q=R.qs[R.i],ans=q.a*q.b;head(R.n,3);R.lock=false;
   $('body').innerHTML=`<div class="card"><div class="rail">${R.qs.map((_,k)=>`<i class="${k===R.i?'now':k<R.i?(R.res[k]?'ok':'no'):''}"></i>`).join('')}</div>
   <div class="stat"><span>第 ${R.i+1} / 5 題</span><span>複習 1–${R.n} 的乘法</span></div>
@@ -435,7 +436,7 @@ function rq(){
   options(ans,q.a,q.b).forEach(v=>{
     const o=document.createElement('button');o.className='opt';o.textContent=v;o.dataset.v=v;
     o.onclick=()=>{
-      if(R.lock)return;R.lock=true;const ok=v===ans;
+      if(R.lock)return;R.lock=true;const ok=v===ans;try{window.KA&&KA.answer({q:q.a+' × '+q.b,given:v,expected:ans,correct:ok,tryNo:1,topic:'times table review 1–'+R.n});}catch(e){}
       document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.v===ans)x.classList.add('ok');else if(x===o)x.classList.add('no');});
       R.res[R.i]=ok;if(!ok)R.w.push(q);else earn(5);
       $('fb').innerHTML=`${ok?'答對了！':'答錯了。'}<br><strong>${kou(q.a,q.b)}</strong>　${q.a} × ${q.b} = ${ans}<br>${plus(ok?5:0)}`;

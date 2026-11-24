@@ -255,6 +255,7 @@ body{font-family:var(--font-display)}
 </head>
 <body>
 <main id="app"></main>
+<script src="../../tracker.js" data-game="sports-stars"></script>
 <script>
 const RAR={Rookie:'#3DDC97',Pro:'#56C2FF','All-Star':'#C77DFF',MVP:'#FFD23F'};
 const MON=[
@@ -726,6 +727,7 @@ function renderCase(){
   $('#rc').onclick=()=>speak(p.o.map(clean).join('. '),'en');
   app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
     const k=+b.dataset.k;
+    try{window.KA&&KA.answer({q:clean(p.q),qid:'pz:'+cur,given:clean(String(p.o[k])),expected:clean(String(p.o[p.a])),correct:k===p.a,tryNo:tries+1,topic:'math puzzle'});}catch(e){}
     if(k===p.a){SND.correct();recPuzzle(tries===0,tries>=2);if(TR.on){trainNext();return;}lbAttack(tries===0?'first':'retry',catchRound);return;}
     SND.wrong();if(!TR.on){S.lch=0;save();}tries++;wrong.push(k);
     if(tries===1){msg='Not quite, champ. Try again!';cls='oops';}
@@ -755,6 +757,7 @@ function renderCatch(m){
   if($('#hs'))$('#hs').onclick=()=>speak(ZYS[target[0]],'zh');
   app.querySelectorAll('.pic').forEach(b=>b.onclick=()=>{
     const k=+b.dataset.k,c=choices[k];speak(c[2],'zh');
+    try{window.KA&&KA.answer({q:'Which starts with '+target[0]+'?',qid:'zy:'+target[0],given:c[2],expected:target[2],correct:c===target,tryNo:cWrong.length+1,topic:'zhuyin sounds'});}catch(e){}
     if(c===target){SND.correct();logL('zy:'+target[0],!cWrong.length,false);if(!cWrong.length){S.miss=S.miss.filter(x=>x!==target[0]);S.zl=Math.min(ZY.length,S.zl+1);}else if(!S.miss.includes(target[0]))S.miss.push(target[0]);save();setTimeout(reveal,900);}
     else{SND.wrong();cWrong.push(k);setTimeout(()=>renderCatch(`Hmm, ${c[2]} doesn’t start with ${target[0]}. Say the sound out loud and try again!`),700);}
   });

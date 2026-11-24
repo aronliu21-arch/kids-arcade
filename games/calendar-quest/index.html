@@ -259,6 +259,7 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
     <div class="months" id="months"></div>
   </section>
 </div>
+<script src="../../tracker.js" data-game="calendar-quest"></script>
 <script>
 // ==LOGIC-START (no DOM in this block)
 const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -763,7 +764,7 @@ function startMission(m){
 }
 function setPrompt(t){$('prompt').innerHTML=pr(t);say(pr(t));}
 function showQ(){
-  const q=qs[qi];tries=0;answered=false;
+  const q=qs[qi];tries=0;answered=false;if(window.KA){KA.setKid(cur&&cur.id);KA.shown();}
   if(cur.id==='nora'){const p=prof(cur.id);if(p.seen.indexOf(q.id)<0)p.seen.push(q.id);p.rev=Date.now();store.save();}
   $('roundInfo').textContent=(qi+1)+' / '+qs.length;$('ptsInfo').textContent='⭐ '+pts;
   $('coach').hidden=true;buddyMood('idle');
@@ -791,12 +792,13 @@ function coach(html,kind,face){
   if(answered)requestAnimationFrame(revealView);
 }
 const PRAISE=['Yes!','Great job!','You got it!','Super!','Nailed it!'];
+function _ka(ok){try{const q=qs[qi];window.KA&&KA.answer({q:String(q.q||'').replace(/<[^>]*>/g,''),qid:q.id,given:window._kaGiven,expected:answerText(q).replace(/<[^>]*>/g,''),correct:ok,tryNo:tries+1,topic:mission&&mission.t});}catch(e){}}
 function win(){
-  answered=true;pts+=tries===0?2:1;$('ptsInfo').textContent='⭐ '+pts;sfx.good();buddyMood('cheer');
+  _ka(true);answered=true;pts+=tries===0?2:1;$('ptsInfo').textContent='⭐ '+pts;sfx.good();buddyMood('cheer');
   const q=qs[qi];coach('<b>'+pick(PRAISE)+'</b> '+(q.why||''),'ok','🎉');say(pick(PRAISE)+' '+(cur.id==='milo'?(q.why||''):''));
 }
 function miss(reveal){
-  sfx.bad();buddyMood('oops');tries++;const q=qs[qi];
+  _ka(false);sfx.bad();buddyMood('oops');tries++;const q=qs[qi];
   if(tries>=2){answered=true;reveal();coach('The answer is <b>'+answerText(q)+'</b>. '+(q.why||''),'bad','💡');say('The answer is '+speakable(answerText(q)));return;}
   let h='Not quite. Try again!';
   if(cur.hints){if(q.hint)h+=' '+q.hint;if(q.hintVis)renderVis(q.hintVis,q,true);if(q.calHint)renderVis({k:'cal',y:q.calHint.y,m:q.calHint.m},q,true);
@@ -806,6 +808,7 @@ function miss(reveal){
 const answerText=q=>q.set?tWords(q.set.h,q.set.m)+' ('+dig(q.set.h,q.set.m)+')':q.o[0].t+(q.o[0].s&&!/^\d/.test(q.o[0].s)?'':'');
 function choose(b,ok){
   if(answered||b.classList.contains('bad'))return;
+  window._kaGiven=b.textContent.trim();
   if(ok){b.classList.add('ok');win();}
   else{b.classList.add('bad');miss(()=>document.querySelectorAll('.opt').forEach(x=>{if(x.dataset.ok)x.classList.add('ok');}));}
 }
@@ -887,6 +890,7 @@ function bindClock(){
 function nudge(d){if(answered)return;clockState.t=((Math.round(clockState.t/5)*5+d)%720+720)%720;sfx.tick();drawClock();}
 function checkSet(){
   if(answered)return;const q=qs[qi],want=((q.set.h%12)*60+q.set.m),got=Math.round(clockState.t)%720;
+  window._kaGiven=(Math.floor(got/60)||12)+':'+String(got%60).padStart(2,'0');
   if(got===want){win();drawClock();}
   else{const gh=Math.floor(got/60)||12,gm=got%60;
     miss(()=>{clockState.t=want;clockState.on=false;drawClock();});

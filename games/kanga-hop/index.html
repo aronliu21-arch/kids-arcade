@@ -52,6 +52,7 @@ button:focus-visible{outline:4px solid var(--plum);outline-offset:2px}
 </head>
 <body>
 <main id="app"></main>
+<script src="../../tracker.js" data-game="kanga-hop"></script>
 <script>
 var G=[
 {name:"Little Joey",k:0,grade:"Grade 1",icon:"🐣",young:1,pool:[
@@ -350,7 +351,7 @@ function track(){
  for(var k=0;k<=5;k++){var c=k<hops?"done":"";if(k==hops)c="here";t+='<div class="stone '+c+'">'+(k==hops?"🦘":(k==5?"🌳":"🪨"))+'</div>'}
  return t+'</div>';
 }
-function show(){
+function show(){window.KA&&KA.shown();
  answered=false;app.className=G[L].young?"young":"";var q=set[i];
  var h='<div class="bar"><button class="ghost" id="hmb" aria-label="Back to home page">🏠 Home</button><span>'+G[L].icon+' '+G[L].grade+'</span><span>Score: '+fmt(score)+'</span></div>'+track();
  h+='<div class="card"><div class="bar"><span>Puzzle '+(i+1)+' of 5 · '+q.p+' points</span><button class="ghost" id="say" aria-label="Read the puzzle aloud">🔊 Read</button></div><div class="q">'+esc(q.q)+'</div>';
@@ -366,6 +367,7 @@ function show(){
 function pick(k){
  if(answered)return;answered=true;
  var q=set[i],ok=k==q.a,p=q.p,btns=app.querySelectorAll(".opt");
+ try{window.KA&&KA.answer({q:q.q,qid:q.id,given:q.o[k],expected:q.o[q.a],correct:ok,tryNo:1,topic:'Kangaroo '+((G[L]&&G[L].grad)||L)});}catch(e){}
  btns.forEach(function(b,n){b.disabled=true;if(n==q.a)b.classList.add("right");else if(n==k)b.classList.add("wrong")});
  var us=used(L);if(us.indexOf(q.id)<0){us.push(q.id);saveUsed(L,us)}
  if(ok){score+=p;hops++}else{score-=p/4}

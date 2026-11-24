@@ -221,6 +221,7 @@ ruby rt{font-size:.42em;font-weight:600}
 
 <button class="small-btn topright" id="soundBtn" aria-label="Sound">🔊</button>
 
+<script src="../../tracker.js" data-game="zhuyin"></script>
 <script>
 "use strict";
 /* ================= DATA ================= */
@@ -475,7 +476,7 @@ function goMenu(){introTimer=introTimer||1;
   <div class="lv">${KIDS[k].level}</div></button>
   <button class="small-btn petBtn" data-pet="${k}">${p?(st>=4?"🏆 ":"🐾 ")+petName(k):"🥚 Pick an egg"}</button></div>`;}).join("");
  document.querySelectorAll(".petBtn").forEach(b=>b.onclick=()=>{initAudio();openPet(b.dataset.pet);});
- document.querySelectorAll(".kidcard").forEach(b=>b.onclick=()=>{initAudio();const k=b.dataset.kid;if(!petOf(k))showEggs(k,()=>startMission(k));else startMission(k);});
+ document.querySelectorAll(".kidcard").forEach(b=>b.onclick=()=>{initAudio();const k=b.dataset.kid;window.KA&&KA.setKid(k);if(!petOf(k))showEggs(k,()=>startMission(k));else startMission(k);});
  show("menu");}
 
 /* ================= GAME ================= */
@@ -564,6 +565,7 @@ $("hearBtn").onclick=()=>sayWord();
 
 function check(){if(G.done)return;if(!G.fill.every(r=>r.every(v=>v))){$("feedback").className="feedback";$("feedback").textContent="Fill every box first.";return;}
  const wrong=[];G.fill.forEach((r,c)=>r.forEach((v,s)=>{if(v!==G.ans[c][s])wrong.push({c,s});}));
+ try{window.KA&&KA.answer({q:G.w.word,given:G.fill.map(a=>a.filter(x=>x&&x!=="ˉ").join("")).join(" "),expected:G.ans.map(a=>a.filter(x=>x!=="ˉ").join("")).join(" "),correct:!wrong.length,tryNo:G.tries+1,topic:'zhuyin'});}catch(e){}
  if(!wrong.length){let pts=G.tries===0?2:1;G.done=true;let comboTxt="";
   if(G.tries===0){G.combo++;G.firstTries++;if(G.combo%3===0){pts+=1;G.bonus++;comboTxt=` <span class="combo">🔥 ${G.combo} in a row! +1</span>`;}}else G.combo=0;
   G.score+=pts;$("scoreBadge").textContent="⭐ "+G.score;

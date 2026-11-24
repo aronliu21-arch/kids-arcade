@@ -133,6 +133,7 @@ button.card{cursor:pointer}
   <div id="panel" aria-live="polite"></div>
   <div id="gate" hidden><div class="sheet" id="gateBody"></div></div>
 </div>
+<script src="../../tracker.js" data-game="critter-grove"></script>
 <script>
 (function(){
 'use strict';
@@ -344,7 +345,7 @@ function later_(ms,tok,fn){setTimeout(()=>{if(alive(tok))fn()},still?Math.min(ms
 function mcq(el,opts,ans,api,cls,onRetry){
   el.insertAdjacentHTML('beforeend','<div class="opts '+(cls||'')+'">'+opts.map((o,i)=>'<button class="opt" data-i="'+i+'">'+o+'</button>').join('')+'</div>');
   const bs=el.querySelectorAll('.opt');
-  bs.forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i===ans){b.classList.add('good');api.ok()}
+  bs.forEach(b=>b.onclick=()=>{const i=+b.dataset.i;window._kaGiven=panelText(opts[i]);if(i===ans){b.classList.add('good');api.ok()}
     else{b.classList.add('bad');b.disabled=true;if(api.no()){onRetry&&onRetry()}else bs[ans].classList.add('good')}})}
 
 const W3=[['CAT','🐱'],['DOG','🐶'],['SUN','☀️'],['BUS','🚌'],['PIG','🐷'],['HAT','🎩'],['BEE','🐝'],['EGG','🥚'],['FOX','🦊'],['COW','🐮'],['BED','🛏️'],['CUP','🥤']];
@@ -591,12 +592,13 @@ function wildFor(k){const own=DB[k].cr;let pool=SP.filter(s=>!own[s.id]);if(k===
 
 /* shared puzzle runner: two tries, then the answer */
 function runPuzzle(p,done){const k=G.kid,kd=KIDS[k];let tries=0,over=false;go('question');
+  if(window.KA){KA.setKid(k);KA.shown();}const _ka=ok=>{try{window.KA&&KA.answer({q:panelText(p.prompt),given:window._kaGiven,expected:'',correct:ok,tryNo:tries+1,topic:p.fam});window._kaGiven='';}catch(e){}};
   setPanel('<p class="famtag">'+FAMNAME[p.fam]+'</p><div class="q"><div>'+p.prompt+'</div><button class="spk" data-a="speak" aria-label="Read it aloud">Hear it</button></div><div id="pz" class="pz"></div><div class="fb" id="fb"></div>',k);
   const fb=$('#fb'),lock=()=>{const z=$('#pz');if(z)z.classList.add('done')};
   const api={
-    ok(n){if(over)return;over=true;lock();const got=n!=null?n:(tries?1:2);fb.className='fb ok';fb.textContent=(got===2?'Super, ':'Yes, ')+kd.name+'! '+(got===2?'+2 ★':'+1 ★');sfx('ok');if(k==='milo')say('Yes!');
+    ok(n){if(over)return;_ka(true);over=true;lock();const got=n!=null?n:(tries?1:2);fb.className='fb ok';fb.textContent=(got===2?'Super, ':'Yes, ')+kd.name+'! '+(got===2?'+2 ★':'+1 ★');sfx('ok');if(k==='milo')say('Yes!');
       clearTimeout(G.timer);G.timer=setTimeout(()=>done(got),still?700:1300)},
-    no(){if(over)return false;sfx('bad');tries++;
+    no(){if(over)return false;_ka(false);sfx('bad');tries++;
       if(tries===1){fb.className='fb no';fb.textContent='Not yet, '+kd.name+'. One more try.'+(kd.hints&&p.hint?' Hint: '+p.hint:'');if(DB[k].read)say('Not yet. One more try. '+(kd.hints&&p.hint?p.hint:''));return true}
       over=true;lock();if(p.show)p.show();fb.className='fb no';fb.innerHTML=(p.why||'')+'<div class="row" style="margin-top:10px"><button class="btn" data-a="cont">Got it ▶</button></div>';
       G.after=()=>done(0);if(DB[k].read&&p.why)say(panelText(p.why));return false}};

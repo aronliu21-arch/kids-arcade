@@ -295,6 +295,7 @@ html.edgeSafe .wrap{padding-bottom:max(88px,env(safe-area-inset-bottom))}
   </section>
 </div>
 
+<script src="../../tracker.js" data-game="pitch-smarts"></script>
 <script>
 // ==LOGIC-START
 const W=800,H=480,X0=58,X1=742,Y0=58,Y1=422;
@@ -1720,6 +1721,7 @@ function coach(text,kind,showNext,face){
   if(text)say(text);
 }
 function finish(p,text){
+  try{if(window.KA&&!done){KA.setKid(cur&&cur.id);KA.answer({q:(M&&M.title?M.title+': ':'')+$('prompt').textContent,qid:(S&&S.q&&S.q.id)||((M&&M.id)+':'+(S&&S.type)+':'+$('prompt').textContent),given:p>0?'right':(window._kaGiven||'wrong'),expected:'',correct:p>0,tryNo:p===2?1:2,topic:M&&M.title});window._kaGiven='';}}catch(e){}
   done=true;locked=true;pts+=p;if(p>0)popPoints(p);
   $('ptsInfo').textContent='⭐ '+pts;
   $('controls').hidden=true;$('done').hidden=true;$('here').hidden=true;$('go').hidden=true;
@@ -2018,7 +2020,7 @@ function showChoices(opts,onPick){
     box.appendChild(b);
   });
 }
-function markChoice(b,ok){b.style.background=ok?'var(--ok)':'var(--bad)';b.style.color='#fff';b.disabled=true;}
+function markChoice(b,ok){if(!ok&&b&&!b.disabled)window._kaGiven=b.textContent.trim();b.style.background=ok?'var(--ok)':'var(--bad)';b.style.color='#fff';b.disabled=true;}
 
 /* ---------- start a scene ---------- */
 function startScene(t,sc){

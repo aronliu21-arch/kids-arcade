@@ -443,6 +443,7 @@ canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 </div></div>
 <div class="evolve" id="evolve" hidden><div class="ebox"><p class="etext" id="eText"></p><canvas id="evoCv" width="220" height="220"></canvas><button class="chip go big" id="eGo" type="button" hidden>AWESOME! ▶</button></div></div>
 
+<script src="../../tracker.js" data-game="question-beasts"></script>
 <script>
 /* ================= helpers ================= */
 const $=s=>document.querySelector(s);
@@ -1522,7 +1523,7 @@ function ask(tier,mode){let src=qsetOf(B.kid),tp=B.topics,ch=B.chap;
   if(mode==='attack')msg('');B.t0=performance.now()}
 $('#sayBtn').onclick=()=>{const q=B&&B.q;if(!q)return;sayQ(q)};
 async function answer(choice,btn){if(!B||B.busy)return;B.busy=true;const K=KIDS[B.kid],ST=beastOf(B.kid),q=B.q,s=Save.kid(B.kid),dt=(performance.now()-B.t0)/1000;
-  const right=choice===q.answer;markSeen(B.kid,q.id);right?s.right++:s.wrong++;Save.save();
+  const right=choice===q.answer;try{window.KA&&(KA.setKid(B.kid),KA.answer({q:q.text,qid:q.id,given:choice,expected:q.answer,correct:right,tryNo:1,topic:q.topic,ms:dt*1000}));}catch(e){}markSeen(B.kid,q.id);right?s.right++:s.wrong++;Save.save();
   [...$('#opts').children].forEach(b=>{b.disabled=true;if(b.dataset.v===q.answer)b.classList.add('right')});if(!right)btn.classList.add('wrong');
   await wait(450);
   if(B.mode==='attack'){

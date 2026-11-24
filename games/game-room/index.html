@@ -4,6 +4,7 @@
 <title>遊戲間</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;800;900&family=Press+Start+2P&display=swap">
+<script src="../../tracker.js" data-game="game-room"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <style>
@@ -1125,6 +1126,7 @@ function startMission(id){const g=GAMES[id];S.game=id;S.kid=g.kid;S.qs=g.make(g.
   clearInterval(clockTimer);if(g.timed)clockTimer=setInterval(()=>{const c=$('#clock');if(c&&!S.done)c.textContent='⏱ '+Math.floor((Date.now()-S.t0)/1000)+'s'},500)}
 function markSeen(){const q=S.qs[S.qi],a=DB.kids[S.kid].seen[S.game]=DB.kids[S.kid].seen[S.game]||[];if(!a.includes(q.id))a.push(q.id);save()}
 function answer(i){if(S.done)return;const q=S.qs[S.qi],c=q.choices[i],k=S.kid;
+  try{const tx=v=>{v=(v&&typeof v==='object')?(v.t||v.text||v.label||v.n||v.html||v.val||JSON.stringify(v)):v;const d=document.createElement('div');d.innerHTML=String(v);return d.textContent.trim()};window.KA&&(KA.setKid(k),KA.answer({q:tx(q.prompt),qid:q.id,given:tx(c),expected:tx(q.answer),correct:!!isAns(q,c),tryNo:S.att+1,topic:S.game}))}catch(e){}
   if(isAns(q,c)){S.done=true;S.gain=S.att===0?2:1;S.pts+=S.gain;S.times.push((Date.now()-S.t0)/1000);markSeen();sfx('ok');if(k==='milo')sfx('roar');say(pick(CHEER[k])+(k==='milo'&&!q.lang?' '+q.final:''),'en-US',k==='milo'?450:0)}
   else{S.att++;S.dead.push(i);sfx('no');
     if(S.att>=2||q.choices.length-S.dead.length<=1){S.done=true;S.reveal=true;S.gain=0;S.times.push((Date.now()-S.t0)/1000);markSeen();say(k==='milo'?(q.lang?'Good try!':'Good try! '+q.final):'Good try! Here is the answer.')}
