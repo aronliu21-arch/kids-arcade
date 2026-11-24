@@ -2,21 +2,21 @@
 function store(){
  if(!S.shelf||!S.shelf.length)restock();
  setScreen('store',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🛒 Card store ${zh([['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['店','ㄉㄧㄢˋ']])}</h2>
- <div class="row"><button class="pack" data-a="pack" style="cursor:pointer"><span class="e">🎁</span>Mystery pack<span style="font-size:1rem">4 cards</span></button>
+ <div class="row"><button class="pack" data-a="pack" data-v="1" style="cursor:pointer"><span class="e">⭐</span>Base Set<span style="font-size:1rem">4 cards · $2</span></button><button class="pack dk" data-a="pack" data-v="2" style="cursor:pointer"><span class="e">🐉</span>Dragon Kingdom<span style="font-size:1rem">4 cards · $2</span></button>
  <div style="text-align:left;max-width:260px;font-weight:700">A pack costs <b>$2.00</b>.<br>The last card is always rare or better!<br><br>You have <b>${money(S.cents)}</b>.</div></div></div>
  <div class="panel" style="text-align:center"><h2 class="h">Single cards ${zh([['單','ㄉㄢ'],['張','ㄓㄤ']])}</h2><div class="shelf">${S.shelf.map((id,i)=>{const c=byId(id);return `<div>${cardHTML(c)}<button class="btn ${S.cents>=R[c.r].p?'':'ghost'} price small" data-a="buy" data-v="${i}">${money(R[c.r].p)}</button></div>`;}).join('')}</div>
  <p style="color:var(--muted);font-weight:700">New cards come after every job or battle.</p></div>
  <div class="row"><button class="btn ghost" data-a="home">🏠 Home</button></div></div>`);
- bindAll({home:()=>hub(),pack(){if(S.cents<200){sfx.bad();toast('You need $2.00. Try a job! 🧾');return;}S.cents-=200;save();sfx.coin();openPack();},
+ bindAll({home:()=>hub(),pack(v){if(S.cents<200){sfx.bad();toast('You need $2.00. Try a job! 🧾');return;}S.cents-=200;save();sfx.coin();openPack(false,+v||1);},
   buy(i){const c=byId(S.shelf[i]),p=R[c.r].p;if(S.cents<p){sfx.bad();toast('You need '+money(p-S.cents)+' more');return;}
    S.cents-=p;S.owned[c.id]=(S.owned[c.id]||0)+1;S.shelf.splice(+i,1);save();sfx.coin();if(c.r==='holo'||c.r==='legend')sfx.shimmer();toast('📒 '+c.name+' added to your binder!');store();}});}
-function packSVG(f){let top='',bot='';for(let x=6;x<=114;x+=6){top+=`L${x} ${(x/6)%2?4:8}`;bot=`L${x} ${(x/6)%2?168:164}`+bot;}
- return `<svg viewBox="0 0 120 172"><defs><linearGradient id="pf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4c6ef5"/><stop offset=".5" stop-color="#9775fa"/><stop offset="1" stop-color="#f06595"/></linearGradient><clipPath id="pc"><rect x="6" y="22" width="108" height="142"/></clipPath></defs>
+function packSVG(f,set){const dk=set===2;let top='',bot='';for(let x=6;x<=114;x+=6){top+=`L${x} ${(x/6)%2?4:8}`;bot=`L${x} ${(x/6)%2?168:164}`+bot;}
+ return `<svg viewBox="0 0 120 172"><defs><linearGradient id="pf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${dk?'#c92a2a':'#4c6ef5'}"/><stop offset=".5" stop-color="${dk?'#f76707':'#9775fa'}"/><stop offset="1" stop-color="${dk?'#fcc419':'#f06595'}"/></linearGradient><clipPath id="pc"><rect x="6" y="22" width="108" height="142"/></clipPath></defs>
  <g class="flap"><path d="M6 22V8${top}V22Z" fill="#dee2e6" stroke="#1b1f3b" stroke-width="2"/><path d="M10 15H110" stroke="#adb5bd" stroke-width="2" stroke-dasharray="4 3"/></g>
  <path d="M6 22H114V164${bot}L6 164Z" fill="url(#pf)" stroke="#1b1f3b" stroke-width="2"/>
  <g clip-path="url(#pc)"><g opacity=".35" fill="#fff">${Array.from({length:12},(_,i)=>{const a=i*Math.PI/6;return `<path d="M60 92L${(60+120*Math.cos(a)).toFixed(1)} ${(92+120*Math.sin(a)).toFixed(1)}L${(60+120*Math.cos(a+.2)).toFixed(1)} ${(92+120*Math.sin(a+.2)).toFixed(1)}Z"/>`;}).join('')}</g>
  <circle cx="60" cy="92" r="36" fill="#fff" opacity=".35"/><g transform="translate(9 52) scale(.69)">${creature(f)}</g><path d="M-20 164L60 22L80 22L0 164Z" fill="#fff" opacity=".18"/></g>
- <text x="60" y="44" text-anchor="middle" font-size="17" font-weight="900" font-style="italic" fill="#ffd43b" stroke="#1b1f3b" stroke-width="3" paint-order="stroke" font-family="system-ui">CARD QUEST</text>
+ <text x="60" y="44" text-anchor="middle" font-size="17" font-weight="900" font-style="italic" fill="#ffd43b" stroke="#1b1f3b" stroke-width="3" paint-order="stroke" font-family="system-ui">${dk?'DRAGON KINGDOM':'CARD QUEST'}</text>
  <text x="60" y="154" text-anchor="middle" font-size="10" font-weight="900" fill="#fff" stroke="#1b1f3b" stroke-width="2.5" paint-order="stroke" font-family="system-ui">★ 4 CARDS ★</text></svg>`;}
 const RK={common:0,rare:1,holo:2,legend:3,promo:4};
 function drumroll(ms){if(!SOUND)return;let t=0,gap=.12;while(t<ms/1000){tone(170+t*120,.05,'square',.05+t*.03,t);t+=gap;gap=Math.max(.035,gap*.9);}}
@@ -29,12 +29,12 @@ function spotlight(c,isNew,then){const rk=RK[c.r],col=rk>=3?'#ffd43b':rk===2?'#e
  if(rk>=3){const rain=setInterval(()=>FX.emit(Math.random()*innerWidth,-10,'gold',2,{dir:Math.PI/2,spread:.4,speed:4,g:.12,life:90,size:5}),60);fw.push(setTimeout(()=>clearInterval(rain),2600));}
  let ok=false;setTimeout(()=>{ok=true;d.classList.add('ready');},1300);
  d.onclick=()=>{if(!ok)return;fw.forEach(clearTimeout);d.classList.add('out');setTimeout(()=>{d.remove();then&&then();},300);};}
-function openPack(free){if(free){if(!(S.freePacks>0))return hub();S.freePacks--;save();}
+function openPack(free,set){set=set||1;if(free){set=S.freePacks<=2?2:1;if(!(S.freePacks>0))return hub();S.freePacks--;save();}
  const before=Object.assign({},S.owned);
- const cards=[0,1,2].map(()=>randCard([['common',7],['rare',3]])).concat([randCard([['rare',70],['holo',22],['legend',8]])]);
+ const cards=[0,1,2].map(()=>randCard([['common',7],['rare',3]],set)).concat([randCard([['rare',70],['holo',22],['legend',8]],set)]);
  const best=cards.reduce((a,c)=>RK[c.r]>RK[a.r]?c:a),glow={common:'rgba(255,255,255,.4)',rare:'rgba(77,171,247,.5)',holo:'rgba(218,119,242,.55)',legend:'rgba(255,212,59,.6)',promo:'rgba(255,212,59,.6)'}[best.r];
  setScreen('pack',`<div class="hub"><div class="stage" id="stg"><div class="rays"></div><h2>${free?`🎁 Free pack ${5-S.freePacks} of 5!`:'🎁 Mystery pack'}</h2>
- <button class="pk2" id="pb" aria-label="Rip open the pack">${packSVG(pick(C.filter(c=>c.r==='legend')))}<span class="leak"></span></button><div class="prow" id="pk"></div><p id="pm">Tap the pack to rip it open!</p><div class="row" id="pdone"></div></div></div>`);
+ <button class="pk2" id="pb" aria-label="Rip open the pack">${packSVG(pick(C.filter(c=>c.r==='legend'&&c.set===set)),set)}<span class="leak"></span></button><div class="prow" id="pk"></div><p id="pm">Tap the pack to rip it open!</p><div class="row" id="pdone"></div></div></div>`);
  const stg=$('stg');stg.style.setProperty('--glow',glow);let ripping=false;
  $('pb').onclick=()=>{if(ripping)return;ripping=true;audio();const pb=$('pb');pb.classList.add('charge');pb.style.setProperty('--lk',glow);riser(1100);$('pm').textContent='It’s shaking…!';
   const spark=setInterval(()=>{const [x,y]=ctr(pb);FX.emit(x,y,RK[best.r]>=2?'rainbow':'gold',4,{speed:5,size:3,life:20});},90);
@@ -59,5 +59,5 @@ function openPack(free){if(free){if(!(S.freePacks>0))return hub();S.freePacks--;
   $('fa').onclick=async()=>{$('fa').remove();const fs=[...pk.querySelectorAll('.flip')];for(const f of fs){const c=cards[+f.dataset.i];await flipOne(f,!f.classList.contains('last')&&RK[c.r]<2);await new Promise(r=>setTimeout(r,250));}};
   function allDone(){const nn=cards.filter(isNew).length;setTimeout(()=>{$('pm').innerHTML=`All 4 cards went into your binder! ${nn?`<b style="color:#69db7c">${nn} NEW</b>`:''}`;const fa=$('fa');if(fa)fa.remove();
    if(S.freePacks>0){$('pdone').innerHTML=`<button class="btn gold" id="again">Rip the next free pack ▶ (${S.freePacks} left)</button>`;$('again').onclick=()=>openPack(true);}
-   else{$('pdone').innerHTML=(free?'<button class="btn green" id="hm">📒 All done! Go to town ▶</button>':'<button class="btn gold" id="again">Another pack ($2.00)</button><button class="btn ghost" id="hm">🏠 Home</button>');const ag=$('again');if(ag)ag.onclick=()=>{if(S.cents<200){sfx.bad();toast('You need $2.00');return;}S.cents-=200;save();openPack();};$('hm').onclick=()=>hub();}},500);}}}
+   else{$('pdone').innerHTML=(free?'<button class="btn green" id="hm">📒 All done! Go to town ▶</button>':'<button class="btn gold" id="again">Another pack ($2.00)</button><button class="btn ghost" id="hm">🏠 Home</button>');const ag=$('again');if(ag)ag.onclick=()=>{if(S.cents<200){sfx.bad();toast('You need $2.00');return;}S.cents-=200;save();openPack(false,set);};$('hm').onclick=()=>hub();}},500);}}}
 

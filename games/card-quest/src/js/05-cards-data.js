@@ -79,11 +79,60 @@ const C=[ // id,name,type,body,hp,[atk,cost,dmg],[atk,cost,dmg],rarity,[main,lig
 [69,'Cyclonehydra','sky','hydra',130,['Triple Gust',2,50],['Cyclone',3,110],'legend',['#7048e8','#d0bfff'],'','|wings|'],
 [70,'Prismhydra','rock','hydra',150,['Prism Bite',2,60],['Rainbow Quake',3,140],'promo',['#ced4da','#a5d8ff'],'','crown|crystals|star'],
 [71,'Astrowl','spark','owl',140,['Star Talon',2,60],['Cosmic Dive',3,130],'promo',['#1b1f3b','#ffd43b'],'','crown|aura|star'],
-[72,'Emperhorn','leaf','rhino',150,['Royal Horn',2,60],['Earth Emperor',3,140],'promo',['#2b8a3e','#ffd43b'],'','crown|crystals|star']
-].map(a=>({id:a[0],name:a[1],type:a[2],tpl:a[3],hp:a[4],atk:[{n:a[5][0],c:a[5][1],d:a[5][2]},{n:a[6][0],c:a[6][1],d:a[6][2]}],r:a[7],pal:a[8],v:a[9]||'',ad:a[10]||''}));
+[72,'Emperhorn','leaf','rhino',150,['Royal Horn',2,60],['Earth Emperor',3,140],'promo',['#2b8a3e','#ffd43b'],'','crown|crystals|star'],
+[73,'Kindlewyrm','fire','dragon',70,['Ember Puff',1,20],['Wing Flare',2,40],'common',['#ff8787','#ffe066'],'',''],
+[74,'Twiglet','leaf','treant',70,['Twig Poke',1,20],['Root Grab',2,40],'common',['#8d6e63','#69db7c'],'',''],
+[75,'Slowshell','water','snail',60,['Slime Slide',1,10],['Shell Spin',2,40],'common',['#4dabf7','#d0bfff'],'',''],
+[76,'Webling','spark','spider',60,['Zap Web',1,20],['Sticky Shock',2,40],'common',['#fab005','#495057'],'',''],
+[77,'Pengo','water','penguin',60,['Belly Slide',1,20],['Ice Peck',2,40],'common',['#343a40','#f8f9fa'],'',''],
+[78,'Griffy','sky','griffin',70,['Talon Swipe',1,20],['Gust Pounce',2,40],'common',['#e5dbff','#e6c38a'],'',''],
+[79,'Pinchy','rock','crab',70,['Pebble Pinch',1,20],['Shell Bash',2,40],'common',['#e8590c','#ffd8a8'],'',''],
+[80,'Sparkhorn','spark','unicorn',60,['Horn Zap',1,20],['Rainbow Gallop',2,40],'common',['#f8f9fa','#fcc419'],'',''],
+[81,'Mossnail','leaf','snail',70,['Moss Spit',1,20],['Vine Coil',2,40],'common',['#82c91e','#e9fac8'],'',''],
+[82,'Cragcrawler','rock','spider',70,['Rock Bite',1,20],['Web Slam',2,40],'common',['#868e96','#495057'],'',''],
+[83,'Blazepeng','fire','penguin',60,['Hot Slide',1,20],['Flame Flap',2,40],'common',['#c92a2a','#ffe8cc'],'',''],
+[84,'Tidecrab','water','crab',70,['Bubble Pinch',1,20],['Wave Claw',2,40],'common',['#1c7ed6','#a5d8ff'],'',''],
+[85,'Charbark','fire','treant',70,['Ash Swipe',1,20],['Burning Branch',2,40],'common',['#5c3d2e','#ff922b'],'',''],
+[86,'Skyhorn','sky','unicorn',70,['Cloud Kick',1,20],['Star Gallop',2,40],'common',['#d0bfff','#ffffff'],'',''],
+[87,'Glidewyrm','sky','dragon',60,['Breeze Bite',1,20],['Glide Strike',2,40],'common',['#9775fa','#e5dbff'],'',''],
+[88,'Voltpeng','spark','penguin',60,['Static Slide',1,20],['Volt Flap',2,40],'common',['#1971c2','#ffe066'],'',''],
+[89,'Stonegriff','rock','griffin',70,['Stone Talon',1,20],['Rock Dive',2,40],'common',['#868e96','#c19a6b'],'',''],
+[90,'Leafcrab','leaf','crab',60,['Leaf Pinch',1,20],['Grass Claw',2,40],'common',['#2f9e44','#b2f2bb'],'',''],
+[91,'Icyshell','water','snail',60,['Frost Trail',1,20],['Ice Shell Slam',2,40],'common',['#a5d8ff','#e7f5ff'],'',''],
+[92,'Vinespinner','leaf','spider',60,['Vine Web',1,20],['Leaf Fang',2,40],'common',['#2b8a3e','#d8f5a2'],'',''],
+[93,'Blazewyrm','fire','dragon',90,['Fire Fang',1,30],['Dragon Flame',3,70],'rare',['#e03131','#ffd43b'],'','horns||stripes'],
+[94,'Oakguard','leaf','treant',90,['Branch Bash',1,30],['Forest Slam',3,70],'rare',['#6d4c41','#40c057'],'','antlers||'],
+[95,'Spiralshell','water','snail',80,['Spiral Splash',1,30],['Tidal Shell',2,50],'rare',['#1c7ed6','#99e9f2'],'','crystal||'],
+[96,'Voltarach','spark','spider',80,['Thunder Bite',1,30],['Mega Web Zap',2,50],'rare',['#f59f00','#343a40'],'','horns||bolt'],
+[97,'Penguard','water','penguin',90,['Iceberg Slide',1,30],['Blizzard Flap',3,70],'rare',['#1864ab','#e7f5ff'],'','crest||'],
+[98,'Griffinix','sky','griffin',90,['Sky Talon',1,30],['Hurricane Pounce',3,70],'rare',['#7048e8','#ffd8a8'],'','crest|wings|'],
+[99,'Boulderclaw','rock','crab',90,['Boulder Pinch',1,30],['Rock Crusher',3,70],'rare',['#a9805b','#e6d5c3'],'','horn||spots'],
+[100,'Prismhoof','spark','unicorn',80,['Prism Kick',1,30],['Lightning Gallop',2,50],'rare',['#fff3bf','#cc5de8'],'','|aura|star'],
+[101,'Thornsnail','leaf','snail',80,['Thorn Shot',1,30],['Thorny Coil',2,50],'rare',['#5c940d','#d8f5a2'],'','crest||'],
+[102,'Magmapeng','fire','penguin',80,['Lava Slide',1,30],['Volcano Flap',2,50],'rare',['#862e9c','#ffd8a8'],'','flamehair||'],
+[103,'Ripclaw','water','crab',90,['Rip Pinch',1,30],['Whirlpool Claw',3,70],'rare',['#0b7285','#99e9f2'],'','crown||'],
+[104,'Stormwyrm','sky','dragon',90,['Gale Fang',1,30],['Storm Wing',3,70],'rare',['#5f3dc4','#d0bfff'],'','crest||stripes'],
+[105,'Ashbark','fire','treant',90,['Ember Branch',1,30],['Wildfire Storm',3,70],'rare',['#3b2a20','#ff6b35'],'','|flames|'],
+[106,'Cloudmane','sky','unicorn',90,['Moon Kick',1,30],['Comet Gallop',3,70],'rare',['#e5dbff','#748ffc'],'','crest|wings|'],
+[107,'Infernodrake','fire','dragon',120,['Inferno Claw',2,50],['Dragon Meteor',3,90],'holo',['#c92a2a','#ff922b'],'','crown|flames|'],
+[108,'Elderoak','leaf','treant',120,['Root Quake',2,50],['Forest Fury',3,90],'holo',['#4e342e','#2f9e44'],'','crown|crystals|'],
+[109,'Voltarantula','spark','spider',110,['Shock Fang',2,50],['Thunder Web',3,90],'holo',['#fcc419','#212529'],'','crown|spikes|bolt'],
+[110,'Kingpengu','water','penguin',110,['Royal Slide',2,40],['Glacier Cannon',3,90],'holo',['#0b7285','#e3fafc'],'','crown||'],
+[111,'Griffking','sky','griffin',110,['Sky Lord Talon',2,50],['Tempest Dive',3,90],'holo',['#5f3dc4','#ffd43b'],'','crown|wings|'],
+[112,'Titanclaw','rock','crab',120,['Titan Pinch',2,50],['Earthquake Claw',3,90],'holo',['#5c5f66','#ffa94d'],'','crown|spikes|'],
+[113,'Prismacorn','spark','unicorn',110,['Rainbow Horn',2,50],['Galaxy Gallop',3,90],'holo',['#fff0f6','#f783ac'],'','crown|aura|star'],
+[114,'Volcanyx','fire','dragon',130,['Magma Fang',2,50],['Supernova Breath',3,110],'legend',['#a61e4d','#ffd43b'],'','crown|aura|stripes'],
+[115,'Gaiaroot','leaf','treant',130,['Ancient Root',2,50],['Earth Quake Roar',3,110],'legend',['#3e2723','#94d82d'],'','crown|aura|star'],
+[116,'Abyssnail','water','snail',130,['Deep Spiral',2,50],['Tsunami Shell',3,110],'legend',['#364fc7','#99e9f2'],'','crown|crystals|'],
+[117,'Skyweaver','sky','spider',130,['Cyclone Web',2,50],['Hurricane Fang',3,110],'legend',['#7048e8','#e5dbff'],'','crown|wings|'],
+[118,'Astrodrake','spark','dragon',150,['Star Fang',2,60],['Cosmic Meteor',3,140],'promo',['#1b1f3b','#ffd43b'],'','crown|crystals|star'],
+[119,'Auroracorn','water','unicorn',140,['Ice Crown Kick',2,60],['Aurora Gallop',3,130],'promo',['#e7f5ff','#63e6be'],'','crown|crystals|star'],
+[120,'Gemclaw','rock','crab',150,['Gem Pinch',2,60],['Diamond Quake',3,140],'promo',['#ced4da','#da77f2'],'','crown|crystals|star']
+].map(a=>({id:a[0],name:a[1],type:a[2],tpl:a[3],hp:a[4],atk:[{n:a[5][0],c:a[5][1],d:a[5][2]},{n:a[6][0],c:a[6][1],d:a[6][2]}],r:a[7],pal:a[8],v:a[9]||'',ad:a[10]||'',set:a[0]>72?2:1}));
 const byId=id=>C.find(c=>c.id===id);
 const ofR=r=>C.filter(c=>c.r===r);
 function rollR(w){let x=Math.random()*w.reduce((a,b)=>a+b[1],0);for(const [r,n] of w){if((x-=n)<0)return r;}return w[0][0];}
-const randCard=w=>pick(ofR(rollR(w)));
+const SETS={1:{n:'Card Quest Base',k:'CQ',e:'⭐'},2:{n:'Dragon Kingdom',k:'DK',e:'🐉'}};
+const randCard=(w,set)=>{const r=rollR(w),pool=ofR(r).filter(c=>!set||c.set===set);return pick(pool.length?pool:ofR(r));};
 const STARTER=[1,2,3,4,5,6];
 
