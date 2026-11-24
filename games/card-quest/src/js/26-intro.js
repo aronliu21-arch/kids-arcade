@@ -21,11 +21,12 @@ function quests(){const owned=Object.keys(S.owned).length,rs=S.rivalStage||0;ret
  {e:'🏆',n:'Win 3 tournament titles',z:[['冠','ㄍㄨㄢˋ'],['軍','ㄐㄩㄣ']],v:Math.min(S.trophies,TITLES),of:TITLES,how:'Pick a cup at the 🏆 Stadium and win 3 battles in a row.',go:()=>tourStart()},
  {e:'🏪',n:'Open your own card shop',z:[['開','ㄎㄞ'],['店','ㄉㄧㄢˋ']],v:S.shopOpen?1:0,of:1,how:`You need ${money(GOAL)} and ${TITLES} 🏆 titles.`,go:()=>hub()},
  {e:'✨',n:'Evolve a card',z:[['進','ㄐㄧㄣˋ'],['化','ㄏㄨㄚˋ']],v:Math.min(S.evolved||0,1),of:1,how:'Get 3 of the same card. Open it in 📒 My binder and tap ✨ Evolve!',go:()=>binder()},
+ {e:'🎓',n:'Win a gold medal in a skill',z:[['金','ㄐㄧㄣ'],['牌','ㄆㄞˊ']],v:Math.max(0,...SKILLS.map(s=>skLevel(s.k))),of:3,how:'Open 🎓 Skill Path and practice. Every medal gives you $1.00!',go:()=>skillPath()},
  {e:'📒',n:`Collect all ${C.length} cards`,z:[['收','ㄕㄡ'],['集','ㄐㄧˊ']],v:owned,of:C.length,how:'Buy packs at the 🛒 store, win prizes, and meet the mystery Card Master!',go:()=>store()}];}
 function questBook(){const Q=quests(),nx=Q.findIndex(q=>q.v<q.of);S.qbSeen=true;save();
  setScreen('quest',`<div class="hub"><div class="panel"><h2 class="h">📜 Quest Book ${zh([['任','ㄖㄣˋ'],['務','ㄨˋ'],['本','ㄅㄣˇ']])}</h2>
  <p style="text-align:center;font-weight:700">Your goal: become the Champion and open your own card shop!</p>
  <div class="qlist">${Q.map((q,i)=>{const done=q.v>=q.of,f=q.fmt||(x=>x);return `<div class="qrow ${done?'done':i===nx?'next':''}"><span class="qe">${done?'✅':q.e}</span><div class="qt"><b>${q.n}</b>${zh(q.z)}<small>${q.how}</small><div class="bar"><i style="width:${Math.min(100,q.v/q.of*100)}%"></i></div><small>${f(q.v)} / ${f(q.of)}</small></div>${i===nx?`<button class="btn gold small" data-a="go" data-v="${i}">NEXT ▶</button>`:''}</div>`;}).join('')}</div>
  <div class="tip" style="text-align:left">💡 <b>How it works</b><br>⭐ Right answers give you stars. Stars show how strong your math is.<br>✏️ Stuck on math? The math helper shows the steps for 5¢.<br>⚔️ In battle, look for <b>×2</b>: a type that beats the other card does double damage.<br>🔄 Use Switch to swap in a better card.</div>
- <div class="row"><button class="btn ghost" data-a="story">📖 Watch the story again</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
- bindAll({go:i=>Q[+i].go(),story:()=>introStory(questBook),home:()=>hub()});}
+ <div class="row"><button class="btn" data-a="skp">🎓 Skill Path</button><button class="btn ghost" data-a="story">📖 Watch the story again</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
+ bindAll({skp:()=>skillPath(),go:i=>Q[+i].go(),story:()=>introStory(questBook),home:()=>hub()});}

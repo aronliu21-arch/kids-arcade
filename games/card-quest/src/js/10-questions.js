@@ -1,6 +1,9 @@
 /* ---------- question bank: 20 kinds, 3 levels; gets harder as Lucas gets them right ---------- */
 const qLv=()=>Math.min(3,1+Math.floor((S.qRight||0)/4));
-function qScore(first){S.qRight=first?(S.qRight||0)+1:Math.max(0,(S.qRight||0)-1);save();}
+let LASTQ=null;
+function qScore(first){S.qRight=first?(S.qRight||0)+1:Math.max(0,(S.qRight||0)-1);save();if(LASTQ)track(LASTQ.kind,first,LASTQ.q,LASTQ.ans);LASTQ=null;}
+/* difficulty per skill: grows with that skill's medals, never below the overall level minus one, and eases off while he is struggling */
+function qLvFor(kind){const sk=skillOf(kind),s=skRec(sk),rec=s.r.slice(-6),hard=rec.length>=5&&rec.filter(Boolean).length<=2;const L=Math.min(3,Math.max(skDiff(sk),qLv()-1));return hard?Math.max(1,L-1):L;}
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const tfmt=m=>{m=((m%1440)+1440)%1440;const h=Math.floor(m/60),mm=m%60,h12=h%12||12;return `${h12}:${String(mm).padStart(2,'0')}`;};
 function mkQ(q,ans,wrong,why,extra){ans=String(ans);const w=[...new Set(wrong.map(String))].filter(x=>x!==ans&&x!=='NaN'&&!x.startsWith('-'));return {q,ans,opts:shuffle([ans,...shuffle(w).slice(0,3)]),why,extra:extra||''};}
@@ -50,7 +53,7 @@ const RIDDLES={
  calendar(L){const s=ri(0,6),k=ri(L===1?3:8,L===1?9:25),ans=DAYS[(s+k)%7];return mkQ(`Today is <b>${DAYS[s]}</b>. The big tournament is in <b>${k} days</b>. What day is the tournament?`,ans,DAYS.filter(x=>x!==ans).slice(0,6).filter((_,i)=>i%2===0),`${k} days = ${Math.floor(k/7)} week${Math.floor(k/7)===1?'':'s'} and ${k%7} more day${k%7===1?'':'s'} after ${DAYS[s]}.`);},
  coins(L){const sets=[[40,'25¢ + 10¢ + 5¢',['25¢ + 25¢ + 5¢','10¢ + 10¢ + 10¢','25¢ + 5¢ + 5¢']],[60,'25¢ + 25¢ + 10¢',['25¢ + 10¢ + 10¢','25¢ + 25¢ + 5¢','10¢ + 25¢ + 5¢']],[35,'10¢ + 10¢ + 10¢ + 5¢',['25¢ + 5¢ + 1¢ + 1¢','10¢ + 10¢ + 5¢ + 5¢','25¢ + 5¢ + 5¢ + 1¢']],[85,'25¢ + 25¢ + 25¢ + 10¢',['25¢ + 25¢ + 10¢ + 10¢','25¢ + 25¢ + 25¢ + 5¢','25¢ + 25¢ + 25¢ + 1¢']]];
   const [v,ans,w]=pick(sets);const n=ans.split('+').length;return mkQ(`Make exactly <b>${v}¢</b> using exactly <b>${n} coins</b>. Which coins?`,ans,w,`${ans} = ${v}¢`);}};
-function makeQ(opts){opts=opts||{};let ks=Object.keys(RIDDLES);if(opts.noCards)ks=ks.filter(k=>!['weakness','sumHP'].includes(k));const L=qLv();
- S.qLast=S.qLast||[];S.qSeen=S.qSeen||[];let r,key;for(let i=0;i<60;i++){let k;do{k=pick(ks);}while(S.qLast.includes(k)&&i<40);r=RIDDLES[k](L);key=r.q.replace(/<[^>]+>/g,'');if(!S.qSeen.includes(key)){S.qLast=[k].concat(S.qLast).slice(0,6);break;}}
- S.qSeen=[key].concat(S.qSeen).slice(0,500);save();return r;}
+function makeQ(opts){opts=opts||{};let ks=Object.keys(RIDDLES);if(opts.noCards)ks=ks.filter(k=>!['weakness','sumHP'].includes(k));if(opts.only)ks=ks.filter(k=>opts.only.includes(k));
+ S.qLast=S.qLast||[];S.qSeen=S.qSeen||[];let r,key;for(let i=0;i<60;i++){let k;do{k=pick(ks);}while(S.qLast.includes(k)&&i<40);r=RIDDLES[k](qLvFor(k));r.kind=k;key=r.q.replace(/<[^>]+>/g,'');if(!S.qSeen.includes(key)){S.qLast=[k].concat(S.qLast).slice(0,6);break;}}
+ S.qSeen=[key].concat(S.qSeen).slice(0,500);save();LASTQ={kind:r.kind,q:r.q,ans:r.ans};return r;}
 

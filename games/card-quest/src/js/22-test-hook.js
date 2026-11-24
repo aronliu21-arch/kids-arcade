@@ -6,4 +6,4 @@ window.__test={
   if(SCREEN==='cash'&&CJ){if($('give').disabled)return;let w=CJ.pay-CJ.price;$('change').innerHTML='';for(const [k,v] of CO)while(w>=v){addCoin(k);w-=v;}return giveChange();}
   if(SCREEN==='sort'&&SJ){const b=main.querySelector(`.sortc[data-v="${SJ.order[SJ.pos]}"]:not(.used)`);return b&&b.click();}
   if(REV){REV.querySelector('.flip').click();return REV.querySelector('.row .btn').click();}
-  if(SCREEN==='master'){const b=[...main.querySelectorAll('[data-a="o"]')].find(x=>x.dataset.v===String(window.__mans));b&&b.click();}}};
+  if(SCREEN==='master'||SCREEN==='practice'){const b=[...main.querySelectorAll('[data-a="o"]')].find(x=>x.dataset.v===String(window.__mans));b&&b.click();}}};

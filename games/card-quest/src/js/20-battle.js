@@ -33,11 +33,11 @@ function meAttack(i){const me=B.me,a=act('me').atk[+i],foe=act('op');if(B.turn!=
    left,left===0?shuffle([0,10,Math.abs(dmg-hp)||20]):shuffle([left,hp+dmg>200?left+10:hp+dmg,left===10?20:left-10]),`${hp} − ${dmg} ${left===0?'is 0 or less, so it is 0. Knocked out!':'= '+left}`,()=>hit2('op',dmg,`${a.n}!`,{card:act('me'),atk:a,weak:K.weak}),left>0?[{a:hp,op:'-',b:dmg}]:[]);
  if(K.mods)ask(`${K.prompt}<br>How much damage?`,dmg,shuffle([dmg,a.d,dmg+10,Math.max(10,dmg-20)]).slice(0,3),K.why,q2,K.ops);
  else q2();};
- if(Math.random()<.4){const r=makeQ({noCards:true});ask(`⚡ <b>Power-up question!</b> Right the first time = <b>+10 damage</b>!<br>${r.q}`,r.ans,r.opts,r.why,ft=>{qScore(ft);if(ft){FX.stamp('POWER UP!','small','#ffd43b');sfx.shimmer();}go(ft?10:0);},r.ops);}
+ if(Math.random()<.4){const r=makeQ({noCards:true});B.pu=true;ask(`⚡ <b>Power-up question!</b> Right the first time = <b>+10 damage</b>!<br>${r.q}`,r.ans,r.opts,r.why,ft=>{qScore(ft);if(ft){FX.stamp('POWER UP!','small','#ffd43b');sfx.shimmer();}go(ft?10:0);},r.ops);}
  else go(0);}
 function ask(h,ans,opts,why,then,ops){padClear();deskClose();ans=String(ans);opts=[...new Set(opts.map(String))];if(!opts.includes(ans))opts.push(ans);let tries=0,first=true;B.q={ans,go:null,ops:ops||[]};
  $('mid').innerHTML=`<div>${h}</div><div class="opts">${opts.map(o=>`<button class="btn" data-q="${o}">${o}</button>`).join('')}</div>${(ops&&ops.length)?'<button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button>':''}`;say(h.replace(/<[^>]+>/g,' ').replace(/▢/g,'blank').replace(/−/g,'minus').replace(/×/g,'times'));
- const fin=()=>{B.q=null;const ft=first;setTimeout(()=>then(ft),900);};
+ const pu=!!B.pu;B.pu=false;const fin=()=>{B.q=null;const ft=first;if(!pu)track('damage',ft,ft?'':h,ans);setTimeout(()=>then(ft),900);};
  B.q.go=()=>{const b=$('mid').querySelector(`[data-q="${ans}"]`);b&&b.click();};
  $('mid').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{if(tries<0)return;if(b.dataset.q===ans){first=tries===0;B.stars+=tries?1:2;S.stars+=tries?1:2;save();sfx.good();b.classList.add('green');tries=-1;fin();}
   else{sfx.bad();b.disabled=true;first=false;if(++tries>=2){tries=-1;$('mid').querySelector(`[data-q="${ans}"]`).classList.add('green');$('mid').insertAdjacentHTML('beforeend',`<div>👉 ${why}</div>`);say(why.replace('−','minus').replace('×','times'));setTimeout(fin,1800);}}});}

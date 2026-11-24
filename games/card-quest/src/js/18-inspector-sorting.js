@@ -49,7 +49,7 @@ function inspTap(x,y){const F=IJ.F,c=F.card,left=F.reg.filter(r=>!IJ.found.inclu
 function markRegion(reg,col){const r=region(IJ.F?IJ.F.card:IJ.c,reg),m=document.createElement('div');m.className='mark';m.style.borderColor=col;
  if(r==='edge'){Object.assign(m.style,{left:'0',top:'0',width:'100%',height:'100%',borderRadius:'7%',borderWidth:'6px'});}
  else Object.assign(m.style,{left:(r[0]/180*100)+'%',top:(r[1]/252*100)+'%',width:((r[2]-r[0])/180*100)+'%',height:((r[3]-r[1])/252*100)+'%'});$('marks').appendChild(m);}
-function inspGood(pay,txt){IJ.phase='done';IJ.earn+=pay;S.cents+=pay;S.stars+=IJ.tries?1:2;save();chaching();FX.stamp('+'+pay+'¢','small','#69db7c');$('imsg').innerHTML=txt;inspNextBtn();}
+function inspGood(pay,txt){track('inspect',!IJ.tries);IJ.phase='done';IJ.earn+=pay;S.cents+=pay;S.stars+=IJ.tries?1:2;save();chaching();FX.stamp('+'+pay+'¢','small','#69db7c');$('imsg').innerHTML=txt;inspNextBtn();}
 function inspNextBtn(){$('ibtn').innerHTML=`<button class="btn gold" data-a="nx">${IJ.n+1<IJ.total?'Next card ▶':'Finish shift ▶'}</button>`;$('ibtn').querySelector('button').onclick=()=>{if(++IJ.n<IJ.total)inspNext();else{S.inspShifts++;save();
  result('insp','🔍 Inspection done!',`<div class="big">🕵️</div><p style="font-size:1.3rem;font-weight:800">You earned ${money(IJ.earn)}</p><p>Fakes caught: ${IJ.caught} · All-time: ${S.fakesCaught||0}${(S.fakesCaught||0)>=10?' 🏅':''}</p><p>Wallet: ${money(S.cents)}</p>`,'Real collectors check the spelling, numbers and symbols before they trade.');}};}
 function lensSetup(){const L=$("lens"),box=$("ccard"),Z=2.4;let lx=.84,ly=.9,drag=null,moved=0;
@@ -76,6 +76,6 @@ function sortRound(){const R0=SJ.rules[SJ.round];let cs;do{cs=shuffle(C).slice(0
  bindAll({t(id,b){id=+id;if(b.classList.contains('used'))return;if(id===SJ.order[SJ.pos]){place(b);}else{sfx.bad();b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),450);SJ.perfect=false;
   if(++SJ.miss>=2){const rb=main.querySelector(`.sortc[data-v="${SJ.order[SJ.pos]}"]`);rb.classList.add('hint');const c=byId(SJ.order[SJ.pos]);toast(`Next is <b>${c.name}</b> (${R0.h(c)})`,2400);}}}});}
 function place(b){sfx.pop();SJ.miss=0;const slot=$('sl').children[SJ.pos];slot.innerHTML=b.querySelector('.cardw').outerHTML+'<span class="sbadge sm">'+b.querySelector('.sbadge').textContent+'</span>';slot.style.border='none';b.classList.add('used');b.classList.remove('hint');
- if(++SJ.pos===5){const pay=50;SJ.earn+=pay;S.cents+=pay;S.stars+=SJ.perfect?2:1;save();sfx.good();toast('📦 Sorted! +50¢');
+ if(++SJ.pos===5){track('compare',SJ.perfect);const pay=50;SJ.earn+=pay;S.cents+=pay;S.stars+=SJ.perfect?2:1;save();sfx.good();toast('📦 Sorted! +50¢');
   setTimeout(()=>{if(SCREEN!=='sort')return;if(++SJ.round<2)sortRound();else result('sort','🗂️ Cards sorted!',`<div class="big">📦</div><p style="font-size:1.3rem;font-weight:800">You earned ${money(SJ.earn)}</p><p>Wallet: ${money(S.cents)}</p>`,'Sort your real cards by number to spot doubles you can trade.');},1300);}}
 

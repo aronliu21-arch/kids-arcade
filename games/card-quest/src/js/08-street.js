@@ -95,7 +95,7 @@ function hub(fromAct){
  if(S.hubMode==='list')return hubList(fromAct);
  const mode=skyMode(),night=mode==='night',dusk=mode==='dusk';
  setScreen('hub',`<div class="vill"><div class="vhud"><div class="vgoal">${S.shopOpen?`<b>🏪 Your shop is open!</b>`:`<b>🏪 Shop: ${money(S.cents)} / ${money(GOAL)}</b><div class="bar"><i style="width:${Math.min(100,S.cents/GOAL*100)}%"></i></div><span>${'🏆'.repeat(Math.min(S.trophies,TITLES))}${'<span style="opacity:.3">🏆</span>'.repeat(Math.max(0,TITLES-S.trophies))}</span>`}</div>
- <button class="btn small" id="vqb">📜</button><button class="btn ghost small" id="vlist">☰ List</button></div>
+ <button class="btn small" id="vqb">📜</button><button class="btn small" id="vsk">🎓</button><button class="btn ghost small" id="vlist">☰ List</button></div>
  <div class="vview" id="vview">${villageSVG(night,dusk)}<button class="btn ghost vmv" id="vl" aria-label="Walk left">◀</button><button class="btn ghost vmv" id="vr" aria-label="Walk right">▶</button></div>
  <div class="vbar"><div class="vinfo" id="vinfo">Tap a building to walk there!</div></div>
  <div class="vmap">${BLD.map(b=>`<button class="vm" data-go="${b.k}" aria-label="${b.n||'My shop'}">${b.e}<small>${{home:'Home',store:'Store',cash:'Cashier',sort:'Sorting',insp:'Inspect',arena:'Battle',stadium:'Cup',lot:'My shop'}[b.k]}</small></button>`).join('')}</div></div>`);
@@ -118,7 +118,7 @@ function villageStart(fromAct){const svg=$('world'),view=$('vview');S.vx=S.vx||B
   walkTo(toWorld(e));});
  const hold=d=>()=>{VL.hold=d;VL.after=null;VL.at=null;};const stop=()=>{VL.hold=0;};
  [['vl',-1],['vr',1]].forEach(([id,d])=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();audio();hold(d)();});['pointerup','pointerleave','pointercancel'].forEach(k=>b.addEventListener(k,stop));});
- $('vqb').onclick=()=>questBook();$('vlist').onclick=()=>{S.hubMode='list';save();hubList();};
+ $('vqb').onclick=()=>questBook();$('vsk').onclick=()=>skillPath();$('vlist').onclick=()=>{S.hubMode='list';save();hubList();};
  main.querySelectorAll('.vm').forEach(m=>m.onclick=()=>{audio();const b=BLD.find(x=>x.k===m.dataset.go);walkTo(b.door,()=>arrive(b));});
  const near=BLD.find(b=>Math.abs(b.door-VL.x)<40);if(near)arrive(near,true);
  let last=performance.now();const loop=now=>{if(SCREEN!=='hub'||!$('world')){removeEventListener('resize',resize);return;}const dt=Math.min(.05,(now-last)/1000);last=now;vTick(dt,now);requestAnimationFrame(loop);};requestAnimationFrame(loop);}
@@ -147,7 +147,7 @@ function lotGo(){if(S.shopOpen)return myShop();if(canOpen())return modal(`<div c
 function kidTalk(k){modal(`<div style="width:90px;margin:0 auto">${kidSVG(k.f[1],k.f[2])}</div><h2>${k.f[0]}: “Want to battle?”</h2><p>Winner gets $1.50!</p>`,[['⚔️ Battle!',()=>{PEND={kind:'friendly',foe:k.f,opp:oppTeam('friendly'),sel:[]};teamPick('friendly');}],['Maybe later',null,'ghost']]);}
 
 /* chained result screen */
-const NEXT={insp:['Battle',()=>teamPick('friendly')],myshop:['My shop',()=>myShop()],cash:['Sorting job',sortJob],sort:['Battle',()=>teamPick('friendly')],battle:['Card store',()=>store()],tour:['Card store',()=>store()],rival:['Rival Road',()=>rivalRoad()]};
+const NEXT={insp:['Battle',()=>teamPick('friendly')],myshop:['My shop',()=>myShop()],cash:['Sorting job',sortJob],sort:['Battle',()=>teamPick('friendly')],battle:['Card store',()=>store()],tour:['Card store',()=>store()],rival:['Rival Road',()=>rivalRoad()],practice:['Skill Path',()=>skillPath()]};
 function result(kind,head,body,tip){RUN++;S.acts++;save();
  if(RUN>=3)return breakScreen(head,body);
  const n=NEXT[kind];
