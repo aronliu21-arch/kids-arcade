@@ -261,7 +261,7 @@ function rec(o){try{if(window.KA&&KA.answer)KA.answer(o);}catch(e){}}
 const binCount=()=>SHAPES.reduce((a,s)=>a+S.bin[s].length,0);
 
 /* ---------- zhuyin beside Chinese ---------- */
-const ZY={'葡':'ㄆㄨˊ','萄':'ㄊㄠˊ','飛':'ㄈㄟ','機':'ㄐㄧ','象':'ㄒㄧㄤˋ','兔':'ㄊㄨˋ','牛':'ㄋㄧㄡˊ','奶':'ㄋㄞˇ','老':'ㄌㄠˇ','虎':'ㄏㄨˇ','哥':'ㄍㄜ','花':'ㄏㄨㄚ','雞':'ㄐㄧ','球':'ㄑㄧㄡˊ','瓜':'ㄍㄨㄚ','五':'ㄨˇ','亮':'ㄌㄧㄤˋ','仔':'ㄗˇ','倒':'ㄉㄠˋ','傷':'ㄕㄤ','像':'ㄒㄧㄤˋ','六':'ㄌㄧㄡˋ','共':'ㄍㄨㄥˋ','剩':'ㄕㄥˋ','又':'ㄧㄡˋ','受':'ㄕㄡˋ','向':'ㄒㄧㄤˋ','問':'ㄨㄣˋ','或':'ㄏㄨㄛˋ','手':'ㄕㄡˇ','拍':'ㄆㄞ','於':'ㄩˊ','樣':'ㄧㄤˋ','橢':'ㄊㄨㄛˇ','幾':'ㄐㄧˇ','序':'ㄒㄩˋ','怕':'ㄆㄚˋ','射':'ㄕㄜˋ','減':'ㄐㄧㄢˇ','無':'ㄨˊ','熱':'ㄖㄜˋ','現':'ㄒㄧㄢˋ','發':'ㄈㄚ','等':'ㄉㄥˇ','筒':'ㄊㄨㄥˇ','箭':'ㄐㄧㄢˋ','細':'ㄒㄧˋ','繃':'ㄅㄥ','膝':'ㄒㄧ','買':'ㄇㄞˇ','貼':'ㄊㄧㄝ','跌':'ㄉㄧㄝ','跺':'ㄉㄨㄛˋ','轉':'ㄓㄨㄢˇ','那':'ㄋㄚˋ','電':'ㄉㄧㄢˋ','順':'ㄕㄨㄣˋ','黑':'ㄏㄟ','聊':'ㄌㄧㄠˊ','不':'ㄅㄨˋ','丟':'ㄉㄧㄡ','也':'ㄧㄝˇ','以':'ㄧˇ','任':'ㄖㄣˋ','保':'ㄅㄠˇ','信':'ㄒㄧㄣˋ','修':'ㄒㄧㄡ','做':'ㄗㄨㄛˋ','備':'ㄅㄟˋ','傳':'ㄔㄨㄢˊ','前':'ㄑㄧㄢˊ','務':'ㄨˋ','取':'ㄑㄩˇ','叢':'ㄘㄨㄥˊ','另':'ㄌㄧㄥˋ','可':'ㄎㄜˇ','員':'ㄩㄢˊ','喀':'ㄎㄚ','喔':'ㄛ','嗨':'ㄏㄞ','坐':'ㄗㄨㄛˋ','堆':'ㄉㄨㄟ','壞':'ㄏㄨㄞˋ','壯':'ㄓㄨㄤˋ','夠':'ㄍㄡˋ','守':'ㄕㄡˇ','岩':'ㄧㄢˊ','島':'ㄉㄠˇ','巡':'ㄒㄩㄣˊ','已':'ㄧˇ','庭':'ㄊㄧㄥˊ','強':'ㄑㄧㄤˊ','後':'ㄏㄡˋ','愛':'ㄞˋ','慶':'ㄑㄧㄥˋ','打':'ㄉㄚˇ','推':'ㄊㄨㄟ','搖':'ㄧㄠˊ','搬':'ㄅㄢ','晃':'ㄏㄨㄤˋ','更':'ㄍㄥˋ','會':'ㄏㄨㄟˋ','林':'ㄌㄧㄣˊ','橋':'ㄑㄧㄠˊ','每':'ㄇㄟˇ','沒':'ㄇㄟˊ','海':'ㄏㄞˇ','準':'ㄓㄨㄣˇ','滾':'ㄍㄨㄣˇ','漿':'ㄐㄧㄤ','灘':'ㄊㄢ','瓶':'ㄆㄧㄥˊ','皮':'ㄆㄧˊ','祝':'ㄓㄨˋ','空':'ㄎㄨㄥ','站':'ㄓㄢˋ','箱':'ㄒㄧㄤ','索':'ㄙㄨㄛˇ','經':'ㄐㄧㄥ','線':'ㄒㄧㄢˋ','繼':'ㄐㄧˋ','續':'ㄒㄩˋ','耶':'ㄧㄝ','聲':'ㄕㄥ','處':'ㄔㄨˋ','行':'ㄒㄧㄥˊ','護':'ㄏㄨˋ','讓':'ㄖㄤˋ','貝':'ㄅㄟˋ','走':'ㄗㄡˇ','跟':'ㄍㄣ','車':'ㄔㄜ','轟':'ㄏㄨㄥ','送':'ㄙㄨㄥˋ','邊':'ㄅㄧㄢ','鈕':'ㄋㄧㄡˇ','門':'ㄇㄣˊ','隆':'ㄌㄨㄥˊ','雪':'ㄒㄩㄝˇ','靜':'ㄐㄧㄥˋ','面':'ㄇㄧㄢˋ','頭':'ㄊㄡˊ','顆':'ㄎㄜ','食':'ㄕˊ','飽':'ㄅㄠˇ','餵':'ㄨㄟˋ','高':'ㄍㄠ','乾':'ㄍㄢ','二':'ㄦˋ','他':'ㄊㄚ','住':'ㄓㄨˋ','來':'ㄌㄞˊ','們':'˙ㄇㄣ','吃':'ㄔ','咕':'ㄍㄨ','喝':'ㄏㄜ','嚕':'ㄌㄨ','困':'ㄎㄨㄣˋ','圍':'ㄨㄟˊ','多':'ㄉㄨㄛ','巾':'ㄐㄧㄣ','晚':'ㄨㄢˇ','暖':'ㄋㄨㄢˇ','服':'˙ㄈㄨ','東':'ㄉㄨㄥ','案':'ㄢˋ','洗':'ㄒㄧˇ','淨':'ㄐㄧㄥˋ','溫':'ㄨㄣ','澡':'ㄗㄠˇ','狀':'ㄓㄨㄤˋ','第':'ㄉㄧˋ','糕':'ㄍㄠ','糟':'ㄗㄠ','舒':'ㄕㄨ','被':'ㄅㄟˋ','西':'˙ㄒㄧ','金':'ㄐㄧㄣ','顏':'ㄧㄢˊ','洛':'ㄌㄨㄛˋ','明':'ㄇㄧㄥˊ','的':'˙ㄉㄜ','恐':'ㄎㄨㄥˇ','龍':'ㄌㄨㄥˊ','世':'ㄕˋ','界':'ㄐㄧㄝˋ','點':'ㄉㄧㄢˇ','我':'ㄨㄛˇ','開':'ㄎㄞ','始':'ㄕˇ',
+const ZY={'伸':'ㄕㄣ','呀':'˙ㄧㄚ','聞':'ㄨㄣˊ','脖':'ㄅㄛˊ','誰':'ㄕㄟˊ','躲':'ㄉㄨㄛˇ','葡':'ㄆㄨˊ','萄':'ㄊㄠˊ','飛':'ㄈㄟ','機':'ㄐㄧ','象':'ㄒㄧㄤˋ','兔':'ㄊㄨˋ','牛':'ㄋㄧㄡˊ','奶':'ㄋㄞˇ','老':'ㄌㄠˇ','虎':'ㄏㄨˇ','哥':'ㄍㄜ','花':'ㄏㄨㄚ','雞':'ㄐㄧ','球':'ㄑㄧㄡˊ','瓜':'ㄍㄨㄚ','五':'ㄨˇ','亮':'ㄌㄧㄤˋ','仔':'ㄗˇ','倒':'ㄉㄠˋ','傷':'ㄕㄤ','像':'ㄒㄧㄤˋ','六':'ㄌㄧㄡˋ','共':'ㄍㄨㄥˋ','剩':'ㄕㄥˋ','又':'ㄧㄡˋ','受':'ㄕㄡˋ','向':'ㄒㄧㄤˋ','問':'ㄨㄣˋ','或':'ㄏㄨㄛˋ','手':'ㄕㄡˇ','拍':'ㄆㄞ','於':'ㄩˊ','樣':'ㄧㄤˋ','橢':'ㄊㄨㄛˇ','幾':'ㄐㄧˇ','序':'ㄒㄩˋ','怕':'ㄆㄚˋ','射':'ㄕㄜˋ','減':'ㄐㄧㄢˇ','無':'ㄨˊ','熱':'ㄖㄜˋ','現':'ㄒㄧㄢˋ','發':'ㄈㄚ','等':'ㄉㄥˇ','筒':'ㄊㄨㄥˇ','箭':'ㄐㄧㄢˋ','細':'ㄒㄧˋ','繃':'ㄅㄥ','膝':'ㄒㄧ','買':'ㄇㄞˇ','貼':'ㄊㄧㄝ','跌':'ㄉㄧㄝ','跺':'ㄉㄨㄛˋ','轉':'ㄓㄨㄢˇ','那':'ㄋㄚˋ','電':'ㄉㄧㄢˋ','順':'ㄕㄨㄣˋ','黑':'ㄏㄟ','聊':'ㄌㄧㄠˊ','不':'ㄅㄨˋ','丟':'ㄉㄧㄡ','也':'ㄧㄝˇ','以':'ㄧˇ','任':'ㄖㄣˋ','保':'ㄅㄠˇ','信':'ㄒㄧㄣˋ','修':'ㄒㄧㄡ','做':'ㄗㄨㄛˋ','備':'ㄅㄟˋ','傳':'ㄔㄨㄢˊ','前':'ㄑㄧㄢˊ','務':'ㄨˋ','取':'ㄑㄩˇ','叢':'ㄘㄨㄥˊ','另':'ㄌㄧㄥˋ','可':'ㄎㄜˇ','員':'ㄩㄢˊ','喀':'ㄎㄚ','喔':'ㄛ','嗨':'ㄏㄞ','坐':'ㄗㄨㄛˋ','堆':'ㄉㄨㄟ','壞':'ㄏㄨㄞˋ','壯':'ㄓㄨㄤˋ','夠':'ㄍㄡˋ','守':'ㄕㄡˇ','岩':'ㄧㄢˊ','島':'ㄉㄠˇ','巡':'ㄒㄩㄣˊ','已':'ㄧˇ','庭':'ㄊㄧㄥˊ','強':'ㄑㄧㄤˊ','後':'ㄏㄡˋ','愛':'ㄞˋ','慶':'ㄑㄧㄥˋ','打':'ㄉㄚˇ','推':'ㄊㄨㄟ','搖':'ㄧㄠˊ','搬':'ㄅㄢ','晃':'ㄏㄨㄤˋ','更':'ㄍㄥˋ','會':'ㄏㄨㄟˋ','林':'ㄌㄧㄣˊ','橋':'ㄑㄧㄠˊ','每':'ㄇㄟˇ','沒':'ㄇㄟˊ','海':'ㄏㄞˇ','準':'ㄓㄨㄣˇ','滾':'ㄍㄨㄣˇ','漿':'ㄐㄧㄤ','灘':'ㄊㄢ','瓶':'ㄆㄧㄥˊ','皮':'ㄆㄧˊ','祝':'ㄓㄨˋ','空':'ㄎㄨㄥ','站':'ㄓㄢˋ','箱':'ㄒㄧㄤ','索':'ㄙㄨㄛˇ','經':'ㄐㄧㄥ','線':'ㄒㄧㄢˋ','繼':'ㄐㄧˋ','續':'ㄒㄩˋ','耶':'ㄧㄝ','聲':'ㄕㄥ','處':'ㄔㄨˋ','行':'ㄒㄧㄥˊ','護':'ㄏㄨˋ','讓':'ㄖㄤˋ','貝':'ㄅㄟˋ','走':'ㄗㄡˇ','跟':'ㄍㄣ','車':'ㄔㄜ','轟':'ㄏㄨㄥ','送':'ㄙㄨㄥˋ','邊':'ㄅㄧㄢ','鈕':'ㄋㄧㄡˇ','門':'ㄇㄣˊ','隆':'ㄌㄨㄥˊ','雪':'ㄒㄩㄝˇ','靜':'ㄐㄧㄥˋ','面':'ㄇㄧㄢˋ','頭':'ㄊㄡˊ','顆':'ㄎㄜ','食':'ㄕˊ','飽':'ㄅㄠˇ','餵':'ㄨㄟˋ','高':'ㄍㄠ','乾':'ㄍㄢ','二':'ㄦˋ','他':'ㄊㄚ','住':'ㄓㄨˋ','來':'ㄌㄞˊ','們':'˙ㄇㄣ','吃':'ㄔ','咕':'ㄍㄨ','喝':'ㄏㄜ','嚕':'ㄌㄨ','困':'ㄎㄨㄣˋ','圍':'ㄨㄟˊ','多':'ㄉㄨㄛ','巾':'ㄐㄧㄣ','晚':'ㄨㄢˇ','暖':'ㄋㄨㄢˇ','服':'˙ㄈㄨ','東':'ㄉㄨㄥ','案':'ㄢˋ','洗':'ㄒㄧˇ','淨':'ㄐㄧㄥˋ','溫':'ㄨㄣ','澡':'ㄗㄠˇ','狀':'ㄓㄨㄤˋ','第':'ㄉㄧˋ','糕':'ㄍㄠ','糟':'ㄗㄠ','舒':'ㄕㄨ','被':'ㄅㄟˋ','西':'˙ㄒㄧ','金':'ㄐㄧㄣ','顏':'ㄧㄢˊ','洛':'ㄌㄨㄛˋ','明':'ㄇㄧㄥˊ','的':'˙ㄉㄜ','恐':'ㄎㄨㄥˇ','龍':'ㄌㄨㄥˊ','世':'ㄕˋ','界':'ㄐㄧㄝˋ','點':'ㄉㄧㄢˇ','我':'ㄨㄛˇ','開':'ㄎㄞ','始':'ㄕˇ',
 '造':'ㄗㄠˋ','工':'ㄍㄨㄥ','作':'ㄗㄨㄛˋ','冒':'ㄇㄠˋ','險':'ㄒㄧㄢˇ','找':'ㄓㄠˇ','個':'˙ㄍㄜ','紅':'ㄏㄨㄥˊ','藍':'ㄌㄢˊ','黃':'ㄏㄨㄤˊ','綠':'ㄌㄩˋ','橘':'ㄐㄩˊ','紫':'ㄗˇ','色':'ㄙㄜˋ',
 '正':'ㄓㄥˋ','方':'ㄈㄤ','形':'ㄒㄧㄥˊ','長':'ㄔㄤˊ','三':'ㄙㄢ','角':'ㄐㄧㄠˇ','圓':'ㄩㄢˊ','半':'ㄅㄢˋ','星':'ㄒㄧㄥ','心':'ㄒㄧㄣ','菱':'ㄌㄧㄥˊ',
 '暴':'ㄅㄠˋ','腕':'ㄨㄢˋ','劍':'ㄐㄧㄢˋ','翼':'ㄧˋ','甲':'ㄐㄧㄚˇ','選':'ㄒㄩㄢˇ','一':'ㄧ','隻':'ㄓ','要':'ㄧㄠˋ','蓋':'ㄍㄞˋ','你':'ㄋㄧˇ','蓋':'ㄍㄞˋ',
@@ -428,33 +428,62 @@ const CH=[
  {key:'jungle',em:'🌴',en:'Jungle Station',zh:'叢林站',friend:'neckmom',goal:'rex',baby:{t:'brachio',c:solid('brachio','yellow')},
   missions:[{g:'fruit',en:'Feed the hungry dinos',zh:'餵飽肚子餓的恐龍'},{g:'fossil',en:'Dig for clues',zh:'挖出線索'},{g:'care',en:'Care for the baby',zh:'照顧寶寶'}],
   arrive:[['pip','Are you my mommy?','你是我的媽媽嗎?'],['neckmom','No, little one. And my baby is lost too!','不是喔,小寶貝。我的寶寶也走丟了!'],['pip','Milo can help! Milo is the Dino Ranger!','洛明會幫忙!洛明是恐龍巡守員!'],['nar','Do the jobs to earn bricks. Then build a T-Rex to help!','完成任務賺積木,再蓋一隻暴龍來幫忙!']],
-  finale:[['nar','Look! The T-Rex found something in the tall grass!','你看!暴龍在草叢裡找到了東西!'],['neckmom','My baby! Thank you, Milo!','我的寶寶!謝謝你,洛明!'],['pip','Yay! Now let’s ride the train to the beach!','耶!我們坐火車去海灘吧!']]},
+  finale:[['nar','Look! {N} the T-Rex is sniffing the tall grass…','你看!暴龍{N}在高高的草叢裡聞一聞……',{items:[['pip',.12,.55],['neckmom',.34,1],['goal',.6,.9]],prop:['grass',.84,'hide']}],
+   ['nar','{N} found something! Who is hiding in the grass?','{N}找到東西了!誰躲在草叢裡?',{items:[['pip',.12,.55],['neckmom',.34,1],['goal',.6,.9],['baby',.85,.5,1]],prop:['grass',.85,'peek']}],
+   ['neckmom','My baby! Thank you, Milo and {N}!','我的寶寶!謝謝洛明和{N}!',{items:[['pip',.12,.55],['neckmom',.4,1],['baby',.62,.5,1],['goal',.84,.9,1]],hearts:1}],
+   ['pip','Yay! Now let’s ride the train to the beach!','耶!我們坐火車去海灘吧!',{items:[['pip',.12,.55],['neckmom',.4,1],['baby',.62,.5,1],['goal',.84,.9,1]]}]]},
  {key:'beach',em:'🏖',en:'Beach Station',zh:'海灘站',friend:'ptmom',goal:'stego',baby:{t:'ptero',c:solid('ptero','blue')},
   missions:[{g:'shadow',en:'Fix the broken bridge',zh:'修好壞掉的橋'},{g:'eggs',en:'Sort the beach eggs',zh:'把海灘的蛋分類'},{g:'mail',en:'Deliver the letters',zh:'送信'}],
   arrive:[['pip','Are you my mommy?','你是我的媽媽嗎?'],['ptmom','No! I can fly, see? But the bridge is broken, and my baby is on the other side!','不是!你看,我會飛!可是橋壞了,我的寶寶在另一邊!'],['nar','Fix the bridge, then build a Stego to guard the eggs!','修好橋,再蓋一隻劍龍來保護蛋!']],
-  finale:[['nar','The bridge is fixed! Stego walks across.','橋修好了!劍龍走過去了。'],['ptmom','My baby! You are safe! Thank you, Milo!','我的寶寶!你安全了!謝謝你,洛明!'],['pip','Brr… let’s go to Snow Mountain next!','我們接著去雪山吧!']]},
+  finale:[['nar','The bridge is fixed! {N} the Stego walks across…','橋修好了!劍龍{N}走過橋……',{items:[['pip',.1,.55],['ptmom',.25,.8],['goal',.5,.8]],prop:['bridge',.52]}],
+   ['nar','Look! Baby Ptero is on the other side!','你看!翼龍寶寶在另一邊!',{items:[['pip',.1,.55],['ptmom',.25,.8],['goal',.62,.8],['baby',.88,.5,1]],prop:['bridge',.52]}],
+   ['ptmom','My baby! You are safe! Thank you, Milo and {N}!','我的寶寶!你安全了!謝謝洛明和{N}!',{items:[['pip',.1,.55],['goal',.3,.8],['baby',.68,.5,1],['ptmom',.86,.8,1]],prop:['bridge',.52],hearts:1}],
+   ['pip','Brr… let’s go to Snow Mountain next!','我們接著去雪山吧!',{items:[['pip',.1,.55],['goal',.3,.8],['baby',.68,.5,1],['ptmom',.86,.8,1]],prop:['bridge',.52]}]]},
  {key:'snow',em:'❄️',en:'Snow Station',zh:'雪山站',friend:'ankmom',goal:'ankylo',baby:{t:'ankylo',c:solid('ankylo','orange')},
   missions:[{g:'pattern',en:'Follow the footprints',zh:'跟著腳印走'},{g:'zhuyin',en:'Echo cave sounds',zh:'山洞回音'},{g:'care',en:'Warm up the babies',zh:'幫寶寶取暖'}],
   arrive:[['pip','Brr! It’s cold! Are you my mommy?','好冷!你是我的媽媽嗎?'],['ankmom','No, little one. My baby is lost in the snow!','不是喔,小寶貝。我的寶寶在雪裡走丟了!'],['nar','Follow the footprints, then build a strong Ankylo!','跟著腳印走,再蓋一隻強壯的甲龍!']],
-  finale:[['nar','Ankylo pushed away the big snow pile!','甲龍推開了大雪堆!'],['ankmom','My baby! Thank you, Milo!','我的寶寶!謝謝你,洛明!'],['pip','I hear a big roar from the volcano… is that my mommy?','我聽到火山傳來大吼聲……是我的媽媽嗎?']]},
+  finale:[['nar','{N} the Ankylo pushes the big snow pile…','甲龍{N}推開大雪堆……',{items:[['pip',.1,.55],['ankmom',.3,.9],['goal',.58,.9]],prop:['snow',.83,'hide']}],
+   ['nar','Push, push! Look who was behind the snow!','推呀推!你看雪堆後面是誰!',{items:[['pip',.1,.55],['ankmom',.3,.9],['goal',.6,.9],['baby',.84,.5,1]],prop:['snow',.95,'open']}],
+   ['ankmom','My baby! Thank you, Milo and {N}!','我的寶寶!謝謝洛明和{N}!',{items:[['pip',.1,.55],['ankmom',.36,.9],['baby',.58,.5,1],['goal',.82,.9,1]],prop:['snow',.97,'open'],hearts:1}],
+   ['pip','I hear a big roar from the volcano… is that my mommy?','我聽到火山傳來大吼聲……是我的媽媽嗎?',{items:[['pip',.1,.55],['ankmom',.36,.9],['baby',.58,.5,1],['goal',.82,.9,1]],prop:['snow',.97,'open']}]]},
  {key:'volcano',em:'🌋',en:'Volcano Station',zh:'火山站',friend:'mom',hideFriend:true,goal:'brachio',baby:null,
   missions:[{g:'lava',en:'Cross the lava',zh:'跳過岩漿'},{g:'fruit',en:'Pack food for everyone',zh:'幫大家準備食物'},{g:'fossil',en:'Open the stone door',zh:'打開石頭門'}],
   arrive:[['pip','I hear a big roar… Mommy? Is that you?','我聽到大吼聲……媽媽?是你嗎?'],['nar','Cross the lava, then build a Long Neck to see over the rocks!','跳過岩漿,再蓋一隻腕龍,看看石頭後面!']],
-  finale:[['nar','Long Neck looks over the rocks and sees… a big Tricera!','腕龍看過石頭,看到了……一隻大三角龍!'],['mom','Pip! My baby! I looked everywhere for you!','皮皮!我的寶寶!我到處找你!'],['pip','Mommy! Milo found you!','媽媽!洛明找到你了!'],['nar','The volcano is calm. Every dino family is home. You did it, Dino Ranger!','火山安靜了。每個恐龍家庭都回家了。恐龍巡守員,你做到了!']]}];
+  finale:[['nar','{N} the Long Neck stretches up to look over the big rocks…','腕龍{N}伸長脖子,看看大石頭後面……',{items:[['pip',.12,.55],['goal',.42,1.1]],prop:['rocks',.76,'hide']}],
+   ['nar','…and sees a big Tricera!','……看到了一隻大三角龍!',{items:[['pip',.12,.55],['goal',.4,1.1],['mom',.76,1.15,1]],prop:['rocks',.76,'peek']}],
+   ['mom','Pip! My baby! I looked everywhere for you!','皮皮!我的寶寶!我到處找你!',{items:[['goal',.2,1.1],['pip',.45,.55],['mom',.7,1.15,1]],hearts:1}],
+   ['pip','Mommy! Milo found you!','媽媽!洛明找到你了!',{items:[['goal',.2,1.1],['pip',.45,.55],['mom',.7,1.15,1]],hearts:1}],
+   ['nar','The volcano is calm. Every dino family is home. You did it, Dino Ranger!','火山安靜了。每個恐龍家庭都回家了。恐龍巡守員,你做到了!',{items:[['goal',.2,1.1],['pip',.45,.55],['mom',.7,1.15,1]]}]]}];
 const OPENING=[['nar','Rumble rumble! The volcano on Dino Island shook!','轟隆隆!恐龍島的火山在搖晃!'],['nar','Dino eggs rolled everywhere!','恐龍蛋滾得到處都是!'],['pip','Crack! Hi! I’m Pip. Where is my mommy?','喀!嗨!我是皮皮。我的媽媽在哪裡?'],['nar','Milo, you are the Dino Ranger! Ride the Dino Train and help Pip find his mommy!','洛明,你是恐龍巡守員!坐恐龍火車,幫皮皮找媽媽吧!']];
 
+// a story beat: characters placed left→right (x fraction, size, face-left), plus a prop
+function propSVG(kind,x,W,H,state,u){const g=H*.9;let o='';
+ if(kind==='grass'){const h=u*(state==='hide'?.8:state==='peek'?.36:.15);for(let k=-6;k<=6;k++){const bx=x+k*u*.05,c=k%2?'#2b8a3e':'#40c057';o+=`<path d="M${bx-u*.04} ${g+4} Q${bx+k*2} ${g-h*.6} ${bx+k*3} ${g-h*(.8+((k*7+13)%5)*.06)} Q${bx+4} ${g-h*.5} ${bx+u*.04} ${g+4}Z" fill="${c}" ${ST} stroke-width="2"/>`;}}
+ if(kind==='bridge'){const x0=W*.36,x1=W*.74;o+=`<rect x="${x0-10}" y="${g-6}" width="${x1-x0+20}" height="${u*.2}" fill="#339af0" ${ST}/><path d="M${x0} ${g-6} Q${(x0+x1)/2} ${g-u*.14} ${x1} ${g-6}" stroke="#8b5a2b" stroke-width="${u*.05}" fill="none"/>`;
+  for(let k=0;k<=10;k++){const px=x0+(x1-x0)*k/10,py=g-6-Math.sin(Math.PI*k/10)*u*.11;o+=`<rect x="${px-5}" y="${py-6}" width="10" height="12" rx="2" fill="#c08552" ${ST} stroke-width="1.5"/>`;}}
+ if(kind==='snow'){const s2=state==='open'?.45:1;o+=`<ellipse cx="${x}" cy="${g}" rx="${u*.7*s2}" ry="${u*.6*s2}" fill="#fff" ${ST}/><ellipse cx="${x-u*.22*s2}" cy="${g-u*.25*s2}" rx="${u*.22*s2}" ry="${u*.09*s2}" fill="#e7f5ff"/>`;}
+ if(kind==='rocks'){const h=u*(state==='peek'?.5:1),w=u*.9;o+=`<path d="M${x-w} ${g+4} L${x-w*.8} ${g-h*.7} L${x-w*.3} ${g-h} L${x+w*.25} ${g-h*.8} L${x+w*.75} ${g-h*.9} L${x+w} ${g+4}Z" fill="#868e96" ${ST} stroke-width="3"/><path d="M${x-w*.5} ${g-h*.5} l${w*.2} -${h*.12} M${x+w*.3} ${g-h*.4} l${w*.15} ${h*.1}" stroke="#495057" stroke-width="3" fill="none"/>`;}
+ return o;}
+function viewSVG(v,spk,W,H){const base=Math.min(H*.55,W*.3);let o='';const pr=v.prop;
+ if(pr&&pr[0]==='bridge')o+=propSVG('bridge',W*pr[1],W,H,pr[2],base);
+ v.items.forEach(([k,xf,sc,left])=>{const c=CAST[k];if(!c)return;const sz=base*sc/100;const x=W*xf-50*sz;const fly=TPL[c.t].fly;const y=(fly?H*.55:H*.9)-80*sz;
+  o+=`<g transform="translate(${left?x+100*sz:x},${y}) scale(${left?-sz:sz},${sz})"><g class="${k===spk?'talk':''}">${dinoSVG(c.t,c.c)}</g></g>`;
+  if(k==='goal'&&c.name)o+=`<g><rect x="${W*xf-26}" y="${H*.9+2}" width="52" height="20" rx="7" fill="#fff" ${ST} stroke-width="2"/><text x="${W*xf}" y="${H*.9+17}" text-anchor="middle" font-size="14" font-weight="900" fill="#1b1f3b">${c.name}</text></g>`;});
+ if(pr&&pr[0]!=='bridge')o+=propSVG(pr[0],W*pr[1],W,H,pr[2],base);
+ if(v.hearts)for(let k=0;k<5;k++)o+=`<text x="${W*(.3+k*.1)}" y="${H*(.18+(k%2)*.08)}" font-size="${Math.min(W,H)*.08}">❤️</text>`;
+ return o;}
 // cutscene player: cast drawn on the region background, one line at a time, voiced
 function scene(area,cast,lines,done){musicOff();const m=document.createElement('div');m.className='scene';
  m.innerHTML=`<div class="stage2" id="scStage"></div><div class="say"><span class="who" id="scWho"></span><div class="lines" id="scLine"></div><button class="nx" id="scNext" aria-label="Next">▶</button></div>`;
  document.body.appendChild(m);let i=-1;
- const draw=(spk)=>{const r=$('scStage').getBoundingClientRect();const W=Math.max(300,r.width),H=Math.max(200,r.height);let o=areaArt(area,W,H);
+ const draw=(spk,view)=>{const r=$('scStage').getBoundingClientRect();const W=Math.max(300,r.width),H=Math.max(200,r.height);let o=areaArt(area,W,H);
+  if(view){$('scStage').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${o+viewSVG(view,spk,W,H)}</svg>`;return;}
   const list=cast.filter(k=>CAST[k]&&CAST[k].t);const base=Math.min(H*.62,W/(list.length+.6)*.9);
   list.forEach((k,j)=>{const c=CAST[k];const sz=base*c.sz/100;const x=W*(j+1)/(list.length+1)-50*sz,y=H*.9-80*sz;const flip=x>W/2&&k!=='pip';
    o+=`<g transform="translate(${flip?x+100*sz:x},${y}) scale(${flip?-sz:sz},${sz})"><g class="${k===spk?'talk':''}">${dinoSVG(c.t,c.c)}</g></g>`;});
-  if(spk==='nar'&&i===0&&area==='volcano'&&cast.includes('eggs'))o+='';
   $('scStage').innerHTML=`<svg viewBox="0 0 ${W} ${H}">${o}</svg>`;};
- const next=()=>{i++;if(i>=lines.length){m.remove();SOLVE=prevSolve;done&&done();return;}const [who,en,z]=lines[i];
-  draw(who);$('scWho').textContent=(CAST[who]&&CAST[who].em)||'⭐';$('scLine').innerHTML=bi(en,z);say(en,z,null,CAST[who]&&CAST[who].pitch);};
+ const next=()=>{i++;if(i>=lines.length){m.remove();SOLVE=prevSolve;done&&done();return;}const [who,en,z,view]=lines[i];
+  draw(who,view);$('scWho').textContent=(CAST[who]&&CAST[who].em)||'⭐';$('scLine').innerHTML=bi(en,z);say(en,z,null,CAST[who]&&CAST[who].pitch);};
  const prevSolve=SOLVE;$('scNext').onclick=()=>{SFX.click();next();};SOLVE=()=>$('scNext').click();next();}
 
 /* ---------- intro ---------- */
@@ -545,8 +574,11 @@ function openStation(ci){CUR=ci;const c=CH[ci];unlockArea(c.key);musicOn();BACK=
  else say(line[0],line[1]);
 }
 function finale(ci){const c=CH[ci];
+ const mine=S.dinos.slice().reverse().find(d=>d.t===c.goal&&(d.stage??2)===2)||{t:c.goal,c:stepCols(c.goal),name:''};
+ CAST.goal={t:c.goal,c:mine.c,sz:1,em:'🦖',name:mine.name,pitch:.9};if(c.baby)CAST.baby={t:c.baby.t,c:c.baby.c,sz:.5,em:'🍼',pitch:1.7};
+ const nm=mine.name||TPL[c.goal].en;const lines=c.finale.map(([w,en,z,v])=>[w,en.split('{N}').join(nm),z.split('{N}').join(nm),v]);
  const cast=c.key==='volcano'?['pip','mom']:['pip',c.friend];
- scene(c.key,cast,c.finale,()=>{SFX.fanfare();confetti(60);
+ scene(c.key,cast,lines,()=>{SFX.fanfare();confetti(60);
   const finish=()=>{S.ch=Math.max(S.ch,ci+1);S.snacks+=2;save();showWallet(true);
    if(ci===3){unlockArea('home');S.dinos.push({t:'trike',c:PIPC,name:'PIP',area:'volcano',stage:0,hearts:0});S.dinos.push({t:'trike',c:PIPC,name:'MOM',area:'volcano',stage:2,hearts:0});save();
     toast('🎉 THE END 🎉',2500);say('Pip and Mommy moved into your zoo! Feed Pip to help him grow!','皮皮和媽媽搬進你的動物園了!餵皮皮讓他長大!');Z.area='volcano';setTimeout(()=>{musicOn();show('zoo');},400);return;}
