@@ -351,6 +351,12 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 .medals span{font-size:1.3rem;filter:grayscale(1);opacity:.3;margin-right:2px}.medals span.on{filter:none;opacity:1}
 .sdots i.done{background:#2f9e44}
 .pq{font-size:1.2rem;font-weight:700;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px 12px;max-width:560px;margin:8px auto}
+/* achievements */
+.achs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0}
+.ach{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;border:3px solid var(--ink);border-radius:14px;padding:8px;background:#f1f3f5;opacity:.6}
+.ach .ae{font-size:2rem}.ach small{font-weight:700;color:var(--muted)}
+.ach.got{background:linear-gradient(#fff9db,#ffe066);opacity:1;box-shadow:0 3px 0 var(--ink)}
+@media (max-width:420px){.achs{grid-template-columns:1fr 1fr}}
 
 </style></head><body>
 <div class="app">
@@ -392,12 +398,18 @@ const sfx={good(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.16,i*
  energy(){tone(440,.1,'square',.06);tone(880,.15,'square',.06,.08);},magic(){[392,523,659,784,1047,784,1047].forEach((f,i)=>tone(f,.3,'sine',.1,i*.09));}};
 function say(t){return;}
 function shout(t){if(!SOUND||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.95;u.pitch=1.05;speechSynthesis.speak(u);}catch(e){}}
-/* anthem: menu screens only */
+/* music: a theme per place, menu-type screens only (fades out on jobs, battles and questions) */
 let MUS=null;
-function musicStart(){if(!SOUND||MUS)return;const c=audio();if(!c)return;const g=c.createGain();g.gain.value=0;g.connect(c.destination);g.gain.linearRampToValueAtTime(.5,c.currentTime+.6);
- const beat=60/132,mel=[[392,659,784,659],[523,659,784,1047],[440,523,659,880],[392,494,587,784]],bass=[131,175,110,98];let bar=0;
- const play=()=>{const m=mel[bar%4],t0=0;m.forEach((f,i)=>{tone(f,beat*.9,'square',.05,t0+i*beat,g);tone(f*2,beat*.4,'triangle',.03,t0+i*beat+beat/2,g);});tone(bass[bar%4],beat*3.8,'triangle',.12,0,g);[0,2].forEach(i=>tone(70,.12,'sine',.18,i*beat,g));bar++;};
- play();MUS={g,id:setInterval(play,beat*4000)};}
+const THEMES={
+ anthem:{bpm:132,mel:[[392,659,784,659],[523,659,784,1047],[440,523,659,880],[392,494,587,784]],bass:[131,175,110,98],w:'square',drum:[0,2]},
+ shop:{bpm:116,mel:[[523,659,523,784],[587,698,587,880],[523,659,784,1047],[494,587,784,587]],bass:[131,147,131,98],w:'triangle',drum:[1,3]},
+ calm:{bpm:84,mel:[[523,0,659,784],[440,0,523,659],[349,440,523,0],[392,494,587,0]],bass:[131,110,87,98],w:'sine',drum:[]},
+ stadium:{bpm:144,mel:[[330,392,494,659],[349,440,523,698],[392,494,587,784],[440,554,659,880]],bass:[82,87,98,110],w:'sawtooth',drum:[0,1,2,3]},
+ night:{bpm:96,mel:[[659,0,587,523],[494,0,523,587],[440,0,494,523],[392,0,0,0]],bass:[110,98,87,82],w:'triangle',drum:[0]}};
+function musicStart(theme){theme=theme||'anthem';if(!SOUND)return;if(MUS&&MUS.th===theme)return;if(MUS)musicStop();const c=audio();if(!c)return;const T0=THEMES[theme];const g=c.createGain();g.gain.value=0;g.connect(c.destination);g.gain.linearRampToValueAtTime(theme==='stadium'?.4:.5,c.currentTime+.6);
+ const beat=60/T0.bpm;let bar=0;
+ const play=()=>{const m=T0.mel[bar%4];m.forEach((f,i)=>{if(!f)return;tone(f,beat*.9,T0.w,T0.w==='sawtooth'?.025:.05,i*beat,g);if(T0.w!=='sine')tone(f*2,beat*.4,'triangle',.025,i*beat+beat/2,g);});tone(T0.bass[bar%4],beat*3.8,'triangle',.12,0,g);T0.drum.forEach(i=>tone(70,.12,'sine',.18,i*beat,g));bar++;};
+ play();MUS={g,th:theme,id:setInterval(play,beat*4000)};}
 function musicStop(){if(!MUS)return;const m=MUS;MUS=null;clearInterval(m.id);try{const c=audio();m.g.gain.cancelScheduledValues(c.currentTime);m.g.gain.setValueAtTime(m.g.gain.value,c.currentTime);m.g.gain.linearRampToValueAtTime(0,c.currentTime+.8);setTimeout(()=>m.g.disconnect(),1500);}catch(e){}}
 let tt=0;function toast(h,ms){const t=$('toast');t.innerHTML=h;t.classList.remove('hide');clearTimeout(tt);tt=setTimeout(()=>t.classList.add('hide'),ms||1600);}
 function modal(html,btns){const m=document.createElement('div');m.className='modal';m.innerHTML='<div>'+html+'<div class="row" style="margin-top:10px"></div></div>';
@@ -997,7 +1009,8 @@ const MASTER=`<svg viewBox="0 0 100 112"><path d="M10 112L26 40Q50 6 74 40L90 11
 /* ---------- screens ---------- */
 let SCREEN='title',RUN=0; // RUN = missions in a row this session
 const main=$('main');
-function setScreen(n,html){SCREEN=n;{const hb=$('homeb');if(hb)hb.style.display=['title','hub','starter','break'].includes(n)?'none':'';const pb=$('padb');if(pb)pb.style.display=['cash','battle','master','sort','insp'].includes(n)?'':'none';padClose();padClear();if(typeof deskClose==='function')deskClose();}main.innerHTML=html;main.scrollTop=0;if(n==='hub'||n==='title')musicStart();else musicStop();}
+function setScreen(n,html){SCREEN=n;{const hb=$('homeb');if(hb)hb.style.display=['title','hub','starter','break'].includes(n)?'none':'';const pb=$('padb');if(pb)pb.style.display=['cash','battle','master','sort','insp'].includes(n)?'':'none';padClose();padClear();if(typeof deskClose==='function')deskClose();}main.innerHTML=html;main.scrollTop=0;const th=placeTheme(n);th?musicStart(th):musicStop();if(typeof achCheck==='function'&&n!=='title')achCheck();}
+function placeTheme(n){if(n==='hub')return S.hubMode!=='list'&&typeof skyMode==='function'&&skyMode()==='night'?'night':'anthem';return {title:'anthem',store:'shop',myshop:'shop',binder:'calm',quest:'calm',skills:'calm',ach:'calm',intro:'calm',tour:'stadium',rival:'stadium',pick:'stadium',result:'anthem'}[n]||null;}
 function bindAll(map){main.querySelectorAll('[data-a]').forEach(b=>b.onclick=e=>{audio();const f=map[b.dataset.a];if(f)f(b.dataset.v,b);});}
 
 function title(){
@@ -1036,7 +1049,7 @@ function hubList(fromAct){
  const T2=(e,en,z,a,sub,cls)=>`<button class="tile ${cls||''}" data-a="${a}"><span class="e">${e}</span><span class="en">${en}</span>${zh(z)}${sub?`<small>${sub}</small>`:''}</button>`;
  setScreen('hub',`<div class="hub"><div class="hero"><div class="av me">${LUCAS}<span class="badge">Lucas</span></div><div class="goal">
  ${S.shopOpen?`<b>🏪 Lucas’s Cards is open!</b><div>🏆 ×${S.trophies} · 📒 ${owned}/${C.length} cards</div>`:`<b>To open your own shop: save ${money(GOAL)} and win ${TITLES} tournament titles!</b><div>💵 ${money(S.cents)} of ${money(GOAL)}</div><div class="bar"><i style="width:${Math.min(100,S.cents/GOAL*100)}%"></i></div><div style="margin-top:4px;font-size:1.3rem">${Array.from({length:TITLES},(_,i)=>i<S.trophies?'🏆':'<span style="filter:grayscale(1);opacity:.35">🏆</span>').join(' ')} <span style="font-size:.95rem">${Math.min(S.trophies,TITLES)}/${TITLES} titles · 📒 ${owned}/${C.length}</span></div>`}</div></div>
- <div class="row" style="font-size:.9rem;color:var(--muted);font-weight:700"><span>🔈 Tap any word to hear it</span><button class="btn small" data-a="qb">📜 Quest Book</button><button class="btn small" data-a="sk">🎓 Skills</button><button class="btn gold small" data-a="street">🗺️ Walk the street</button></div>
+ <div class="row" style="font-size:.9rem;color:var(--muted);font-weight:700"><span>🔈 Tap any word to hear it</span><button class="btn small" data-a="qb">📜 Quest Book</button><button class="btn small" data-a="sk">🎓 Skills</button><button class="btn small" data-a="ach">🏅 Awards</button><button class="btn gold small" data-a="street">🗺️ Walk the street</button></div>
  <div class="tiles">
  ${T2('🧾','Cashier job',[['收','ㄕㄡ'],['銀','ㄧㄣˊ'],['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],'cash','Earn 35–50¢ a customer')}
  ${T2('🗂️','Sorting job',[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],'sort','Earn 50¢ a row')}
@@ -1049,7 +1062,7 @@ function hubList(fromAct){
  ${S.shopOpen?T2('🏪','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'myshop','Sell cards · upgrades','hot'):
   T2(canOpen()?'🔑':'🔒','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'open',canOpen()?'Ready to open!':'Needs '+money(GOAL)+' + '+TITLES+' 🏆',canOpen()?'hot':'lock')}
  </div></div>`);
- bindAll({qb:()=>questBook(),sk:()=>skillPath(),street:()=>{S.hubMode='street';save();hub();},free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,insp:inspectJob,battle:()=>arenaMenu(),tour:tourStart,store,binder,myshop:myShop,
+ bindAll({qb:()=>questBook(),sk:()=>skillPath(),ach:()=>achRoom(),street:()=>{S.hubMode='street';save();hub();},free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,insp:inspectJob,battle:()=>arenaMenu(),tour:tourStart,store,binder,myshop:myShop,
   open(){if(!canOpen()){const need=[];if(S.cents<GOAL)need.push('save '+money(GOAL-S.cents)+' more');if(S.trophies<TITLES)need.push('win '+(TITLES-S.trophies)+' more tournament title'+(TITLES-S.trophies>1?'s':''));toast('🔒 You need to '+need.join(' and ')+'!',2400);sfx.bad();return;}
    modal(`<div class="big">🏪</div><h2>Open your own shop?</h2><p>It costs <b>${money(GOAL)}</b>. You will have ${money(S.cents-GOAL)} left.</p>`,[['Open it! 🎉',()=>{S.cents-=GOAL;S.shopOpen=true;S.up=S.up||{};S.stock=S.stock||[];save();confetti();setTimeout(confetti,400);fanfare();FX.stamp('GRAND OPENING!','small','#ffd43b');shout('Your shop is open! Put your extra cards on the shelf and pick a price.');setTimeout(myShop,900);}],['Not yet',null,'ghost']]);}});
  if(fromAct)maybeMaster();}
@@ -1648,7 +1661,7 @@ function oppTurn(){if(SCREEN!=='battle')return;const op=B.op,c=act('op'),mine=ac
  msg(`${c.name} uses <b>${can.n}</b>!${K.mods?'<br>'+K.why.replace(/^/,''):''}`);setTimeout(()=>hit2('me',K.dmg,`${c.name} used ${can.n}!`,{card:c,atk:can,weak:K.weak}),900);}
 function startMyTurn(){if(SCREEN!=='battle')return;B.turn='me';B.drew=false;B.busy=false;B.switched=false;const c=act('me'),ma=abil(c);let h='';if(ma&&ma.k==='heal'&&B.me.hp<c.hp){B.me.hp=Math.min(c.hp,B.me.hp+10);renderSide('me');{const [hx,hy]=ctr($('slot-me'));FX.emit(hx,hy,'heal',18,{dir:-Math.PI/2,spread:1.4,speed:3});}h='🌿 Regrow healed 10 HP! ';sfx.good();}msg(h+`Your turn! Draw an energy card ⚡`);renderCtrl();}
 function endBattle(won){if(SCREEN!=='battle')return;B.busy=true;banner(won,()=>endBattle2(won));}
-function endBattle2(won){const st=B.stars;
+function endBattle2(won){const st=B.stars;if(won){S.wins=(S.wins||0)+1;save();}
  if(B.kind==='friendly'){if(won){S.cents+=150;sfx.win();confetti();}else{S.cents+=25;sfx.bad();}save();restock();
   return result('battle',won?'🏆 You won!':'Good battle!',`<div class="big">${won?'🥇':'🤝'}</div><p style="font-size:1.2rem;font-weight:800">${won?'You won $1.50!':B.foe[0]+' won this time. You still get 25¢ for a good try.'}</p><p>⭐ ${st} stars from your math</p>`,'In the real game, check the weakness before you attack. ×2 can win the match!');}
  if(B.kind==='rival')return rivalAfter(won);
@@ -1828,8 +1841,8 @@ function questBook(){const Q=quests(),nx=Q.findIndex(q=>q.v<q.of);S.qbSeen=true;
  <p style="text-align:center;font-weight:700">Your goal: become the Champion and open your own card shop!</p>
  <div class="qlist">${Q.map((q,i)=>{const done=q.v>=q.of,f=q.fmt||(x=>x);return `<div class="qrow ${done?'done':i===nx?'next':''}"><span class="qe">${done?'✅':q.e}</span><div class="qt"><b>${q.n}</b>${zh(q.z)}<small>${q.how}</small><div class="bar"><i style="width:${Math.min(100,q.v/q.of*100)}%"></i></div><small>${f(q.v)} / ${f(q.of)}</small></div>${i===nx?`<button class="btn gold small" data-a="go" data-v="${i}">NEXT ▶</button>`:''}</div>`;}).join('')}</div>
  <div class="tip" style="text-align:left">💡 <b>How it works</b><br>⭐ Right answers give you stars. Stars show how strong your math is.<br>✏️ Stuck on math? The math helper shows the steps for 5¢.<br>⚔️ In battle, look for <b>×2</b>: a type that beats the other card does double damage.<br>🔄 Use Switch to swap in a better card.</div>
- <div class="row"><button class="btn" data-a="skp">🎓 Skill Path</button><button class="btn ghost" data-a="story">📖 Watch the story again</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
- bindAll({skp:()=>skillPath(),go:i=>Q[+i].go(),story:()=>introStory(questBook),home:()=>hub()});}
+ <div class="row"><button class="btn" data-a="skp">🎓 Skill Path</button><button class="btn" data-a="ach">🏅 Achievements</button><button class="btn ghost" data-a="story">📖 Watch the story again</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
+ bindAll({ach:()=>achRoom(),skp:()=>skillPath(),go:i=>Q[+i].go(),story:()=>introStory(questBook),home:()=>hub()});}
 /* ---------- Learning path: skills, per-skill levels, practice ---------- */
 const SKILLS=[
  {k:'addsub',e:'➕',n:'Add & Subtract',z:[['加','ㄐㄧㄚ'],['減','ㄐㄧㄢˇ']],q:['packsLeft','missing','together','sumHP','damage','hitsKO']},
@@ -1867,6 +1880,38 @@ function practice(k,i,earn){const sk=SKILLS.find(s=>s.k===k);if(i>=5){return res
  const next=ms=>setTimeout(()=>{if(SCREEN==='practice')practice(k,i+1,earn);},ms);
  bindAll({home:()=>skillPath(),o(v,b){if(tries<0)return;if(String(v)===String(R0.ans)){const ft=tries===0;qScore(ft);S.stars+=ft?2:1;if(ft){S.cents+=5;earn+=5;}save();sfx.good();b.classList.add('green');$('pm').textContent=ft?'Right! +5¢':'Right on the second try!';tries=-1;next(1100);}
   else{tries++;sfx.bad();b.disabled=true;if(tries>=2){qScore(false);$('pm').innerHTML='The answer is <b>'+R0.ans+'</b>. '+R0.why;main.querySelector(`[data-a=o][data-v="${R0.ans}"]`).classList.add('green');tries=-1;next(2600);}else $('pm').textContent='Not quite. Try again!';}}});}
+/* ---------- Achievements: checked on every screen change; each pays 25¢ once ---------- */
+const own=()=>Object.keys(S.owned).map(Number);
+const ACH=[
+ {k:'pack',e:'🎁',n:'First Rip',d:'Open your first pack',ok:()=>own().length>=6},
+ {k:'c25',e:'📒',n:'Collector',d:'Own 25 different cards',ok:()=>own().length>=25},
+ {k:'c60',e:'📚',n:'Big Collector',d:'Own 60 different cards',ok:()=>own().length>=60},
+ {k:'call',e:'👑',n:'Master Collector',d:`Own all ${C.length} cards`,ok:()=>own().length>=C.length},
+ {k:'dk10',e:'🐉',n:'Dragon Tamer',d:'Own 10 Dragon Kingdom cards',ok:()=>own().filter(i=>byId(i).set===2).length>=10},
+ {k:'leg',e:'🌟',n:'Legend Finder',d:'Own a Legend card',ok:()=>own().some(i=>byId(i).r==='legend')},
+ {k:'w1',e:'⚔️',n:'First Win',d:'Win a battle',ok:()=>(S.wins||0)>=1},
+ {k:'w10',e:'🛡️',n:'Battle Pro',d:'Win 10 battles',ok:()=>(S.wins||0)>=10},
+ {k:'w30',e:'🗡️',n:'Battle Legend',d:'Win 30 battles',ok:()=>(S.wins||0)>=30},
+ {k:'b3',e:'🎖️',n:'Badge Hunter',d:'Win 3 Rival Road badges',ok:()=>(S.rivalStage||0)>=3},
+ {k:'champ',e:'🏅',n:'Card Quest Champion',d:'Beat Champion Max',ok:()=>(S.rivalStage||0)>=6},
+ {k:'t1',e:'🏆',n:'Title Winner',d:'Win a tournament',ok:()=>S.trophies>=1},
+ {k:'shop',e:'🏪',n:'Shop Owner',d:'Open your own card shop',ok:()=>!!S.shopOpen},
+ {k:'evo',e:'✨',n:'Evolver',d:'Evolve a card',ok:()=>(S.evolved||0)>=1},
+ {k:'s100',e:'⭐',n:'Star Power',d:'Earn 100 stars',ok:()=>S.stars>=100},
+ {k:'s500',e:'🌠',n:'Superstar',d:'Earn 500 stars',ok:()=>S.stars>=500},
+ {k:'fake',e:'🕵️',n:'Fake Buster',d:'Catch 10 fake cards',ok:()=>(S.fakesCaught||0)>=10},
+ {k:'gold',e:'🥇',n:'Gold Brain',d:'Get a gold medal in a skill',ok:()=>SKILLS.some(s=>skLevel(s.k)>=3)},
+ {k:'all',e:'🎓',n:'All-Rounder',d:'Get bronze in every skill',ok:()=>SKILLS.every(s=>skLevel(s.k)>=1)},
+ {k:'rich',e:'💰',n:'Big Saver',d:'Have $20.00 in your wallet',ok:()=>S.cents>=2000}];
+let achBusy=false;
+function achCheck(){if(achBusy||!S.started)return;achBusy=true;try{S.ach=S.ach||{};const fresh=ACH.filter(a=>!S.ach[a.k]&&a.ok());
+ if(fresh.length){fresh.forEach(a=>{S.ach[a.k]=Date.now();S.cents+=25;});save();
+  fresh.forEach((a,i)=>setTimeout(()=>{toast(`🏅 Achievement: <b>${a.e} ${a.n}</b><br>${a.d} · +25¢`,2600);if(i===0){sfx.win();FX.stamp('ACHIEVEMENT!','small','#ffd43b');}},600+i*2800));}}finally{achBusy=false;}}
+function achRoom(){S.ach=S.ach||{};const got=ACH.filter(a=>S.ach[a.k]).length;
+ setScreen('ach',`<div class="hub"><div class="panel"><h2 class="h">🏅 Achievements ${zh([['成','ㄔㄥˊ'],['就','ㄐㄧㄡˋ']])} · ${got}/${ACH.length}</h2>
+ <div class="achs">${ACH.map(a=>{const g=S.ach[a.k];return `<div class="ach ${g?'got':''}"><span class="ae">${g?a.e:'🔒'}</span><b>${a.n}</b><small>${a.d}</small></div>`;}).join('')}</div>
+ <div class="row"><button class="btn ghost" data-a="qb">📜 Quest Book</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
+ bindAll({qb:()=>questBook(),home:()=>hub()});}
 /* ---------- start (keep this file last) ---------- */
 hud();title();
 

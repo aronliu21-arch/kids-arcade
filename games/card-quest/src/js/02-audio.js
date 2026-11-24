@@ -8,12 +8,18 @@ const sfx={good(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.16,i*
  energy(){tone(440,.1,'square',.06);tone(880,.15,'square',.06,.08);},magic(){[392,523,659,784,1047,784,1047].forEach((f,i)=>tone(f,.3,'sine',.1,i*.09));}};
 function say(t){return;}
 function shout(t){if(!SOUND||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.95;u.pitch=1.05;speechSynthesis.speak(u);}catch(e){}}
-/* anthem: menu screens only */
+/* music: a theme per place, menu-type screens only (fades out on jobs, battles and questions) */
 let MUS=null;
-function musicStart(){if(!SOUND||MUS)return;const c=audio();if(!c)return;const g=c.createGain();g.gain.value=0;g.connect(c.destination);g.gain.linearRampToValueAtTime(.5,c.currentTime+.6);
- const beat=60/132,mel=[[392,659,784,659],[523,659,784,1047],[440,523,659,880],[392,494,587,784]],bass=[131,175,110,98];let bar=0;
- const play=()=>{const m=mel[bar%4],t0=0;m.forEach((f,i)=>{tone(f,beat*.9,'square',.05,t0+i*beat,g);tone(f*2,beat*.4,'triangle',.03,t0+i*beat+beat/2,g);});tone(bass[bar%4],beat*3.8,'triangle',.12,0,g);[0,2].forEach(i=>tone(70,.12,'sine',.18,i*beat,g));bar++;};
- play();MUS={g,id:setInterval(play,beat*4000)};}
+const THEMES={
+ anthem:{bpm:132,mel:[[392,659,784,659],[523,659,784,1047],[440,523,659,880],[392,494,587,784]],bass:[131,175,110,98],w:'square',drum:[0,2]},
+ shop:{bpm:116,mel:[[523,659,523,784],[587,698,587,880],[523,659,784,1047],[494,587,784,587]],bass:[131,147,131,98],w:'triangle',drum:[1,3]},
+ calm:{bpm:84,mel:[[523,0,659,784],[440,0,523,659],[349,440,523,0],[392,494,587,0]],bass:[131,110,87,98],w:'sine',drum:[]},
+ stadium:{bpm:144,mel:[[330,392,494,659],[349,440,523,698],[392,494,587,784],[440,554,659,880]],bass:[82,87,98,110],w:'sawtooth',drum:[0,1,2,3]},
+ night:{bpm:96,mel:[[659,0,587,523],[494,0,523,587],[440,0,494,523],[392,0,0,0]],bass:[110,98,87,82],w:'triangle',drum:[0]}};
+function musicStart(theme){theme=theme||'anthem';if(!SOUND)return;if(MUS&&MUS.th===theme)return;if(MUS)musicStop();const c=audio();if(!c)return;const T0=THEMES[theme];const g=c.createGain();g.gain.value=0;g.connect(c.destination);g.gain.linearRampToValueAtTime(theme==='stadium'?.4:.5,c.currentTime+.6);
+ const beat=60/T0.bpm;let bar=0;
+ const play=()=>{const m=T0.mel[bar%4];m.forEach((f,i)=>{if(!f)return;tone(f,beat*.9,T0.w,T0.w==='sawtooth'?.025:.05,i*beat,g);if(T0.w!=='sine')tone(f*2,beat*.4,'triangle',.025,i*beat+beat/2,g);});tone(T0.bass[bar%4],beat*3.8,'triangle',.12,0,g);T0.drum.forEach(i=>tone(70,.12,'sine',.18,i*beat,g));bar++;};
+ play();MUS={g,th:theme,id:setInterval(play,beat*4000)};}
 function musicStop(){if(!MUS)return;const m=MUS;MUS=null;clearInterval(m.id);try{const c=audio();m.g.gain.cancelScheduledValues(c.currentTime);m.g.gain.setValueAtTime(m.g.gain.value,c.currentTime);m.g.gain.linearRampToValueAtTime(0,c.currentTime+.8);setTimeout(()=>m.g.disconnect(),1500);}catch(e){}}
 let tt=0;function toast(h,ms){const t=$('toast');t.innerHTML=h;t.classList.remove('hide');clearTimeout(tt);tt=setTimeout(()=>t.classList.add('hide'),ms||1600);}
 function modal(html,btns){const m=document.createElement('div');m.className='modal';m.innerHTML='<div>'+html+'<div class="row" style="margin-top:10px"></div></div>';
