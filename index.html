@@ -111,6 +111,21 @@ main{max-width:1200px;margin:0 auto;padding:28px 18px 40px}
   padding:3px 11px;border-radius:999px;border:3px solid var(--ink);
   background:var(--k);
 }
+.slot{position:relative;display:flex;flex-direction:column}
+.slot>.cart{flex:1}
+.fav{
+  position:absolute;top:8px;right:8px;z-index:2;
+  width:48px;height:48px;border-radius:50%;
+  background:#fff;border:4px solid var(--ink);box-shadow:3px 3px 0 var(--ink);
+  display:grid;place-items:center;padding:0;cursor:pointer;touch-action:manipulation;
+}
+.fav svg{width:28px;height:28px}
+.fav:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.fav:focus-visible{outline:4px solid #ffd43b;outline-offset:3px}
+.slot.on .fav{background:#fff3bf}
+.slot.on>.cart{outline:5px solid #ffd43b;outline-offset:-10px}
+.favtag{position:absolute;top:8px;left:8px;z-index:2;background:#ffd43b;color:var(--ink);font-weight:800;font-size:.85rem;padding:3px 9px;border:3px solid var(--ink);border-radius:999px;pointer-events:none}
+.tip{text-align:center;color:var(--muted);font-weight:800;margin:-8px 0 18px}
 .kid.nora{--k:var(--nora)} .kid.lucas{--k:var(--lucas)} .kid.milo{--k:var(--milo)}
 
 h2.q{margin:6px 0 24px;text-align:center;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;font-size:clamp(1.8rem,5vw,2.6rem);color:var(--text)}
@@ -159,13 +174,15 @@ footer{text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;padd
       <button class="back" id="back" type="button">← Change player</button>
       <div class="who-now" id="whoNow"></div>
     </div>
+    <p class="tip" id="tip">點 ☆ 把最愛的遊戲放在最上面 · Tap ☆ to keep a favorite on top</p>
     <div class="grid" id="grid"></div>
   </section>
 </main>
 <footer>Stars and progress save inside each game, on this device.</footer>
 
 <script>
-// To add a game: add one line to this list. kids = whose page it appears on.
+// To add a game: add one line to the END of this list (newest last). The menu shows newest first,
+// with each kid's ⭐ favorites above the rest. kids = whose page it appears on.
 const GAMES = [
   {zh:[["拼","ㄆㄧㄣ"],["字","ㄗˋ"],["蜜","ㄇㄧˋ"],["蜂","ㄈㄥ"]], en:"Spelling Bees", url:"games/spelling-bees/", kids:["nora","lucas"], color:"#2f9e44", icon:"spell"},
   {zh:[["足","ㄗㄨˊ"],["球","ㄑㄧㄡˊ"],["高","ㄍㄠ"],["手","ㄕㄡˇ"]], en:"Pitch Smarts", url:"games/pitch-smarts/", kids:["nora","lucas"], color:"#1c7ed6", icon:"ball"},
@@ -256,6 +273,16 @@ $("pick").addEventListener("click", e => {
   const b = e.target.closest(".kidbtn"); if (b) location.hash = b.dataset.kid;
 });
 $("back").addEventListener("click", () => { location.hash = ""; });
+const STAR = on => `<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="${on?"#fcc419":"#fff"}" stroke="#1b1f3b" stroke-width="2" stroke-linejoin="round"/></svg>`;
+const favKey = kid => "arcade-favs-" + kid;
+function getFavs(kid){ try { const v = JSON.parse(localStorage.getItem(favKey(kid)) || "[]"); return Array.isArray(v) ? v : []; } catch(e){ return []; } }
+let memFavs = {};
+function loadFavs(kid){ return memFavs[kid] || (memFavs[kid] = getFavs(kid)); }
+function saveFavs(kid, list){ memFavs[kid] = list; try { localStorage.setItem(favKey(kid), JSON.stringify(list)); } catch(e){} }
+function slotHTML(g, on){
+  const label = on ? `Remove ${g.en} from favorites` : `Add ${g.en} to favorites`;
+  return `<div class="slot${on?" on":""}">${on?'<span class="favtag">⭐ 最愛 Fave</span>':''}<button class="fav" type="button" data-url="${g.url}" aria-pressed="${on}" aria-label="${label}">${STAR(on)}</button>${cardHTML(g)}</div>`;
+}
 function cardHTML(g){
   return `<a class="cart" href="${g.url}" target="_blank" rel="noopener" style="--c:${g.color}">
     <div class="emblem" aria-hidden="true">${ICONS[g.icon]}</div>
@@ -271,10 +298,27 @@ function show(){
   $("sub").textContent = valid ? "點一個遊戲 · Tap a game to play!" : "誰要玩？ · Who\u2019s playing?";
   if (!valid) return;
   $("whoNow").innerHTML = `<span class="mini" aria-hidden="true">${FACES[kid]}</span><span>${NAMES[kid]}\u2019s games</span>`;
-  $("grid").innerHTML = GAMES.filter(g => g.kids.includes(kid)).map(cardHTML).join("");
-  fitNames();
+  renderGrid(kid);
   window.scrollTo(0, 0);
 }
+function renderGrid(kid){
+  const favs = loadFavs(kid);
+  const mine = GAMES.filter(g => g.kids.includes(kid)).reverse(); // newest first
+  const on = mine.filter(g => favs.includes(g.url)), off = mine.filter(g => !favs.includes(g.url));
+  $("grid").innerHTML = on.map(g => slotHTML(g, true)).concat(off.map(g => slotHTML(g, false))).join("");
+  fitNames();
+}
+$("grid").addEventListener("click", e => {
+  const b = e.target.closest(".fav"); if (!b) return;
+  e.preventDefault();
+  const kid = location.hash.slice(1), url = b.dataset.url;
+  const favs = loadFavs(kid).filter(u => u !== url);
+  if (b.getAttribute("aria-pressed") !== "true") favs.push(url);
+  saveFavs(kid, favs);
+  renderGrid(kid);
+  const nb = [...document.querySelectorAll(".fav")].find(x => x.dataset.url === url);
+  if (nb) { nb.focus({preventScroll:true}); nb.scrollIntoView({block:"nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); }
+});
 function fitNames(){
   document.querySelectorAll(".name.zh.fit").forEach(el => {
     el.style.fontSize = "";
