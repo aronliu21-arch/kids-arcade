@@ -6,7 +6,7 @@
    Nothing here can break a game: every call is wrapped in try/catch. */
 (function () {
   "use strict";
-  var ENDPOINT = ""; // Apps Script web-app URL, filled in after setup. Until then rows wait on the device.
+  var ENDPOINT = "https://script.google.com/macros/s/AKfycbwrTV9-YyjNl4MhkiAaOho-kIm30yp65u2ea_cO44sm8pr1_bEqYYzsSf6FSqs3O5z6/exec";
   var TOKEN = "ka-liu-2026";
   var QKEY = "ka-queue-v1", KIDKEY = "ka-kid", MAXQ = 3000;
   var IDLE_MS = 120000, TICK_MS = 5000, SEND_EVERY_MS = 60000;
