@@ -322,3 +322,18 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 .evc{position:absolute;left:50%;top:50%;width:min(110px,26vw);animation:evspin 2.4s ease-in forwards;--a:calc(var(--i)*120deg)}
 @keyframes evspin{0%{transform:translate(-50%,-50%) rotate(var(--a)) translateY(-90px) rotate(calc(-1*var(--a)))}100%{transform:translate(-50%,-50%) rotate(calc(var(--a) + 1080deg)) translateY(0) rotate(calc(-1*var(--a) - 1080deg)) scale(.2);filter:brightness(4)}}
 @media (prefers-reduced-motion:reduce){.rv.now,.evotag,.evc,.evolve .burst{animation:none}}
+/* intro story + quest book */
+.story{text-align:center;max-width:620px;margin:0 auto}
+.sdots{display:flex;justify-content:center;gap:6px;margin-bottom:6px}.sdots i{width:12px;height:12px;border-radius:50%;background:#dee2e6;border:2px solid var(--ink)}.sdots i.on{background:#f76707}
+.sart{min-height:clamp(110px,26vh,220px);display:flex;align-items:center;justify-content:center}
+.sav{width:clamp(100px,22vh,170px);filter:drop-shadow(0 0 14px #ffd43b);animation:pulse 1.6s infinite}
+.sfan{display:flex;justify-content:center}.sfan>*{width:clamp(80px,17vh,140px);margin:0 -10px}.sfan>*:nth-child(1){transform:rotate(-10deg)}.sfan>*:nth-child(3){transform:rotate(10deg)}.sfan>*:nth-child(2){z-index:2;transform:translateY(-8px)}
+.sbig{font-size:clamp(3rem,11vh,5.5rem);letter-spacing:.1em}
+.stxt{font-size:clamp(1.05rem,2.6vh,1.35rem);font-weight:700;line-height:1.4;margin:8px auto;max-width:520px}
+.qlist{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.qrow{display:flex;align-items:center;gap:10px;border:3px solid var(--ink);border-radius:14px;padding:8px 10px;background:#fff}
+.qrow .qe{font-size:2rem;flex:none}.qrow .qt{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.qrow small{font-weight:700;color:var(--muted)}
+.qrow .bar{height:10px}
+.qrow.done{background:#d3f9d8;opacity:.8}.qrow.next{background:linear-gradient(90deg,#fff3bf,#ffe066);box-shadow:0 0 0 3px #f76707}
+@media (prefers-reduced-motion:reduce){.sav{animation:none}}
+.qrow .qt .zh{align-self:flex-start;margin:0}

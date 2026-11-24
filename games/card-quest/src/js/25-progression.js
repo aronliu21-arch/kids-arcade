@@ -41,7 +41,7 @@ function rivalAfter(won){const v=B.round,r=RIVALS[v],first=v===(S.rivalStage||0)
 const evoTo=id=>C.find(c=>EVO[c.id]===id);
 function evolveInfo(c){const to=evoTo(c.id);if(!to)return '';const n=S.owned[c.id]||0;
  return `<div class="evo"><b>✨ Evolves into ${to.name}</b> ${S.owned[to.id]?'':'<span class="newtag" style="position:static">NEW</span>'}<div class="evbar">${[0,1,2].map(i=>`<span class="${i<n?'on':''}"></span>`).join('')}</div><small>Trade 3 copies of ${c.name}. You have ${n}.</small>${n>=3?`<button class="btn gold" id="evob">✨ Evolve!</button>`:''}</div>`;}
-function evolveGo(c){const to=evoTo(c.id);if(!to||(S.owned[c.id]||0)<3)return;S.owned[c.id]-=3;if(S.owned[c.id]<=0)delete S.owned[c.id];save();
+function evolveGo(c){const to=evoTo(c.id);if(!to||(S.owned[c.id]||0)<3)return;S.owned[c.id]-=3;S.evolved=(S.evolved||0)+1;if(S.owned[c.id]<=0)delete S.owned[c.id];save();
  const d=document.createElement('div');d.className='evolve';d.innerHTML=`<div class="burst"></div><h2>✨ ${c.name} is evolving! ✨</h2><div class="evring">${[0,1,2].map(i=>`<div class="evc" style="--i:${i}">${cardHTML(c)}</div>`).join('')}</div>`;document.body.appendChild(d);
  riser(2200);let t=0;const sp=setInterval(()=>{t++;const [x,y]=[innerWidth/2,innerHeight/2];FX.emit(x,y,c.type,6,{speed:6,size:4});if(t%4===0)tone(400+t*30,.1,'triangle',.06);},90);
  setTimeout(()=>{clearInterval(sp);FX.flash('#fff');boom();d.remove();bigReveal(to,'✨ Evolution!',`${c.name} evolved into ${to.name}!`,()=>binder());},RM?100:2400);}

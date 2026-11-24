@@ -91,10 +91,11 @@ function villageSVG(night,dusk){const sky=night?['#0b1026','#364fc7']:dusk?['#ff
 function hub(fromAct){
  if(fromAct&&RUN>=3)return breakScreen();
  if(fromAct&&Math.random()<masterChance())S.masterHere=true;
+ if(S.started&&!S.freePacks&&!S.qbSeen)return questBook();
  if(S.hubMode==='list')return hubList(fromAct);
  const mode=skyMode(),night=mode==='night',dusk=mode==='dusk';
  setScreen('hub',`<div class="vill"><div class="vhud"><div class="vgoal">${S.shopOpen?`<b>🏪 Your shop is open!</b>`:`<b>🏪 Shop: ${money(S.cents)} / ${money(GOAL)}</b><div class="bar"><i style="width:${Math.min(100,S.cents/GOAL*100)}%"></i></div><span>${'🏆'.repeat(Math.min(S.trophies,TITLES))}${'<span style="opacity:.3">🏆</span>'.repeat(Math.max(0,TITLES-S.trophies))}</span>`}</div>
- <button class="btn ghost small" id="vlist">☰ List</button></div>
+ <button class="btn small" id="vqb">📜</button><button class="btn ghost small" id="vlist">☰ List</button></div>
  <div class="vview" id="vview">${villageSVG(night,dusk)}<button class="btn ghost vmv" id="vl" aria-label="Walk left">◀</button><button class="btn ghost vmv" id="vr" aria-label="Walk right">▶</button></div>
  <div class="vbar"><div class="vinfo" id="vinfo">Tap a building to walk there!</div></div>
  <div class="vmap">${BLD.map(b=>`<button class="vm" data-go="${b.k}" aria-label="${b.n||'My shop'}">${b.e}<small>${{home:'Home',store:'Store',cash:'Cashier',sort:'Sorting',insp:'Inspect',arena:'Battle',stadium:'Cup',lot:'My shop'}[b.k]}</small></button>`).join('')}</div></div>`);
@@ -117,7 +118,7 @@ function villageStart(fromAct){const svg=$('world'),view=$('vview');S.vx=S.vx||B
   walkTo(toWorld(e));});
  const hold=d=>()=>{VL.hold=d;VL.after=null;VL.at=null;};const stop=()=>{VL.hold=0;};
  [['vl',-1],['vr',1]].forEach(([id,d])=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();audio();hold(d)();});['pointerup','pointerleave','pointercancel'].forEach(k=>b.addEventListener(k,stop));});
- $('vlist').onclick=()=>{S.hubMode='list';save();hubList();};
+ $('vqb').onclick=()=>questBook();$('vlist').onclick=()=>{S.hubMode='list';save();hubList();};
  main.querySelectorAll('.vm').forEach(m=>m.onclick=()=>{audio();const b=BLD.find(x=>x.k===m.dataset.go);walkTo(b.door,()=>arrive(b));});
  const near=BLD.find(b=>Math.abs(b.door-VL.x)<40);if(near)arrive(near,true);
  let last=performance.now();const loop=now=>{if(SCREEN!=='hub'||!$('world')){removeEventListener('resize',resize);return;}const dt=Math.min(.05,(now-last)/1000);last=now;vTick(dt,now);requestAnimationFrame(loop);};requestAnimationFrame(loop);}
