@@ -154,6 +154,9 @@ h2.q{margin:6px 0 24px;text-align:center;font-family:"Lilita One","Arial Rounded
 .who-now .mini{width:58px;height:58px;border-radius:50%;background:#fff;border:4px solid var(--ink);display:grid;place-items:center;overflow:hidden}
 .who-now .mini svg{width:88%;height:88%}
 [hidden]{display:none!important}
+.testerrow{text-align:center;margin-top:34px}
+.testerbtn{font:inherit;font-size:.8rem;font-weight:700;color:var(--muted);background:transparent;border:1px solid currentColor;border-radius:999px;padding:6px 14px;min-height:32px;opacity:.55;cursor:pointer;touch-action:manipulation}
+.testerbtn:hover,.testerbtn:focus-visible{opacity:1}
 footer{text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;padding:0 18px 28px}
 @media (prefers-reduced-motion:reduce){.cart{transition:none}}
 </style>
@@ -168,6 +171,7 @@ footer{text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;padd
   <section id="pickView">
     <h2 class="q">點你的名字 · Tap your name!</h2>
     <div class="pick" id="pick"></div>
+    <div class="testerrow"><button class="testerbtn" type="button" data-kid="tester">Tester</button></div>
   </section>
   <section id="gameView" hidden>
     <div class="bar">
@@ -263,14 +267,14 @@ const ZH = {
 };
 const $ = id => document.getElementById(id);
 $("hzh").innerHTML = titleHTML([["小","ㄒㄧㄠˇ"],["朋","ㄆㄥˊ"],["友","ㄧㄡˇ"],["遊","ㄧㄡˊ"],["戲","ㄒㄧˋ"],["廳","ㄊㄧㄥ"]]);
-$("pick").innerHTML = Object.keys(NAMES).map(k => `
+$("pick").innerHTML = Object.keys(NAMES).filter(k => k !== "tester").map(k => `
   <button class="kidbtn ${k}" type="button" data-kid="${k}" aria-label="${NAMES[k]}">
     <div class="face" aria-hidden="true">${FACES[k]}</div>
     <div class="kname">${NAMES[k]}</div>
     <div class="kzh" lang="zh-Hant">${titleHTML(ZH[k])}</div>
   </button>`).join("");
-$("pick").addEventListener("click", e => {
-  const b = e.target.closest(".kidbtn"); if (b) location.hash = b.dataset.kid;
+$("pickView").addEventListener("click", e => {
+  const b = e.target.closest(".kidbtn,.testerbtn"); if (b) location.hash = b.dataset.kid;
 });
 $("back").addEventListener("click", () => { location.hash = ""; });
 const STAR = on => `<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="${on?"#fcc419":"#fff"}" stroke="#1b1f3b" stroke-width="2" stroke-linejoin="round"/></svg>`;
@@ -284,7 +288,8 @@ function slotHTML(g, on){
   return `<div class="slot${on?" on":""}">${on?'<span class="favtag">⭐ 最愛 Fave</span>':''}<button class="fav" type="button" data-url="${g.url}" aria-pressed="${on}" aria-label="${label}">${STAR(on)}</button>${cardHTML(g)}</div>`;
 }
 function cardHTML(g){
-  return `<a class="cart" href="${g.url}" target="_blank" rel="noopener" style="--c:${g.color}">
+  const k = location.hash.slice(1), href = g.url + (g.url.includes("?") ? "&" : "?") + "kid=" + encodeURIComponent(k);
+  return `<a class="cart" href="${href}" target="_blank" rel="noopener" style="--c:${g.color}">
     <div class="emblem" aria-hidden="true">${ICONS[g.icon]}</div>
     <div class="name zh${g.zh.length>6?' xl':' fit'}" lang="zh-Hant">${titleHTML(g.zh)}</div>
     <div class="en" lang="en">${g.en}</div>
