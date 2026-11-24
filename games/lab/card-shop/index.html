@@ -250,6 +250,36 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 .flycoin.tipc{background:radial-gradient(circle at 35% 35%,#fff,#ffd43b 50%,#f08c00);width:32px;height:32px;box-shadow:0 0 12px 4px #ffe066}
 .tipbub{background:#fff3bf;border:3px solid #f08c00;border-radius:16px;padding:4px 12px;font-weight:900;color:#d9480f;animation:titlepop .5s cubic-bezier(.2,1.6,.4,1)}
 @media (max-width:600px){.jar{top:26px;right:4px}}
+.insp{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:12px;align-items:start;max-width:720px;margin:0 auto;width:100%}
+.insp .lbl{font-weight:900;text-align:center;margin-bottom:4px}.insp .ref{text-align:center}.insp .ref .btn{width:100%;min-height:120px}
+.ccard{position:relative;cursor:crosshair}.lens{position:absolute;width:clamp(90px,26vw,140px);aspect-ratio:1;border-radius:50%;border:5px solid #1b1f3b;box-shadow:0 0 0 3px #ffd43b,0 8px 18px rgba(0,0,0,.4);overflow:hidden;background:#fff;touch-action:none;cursor:grab;z-index:5}
+.lens .lin{position:absolute;pointer-events:none}
+#marks{position:absolute;inset:0;pointer-events:none}.mark{position:absolute;border:4px solid;border-radius:10px;box-shadow:0 0 0 3px rgba(255,255,255,.7);animation:titlepop .4s}
+.miss{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:4px solid #e03131;animation:vso .7s forwards}
+@media (max-width:600px){.insp{grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:6px}}
+.vill{height:100%;display:flex;flex-direction:column;gap:6px;min-height:300px}
+.vhud{display:flex;align-items:center;gap:8px}.vgoal{flex:1;min-width:0;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:4px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.9rem}
+.vgoal .bar{flex:1;min-width:80px;height:14px;margin:0;border-width:2px}
+.vview{flex:1;min-height:0;border:4px solid var(--ink);border-radius:18px;overflow:hidden;position:relative;touch-action:manipulation}
+#world{display:block;width:100%;height:100%}
+.vbar{display:flex;align-items:center;gap:8px}.vmv{position:absolute;bottom:10px;z-index:3;min-width:58px;min-height:58px;font-size:1.5rem;touch-action:none;opacity:.92}#vl{left:10px}#vr{right:10px}
+.vinfo{flex:1;min-width:0;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:4px 10px;min-height:56px;display:flex;align-items:center;gap:8px;font-weight:800;justify-content:center;text-align:left}
+.vinfo .ve{font-size:1.8rem}.vinfo .vt{flex:1;min-width:0;line-height:1.15}.vinfo small{font-weight:700;color:var(--muted)}.vinfo .zh{font-size:.9rem}.vinfo .btn{white-space:nowrap}
+#world .bld{cursor:pointer}#world .bld:hover{filter:brightness(1.08)}
+#world .neon{animation:neon2 2.2s infinite}@keyframes neon2{0%,100%{opacity:1}46%{opacity:1}48%{opacity:.4}50%{opacity:1}52%{opacity:.5}54%{opacity:1}}
+#world .smoke circle{animation:smoke 3s linear infinite;transform-box:fill-box}@keyframes smoke{from{transform:translateY(0) scale(.8);opacity:.8}to{transform:translateY(-60px) scale(1.6);opacity:0}}
+#world .bob{animation:bobv 1.8s ease-in-out infinite}#world .bob2{animation:bobv 2.6s ease-in-out infinite}@keyframes bobv{50%{transform:translateY(-12px)}}
+#world .swing{animation:swing 2.4s ease-in-out infinite}@keyframes swing{50%{transform:rotate(8deg)}}
+#world .flag{animation:flag .6s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:left center}@keyframes flag{to{transform:scaleX(.75) skewY(6deg)}}
+#world .twink{animation:twk 1.6s ease-in-out infinite}@keyframes twk{50%{opacity:.25}}
+#world .drift{animation:drift 40s linear infinite}@keyframes drift{from{transform:translateX(-200px)}to{transform:translateX(400px)}}
+#world .blimp{animation:blimp 60s linear infinite}@keyframes blimp{from{transform:translateX(-900px)}to{transform:translateX(2400px)}}
+#world .spinc{animation:spinc 1.2s linear infinite;transform-box:fill-box;transform-origin:center}@keyframes spinc{50%{transform:scaleX(.15)}}
+#world .kbub{opacity:.95}
+.vmap{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}.vm{flex:1 0 auto;min-width:58px;background:#fff;border:3px solid var(--ink);border-radius:12px;font-size:1.4rem;padding:2px 4px;display:flex;flex-direction:column;align-items:center;line-height:1.1}.vm small{font-size:.65rem;font-weight:800}
+@media (orientation:portrait){.vview{flex:none;aspect-ratio:1/1}.vill{gap:8px}}
+@media (max-height:450px){.vmap{display:none}.vgoal{padding:2px 8px}.vinfo{min-height:44px;padding:2px 8px}.vinfo .zh{display:none}}
+@media (max-width:600px){.vinfo .zh{display:none}.vinfo .ve{font-size:1.4rem}}
 </style></head><body>
 <div class="app">
   <div class="top"><a href="../../../#tester" aria-label="Back to arcade">←</a><div class="ttl">🃏 Lucas’s Card Shop<span class="tag">sample</span></div><button class="ico" id="homeb" aria-label="Home" style="display:none">🏠</button><button class="ico" id="padb" aria-label="Scratch pad" style="display:none">✏️</button><span class="pill" id="wal">💵 $0.00</span><span class="pill" id="str">⭐ 0</span><button class="ico" id="snd" aria-label="Sound">🔊</button></div>
@@ -311,7 +341,7 @@ function padOpen(){const P=padInit();$('padq').textContent=padPrompt()||'Work ou
 function padClose(){if(PAD)PAD.d.classList.remove('on');}
 function padClear(){if(PAD){PAD.clear();if(PAD.d.classList.contains('on'))setTimeout(()=>{$('padq').textContent=padPrompt()||'Work out the math here!';},60);}}
 $('padb').onclick=()=>{audio();PAD&&PAD.d.classList.contains('on')?padClose():padOpen();};
-$('homeb').onclick=()=>{audio();const risky={battle:'Leave this battle? It will stop and won’t count.',cash:'Leave the shop counter? You keep what you earned so far.',sort:'Leave the sorting job? You keep what you earned so far.',pick:null,master:'Leave the Card Master? He will disappear with his gift!',pack:null,tour:'Leave the tournament? Your entry money won’t come back.'};
+$('homeb').onclick=()=>{audio();const risky={insp:'Leave the inspector job? You keep what you earned so far.',battle:'Leave this battle? It will stop and won’t count.',cash:'Leave the shop counter? You keep what you earned so far.',sort:'Leave the sorting job? You keep what you earned so far.',pick:null,master:'Leave the Card Master? He will disappear with his gift!',pack:null,tour:'Leave the tournament? Your entry money won’t come back.'};
  let m=risky[SCREEN];if(SCREEN==='battle'&&B&&B.kind==='tour')m='Leave the tournament? Your entry money won’t come back.';
  const goHome=()=>{document.querySelectorAll('.vs,.banner,.spot,.reveal,.modal').forEach(e=>e.remove());REV=null;if('speechSynthesis' in window)speechSynthesis.cancel();TR=SCREEN==='battle'&&B&&B.kind==='tour'?null:TR;hub();};
  if(m)modal(`<div class="big">🏠</div><h2>Go home?</h2><p>${m}</p>`,[['Yes, go home',goHome],['Keep playing',null,'ghost']]);else goHome();};
@@ -758,7 +788,7 @@ const FLAV={frog:'It can jump over a house in one hop.',scorpion:'Its tail is al
  bird:'It dives faster than a race car to catch the wind.',turtle:'Its spiky shell is harder than steel.',serpent:'It guards the deep places where the light never reaches.'};
 let UID=0;
 function cardSVG(c){const t=T[c.type],u='k'+(++UID),wt=WEAK[c.type],ab=abil(c),boss=c.r==='legend'||c.r==='promo',st=stage(c),ev=EVO[c.id]?byId(EVO[c.id]):null;
- const frame={common:'#adb5bd',rare:'#ced4da',holo:`url(#${u}s)`,legend:`url(#${u}o)`,promo:`url(#${u}r)`}[c.r];
+ const frame={common:'#adb5bd',rare:'#ced4da',holo:`url(#${u}s)`,legend:`url(#${u}o)`,promo:`url(#${u}r)`}[c.frameR||c.r];
  const cost=(n,x,y)=>Array.from({length:n},(_,i)=>ticon(c.type,x+i*11,y,4.8)).join('');
  const nameX=st.length*4.6+21,nameFs=Math.min(14,(108-nameX)/(c.name.length*.68));
  const retreat=c.hp<=70?1:c.hp<=100?2:3;
@@ -789,14 +819,14 @@ ${boss?`<rect x="6" y="137" width="168" height="4" fill="url(#${u}m)"/>`:''}
 <rect x="9" y="8" width="${st.length*4.6+8}" height="9" rx="2" fill="url(#${u}m)" stroke="${O}" stroke-width=".6"/><text x="13" y="15" font-size="6.5" font-weight="900" font-style="italic" fill="${O}">${st}</text>
 <text x="${nameX}" y="${ev?24:27}" font-size="${nameFs.toFixed(1)}" font-weight="900" fill="#fff" stroke="${O}" stroke-width="2.4" paint-order="stroke" font-style="italic">${c.name}</text>
 ${ev?`<text x="${st.length*4.6+22}" y="31" font-size="5.8" font-weight="800" font-style="italic" fill="#fff" stroke="${O}" stroke-width="1.5" paint-order="stroke">Evolves from ${ev.name}</text>`:''}
-<text x="152" y="27" text-anchor="end" font-weight="900" fill="#fff" stroke="${O}" stroke-width="2.4" paint-order="stroke"><tspan font-size="7">HP</tspan><tspan font-size="17">${c.hp}</tspan></text>${ticon(c.type,164,21,7.5)}
+<text x="152" y="27" text-anchor="end" font-weight="900" fill="#fff" stroke="${O}" stroke-width="2.4" paint-order="stroke"><tspan font-size="7">HP</tspan><tspan font-size="17">${c.hp}</tspan></text>${ticon(c.icon||c.type,164,21,7.5)}
 <g transform="translate(0 ${boss?14:0})">${body}</g>
 <rect x="10" y="218" width="160" height="10" rx="2" fill="#f1f3f5" opacity=".95"/>
 <text x="14" y="225.5" font-size="5.8" font-weight="800" fill="${O}">weakness</text>${ticon(wt,50,223,3.6)}<text x="55" y="225.8" font-size="6.5" font-weight="900" fill="${O}">×2</text>
 <text x="72" y="225.5" font-size="5.8" font-weight="800" fill="${O}">resistance</text><text x="114" y="225.5" font-size="5.8" fill="${O}">—</text>
 <text x="128" y="225.5" font-size="5.8" font-weight="800" fill="${O}">retreat</text>${Array.from({length:retreat},(_,i)=>`<circle cx="${153+i*6}" cy="223" r="2.3" fill="#fff" stroke="${O}" stroke-width=".8"/>`).join('')}
-${boss?`<text x="12" y="240" font-size="5.5" font-weight="900" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke">CQ ${String(c.id).padStart(3,'0')}/${C.length} ${R[c.r].m}</text><rect x="58" y="231" width="112" height="12" rx="6" fill="url(#${u}o)" stroke="${O}" stroke-width=".8"/><text x="114" y="239.3" font-size="6" font-weight="900" fill="${O}" text-anchor="middle" font-style="italic">★ BOSS card · super strong! ★</text>`:
- `<text x="12" y="236" font-size="5" font-weight="700" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke">Illus. Card Quest Studio</text><text x="12" y="243" font-size="5.5" font-weight="900" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke">CQ ${String(c.id).padStart(3,'0')}/${C.length} ${R[c.r].m}</text>
+${boss?`<text x="12" y="240" font-size="5.5" font-weight="900" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke">CQ ${String(c.num||c.id).padStart(3,'0')}/${C.length} ${R[c.r].m}</text><rect x="58" y="231" width="112" height="12" rx="6" fill="url(#${u}o)" stroke="${O}" stroke-width=".8"/><text x="114" y="239.3" font-size="6" font-weight="900" fill="${O}" text-anchor="middle" font-style="italic">★ BOSS card · super strong! ★</text>`:
+ `<text x="12" y="236" font-size="5" font-weight="700" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke">Illus. Card Quest Studio</text><text x="12" y="243" font-size="5.5" font-weight="900" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke">CQ ${String(c.num||c.id).padStart(3,'0')}/${C.length} ${R[c.r].m}</text>
  <text x="168" y="236" font-size="5" font-weight="700" font-style="italic" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke" text-anchor="end">${FLAV[c.tpl].slice(0,FLAV[c.tpl].indexOf(' ',26))}</text><text x="168" y="243" font-size="5" font-weight="700" font-style="italic" fill="#fff" stroke="${O}" stroke-width="1.2" paint-order="stroke" text-anchor="end">${FLAV[c.tpl].slice(FLAV[c.tpl].indexOf(' ',26)+1)}</text>`}
 </svg>`;}
 
@@ -815,7 +845,7 @@ const MASTER=`<svg viewBox="0 0 100 112"><path d="M10 112L26 40Q50 6 74 40L90 11
 /* ---------- screens ---------- */
 let SCREEN='title',RUN=0; // RUN = missions in a row this session
 const main=$('main');
-function setScreen(n,html){SCREEN=n;{const hb=$('homeb');if(hb)hb.style.display=['title','hub','starter','break'].includes(n)?'none':'';const pb=$('padb');if(pb)pb.style.display=['cash','battle','master','sort'].includes(n)?'':'none';padClose();padClear();}main.innerHTML=html;main.scrollTop=0;if(n==='hub'||n==='title')musicStart();else musicStop();}
+function setScreen(n,html){SCREEN=n;{const hb=$('homeb');if(hb)hb.style.display=['title','hub','starter','break'].includes(n)?'none':'';const pb=$('padb');if(pb)pb.style.display=['cash','battle','master','sort','insp'].includes(n)?'':'none';padClose();padClear();}main.innerHTML=html;main.scrollTop=0;if(n==='hub'||n==='title')musicStart();else musicStop();}
 function bindAll(map){main.querySelectorAll('[data-a]').forEach(b=>b.onclick=e=>{audio();const f=map[b.dataset.a];if(f)f(b.dataset.v,b);});}
 
 function title(){
@@ -848,16 +878,17 @@ function starter(){
 
 function restock(){S.shelf=[0,1,2].map(i=>randCard(i===2?[['rare',6],['holo',3],['legend',1]]:[['common',6],['rare',4]]).id);}
 const GOAL=10000,TITLES=3;const canOpen=()=>S.cents>=GOAL&&S.trophies>=TITLES;
-function hub(fromAct){
+function hubList(fromAct){
  if(fromAct&&RUN>=3){return breakScreen();}
  const owned=Object.keys(S.owned).length;
  const T2=(e,en,z,a,sub,cls)=>`<button class="tile ${cls||''}" data-a="${a}"><span class="e">${e}</span><span class="en">${en}</span>${zh(z)}${sub?`<small>${sub}</small>`:''}</button>`;
  setScreen('hub',`<div class="hub"><div class="hero"><div class="av me">${LUCAS}<span class="badge">Lucas</span></div><div class="goal">
  ${S.shopOpen?`<b>🏪 Lucas’s Cards is open!</b><div>🏆 ×${S.trophies} · 📒 ${owned}/${C.length} cards</div>`:`<b>To open your own shop: save ${money(GOAL)} and win ${TITLES} tournament titles!</b><div>💵 ${money(S.cents)} of ${money(GOAL)}</div><div class="bar"><i style="width:${Math.min(100,S.cents/GOAL*100)}%"></i></div><div style="margin-top:4px;font-size:1.3rem">${Array.from({length:TITLES},(_,i)=>i<S.trophies?'🏆':'<span style="filter:grayscale(1);opacity:.35">🏆</span>').join(' ')} <span style="font-size:.95rem">${Math.min(S.trophies,TITLES)}/${TITLES} titles · 📒 ${owned}/${C.length}</span></div>`}</div></div>
- <div style="text-align:center;font-size:.9rem;color:var(--muted);font-weight:700">🔈 Tap any word to hear it</div>
+ <div class="row" style="font-size:.9rem;color:var(--muted);font-weight:700"><span>🔈 Tap any word to hear it</span><button class="btn gold small" data-a="street">🗺️ Walk the street</button></div>
  <div class="tiles">
  ${T2('🧾','Cashier job',[['收','ㄕㄡ'],['銀','ㄧㄣˊ'],['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],'cash','Earn 35–50¢ a customer')}
  ${T2('🗂️','Sorting job',[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],'sort','Earn 50¢ a row')}
+ ${T2('🔍','Inspector job',[['鑑','ㄐㄧㄢˋ'],['定','ㄉㄧㄥˋ'],['真','ㄓㄣ'],['假','ㄐㄧㄚˇ']],'insp','Real or fake? 40–60¢')}
  ${T2('⚔️','Battle',[['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']],'battle','Win $1.50')}
  ${T2('🏆','Tournament',[['錦','ㄐㄧㄣˇ'],['標','ㄅㄧㄠ'],['賽','ㄙㄞˋ']],'tour','Entry $1 · win $5 + prize','hot')}
  ${S.freePacks>0?T2('🎁','Free packs',[['免','ㄇㄧㄢˇ'],['費','ㄈㄟˋ'],['卡','ㄎㄚˇ'],['包','ㄅㄠ']],'free',S.freePacks+' left to rip!','hot'):''}
@@ -866,19 +897,166 @@ function hub(fromAct){
  ${S.shopOpen?T2('🏪','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'myshop','Sell cards · upgrades','hot'):
   T2(canOpen()?'🔑':'🔒','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'open',canOpen()?'Ready to open!':'Needs '+money(GOAL)+' + '+TITLES+' 🏆',canOpen()?'hot':'lock')}
  </div></div>`);
- bindAll({free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,battle:()=>teamPick('friendly'),tour:tourStart,store,binder,myshop:myShop,
+ bindAll({street:()=>{S.hubMode='street';save();hub();},free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,insp:inspectJob,battle:()=>teamPick('friendly'),tour:tourStart,store,binder,myshop:myShop,
   open(){if(!canOpen()){const need=[];if(S.cents<GOAL)need.push('save '+money(GOAL-S.cents)+' more');if(S.trophies<TITLES)need.push('win '+(TITLES-S.trophies)+' more tournament title'+(TITLES-S.trophies>1?'s':''));toast('🔒 You need to '+need.join(' and ')+'!',2400);sfx.bad();return;}
    modal(`<div class="big">🏪</div><h2>Open your own shop?</h2><p>It costs <b>${money(GOAL)}</b>. You will have ${money(S.cents-GOAL)} left.</p>`,[['Open it! 🎉',()=>{S.cents-=GOAL;S.shopOpen=true;S.up=S.up||{};S.stock=S.stock||[];save();confetti();setTimeout(confetti,400);fanfare();FX.stamp('GRAND OPENING!','small','#ffd43b');shout('Your shop is open! Put your extra cards on the shelf and pick a price.');setTimeout(myShop,900);}],['Not yet',null,'ghost']]);}});
  if(fromAct)maybeMaster();}
 
+/* ---------- Card Quest Street: the walkable village ---------- */
+const VH=600,GROUND=470;
+const BLD=[
+ {k:'home',x:60,w:300,door:200,e:'🏠',n:'Lucas’s House',z:[['陸','ㄌㄨˋ'],['晨','ㄔㄣˊ'],['的','˙ㄉㄜ'],['家','ㄐㄧㄚ']],d:'Your binder and trophies',go:()=>S.freePacks>0?openPack(true):binder()},
+ {k:'store',x:420,w:320,door:580,e:'🛒',n:'Card Store',z:[['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['店','ㄉㄧㄢˋ']],d:'Packs $2 and single cards',go:()=>store()},
+ {k:'cash',x:800,w:260,door:930,e:'🧾',n:'Corner Shop',z:[['收','ㄕㄡ'],['銀','ㄧㄣˊ'],['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],d:'Cashier job · 35–50¢ a customer + tips',go:()=>cashier(false)},
+ {k:'sort',x:1110,w:280,door:1250,e:'🗂️',n:'Card Warehouse',z:[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],d:'Sorting job · 50¢ a row',go:()=>sortJob()},
+ {k:'insp',x:1440,w:250,door:1565,e:'🔍',n:'Inspector Office',z:[['鑑','ㄐㄧㄢˋ'],['定','ㄉㄧㄥˋ'],['真','ㄓㄣ'],['假','ㄐㄧㄚˇ']],d:'Real or fake? 40–60¢ a card',go:()=>inspectJob()},
+ {k:'arena',x:1750,w:340,door:1920,e:'⚔️',n:'Battle Arena',z:[['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']],d:'Friendly battle · win $1.50',go:()=>teamPick('friendly')},
+ {k:'stadium',x:2150,w:400,door:2350,e:'🏆',n:'Card Quest Stadium',z:[['錦','ㄐㄧㄣˇ'],['標','ㄅㄧㄠ'],['賽','ㄙㄞˋ']],d:'Tournament · $1 entry, win $5 + Prize card',go:()=>tourStart()},
+ {k:'lot',x:2610,w:330,door:2775,e:'🏪',n:'',z:[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],d:'',go:()=>lotGo()}];
+const WORLD_W=3000;
+let VL=null;
+function skyMode(){const h=new Date().getHours();return h>=6&&h<17?'day':h>=17&&h<19?'dusk':'night';}
+const SW5='stroke="#1b1f3b" stroke-width="5" stroke-linejoin="round"';
+function bHome(b,night){const x=b.x,lit=night?'#ffe066':'#d0ebff';return `<g>
+ <rect x="${x+230}" y="${GROUND-260}" width="34" height="70" fill="#c92a2a" ${SW5}/><g class="smoke"><circle cx="${x+247}" cy="${GROUND-280}" r="12" fill="#fff" opacity=".7"/><circle cx="${x+258}" cy="${GROUND-305}" r="16" fill="#fff" opacity=".5"/></g>
+ <rect x="${x+20}" y="${GROUND-200}" width="260" height="200" fill="#fff3bf" ${SW5}/><path d="M${x} ${GROUND-195}L${x+150} ${GROUND-310}L${x+300} ${GROUND-195}Z" fill="#fa5252" ${SW5}/>
+ <path d="M${x+40} ${GROUND-220}H${x+260}" stroke="#c92a2a" stroke-width="6"/><circle cx="${x+150}" cy="${GROUND-245}" r="22" fill="${lit}" ${SW5}/><path d="M${x+150} ${GROUND-267}V${GROUND-223}M${x+128} ${GROUND-245}H${x+172}" stroke="#1b1f3b" stroke-width="4"/>
+ <rect x="${x+40}" y="${GROUND-160}" width="70" height="60" fill="${lit}" ${SW5}/><text x="${x+75}" y="${GROUND-118}" font-size="34" text-anchor="middle">🏆</text>
+ <rect x="${x+190}" y="${GROUND-160}" width="70" height="60" fill="${lit}" ${SW5}/><text x="${x+225}" y="${GROUND-118}" font-size="34" text-anchor="middle">📒</text>
+ <rect x="${x+125}" y="${GROUND-110}" width="50" height="110" rx="6" fill="#1c7ed6" ${SW5}/><circle cx="${x+165}" cy="${GROUND-55}" r="5" fill="#ffd43b"/>
+ <rect x="${x+70}" y="${GROUND-185}" width="160" height="22" rx="6" fill="#f76707" ${SW5}/><text x="${x+150}" y="${GROUND-168}" font-size="17" font-weight="900" fill="#fff" text-anchor="middle">LUCAS’S HOUSE</text>
+ ${S.freePacks>0?`<g class="bob"><text x="${x+150}" y="${GROUND-330}" font-size="40" text-anchor="middle">🎁</text></g>`:''}</g>`;}
+function bStore(b,night){const x=b.x;let stripes='';for(let i=0;i<8;i++)stripes+=`<path d="M${x+i*40} ${GROUND-210}H${x+i*40+40}L${x+i*40+34} ${GROUND-180}H${x+i*40+6}Z" fill="${i%2?'#fff':'#f76707'}" stroke="#1b1f3b" stroke-width="3"/>`;
+ return `<g><rect x="${x}" y="${GROUND-300}" width="320" height="300" fill="#4c6ef5" ${SW5}/><rect x="${x+20}" y="${GROUND-290}" width="280" height="60" rx="10" fill="#1b1f3b"/>
+ <text class="neon" x="${x+160}" y="${GROUND-247}" font-size="40" font-weight="900" font-style="italic" fill="#ffe066" text-anchor="middle">CARD STORE</text>${stripes}
+ <rect x="${x+20}" y="${GROUND-170}" width="150" height="120" fill="${night?'#fff3bf':'#e7f5ff'}" ${SW5}/>
+ <g transform="translate(${x+35} ${GROUND-160}) rotate(-8) scale(.32)">${cardBackMini('#e03131')}</g><g transform="translate(${x+90} ${GROUND-165}) rotate(6) scale(.32)">${cardBackMini('#ffd43b')}</g>
+ <rect x="${x+200}" y="${GROUND-170}" width="90" height="170" rx="6" fill="#ffd8a8" ${SW5}/><rect x="${x+212}" y="${GROUND-155}" width="66" height="70" fill="${night?'#ffe066':'#a5d8ff'}" stroke="#1b1f3b" stroke-width="3"/>
+ <g class="bob2"><path d="M${x+280} ${GROUND-360}Q${x+262} ${GROUND-330} ${x+280} ${GROUND-300}" stroke="#1b1f3b" stroke-width="2" fill="none"/><rect x="${x+255}" y="${GROUND-410}" width="50" height="62" rx="6" fill="#9775fa" stroke="#1b1f3b" stroke-width="4"/><text x="${x+280}" y="${GROUND-370}" font-size="24" text-anchor="middle">🎁</text></g></g>`;}
+function cardBackMini(c){return `<rect width="120" height="168" rx="10" fill="#1864ab" stroke="#1b1f3b" stroke-width="8"/><circle cx="60" cy="84" r="34" fill="${c}" stroke="#1b1f3b" stroke-width="8"/><path d="M60 62l7 15 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2z" fill="#fff"/>`;}
+function bCash(b,night){const x=b.x;let st='';for(let i=0;i<7;i++)st+=`<path d="M${x-10+i*40} ${GROUND-200}H${x+30+i*40}L${x+24+i*40} ${GROUND-168}H${x-4+i*40}Z" fill="${i%2?'#fff':'#2f9e44'}" stroke="#1b1f3b" stroke-width="3"/>`;
+ return `<g><rect x="${x}" y="${GROUND-260}" width="260" height="260" fill="#ffe3e3" ${SW5}/><rect x="${x+30}" y="${GROUND-250}" width="200" height="40" rx="8" fill="#fff" ${SW5}/><text x="${x+130}" y="${GROUND-221}" font-size="24" font-weight="900" fill="#2f9e44" text-anchor="middle">CORNER SHOP</text>${st}
+ <rect x="${x+20}" y="${GROUND-150}" width="120" height="100" fill="${night?'#fff3bf':'#e7f5ff'}" ${SW5}/><rect x="${x+45}" y="${GROUND-105}" width="70" height="40" rx="6" fill="#868e96" stroke="#1b1f3b" stroke-width="3"/><rect x="${x+55}" y="${GROUND-120}" width="50" height="16" fill="#69db7c" stroke="#1b1f3b" stroke-width="3"/>
+ <rect x="${x+160}" y="${GROUND-150}" width="80" height="150" rx="6" fill="#2f9e44" ${SW5}/><text x="${x+200}" y="${GROUND-100}" font-size="30" text-anchor="middle">🧾</text></g>`;}
+function bSort(b,night){const x=b.x;let bricks='';for(let r=0;r<7;r++)for(let i=0;i<7;i++)bricks+=`<rect x="${x+8+i*38+(r%2?19:0)}" y="${GROUND-250+r*22}" width="34" height="18" fill="#e8590c" opacity=".35"/>`;
+ return `<g><rect x="${x}" y="${GROUND-280}" width="280" height="280" fill="#d9480f" ${SW5}/>${bricks}<rect x="${x+20}" y="${GROUND-270}" width="240" height="40" rx="6" fill="#1b1f3b"/><text x="${x+140}" y="${GROUND-241}" font-size="24" font-weight="900" fill="#ffd43b" text-anchor="middle">CARD WAREHOUSE</text>
+ <rect x="${x+40}" y="${GROUND-190}" width="200" height="190" fill="#495057" ${SW5}/>${[0,1,2,3,4,5].map(i=>`<path d="M${x+40} ${GROUND-170+i*14}H${x+240}" stroke="#868e96" stroke-width="3"/>`).join('')}
+ <g>${[[60,40],[110,40],[85,80],[170,40]].map(([a,h])=>`<rect x="${x+a}" y="${GROUND-h}" width="44" height="40" fill="#c19a6b" stroke="#1b1f3b" stroke-width="3"/><path d="M${x+a} ${GROUND-h+12}H${x+a+44}" stroke="#8d6e63" stroke-width="4"/>`).join('')}</g></g>`;}
+function bInsp(b,night){const x=b.x;return `<g><rect x="${x}" y="${GROUND-270}" width="250" height="270" fill="#364fc7" ${SW5}/><rect x="${x+20}" y="${GROUND-258}" width="210" height="38" rx="6" fill="#fff" ${SW5}/><text x="${x+125}" y="${GROUND-231}" font-size="22" font-weight="900" fill="#364fc7" text-anchor="middle">INSPECTOR</text>
+ <g class="swing" style="transform-origin:${x+190}px ${GROUND-210}px"><circle cx="${x+190}" cy="${GROUND-165}" r="34" fill="${night?'#fff3bf':'#e7f5ff'}" stroke="#1b1f3b" stroke-width="8"/><path d="M${x+214} ${GROUND-140}L${x+240} ${GROUND-112}" stroke="#8d6e63" stroke-width="12" stroke-linecap="round"/><text x="${x+190}" y="${GROUND-153}" font-size="30" text-anchor="middle">🃏</text></g>
+ <rect x="${x+30}" y="${GROUND-190}" width="80" height="70" fill="${night?'#ffe066':'#a5d8ff'}" ${SW5}/><path d="M${x+30} ${GROUND-155}H${x+110}M${x+70} ${GROUND-190}V${GROUND-120}" stroke="#1b1f3b" stroke-width="4"/>
+ <rect x="${x+90}" y="${GROUND-110}" width="70" height="110" rx="6" fill="#1b1f3b" ${SW5}/><text x="${x+125}" y="${GROUND-60}" font-size="30" text-anchor="middle">🕵️</text></g>`;}
+function bArena(b,night){const x=b.x;return `<g>${night?`<path d="M${x+60} ${GROUND-250}L${x-20} 0H${x+40}Z" fill="#fff" opacity=".18"/><path d="M${x+280} ${GROUND-250}L${x+360} 0H${x+300}Z" fill="#fff" opacity=".18"/>`:''}
+ <path d="M${x} ${GROUND}V${GROUND-150}Q${x+170} ${GROUND-360} ${x+340} ${GROUND-150}V${GROUND}Z" fill="#ced4da" ${SW5}/><path d="M${x+20} ${GROUND-160}Q${x+170} ${GROUND-330} ${x+320} ${GROUND-160}" stroke="#fff" stroke-width="8" fill="none" opacity=".7"/>
+ <circle cx="${x+170}" cy="${GROUND-210}" r="42" fill="#ffd43b" ${SW5}/><path d="M${x+176} ${GROUND-245}L${x+150} ${GROUND-205}H${x+168}L${x+160} ${GROUND-175}L${x+192} ${GROUND-218}H${x+174}Z" fill="#fff" stroke="#1b1f3b" stroke-width="4"/>
+ <rect x="${x+20}" y="${GROUND-140}" width="300" height="36" rx="8" fill="#e03131" ${SW5}/><text class="neon" x="${x+170}" y="${GROUND-113}" font-size="26" font-weight="900" font-style="italic" fill="#fff" text-anchor="middle">BATTLE ARENA</text>
+ <path d="M${x+110} ${GROUND}V${GROUND-80}Q${x+170} ${GROUND-130} ${x+230} ${GROUND-80}V${GROUND}Z" fill="#1b1f3b"/>
+ ${[[x+30,'#1c7ed6'],[x+310,'#e03131']].map(([fx,c])=>`<path d="M${fx} ${GROUND-150}V${GROUND-250}" stroke="#1b1f3b" stroke-width="5"/><path class="flag" d="M${fx} ${GROUND-250}L${fx+40} ${GROUND-238}L${fx} ${GROUND-224}Z" fill="${c}" stroke="#1b1f3b" stroke-width="3"/>`).join('')}</g>`;}
+function bStadium(b,night){const x=b.x;let lights='';for(let i=0;i<9;i++)lights+=`<circle cx="${x+40+i*40}" cy="${GROUND-250}" r="8" fill="${night?'#ffe066':'#fff'}" stroke="#1b1f3b" stroke-width="3" class="${night?'twink':''}" style="animation-delay:${i*.15}s"/>`;
+ return `<g><path d="M${x} ${GROUND}V${GROUND-240}H${x+400}V${GROUND}Z" fill="#7048e8" ${SW5}/>${lights}<path d="M${x} ${GROUND-170}H${x+400}" stroke="#ffd43b" stroke-width="10"/>
+ <g class="bob"><path d="M${x+170} ${GROUND-330}H${x+230}Q${x+230} ${GROUND-280} ${x+200} ${GROUND-275}Q${x+170} ${GROUND-280} ${x+170} ${GROUND-330}Z" fill="#ffd43b" ${SW5}/><rect x="${x+188}" y="${GROUND-275}" width="24" height="18" fill="#ffd43b" stroke="#1b1f3b" stroke-width="4"/><rect x="${x+175}" y="${GROUND-260}" width="50" height="12" rx="3" fill="#f08c00" stroke="#1b1f3b" stroke-width="4"/></g>
+ <rect x="${x+50}" y="${GROUND-225}" width="300" height="44" rx="10" fill="#1b1f3b"/><text class="neon" x="${x+200}" y="${GROUND-193}" font-size="28" font-weight="900" font-style="italic" fill="#ffd43b" text-anchor="middle">CARD QUEST CUP</text>
+ ${[0,1,2].map(i=>`<rect x="${x+40+i*120}" y="${GROUND-150}" width="80" height="80" fill="${['#e03131','#1c7ed6','#2f9e44'][i]}" stroke="#1b1f3b" stroke-width="4"/><text x="${x+80+i*120}" y="${GROUND-98}" font-size="36" text-anchor="middle">${['🔥','💧','🍃'][i]}</text>`).join('')}
+ <path d="M${x+160} ${GROUND}V${GROUND-60}H${x+240}V${GROUND}Z" fill="#1b1f3b"/><text x="${x+200}" y="${GROUND-75}" font-size="16" font-weight="900" fill="#fff" text-anchor="middle">🏆 ×${S.trophies}</text></g>`;}
+function bLot(b,night){const x=b.x;if(S.shopOpen)return `<g><rect x="${x}" y="${GROUND-290}" width="330" height="290" fill="#1b1f3b" ${SW5}/><rect x="${x+15}" y="${GROUND-280}" width="300" height="56" rx="12" fill="#1b1f3b" stroke="#ffd43b" stroke-width="5"/>
+ <text class="neon pink" x="${x+165}" y="${GROUND-240}" font-size="34" font-weight="900" font-style="italic" fill="#ff8cc6" text-anchor="middle">LUCAS’S CARDS</text>
+ <rect x="${x+20}" y="${GROUND-200}" width="180" height="150" fill="#fff3bf" ${SW5}/>${[0,1,2].map(i=>`<g transform="translate(${x+35+i*55} ${GROUND-185}) scale(.34)">${cardBackMini(['#e03131','#ffd43b','#4dabf7'][i])}</g>`).join('')}
+ <rect x="${x+220}" y="${GROUND-180}" width="90" height="180" rx="6" fill="#f76707" ${SW5}/><text x="${x+265}" y="${GROUND-120}" font-size="16" font-weight="900" fill="#fff" text-anchor="middle">OPEN</text></g>`;
+ const pr=Math.min(1,(S.cents/GOAL)*.6+(Math.min(S.trophies,TITLES)/TITLES)*.4),hgt=Math.round(40+pr*220);
+ return `<g><rect x="${x+20}" y="${GROUND-hgt}" width="290" height="${hgt}" fill="#ffe8cc" stroke="#1b1f3b" stroke-width="4" stroke-dasharray="14 8"/>
+ ${[0,1,2,3].map(i=>`<path d="M${x+20+i*96} ${GROUND}V${GROUND-hgt-20}" stroke="#f08c00" stroke-width="8"/>`).join('')}${[1,2,3].map(i=>`<path d="M${x+20} ${GROUND-i*hgt/3.2}H${x+310}" stroke="#f08c00" stroke-width="6"/>`).join('')}
+ <path d="M${x+250} ${GROUND-hgt-20}V${GROUND-hgt-140}H${x+150}" stroke="#ffd43b" stroke-width="10" fill="none"/><path d="M${x+160} ${GROUND-hgt-140}V${GROUND-hgt-100}" stroke="#1b1f3b" stroke-width="3"/><rect x="${x+145}" y="${GROUND-hgt-100}" width="30" height="20" fill="#c19a6b" stroke="#1b1f3b" stroke-width="3"/>
+ <rect x="${x+60}" y="${GROUND-150}" width="210" height="110" rx="10" fill="#fff" ${SW5}/><text x="${x+165}" y="${GROUND-118}" font-size="18" font-weight="900" fill="#1b1f3b" text-anchor="middle">FUTURE SHOP OF</text><text x="${x+165}" y="${GROUND-94}" font-size="22" font-weight="900" fill="#f76707" text-anchor="middle">LUCAS!</text>
+ <text x="${x+165}" y="${GROUND-60}" font-size="16" font-weight="900" fill="#1b1f3b" text-anchor="middle">${Math.round(pr*100)}% built</text>
+ ${[0,1,2,3,4,5,6].map(i=>`<path d="M${x+i*55} ${GROUND}V${GROUND-50}" stroke="#ced4da" stroke-width="6"/>`).join('')}<path d="M${x} ${GROUND-38}H${x+330}" stroke="#ced4da" stroke-width="6"/></g>`;}
+const BART={home:bHome,store:bStore,cash:bCash,sort:bSort,insp:bInsp,arena:bArena,stadium:bStadium,lot:bLot};
+function lucasWalker(){return `<g id="lw"><g id="lwb"><ellipse cx="0" cy="58" rx="26" ry="6" fill="#000" opacity=".2"/>
+ <path id="lgL" d="M-6 30L-10 54" stroke="#1b1f3b" stroke-width="9" stroke-linecap="round"/><path id="lgR" d="M6 30L10 54" stroke="#1b1f3b" stroke-width="9" stroke-linecap="round"/>
+ <g transform="translate(-50 -78) scale(1)" filter="url(#glow)">${LUCAS.replace('<svg viewBox="0 0 100 112">','<g>').replace('</svg>','</g>')}</g></g>
+ <rect x="-32" y="-96" width="64" height="20" rx="10" fill="#f76707" stroke="#1b1f3b" stroke-width="3"/><text x="0" y="-81" font-size="14" font-weight="900" fill="#fff" text-anchor="middle">Lucas</text></g>`;}
+function kidWalker(f){return `<g><ellipse cx="0" cy="58" rx="22" ry="5" fill="#000" opacity=".2"/><path class="kl" d="M-5 30L-7 54M5 30L7 54" stroke="#495057" stroke-width="8" stroke-linecap="round"/><g transform="translate(-42 -62) scale(.84)">${kidSVG(f[1],f[2]).replace('<svg viewBox="0 0 100 112">','<g>').replace('</svg>','</g>')}</g></g>`;}
+function villageSVG(night,dusk){const sky=night?['#0b1026','#364fc7']:dusk?['#ff922b','#ffd8a8']:['#4dabf7','#d0ebff'];
+ let stars='';if(night)for(let i=0;i<60;i++)stars+=`<circle cx="${(i*197)%WORLD_W}" cy="${(i*71)%260}" r="${i%4?1.5:2.6}" fill="#fff" class="${i%5?'':'twink'}" style="animation-delay:${(i%7)*.3}s"/>`;
+ let sky2='';for(let i=0;i<14;i++){const h=120+((i*53)%140),w=90+((i*37)%70);sky2+=`<rect x="${i*230}" y="${GROUND-h-40}" width="${w}" height="${h+40}" fill="${night?'#1c2a6b':dusk?'#e8590c':'#a5d8ff'}" opacity=".8"/>`;}
+ let props='';for(let x=380;x<WORLD_W;x+=420)props+=`<path d="M${x} ${GROUND+30}V${GROUND-170}Q${x} ${GROUND-190} ${x+24} ${GROUND-190}" stroke="#1b1f3b" stroke-width="6" fill="none"/><circle cx="${x+28}" cy="${GROUND-184}" r="12" fill="${night?'#ffe066':'#fff3bf'}" stroke="#1b1f3b" stroke-width="4"/>${night?`<circle cx="${x+28}" cy="${GROUND-184}" r="40" fill="#ffe066" opacity=".18"/>`:''}`;
+ for(const x of [395,1080,1715,2580])props+=`<circle cx="${x}" cy="${GROUND-40}" r="34" fill="#2f9e44" stroke="#1b1f3b" stroke-width="4"/><rect x="${x-6}" y="${GROUND-12}" width="12" height="16" fill="#8d6e63"/>`;
+ return `<svg id="world" xmlns="http://www.w3.org/2000/svg" font-family="Arial Rounded MT Bold,ui-rounded,system-ui,sans-serif"><defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient>
+ <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#ffd43b"/></filter></defs>
+ <rect x="-400" y="0" width="${WORLD_W+800}" height="${VH}" fill="url(#skyg)"/>
+ <g id="pfar">${stars}<circle cx="300" cy="90" r="${night?34:46}" fill="${night?'#f8f9fa':'#ffe066'}"/>${night?'':'<circle cx="300" cy="90" r="64" fill="#ffe066" opacity=".25"/>'}</g>
+ <g id="pcloud">${[100,700,1300,1900,2500].map((x,i)=>`<g class="drift" style="animation-delay:${-i*7}s"><ellipse cx="${x}" cy="${70+i%2*50}" rx="70" ry="22" fill="#fff" opacity="${night?.25:.9}"/><ellipse cx="${x+40}" cy="${60+i%2*50}" rx="40" ry="20" fill="#fff" opacity="${night?.25:.9}"/></g>`).join('')}
+  <g class="blimp"><ellipse cx="900" cy="150" rx="110" ry="34" fill="#f76707" stroke="#1b1f3b" stroke-width="5"/><path d="M1000 150L1040 126V174Z" fill="#e8590c" stroke="#1b1f3b" stroke-width="4"/><rect x="870" y="182" width="60" height="18" rx="5" fill="#495057" stroke="#1b1f3b" stroke-width="3"/><text x="900" y="160" font-size="26" font-weight="900" font-style="italic" fill="#fff" text-anchor="middle">CARD QUEST</text></g></g>
+ <g id="pmid">${sky2}</g>
+ <g id="phill"><path d="M-400 ${GROUND-60}Q200 ${GROUND-160} 800 ${GROUND-70}T2000 ${GROUND-80}T3400 ${GROUND-60}V${GROUND}H-400Z" fill="${night?'#2b8a3e':'#69db7c'}" opacity=".9"/></g>
+ <g id="blds">${BLD.map(b=>`<g class="bld" data-b="${b.k}">${BART[b.k](b,night)}</g>`).join('')}</g>
+ <rect x="-400" y="${GROUND}" width="${WORLD_W+800}" height="40" fill="#dee2e6" stroke="#1b1f3b" stroke-width="3"/><path d="M-400 ${GROUND+40}H${WORLD_W+400}" stroke="#adb5bd" stroke-width="4"/>
+ <rect x="-400" y="${GROUND+40}" width="${WORLD_W+800}" height="${VH-GROUND}" fill="${night?'#343a40':'#495057'}"/><path d="M-400 ${GROUND+95}H${WORLD_W+400}" stroke="#ffd43b" stroke-width="6" stroke-dasharray="40 30"/>
+ ${props}<g id="coins"></g><g id="npcs"></g><g id="master"></g><g id="lucas" style="cursor:pointer">${lucasWalker()}</g></svg>`;}
+function hub(fromAct){
+ if(fromAct&&RUN>=3)return breakScreen();
+ if(fromAct&&Math.random()<masterChance())S.masterHere=true;
+ if(S.hubMode==='list')return hubList(fromAct);
+ const mode=skyMode(),night=mode==='night',dusk=mode==='dusk';
+ setScreen('hub',`<div class="vill"><div class="vhud"><div class="vgoal">${S.shopOpen?`<b>🏪 Your shop is open!</b>`:`<b>🏪 Shop: ${money(S.cents)} / ${money(GOAL)}</b><div class="bar"><i style="width:${Math.min(100,S.cents/GOAL*100)}%"></i></div><span>${'🏆'.repeat(Math.min(S.trophies,TITLES))}${'<span style="opacity:.3">🏆</span>'.repeat(Math.max(0,TITLES-S.trophies))}</span>`}</div>
+ <button class="btn ghost small" id="vlist">☰ List</button></div>
+ <div class="vview" id="vview">${villageSVG(night,dusk)}<button class="btn ghost vmv" id="vl" aria-label="Walk left">◀</button><button class="btn ghost vmv" id="vr" aria-label="Walk right">▶</button></div>
+ <div class="vbar"><div class="vinfo" id="vinfo">Tap a building to walk there!</div></div>
+ <div class="vmap">${BLD.map(b=>`<button class="vm" data-go="${b.k}" aria-label="${b.n||'My shop'}">${b.e}<small>${{home:'Home',store:'Store',cash:'Cashier',sort:'Sorting',insp:'Inspect',arena:'Battle',stadium:'Cup',lot:'My shop'}[b.k]}</small></button>`).join('')}</div></div>`);
+ villageStart(fromAct);}
+function villageStart(fromAct){const svg=$('world'),view=$('vview');S.vx=S.vx||BLD[0].door;
+ VL={x:S.vx,tx:S.vx,cam:0,dir:1,t:0,at:null,hold:0,coins:VL&&VL.coins&&!fromAct?VL.coins:[],kids:[],master:S.masterHere?{x:pick(BLD.slice(1,7)).x+30}:null};
+ if(fromAct||!VL.coins.length){VL.coins=[0,1,2].map(()=>({x:ri(300,WORLD_W-300),v:pick([1,5,5,10]),got:false}));}
+ VL.kids=shuffle(FOES).slice(0,2).map((f,i)=>({f,x:ri(700,2500),dir:i?1:-1,spd:40+i*15,mood:0}));
+ $('coins').innerHTML=VL.coins.map((c,i)=>c.got?'':`<g class="coin2" id="cn${i}" transform="translate(${c.x} ${GROUND+12})"><g class="spinc"><ellipse rx="14" ry="14" fill="#fcc419" stroke="#7a4a00" stroke-width="3"/><text y="5" font-size="13" font-weight="900" text-anchor="middle" fill="#7a4a00">${c.v}¢</text></g></g>`).join('');
+ $('npcs').innerHTML=VL.kids.map((k,i)=>`<g class="npc" data-k="${i}" id="kid${i}" style="cursor:pointer">${kidWalker(k.f)}<g class="kbub"><rect x="-44" y="-100" width="88" height="26" rx="10" fill="#fff" stroke="#1b1f3b" stroke-width="3"/><text x="0" y="-82" font-size="14" font-weight="900" text-anchor="middle" fill="#1b1f3b">Battle? ⚔️</text></g></g>`).join('');
+ if(VL.master)$('master').innerHTML=`<g id="mst" style="cursor:pointer" transform="translate(${VL.master.x} ${GROUND-60})"><circle r="60" cy="40" fill="#b197fc" opacity=".35" class="twink"/><g transform="translate(-45 -20) scale(.9)">${MASTER.replace('<svg viewBox="0 0 100 112">','<g>').replace('</svg>','</g>')}</g><text y="-34" font-size="26" text-anchor="middle" class="bob">❓</text></g>`;
+ const resize=()=>{const r=view.getBoundingClientRect(),asp=r.width/Math.max(1,r.height);VL.vy=asp<1.4?90:0;VL.vh=VH-VL.vy;VL.vw=VL.vh*asp;};resize();VL.onr=resize;addEventListener('resize',resize);
+ VL.cam=Math.max(0,Math.min(WORLD_W-VL.vw,VL.x-VL.vw/2));
+ const toWorld=e=>{const r=svg.getBoundingClientRect();return VL.cam+(e.clientX-r.left)/r.width*VL.vw;};
+ svg.addEventListener('click',e=>{audio();const k=e.target.closest('.npc'),m=e.target.closest('#mst'),bl=e.target.closest('.bld'),lc=e.target.closest('#lucas');
+  if(lc){VL.jump=1;tone(600,.12,'triangle',.08);tone(900,.12,'triangle',.08,.08);return;}
+  if(m){walkTo(VL.master.x,()=>{S.masterHere=false;save();maybeMaster(()=>hub());});return;}
+  if(k){const kd=VL.kids[+k.dataset.k];walkTo(kd.x-60*kd.dir,()=>kidTalk(kd));return;}
+  if(bl){const b=BLD.find(x=>x.k===bl.dataset.b);walkTo(b.door,()=>arrive(b));return;}
+  walkTo(toWorld(e));});
+ const hold=d=>()=>{VL.hold=d;VL.after=null;VL.at=null;};const stop=()=>{VL.hold=0;};
+ [['vl',-1],['vr',1]].forEach(([id,d])=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();audio();hold(d)();});['pointerup','pointerleave','pointercancel'].forEach(k=>b.addEventListener(k,stop));});
+ $('vlist').onclick=()=>{S.hubMode='list';save();hubList();};
+ main.querySelectorAll('.vm').forEach(m=>m.onclick=()=>{audio();const b=BLD.find(x=>x.k===m.dataset.go);walkTo(b.door,()=>arrive(b));});
+ const near=BLD.find(b=>Math.abs(b.door-VL.x)<40);if(near)arrive(near,true);
+ let last=performance.now();const loop=now=>{if(SCREEN!=='hub'||!$('world')){removeEventListener('resize',resize);return;}const dt=Math.min(.05,(now-last)/1000);last=now;vTick(dt,now);requestAnimationFrame(loop);};requestAnimationFrame(loop);}
+function walkTo(x,after){VL.tx=Math.max(40,Math.min(WORLD_W-40,x));VL.after=after||null;VL.at=null;VL.hold=0;$('vinfo').innerHTML='🚶 Walking…';}
+function vTick(dt,now){const V=VL,sp=330;let moving=false;
+ if(V.hold){V.x=Math.max(40,Math.min(WORLD_W-40,V.x+V.hold*sp*dt));V.tx=V.x;V.dir=V.hold;moving=true;const nb=BLD.find(b=>Math.abs(b.door-V.x)<30);if(nb&&V.at!==nb.k)arrive(nb,true);if(!nb&&V.at){V.at=null;$('vinfo').innerHTML='Tap a building to walk there!';}}
+ else if(Math.abs(V.tx-V.x)>3){const d=Math.sign(V.tx-V.x);V.x+=d*Math.min(sp*dt,Math.abs(V.tx-V.x));V.dir=d;moving=true;if(Math.abs(V.tx-V.x)<=3&&V.after){const f=V.after;V.after=null;setTimeout(f,120);}}
+ else if(V.after){const f=V.after;V.after=null;f();}
+ S.vx=V.x;V.t+=dt*(moving?1:0);const sw=moving?Math.sin(V.t*14)*10:0,bob=moving?Math.abs(Math.sin(V.t*14))*-5:0;
+ if(V.jump){V.jump+=dt*4;if(V.jump>2)V.jump=0;}const jy=V.jump?-Math.sin((V.jump-1)*Math.PI)*60:0;
+ $('lw').setAttribute('transform',`translate(${V.x} ${GROUND-30+bob+jy}) scale(${V.dir} 1)`);$('lgL').setAttribute('d',`M-6 30L${-10+sw} 54`);$('lgR').setAttribute('d',`M6 30L${10-sw} 54`);
+ const tc=Math.max(0,Math.min(WORLD_W-V.vw,V.x-V.vw/2));V.cam+=(tc-V.cam)*Math.min(1,dt*5);
+ const svg=$('world');svg.setAttribute('viewBox',`${V.cam} ${V.vy} ${V.vw} ${V.vh}`);
+ $('pfar').setAttribute('transform',`translate(${V.cam*.92} 0)`);$('pcloud').setAttribute('transform',`translate(${V.cam*.75} 0)`);$('pmid').setAttribute('transform',`translate(${V.cam*.55} 0)`);$('phill').setAttribute('transform',`translate(${V.cam*.3} 0)`);
+ V.coins.forEach((c,i)=>{if(!c.got&&Math.abs(c.x-V.x)<26){c.got=true;S.cents+=c.v;save();const el=$('cn'+i);if(el)el.remove();const r=svg.getBoundingClientRect(),sx=r.left+(c.x-V.cam)/V.vw*r.width,sy=r.top+((GROUND-V.vy)/V.vh)*r.height;
+  FX.emit(sx,sy,'gold',14,{speed:5});tone(1800,.08,'square',.06);tone(2400,.12,'square',.05,.06);toast(`🪙 You found ${c.v}¢!`,1200);}});
+ V.kids.forEach((k,i)=>{const el=$('kid'+i);if(!el)return;if(Math.abs(k.x-V.x)>90||!k.stop){k.x+=k.dir*k.spd*dt;if(k.x<500||k.x>2700)k.dir*=-1;}k.stop=Math.abs(k.x-V.x)<90;
+  el.setAttribute('transform',`translate(${k.x} ${GROUND-26}) scale(${k.dir} 1)`);const kb=el.querySelector('.kbub');if(kb)kb.setAttribute('transform',`scale(${k.dir} 1)`);el.querySelector('.kl').setAttribute('transform',k.stop?'':`rotate(${Math.sin(now/90+i)*6})`);});}
+function arrive(b,quiet){VL.at=b.k;const name=b.k==='lot'?(S.shopOpen?'Lucas’s Cards':'Your future shop'):b.n;let desc=b.d;
+ if(b.k==='lot')desc=S.shopOpen?'Sell cards and buy upgrades':`Needs ${money(GOAL)} + ${TITLES} 🏆 · you have ${money(S.cents)} + ${S.trophies} 🏆`;
+ if(b.k==='home'&&S.freePacks>0)desc=`🎁 ${S.freePacks} free pack${S.freePacks>1?'s':''} waiting!`;
+ $('vinfo').innerHTML=`<span class="ve">${b.e}</span><span class="vt"><b>${name}</b> ${zh(b.z)}<br><small>${desc}</small></span><button class="btn gold" id="vgo">Go in ▶</button>`;
+ $('vgo').onclick=()=>{audio();whoosh();b.go();};if(!quiet)tone(700,.1,'triangle',.08);}
+function lotGo(){if(S.shopOpen)return myShop();if(canOpen())return modal(`<div class="big">🏪</div><h2>Open your own shop?</h2><p>It costs <b>${money(GOAL)}</b>. You will have ${money(S.cents-GOAL)} left.</p>`,[['Open it! 🎉',()=>{S.cents-=GOAL;S.shopOpen=true;S.up=S.up||{};S.stock=S.stock||[];save();confetti();setTimeout(confetti,400);fanfare();FX.stamp('GRAND OPENING!','small','#ffd43b');shout('Your shop is open!');setTimeout(myShop,900);}],['Not yet',null,'ghost']]);
+ const need=[];if(S.cents<GOAL)need.push('save '+money(GOAL-S.cents)+' more');if(S.trophies<TITLES)need.push('win '+(TITLES-S.trophies)+' more tournament title'+(TITLES-S.trophies>1?'s':''));toast('🔒 You need to '+need.join(' and ')+'!',2600);sfx.bad();}
+function kidTalk(k){modal(`<div style="width:90px;margin:0 auto">${kidSVG(k.f[1],k.f[2])}</div><h2>${k.f[0]}: “Want to battle?”</h2><p>Winner gets $1.50!</p>`,[['⚔️ Battle!',()=>{PEND={kind:'friendly',foe:k.f,opp:oppTeam('friendly'),sel:[]};teamPick('friendly');}],['Maybe later',null,'ghost']]);}
+
 /* chained result screen */
-const NEXT={myshop:['My shop',()=>myShop()],cash:['Sorting job',sortJob],sort:['Battle',()=>teamPick('friendly')],battle:['Card store',()=>store()],tour:['Card store',()=>store()]};
+const NEXT={insp:['Battle',()=>teamPick('friendly')],myshop:['My shop',()=>myShop()],cash:['Sorting job',sortJob],sort:['Battle',()=>teamPick('friendly')],battle:['Card store',()=>store()],tour:['Card store',()=>store()]};
 function result(kind,head,body,tip){RUN++;S.acts++;save();
  if(RUN>=3)return breakScreen(head,body);
  const n=NEXT[kind];
  setScreen('result',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">${head}</h2>${body}${tip?`<div class="tip">💡 Try it for real: ${tip}</div>`:''}
  <div class="row"><button class="btn gold" data-a="next">Next: ${n[0]} ▶</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
- bindAll({next:()=>{if(Math.random()<masterChance())return maybeMaster(n[1]);n[1]();},home:()=>hub(true)});}
+ bindAll({next:()=>{if(Math.random()<masterChance())S.masterHere=true;n[1]();},home:()=>hub(true)});}
 function breakScreen(head,body){setScreen('break',`<div class="hub"><div class="panel" style="text-align:center">${head?`<h2 class="h">${head}</h2>${body}`:''}<div class="big">🌟</div><h2 class="h">Great practice! Time for a break</h2>${zh([['休','ㄒㄧㄡ'],['息','ㄒㄧˊ'],['一','ㄧˊ'],['下','ㄒㄧㄚˋ']])}<div class="row" style="margin-top:10px"><button class="btn" data-a="fin">Finish for now</button></div></div></div>`);
  shout('Great practice! Time for a break.');bindAll({fin(){RUN=0;title();}});}
 
@@ -1129,13 +1307,74 @@ function giveTip(tip,why){if(SCREEN!=='cash')return;FX.stamp(`TIP! +${tip}¢`,'s
 function shiftDone(){const out=!S.stock.length&&CJ.n<CJ.total;result('myshop','🏪 Shop day done!',`<div class="big">💰</div><p style="font-size:1.3rem;font-weight:800">You sold ${CJ.sold} card${CJ.sold===1?'':'s'} and earned ${money(CJ.earn)}</p>
  ${CJ.walk?`<p style="color:#e03131;font-weight:800">😤 ${CJ.walk} customer${CJ.walk>1?'s':''} walked out. A price was too high!</p>`:''}${CJ.tips?`<p>🎵 Tips: ${money(CJ.tips)}</p>`:''}${out?'<p style="font-weight:800">📦 Your shelf is empty! Restock it with extra cards.</p>':''}<p>Wallet: ${money(S.cents)}</p>`,
  'Real shops look at what similar things cost, then pick a price close to that.');}
-function giveChange(){audio();const g=trayTotal(),want=CJ.pay-CJ.price;
- if(g===want){sfx.good();if(CJ.own){shopSell(CJ.tries===0);S.stars+=CJ.tries?1:2;save();toast(`😄 Right! ${CJ.pay}¢ − ${CJ.price}¢ = ${want}¢<br>+${money(CJ.price)} for your shop!`);}else{const pay=CJ.wage||35,tip=CJ.tries===0&&Math.random()<.45?pick([5,10,10,15,25]):0;CJ.earn+=pay+tip;CJ.tips+=tip;S.cents+=pay+tip;S.stars+=CJ.tries?1:2;save();toast(`😄 Right! ${money(CJ.pay)} − ${money(CJ.price)} = ${money(want)}<br>+${pay}¢ for you`);jarAdd(pay,false);if(tip)setTimeout(()=>giveTip(tip,'You got it right the first time!'),1100);}step(2600);}
- else{CJ.tries++;sfx.bad();if(CJ.tries>=2){if(CJ.own)shopSell(false);toast(`The change is <b>${money(want)}</b>: ${money(CJ.pay)} − ${money(CJ.price)} = ${money(want)}`,2800);say('The change is '+money(want).replace('$','')+' dollars.');step(2600);}
+function giveChange(){audio();if($('give').disabled)return;const g=trayTotal(),want=CJ.pay-CJ.price;
+ if(g===want){$('give').disabled=true;sfx.good();if(CJ.own){shopSell(CJ.tries===0);S.stars+=CJ.tries?1:2;save();toast(`😄 Right! ${CJ.pay}¢ − ${CJ.price}¢ = ${want}¢<br>+${money(CJ.price)} for your shop!`);}else{const pay=CJ.wage||35,tip=CJ.tries===0&&Math.random()<.45?pick([5,10,10,15,25]):0;CJ.earn+=pay+tip;CJ.tips+=tip;S.cents+=pay+tip;S.stars+=CJ.tries?1:2;save();toast(`😄 Right! ${money(CJ.pay)} − ${money(CJ.price)} = ${money(want)}<br>+${pay}¢ for you`);jarAdd(pay,false);if(tip)setTimeout(()=>giveTip(tip,'You got it right the first time!'),1100);}step(2600);}
+ else{CJ.tries++;sfx.bad();if(CJ.tries>=2){$('give').disabled=true;if(CJ.own)shopSell(false);toast(`The change is <b>${money(want)}</b>: ${money(CJ.pay)} − ${money(CJ.price)} = ${money(want)}`,2800);say('The change is '+money(want).replace('$','')+' dollars.');step(2600);}
   else{const m=g<want?'Hmm, I think I need more change.':'Whoa, that’s too much change!';toast('😕 '+m+'<br>You gave '+money(g));say(m);}}}
-function step(ms){setTimeout(()=>{if(CJ.own&&(++CJ.n>=CJ.total||!S.stock.length))return shiftDone();if(!CJ.own&&++CJ.n>=3){result('cash','🧾 Shift done!',`<div class="big">🫙💵</div><p style="font-size:1.3rem;font-weight:800">You earned ${money(CJ.earn)}</p>${CJ.tips?`<p style="font-size:1.15rem;font-weight:900;color:#d9480f">💛 Tips: ${money(CJ.tips)}</p>`:''}<p>Wallet: ${money(S.cents)}</p>`,'At the store, count up from the price to what you paid. 65¢ → 75¢ → $1.00 is 35¢ change.');}else nextCust();},ms||1400);}
+function step(ms){setTimeout(()=>{if(SCREEN!=='cash')return;if(CJ.own&&(++CJ.n>=CJ.total||!S.stock.length))return shiftDone();if(!CJ.own&&++CJ.n>=3){result('cash','🧾 Shift done!',`<div class="big">🫙💵</div><p style="font-size:1.3rem;font-weight:800">You earned ${money(CJ.earn)}</p>${CJ.tips?`<p style="font-size:1.15rem;font-weight:900;color:#d9480f">💛 Tips: ${money(CJ.tips)}</p>`:''}<p>Wallet: ${money(S.cents)}</p>`,'At the store, count up from the price to what you paid. 65¢ → 75¢ → $1.00 is 35¢ change.');}else nextCust();},ms||1400);}
 
 /* ---------- sorting job ---------- */
+/* ---------- Inspector job: real or fake? ---------- */
+function misspell(w){const vow='aeiou';for(let i=0;i<30;i++){const a=[...w],k=ri(1,a.length-2),op=ri(0,3);let r;
+ if(op===0)[a[k],a[k+1]]=[a[k+1],a[k]];else if(op===1)a.splice(k,1);else if(op===2)a.splice(k,0,a[k]);
+ else{if(vow.includes(a[k].toLowerCase()))a[k]=pick([...vow].filter(v=>v!==a[k].toLowerCase()));else continue;}
+ r=a.join('');if(r!==w&&r.toLowerCase()!==w.toLowerCase())return r;}return w.slice(0,-1);}
+const FAULTS={1:['spell','type','frame'],2:['spell','type','frame','hp','num','deal'],3:['spell','type','frame','hp','num','deal','art','double']};
+const isBoss=c=>c.r==='legend'||c.r==='promo';
+function region(c,f){const ab=abil(c),boss=isBoss(c),base=(ab?126:134)+(ab?34:0)+(boss?14:0),ay=i=>base+12+i*(ab?24:30);
+ return {name:[6,6,116,34],hp:[110,10,154,34],type:[150,8,178,34],num:boss?[6,232,62,246]:[6,230,74,248],art:boss?[6,34,174,138]:[6,34,174,128],
+  atk0:[12,ay(0)-12,170,ay(0)+5],atk1:[12,ay(1)-12,170,ay(1)+5],frame:'edge'}[f];}
+function makeFake(c,kind){const f={...c,atk:c.atk.map(a=>({...a})),pal:c.pal.slice()},why=[],reg=[];
+ const one=k=>{if(k==='spell'){if(Math.random()<.5){const w=misspell(c.name);f.name=w;why.push(`The name is spelled wrong: “${w}” should be “${c.name}”.`);reg.push('name');}
+   else{const i=ri(0,1),words=c.atk[i].n.split(' '),j=ri(0,words.length-1),w=misspell(words[j]);words[j]=w;f.atk[i].n=words.join(' ');why.push(`The attack is spelled wrong: “${f.atk[i].n}” should be “${c.atk[i].n}”.`);reg.push('atk'+i);}}
+  if(k==='type'){const x=pick(Object.keys(T).filter(t=>t!==c.type));f.icon=x;why.push(`This is a ${T[c.type].n} card, but the symbol next to its HP is ${T[x].n}.`);reg.push('type');}
+  if(k==='frame'){const x=c.r==='common'||c.r==='rare'?pick(['legend','promo']):'common';f.frameR=x;why.push(`A ${R[c.r].n} card never has a ${R[x].n} frame.`);reg.push('frame');}
+  if(k==='hp'){const v=c.hp+pick([-5,5,-15,15]);f.hp=v;why.push(`HP always goes up in tens (like 60, 70, 80). ${v} can’t be real!`);reg.push('hp');}
+  if(k==='num'){const v=C.length+ri(3,40);f.num=v;why.push(`The set has only ${C.length} cards, so card number ${v} can’t exist.`);reg.push('num');}
+  if(k==='deal'){f.atk[1]={...c.atk[1],c:3,d:10};why.push(`A 3-energy attack never does just 10. The real ${c.atk[1].n} does ${c.atk[1].d}.`);reg.push('atk1');}
+  if(k==='art'){if(Math.random()<.5){const cols=['#ff6b6b','#51cf66','#339af0','#fcc419','#cc5de8','#ff922b'].filter(x=>x.toLowerCase()!==c.pal[0].toLowerCase());f.pal[0]=pick(cols);why.push(`The creature is the wrong color. Look at the real card!`);}
+   else{const [h,bk,mk]=(c.ad||'||').split('|');if(h){f.ad=['',bk||'',mk||''].join('|');why.push(`The creature is missing its ${h==='flamehair'?'flame':h}!`);}else{f.ad=['horns',bk||'',mk||''].join('|');why.push('The creature has extra horns that the real one doesn’t have!');}}reg.push('art');}};
+ if(kind==='double'){const ks=shuffle(['spell','type','hp','num','frame']).slice(0,2);ks.forEach(one);}else one(kind);
+ return {card:f,why,reg};}
+let IJ=null;
+function inspectJob(){S.inspShifts=(S.inspShifts||0);IJ={n:0,total:5,earn:0,caught:0,side:S.inspShifts<3};inspNext();}
+function inspNext(){padClear();const L=qLv(),c=pick(C),fake=Math.random()<.42;let F=null;if(fake)F=makeFake(c,pick(FAULTS[L]));
+ IJ.c=c;IJ.F=F;IJ.phase='judge';IJ.peek=IJ.side;IJ.tries=0;IJ.found=[];const f=pick(FOES);IJ.who=f[0];const shown=F?F.card:c;
+ setScreen('insp',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🔍 Inspector job · card ${IJ.n+1}/${IJ.total}</h2>
+ <div class="row" style="flex-wrap:nowrap;align-items:center"><div style="width:52px">${kidSVG(f[1],f[2])}</div><div class="bub" style="text-align:left">${f[0]}: “I want to sell you my <b>${c.name}</b> card. It’s totally real… I think!”</div></div></div>
+ <div class="insp"><div class="ref" id="ref">${IJ.peek?`<div class="lbl">📒 Real card</div>${cardHTML(c)}`:`<button class="btn ghost" data-a="peek">📒 Peek at the real card<br><small>(no find bonus)</small></button>`}</div>
+ <div class="cust"><div class="lbl">🃏 ${f[0]}’s card</div><div class="ccard" id="ccard">${cardHTML(shown)}<div class="lens" id="lens"><div class="lin">${cardHTML(shown)}</div></div><div id="marks"></div></div></div></div>
+ <div class="panel" style="text-align:center" id="ipan"><p style="font-weight:800;margin:4px 0" id="imsg">Check the name, the numbers, the symbols and the picture. Drag the 🔍 to look closer!</p>
+ <div class="row" id="ibtn"><button class="btn green" data-a="real">✅ Real</button><button class="btn" style="background:#e03131" data-a="fake">🚫 Fake</button></div></div></div>`);
+ lensSetup();
+ bindAll({peek(){const c=IJ.c;IJ.peek=true;IJ.peeked=true;$('ref').innerHTML=`<div class="lbl">📒 Real card</div>${cardHTML(c)}`;sfx.flip();},
+  real(){const F=IJ.F;if(IJ.phase!=='judge')return;if(!F){inspGood(40,`Correct, it’s a real card! +40¢`);}else{const pen=Math.min(25,S.cents);S.cents-=pen;save();sfx.bad();IJ.phase='done';
+    $('imsg').innerHTML=`😱 Oh no, it was a <b>fake</b>! ${F.why.join(' ')} ${pen?`You lose ${pen}¢.`:''}`;F.reg.forEach(r=>markRegion(r,'#e03131'));inspNextBtn();}},
+  fake(){const F=IJ.F;if(IJ.phase!=='judge')return;if(!F){sfx.bad();IJ.phase='done';$('imsg').innerHTML='🤔 Actually, this card was <b>real</b>. Nothing was wrong with it. No pay this time.';inspNextBtn();}
+   else{IJ.phase='find';sfx.good();$('ibtn').innerHTML='';$('imsg').innerHTML=`🕵️ You’re right, it’s fake! Now <b>tap the mistake</b> on the card${F.reg.length>1?` (there are <b>${F.reg.length}</b>!)`:''}.`;}}});
+ $('ccard').addEventListener('click',e=>{if(IJ.phase!=='find'||e.target.closest('.lens'))return;const r=$('ccard').getBoundingClientRect();inspTap((e.clientX-r.left)/r.width*180,(e.clientY-r.top)/r.height*252);});}
+function inHit(c,reg,x,y){const r=region(c,reg),p=8;if(r==='edge')return x<14||x>166||y<14||y>238;return x>=r[0]-p&&x<=r[2]+p&&y>=r[1]-p&&y<=r[3]+p;}
+function inspTap(x,y){const F=IJ.F,c=F.card,left=F.reg.filter(r=>!IJ.found.includes(r));const hitR=left.find(r=>inHit(c,r,x,y));
+ if(hitR){IJ.found.push(hitR);markRegion(hitR,'#2f9e44');sfx.good();FX.emit(...ctr($('ccard')),'gold',14,{speed:5});
+  if(IJ.found.length===F.reg.length){const bonus=IJ.tries<2&&!IJ.peeked?20:0;IJ.caught++;S.fakesCaught=(S.fakesCaught||0)+1;inspGood(40+bonus,`🕵️ Fake busted! ${F.why.join(' ')}<br>+40¢${bonus?' + 20¢ find bonus':''}`);
+   if(S.fakesCaught===10)setTimeout(()=>{FX.stamp('FAKE BUSTER!','small','#ffd43b');fanfare();modal('<div class="big">🕵️</div><h2>Fake Buster badge!</h2><p>You caught 10 fake cards. Great detective work!</p>',[['Awesome!',null]]);},1500);}
+  else $('imsg').innerHTML=`Nice, you found one! Find the <b>other</b> mistake.`;return;}
+ const mk=document.createElement('div');mk.className='miss';mk.style.left=(x/180*100)+'%';mk.style.top=(y/252*100)+'%';$('marks').appendChild(mk);setTimeout(()=>mk.remove(),700);sfx.bad();
+ if(++IJ.tries>=2){left.forEach(r=>markRegion(r,'#f08c00'));IJ.caught++;S.fakesCaught=(S.fakesCaught||0)+1;inspGood(40,`Here it is! ${F.why.join(' ')}<br>+40¢ for spotting the fake`);}
+ else $('imsg').innerHTML='Not there. Look again! (Try the name, numbers, symbols or picture.)';}
+function markRegion(reg,col){const r=region(IJ.F?IJ.F.card:IJ.c,reg),m=document.createElement('div');m.className='mark';m.style.borderColor=col;
+ if(r==='edge'){Object.assign(m.style,{left:'0',top:'0',width:'100%',height:'100%',borderRadius:'7%',borderWidth:'6px'});}
+ else Object.assign(m.style,{left:(r[0]/180*100)+'%',top:(r[1]/252*100)+'%',width:((r[2]-r[0])/180*100)+'%',height:((r[3]-r[1])/252*100)+'%'});$('marks').appendChild(m);}
+function inspGood(pay,txt){IJ.phase='done';IJ.earn+=pay;S.cents+=pay;S.stars+=IJ.tries?1:2;save();chaching();FX.stamp('+'+pay+'¢','small','#69db7c');$('imsg').innerHTML=txt;inspNextBtn();}
+function inspNextBtn(){$('ibtn').innerHTML=`<button class="btn gold" data-a="nx">${IJ.n+1<IJ.total?'Next card ▶':'Finish shift ▶'}</button>`;$('ibtn').querySelector('button').onclick=()=>{if(++IJ.n<IJ.total)inspNext();else{S.inspShifts++;save();
+ result('insp','🔍 Inspection done!',`<div class="big">🕵️</div><p style="font-size:1.3rem;font-weight:800">You earned ${money(IJ.earn)}</p><p>Fakes caught: ${IJ.caught} · All-time: ${S.fakesCaught||0}${(S.fakesCaught||0)>=10?' 🏅':''}</p><p>Wallet: ${money(S.cents)}</p>`,'Real collectors check the spelling, numbers and symbols before they trade.');}};}
+function lensSetup(){const L=$("lens"),box=$("ccard"),Z=2.4;let lx=.84,ly=.9,drag=null,moved=0;
+ const place=()=>{const r=box.getBoundingClientRect(),R=L.offsetWidth/2,inn=L.firstElementChild;inn.style.width=(r.width*Z)+'px';L.style.left=(lx*r.width-R)+'px';L.style.top=(ly*r.height-R)+'px';inn.style.left=(R-lx*r.width*Z)+'px';inn.style.top=(R-ly*r.height*Z)+'px';};
+ place();addEventListener('resize',place);
+ L.addEventListener('pointerdown',e=>{e.preventDefault();L.setPointerCapture(e.pointerId);drag=[e.clientX,e.clientY];moved=0;});
+ L.addEventListener('pointermove',e=>{if(!drag)return;const r=box.getBoundingClientRect();moved+=Math.abs(e.clientX-drag[0])+Math.abs(e.clientY-drag[1]);drag=[e.clientX,e.clientY];lx=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));ly=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));place();});
+ L.addEventListener('pointerup',()=>{if(drag&&moved<8&&IJ.phase==='find')inspTap(lx*180,ly*252);drag=null;});}
+
 let SJ=null;
 const SORTS=[{k:c=>c.hp,d:1,t:'from <b>smallest HP</b> to <b>biggest HP</b>',s:'from smallest HP to biggest HP',h:c=>c.hp+' HP',b:c=>c.hp+' HP'},
  {k:c=>c.hp,d:-1,t:'from <b>biggest HP</b> to <b>smallest HP</b>',s:'from biggest HP to smallest HP',h:c=>c.hp+' HP',b:c=>c.hp+' HP'},
@@ -1154,7 +1393,7 @@ function sortRound(){const R0=SJ.rules[SJ.round];let cs;do{cs=shuffle(C).slice(0
   if(++SJ.miss>=2){const rb=main.querySelector(`.sortc[data-v="${SJ.order[SJ.pos]}"]`);rb.classList.add('hint');const c=byId(SJ.order[SJ.pos]);toast(`Next is <b>${c.name}</b> (${R0.h(c)})`,2400);}}}});}
 function place(b){sfx.pop();SJ.miss=0;const slot=$('sl').children[SJ.pos];slot.innerHTML=b.querySelector('.cardw').outerHTML+'<span class="sbadge sm">'+b.querySelector('.sbadge').textContent+'</span>';slot.style.border='none';b.classList.add('used');b.classList.remove('hint');
  if(++SJ.pos===5){const pay=50;SJ.earn+=pay;S.cents+=pay;S.stars+=SJ.perfect?2:1;save();sfx.good();toast('📦 Sorted! +50¢');
-  setTimeout(()=>{if(++SJ.round<2)sortRound();else result('sort','🗂️ Cards sorted!',`<div class="big">📦</div><p style="font-size:1.3rem;font-weight:800">You earned ${money(SJ.earn)}</p><p>Wallet: ${money(S.cents)}</p>`,'Sort your real cards by number to spot doubles you can trade.');},1300);}}
+  setTimeout(()=>{if(SCREEN!=='sort')return;if(++SJ.round<2)sortRound();else result('sort','🗂️ Cards sorted!',`<div class="big">📦</div><p style="font-size:1.3rem;font-weight:800">You earned ${money(SJ.earn)}</p><p>Wallet: ${money(S.cents)}</p>`,'Sort your real cards by number to spot doubles you can trade.');},1300);}}
 
 /* ---------- team pick ---------- */
 let PEND=null;
@@ -1285,7 +1524,7 @@ function tourAfter(won){
 window.__test={
  state:()=>({screen:SCREEN,cents:S.cents,stars:S.stars,owned:Object.keys(S.owned).length,turn:B&&B.turn,meHp:B&&B.me.hp,opHp:B&&B.op.hp,q:!!(B&&B.q),change:CJ&&CJ.pay-CJ.price}),
  give:c=>{S.cents+=c;save();},
- solve:()=>{{const sp=document.querySelector('.spot.ready');if(sp){sp.click();return;}}if(REV){REV.querySelector('.flip').click();return REV.querySelector('.row .btn').click();}if(SCREEN==='battle'&&B){if(B.q&&B.q.go)return B.q.go();if(B.turn==='me'&&!B.busy){if(!B.drew)return meDraw();const c=act('me');const i=[1,0].find(i=>c.atk[i].c<=B.me.en);if(i!==undefined)return meAttack(i);return endMyTurn();}}
+ solve:()=>{if(SCREEN==='insp'&&IJ){if(IJ.phase==='judge')return main.querySelector(IJ.F?'[data-a=fake]':'[data-a=real]').click();if(IJ.phase==='find'){const r=IJ.F.reg.find(x=>!IJ.found.includes(x)),g=region(IJ.F.card,r);return g==='edge'?inspTap(4,120):inspTap((g[0]+g[2])/2,(g[1]+g[3])/2);}if(IJ.phase==='done'){const b=$('ibtn').querySelector('button');return b&&b.click();}}{const sp=document.querySelector('.spot.ready');if(sp){sp.click();return;}}if(REV){REV.querySelector('.flip').click();return REV.querySelector('.row .btn').click();}if(SCREEN==='battle'&&B){if(B.q&&B.q.go)return B.q.go();if(B.turn==='me'&&!B.busy){if(!B.drew)return meDraw();const c=act('me');const i=[1,0].find(i=>c.atk[i].c<=B.me.en);if(i!==undefined)return meAttack(i);return endMyTurn();}}
   if(SCREEN==='cash'&&CJ){if($('give').disabled)return;let w=CJ.pay-CJ.price;$('change').innerHTML='';for(const [k,v] of CO)while(w>=v){addCoin(k);w-=v;}return giveChange();}
   if(SCREEN==='sort'&&SJ){const b=main.querySelector(`.sortc[data-v="${SJ.order[SJ.pos]}"]:not(.used)`);return b&&b.click();}
   if(REV){REV.querySelector('.flip').click();return REV.querySelector('.row .btn').click();}
