@@ -1,11 +1,11 @@
 /* ---------- battle ---------- */
 let B=null;
-function startBattle(team,p){B={kind:p.kind,round:p.round||0,foe:p.foe,me:{team,idx:0,hp:byId(team[0]).hp,en:1},op:{team:p.opp,idx:0,hp:byId(p.opp[0]).hp,en:1},turn:'me',drew:false,busy:false,stars:0};PEND=null;
+function startBattle(team,p){B={kind:p.kind,round:p.round||0,foe:p.foe,me:{team,idx:0,hp:byId(team[0]).hp,en:1,hps:team.map(id=>byId(id).hp),ko:[]},op:{team:p.opp,idx:0,hp:byId(p.opp[0]).hp,en:1,hps:p.opp.map(id=>byId(id).hp),ko:[]},turn:'me',drew:false,busy:false,stars:0};PEND=null;
  setScreen('battle',`<div class="arena"><div class="side opp" id="sOpp"></div><div class="mid" id="mid"></div><div class="side me" id="sMe"></div><div class="ctrl" id="ctrl"></div></div>`);
  renderSide('op');renderSide('me');B.busy=true;renderCtrl();msg(`${B.foe[0]} wants to battle!`);vsIntro(()=>{cardEnter('me');setTimeout(()=>cardEnter('op'),250);B.busy=false;msg(`Your turn first. Draw an energy card ⚡`);say(B.foe[0]+' wants to battle! Draw an energy card.');renderCtrl();});}
 const act=s=>byId(B[s].team[B[s].idx]);
 function renderSide(s){const P=B[s],c=act(s),el=$(s==='me'?'sMe':'sOpp'),pct=P.hp/c.hp*100;if(!el||!c)return;
- const dots=P.team.map((_,i)=>i<P.idx?'✖':'●').join('');
+ const dots=P.team.map((id,i)=>`<span style="color:${P.ko[i]?'#868e96':T[byId(id).type].c}">${P.ko[i]?'✖':i===P.idx?'◉':'●'}</span>`).join('');
  el.innerHTML=`<div class="who">${s==='me'?`<div class="mini av me" style="width:38px;flex-basis:38px">${LUCAS}</div><span style="color:var(--lucas)">Lucas</span>`:`<div class="mini">${kidSVG(B.foe[1],B.foe[2])}</div><span style="color:var(--red)">${B.foe[0]}</span>`}<span class="dots">${dots}</span><span class="enb" id="en-${s}">⚡${P.en}</span></div>
  <div class="slot" id="slot-${s}">${cardHTML(c)}</div><div class="hp"><div class="bar"><i class="${pct<=25?'crit':pct<=50?'low':''}" style="width:${pct}%"></i></div><span>${P.hp}/${c.hp}</span></div>`;}
 function setEn(s){const e=$('en-'+s);if(e&&B){e.textContent='⚡'+B[s].en;e.classList.remove('pulse');void e.offsetWidth;e.classList.add('pulse');}}
@@ -14,8 +14,9 @@ function renderCtrl(){if(!$('ctrl'))return;const c=act('me'),me=B.me,my=B.turn==
  $('ctrl').innerHTML=`<div class="enpool">Your energy: ${me.en?'⚡'.repeat(me.en):'—'} (${me.en})</div>
  <button class="btn gold" data-a="draw" ${!my||B.drew?'disabled':''}>⚡ Draw energy</button>
  ${c.atk.map((a,i)=>`<button class="btn" data-a="atk" data-v="${i}" ${!my||me.en<a.c?'disabled':''}>${'⚡'.repeat(a.c)} ${a.n} · ${a.d}</button>`).join('')}
+ ${benchAlive('me').length?`<button class="btn ghost" data-a="sw" ${!my||B.switched||me.en<retreatCost(c)?'disabled':''}>🔄 Switch ${'⚡'.repeat(retreatCost(c))}</button>`:''}
  <button class="btn ghost" data-a="end" ${!my||!B.drew?'disabled':''}>End turn</button>`;
- bindAll({draw:meDraw,atk:meAttack,end:()=>{if(B.turn!=='me')return;endMyTurn();}});}
+ bindAll({draw:meDraw,atk:meAttack,sw:()=>doSwitch(false),end:()=>{if(B.turn!=='me')return;endMyTurn();}});}
 function meDraw(){if(B.drew||B.turn!=='me'||B.busy)return;const w=abil(act('me'))&&abil(act('me')).k==='wind'?1:0,n=(Math.random()<.6?1:2)+w;B.me.en+=n;B.drew=true;sfx.energy();setEn('me');{const bt=main.querySelector('[data-a=draw]');if(bt){const [ex,ey]=ctr(bt);FX.emit(ex,ey,'spark',14+n*6,{speed:6});}}setTimeout(()=>{const ep=main.querySelector('.enpool');if(ep){ep.classList.add('pulse');const [px,py]=ctr(ep);FX.emit(px,py,'gold',10,{speed:4});}},60);msg(`You drew <b>+${n} energy</b>! ${'⚡'.repeat(n)}${w?' (Tailwind +1)':''}<br>Now attack, or end your turn to save energy.`);renderCtrl();}
 function calc(att,def,a,bonus){bonus=bonus||0;const pa=abil(att),pd=abil(def),ab=pa&&pa.k==='plus'?10:0,plus=ab+bonus,shield=pd&&pd.k==='shield'?10:0,weak=WEAK[def.type]===att.type;
  const raw=a.d+plus,dmg=Math.max(0,raw*(weak?2:1)-shield);
@@ -52,7 +53,9 @@ function hit2(target,dmg,label,info){const atkSide=target==='op'?'me':'op',P=B[t
   P.hp=Math.max(0,P.hp-dmg);setTimeout(()=>renderSide(target),350);msg(`${label} <b>${dmg} damage!</b>`);
   setTimeout(()=>{if(SCREEN!=='battle')return;if(P.hp===0){const k=$('slot-'+target),kc=act(target),[kx,ky]=ctr(k);sfx.ko();boom();FX.emit(kx,ky,kc.type,60,{speed:10,size:5});FX.emit(kx,ky,'gold',24,{speed:7});FX.ring(kx,ky,'#ffd43b',150,7);FX.flash('#fff');FX.stamp('KO!');
     k.classList.add('ko');msg(`${kc.name} is knocked out! 💫`);
-    setTimeout(()=>{if(++P.idx>=P.team.length)return endBattle(target==='op');P.hp=act(target).hp;renderSide(target);cardEnter(target);msg(`${target==='op'?B.foe[0]+' sends out':'Go,'} <b>${act(target).name}</b>!`);setTimeout(()=>target==='op'?endMyTurn():startMyTurn(),1200);},1300);}
+    setTimeout(()=>{P.ko[P.idx]=true;P.hps[P.idx]=0;const alive=benchAlive(target);if(!alive.length)return endBattle(target==='op');
+     const bring=nx=>{P.idx=nx;P.hp=P.hps[nx];renderSide(target);cardEnter(target);msg(`${target==='op'?B.foe[0]+' sends out':'Go,'} <b>${act(target).name}</b>!`);setTimeout(()=>target==='op'?endMyTurn():startMyTurn(),1200);};
+     if(target==='me'&&alive.length>1)chooseBench('Your card was knocked out! Who goes next?',bring);else bring(target==='op'?oppPick():alive[0]);},1300);}
    else{target==='op'?endMyTurn():startMyTurn();}},1000);}),450);}
 function cardEnter(s){const sl=$('slot-'+s);if(!sl)return;sl.classList.add('enter');whoosh();setTimeout(()=>{const [x,y]=ctr(sl);FX.ring(x,y,s==='me'?'#4dabf7':'#ff6b6b',90);FX.emit(x,y+50,'rock',8,{dir:-Math.PI/2,spread:2.4,speed:4,life:22,size:3});tone(120,.15,'square',.1);},500);}
 function vsIntro(then){if(RM){then();return;}const me=act('me'),op=act('op'),v=document.createElement('div');v.className='vs';
@@ -68,10 +71,22 @@ function oppTurn(){if(SCREEN!=='battle')return;const op=B.op,c=act('op'),mine=ac
  if(!can){msg(`${B.foe[0]} draws energy and waits… ⚡ (${op.en})`);setTimeout(startMyTurn,1300);return;}
  op.en-=can.c;setEn('op');const K=calc(c,mine,can);
  msg(`${c.name} uses <b>${can.n}</b>!${K.mods?'<br>'+K.why.replace(/^/,''):''}`);setTimeout(()=>hit2('me',K.dmg,`${c.name} used ${can.n}!`,{card:c,atk:can,weak:K.weak}),900);}
-function startMyTurn(){if(SCREEN!=='battle')return;B.turn='me';B.drew=false;B.busy=false;const c=act('me'),ma=abil(c);let h='';if(ma&&ma.k==='heal'&&B.me.hp<c.hp){B.me.hp=Math.min(c.hp,B.me.hp+10);renderSide('me');{const [hx,hy]=ctr($('slot-me'));FX.emit(hx,hy,'heal',18,{dir:-Math.PI/2,spread:1.4,speed:3});}h='🌿 Regrow healed 10 HP! ';sfx.good();}msg(h+`Your turn! Draw an energy card ⚡`);renderCtrl();}
+function startMyTurn(){if(SCREEN!=='battle')return;B.turn='me';B.drew=false;B.busy=false;B.switched=false;const c=act('me'),ma=abil(c);let h='';if(ma&&ma.k==='heal'&&B.me.hp<c.hp){B.me.hp=Math.min(c.hp,B.me.hp+10);renderSide('me');{const [hx,hy]=ctr($('slot-me'));FX.emit(hx,hy,'heal',18,{dir:-Math.PI/2,spread:1.4,speed:3});}h='🌿 Regrow healed 10 HP! ';sfx.good();}msg(h+`Your turn! Draw an energy card ⚡`);renderCtrl();}
 function endBattle(won){if(SCREEN!=='battle')return;B.busy=true;banner(won,()=>endBattle2(won));}
 function endBattle2(won){const st=B.stars;
  if(B.kind==='friendly'){if(won){S.cents+=150;sfx.win();confetti();}else{S.cents+=25;sfx.bad();}save();restock();
   return result('battle',won?'🏆 You won!':'Good battle!',`<div class="big">${won?'🥇':'🤝'}</div><p style="font-size:1.2rem;font-weight:800">${won?'You won $1.50!':B.foe[0]+' won this time. You still get 25¢ for a good try.'}</p><p>⭐ ${st} stars from your math</p>`,'In the real game, check the weakness before you attack. ×2 can win the match!');}
+ if(B.kind==='rival')return rivalAfter(won);
  tourAfter(won);}
 
+
+/* ---------- bench + switching ---------- */
+const retreatCost=c=>c.hp<=70?1:c.hp<=100?2:3;
+function benchAlive(s){const P=B[s];return P.team.map((_,i)=>i).filter(i=>i!==P.idx&&!P.ko[i]);}
+function oppPick(){const P=B.op,mine=act('me'),al=benchAlive('op');return al.find(i=>WEAK[mine.type]===byId(P.team[i]).type)??al[0];}
+function chooseBench(title,cb){const P=B.me,foe=act('op'),al=benchAlive('me');
+ const m=modal(`<h2>${title}</h2><div class="row">${al.map(i=>{const c=byId(P.team[i]),x2=WEAK[foe.type]===c.type,risky=WEAK[c.type]===foe.type;return `<button class="pickc bench" data-i="${i}" style="width:clamp(100px,26vw,150px)">${cardHTML(c)}<span class="bhp">❤️ ${P.hps[i]}/${c.hp}</span>${x2?'<span class="x2tag">×2 vs '+foe.name+'</span>':risky?'<span class="x2tag" style="background:#e03131">Weak to '+foe.name+'</span>':''}</button>`;}).join('')}</div>`,[]);
+ m.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{m.remove();sfx.pop();cb(+b.dataset.i);});}
+function doSwitch(){const me=B.me,c=act('me'),cost=retreatCost(c);if(B.turn!=='me'||B.busy||B.switched||me.en<cost||!benchAlive('me').length)return;
+ const m=chooseBench(`Switch ${c.name} out for ${'⚡'.repeat(cost)}?`,i=>{me.en-=cost;me.hps[me.idx]=me.hp;const old=c.name;me.idx=i;me.hp=me.hps[i];B.switched=true;setEn('me');renderSide('me');cardEnter('me');renderCtrl();msg(`Come back, ${old}! Go, <b>${act('me').name}</b>!`);});
+ const mm=document.querySelector('.modal:last-of-type .row:last-child');if(mm){const x=document.createElement('button');x.className='btn ghost';x.textContent='Cancel';x.onclick=()=>x.closest('.modal').remove();mm.appendChild(x);}}

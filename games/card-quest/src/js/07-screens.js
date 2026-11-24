@@ -53,7 +53,7 @@ function hubList(fromAct){
  ${S.shopOpen?T2('🏪','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'myshop','Sell cards · upgrades','hot'):
   T2(canOpen()?'🔑':'🔒','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'open',canOpen()?'Ready to open!':'Needs '+money(GOAL)+' + '+TITLES+' 🏆',canOpen()?'hot':'lock')}
  </div></div>`);
- bindAll({street:()=>{S.hubMode='street';save();hub();},free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,insp:inspectJob,battle:()=>teamPick('friendly'),tour:tourStart,store,binder,myshop:myShop,
+ bindAll({street:()=>{S.hubMode='street';save();hub();},free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,insp:inspectJob,battle:()=>arenaMenu(),tour:tourStart,store,binder,myshop:myShop,
   open(){if(!canOpen()){const need=[];if(S.cents<GOAL)need.push('save '+money(GOAL-S.cents)+' more');if(S.trophies<TITLES)need.push('win '+(TITLES-S.trophies)+' more tournament title'+(TITLES-S.trophies>1?'s':''));toast('🔒 You need to '+need.join(' and ')+'!',2400);sfx.bad();return;}
    modal(`<div class="big">🏪</div><h2>Open your own shop?</h2><p>It costs <b>${money(GOAL)}</b>. You will have ${money(S.cents-GOAL)} left.</p>`,[['Open it! 🎉',()=>{S.cents-=GOAL;S.shopOpen=true;S.up=S.up||{};S.stock=S.stock||[];save();confetti();setTimeout(confetti,400);fanfare();FX.stamp('GRAND OPENING!','small','#ffd43b');shout('Your shop is open! Put your extra cards on the shelf and pick a price.');setTimeout(myShop,900);}],['Not yet',null,'ghost']]);}});
  if(fromAct)maybeMaster();}

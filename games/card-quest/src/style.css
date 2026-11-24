@@ -296,3 +296,29 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 @media (max-height:450px){.dk{max-height:100vh}.dkc{height:40px}.dkd{min-height:40px}}
 .dkh b{white-space:nowrap}.dkh .zh{font-size:.8rem}
 .pack.dk{background:linear-gradient(135deg,#c92a2a,#f76707,#fcc419,#e03131);background-size:300% 300%}.seth{margin:14px 0 6px;font-size:1.1rem}
+/* Phase 4: bench, cups, rival road, evolve */
+.bhp{position:absolute;top:-8px;left:50%;transform:translateX(-50%);z-index:3;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:0 7px;font-weight:900;font-size:.8rem;white-space:nowrap}
+.pickc.bench{margin:10px 4px 14px}
+.cups{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:10px 0}
+.cupb{display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 8px;min-height:120px;border:3px solid var(--ink);border-radius:16px;background:linear-gradient(#fff9db,#ffe066);font:inherit;box-shadow:0 4px 0 var(--ink);cursor:pointer}
+.cupb .e{font-size:2.2rem}.cupb b{font-size:1.1rem}.cupb small{font-weight:700}
+.cupb .won{background:#2f9e44;color:#fff;border-radius:999px;padding:0 8px;font-weight:900;font-size:.8rem}
+.cupb.off{filter:grayscale(.8);opacity:.7}
+.cuprule{text-align:center;font-weight:800;background:#fff3bf;border:2px solid var(--ink);border-radius:10px;padding:4px 8px;margin:6px 0}
+.road{display:flex;flex-direction:column;gap:8px;margin:10px auto;max-width:560px}
+.rv{display:flex;align-items:center;gap:10px;padding:6px 10px;min-height:64px;border:3px solid var(--ink);border-radius:14px;background:#fff;font:inherit;text-align:left;cursor:pointer}
+.rv .rva{width:52px;flex:none}.rv .rvt{flex:1;display:flex;flex-direction:column}.rv .rvt small{font-weight:700}
+.rv .badge2{font-size:1.8rem}
+.rv.now{background:linear-gradient(90deg,#fff3bf,#ffd43b);box-shadow:0 0 0 3px #f76707;animation:pulse 1.4s infinite}
+.rv.done{background:#d3f9d8}.rv.lock{opacity:.55}
+@keyframes pulse{50%{transform:scale(1.02)}}
+.evotag{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);z-index:3;background:linear-gradient(90deg,#7048e8,#e64980);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:0 8px;font-weight:900;font-size:.8rem;white-space:nowrap;animation:pulse 1.2s infinite}
+.evo{border:3px dashed #7048e8;border-radius:14px;padding:8px;margin:8px 0;background:#f3f0ff;display:flex;flex-direction:column;align-items:center;gap:4px}
+.evbar{display:flex;gap:6px}.evbar span{width:26px;height:36px;border:2px solid var(--ink);border-radius:5px;background:#dee2e6}.evbar span.on{background:linear-gradient(135deg,#ffd43b,#f76707);box-shadow:0 0 6px #ffd43b}
+.evolve{position:fixed;inset:0;z-index:60;background:radial-gradient(circle,#4c1d95,#0b0720);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}
+.evolve h2{font-size:clamp(1.3rem,4vw,2.2rem);text-shadow:0 0 12px #e599f7;z-index:2}
+.evolve .burst{position:absolute;inset:-50%;background:repeating-conic-gradient(#ffffff22 0 8deg,transparent 8deg 20deg);animation:spin 6s linear infinite}
+.evring{position:relative;width:min(300px,70vw);height:min(300px,45vh);z-index:2}
+.evc{position:absolute;left:50%;top:50%;width:min(110px,26vw);animation:evspin 2.4s ease-in forwards;--a:calc(var(--i)*120deg)}
+@keyframes evspin{0%{transform:translate(-50%,-50%) rotate(var(--a)) translateY(-90px) rotate(calc(-1*var(--a)))}100%{transform:translate(-50%,-50%) rotate(calc(var(--a) + 1080deg)) translateY(0) rotate(calc(-1*var(--a) - 1080deg)) scale(.2);filter:brightness(4)}}
+@media (prefers-reduced-motion:reduce){.rv.now,.evotag,.evc,.evolve .burst{animation:none}}

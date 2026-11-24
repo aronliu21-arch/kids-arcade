@@ -6,7 +6,7 @@ const BLD=[
  {k:'cash',x:800,w:260,door:930,e:'🧾',n:'Corner Shop',z:[['收','ㄕㄡ'],['銀','ㄧㄣˊ'],['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],d:'Cashier job · 35–50¢ a customer + tips',go:()=>cashier(false)},
  {k:'sort',x:1110,w:280,door:1250,e:'🗂️',n:'Card Warehouse',z:[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],d:'Sorting job · 50¢ a row',go:()=>sortJob()},
  {k:'insp',x:1440,w:250,door:1565,e:'🔍',n:'Inspector Office',z:[['鑑','ㄐㄧㄢˋ'],['定','ㄉㄧㄥˋ'],['真','ㄓㄣ'],['假','ㄐㄧㄚˇ']],d:'Real or fake? 40–60¢ a card',go:()=>inspectJob()},
- {k:'arena',x:1750,w:340,door:1920,e:'⚔️',n:'Battle Arena',z:[['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']],d:'Friendly battle · win $1.50',go:()=>teamPick('friendly')},
+ {k:'arena',x:1750,w:340,door:1920,e:'⚔️',n:'Battle Arena',z:[['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']],d:'Friendly battle or Rival Road',go:()=>arenaMenu()},
  {k:'stadium',x:2150,w:400,door:2350,e:'🏆',n:'Card Quest Stadium',z:[['錦','ㄐㄧㄣˇ'],['標','ㄅㄧㄠ'],['賽','ㄙㄞˋ']],d:'Tournament · $1 entry, win $5 + Prize card',go:()=>tourStart()},
  {k:'lot',x:2610,w:330,door:2775,e:'🏪',n:'',z:[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],d:'',go:()=>lotGo()}];
 const WORLD_W=3000;
@@ -146,7 +146,7 @@ function lotGo(){if(S.shopOpen)return myShop();if(canOpen())return modal(`<div c
 function kidTalk(k){modal(`<div style="width:90px;margin:0 auto">${kidSVG(k.f[1],k.f[2])}</div><h2>${k.f[0]}: “Want to battle?”</h2><p>Winner gets $1.50!</p>`,[['⚔️ Battle!',()=>{PEND={kind:'friendly',foe:k.f,opp:oppTeam('friendly'),sel:[]};teamPick('friendly');}],['Maybe later',null,'ghost']]);}
 
 /* chained result screen */
-const NEXT={insp:['Battle',()=>teamPick('friendly')],myshop:['My shop',()=>myShop()],cash:['Sorting job',sortJob],sort:['Battle',()=>teamPick('friendly')],battle:['Card store',()=>store()],tour:['Card store',()=>store()]};
+const NEXT={insp:['Battle',()=>teamPick('friendly')],myshop:['My shop',()=>myShop()],cash:['Sorting job',sortJob],sort:['Battle',()=>teamPick('friendly')],battle:['Card store',()=>store()],tour:['Card store',()=>store()],rival:['Rival Road',()=>rivalRoad()]};
 function result(kind,head,body,tip){RUN++;S.acts++;save();
  if(RUN>=3)return breakScreen(head,body);
  const n=NEXT[kind];

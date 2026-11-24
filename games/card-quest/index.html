@@ -301,6 +301,32 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 @media (max-height:450px){.dk{max-height:100vh}.dkc{height:40px}.dkd{min-height:40px}}
 .dkh b{white-space:nowrap}.dkh .zh{font-size:.8rem}
 .pack.dk{background:linear-gradient(135deg,#c92a2a,#f76707,#fcc419,#e03131);background-size:300% 300%}.seth{margin:14px 0 6px;font-size:1.1rem}
+/* Phase 4: bench, cups, rival road, evolve */
+.bhp{position:absolute;top:-8px;left:50%;transform:translateX(-50%);z-index:3;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:0 7px;font-weight:900;font-size:.8rem;white-space:nowrap}
+.pickc.bench{margin:10px 4px 14px}
+.cups{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:10px 0}
+.cupb{display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 8px;min-height:120px;border:3px solid var(--ink);border-radius:16px;background:linear-gradient(#fff9db,#ffe066);font:inherit;box-shadow:0 4px 0 var(--ink);cursor:pointer}
+.cupb .e{font-size:2.2rem}.cupb b{font-size:1.1rem}.cupb small{font-weight:700}
+.cupb .won{background:#2f9e44;color:#fff;border-radius:999px;padding:0 8px;font-weight:900;font-size:.8rem}
+.cupb.off{filter:grayscale(.8);opacity:.7}
+.cuprule{text-align:center;font-weight:800;background:#fff3bf;border:2px solid var(--ink);border-radius:10px;padding:4px 8px;margin:6px 0}
+.road{display:flex;flex-direction:column;gap:8px;margin:10px auto;max-width:560px}
+.rv{display:flex;align-items:center;gap:10px;padding:6px 10px;min-height:64px;border:3px solid var(--ink);border-radius:14px;background:#fff;font:inherit;text-align:left;cursor:pointer}
+.rv .rva{width:52px;flex:none}.rv .rvt{flex:1;display:flex;flex-direction:column}.rv .rvt small{font-weight:700}
+.rv .badge2{font-size:1.8rem}
+.rv.now{background:linear-gradient(90deg,#fff3bf,#ffd43b);box-shadow:0 0 0 3px #f76707;animation:pulse 1.4s infinite}
+.rv.done{background:#d3f9d8}.rv.lock{opacity:.55}
+@keyframes pulse{50%{transform:scale(1.02)}}
+.evotag{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);z-index:3;background:linear-gradient(90deg,#7048e8,#e64980);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:0 8px;font-weight:900;font-size:.8rem;white-space:nowrap;animation:pulse 1.2s infinite}
+.evo{border:3px dashed #7048e8;border-radius:14px;padding:8px;margin:8px 0;background:#f3f0ff;display:flex;flex-direction:column;align-items:center;gap:4px}
+.evbar{display:flex;gap:6px}.evbar span{width:26px;height:36px;border:2px solid var(--ink);border-radius:5px;background:#dee2e6}.evbar span.on{background:linear-gradient(135deg,#ffd43b,#f76707);box-shadow:0 0 6px #ffd43b}
+.evolve{position:fixed;inset:0;z-index:60;background:radial-gradient(circle,#4c1d95,#0b0720);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}
+.evolve h2{font-size:clamp(1.3rem,4vw,2.2rem);text-shadow:0 0 12px #e599f7;z-index:2}
+.evolve .burst{position:absolute;inset:-50%;background:repeating-conic-gradient(#ffffff22 0 8deg,transparent 8deg 20deg);animation:spin 6s linear infinite}
+.evring{position:relative;width:min(300px,70vw);height:min(300px,45vh);z-index:2}
+.evc{position:absolute;left:50%;top:50%;width:min(110px,26vw);animation:evspin 2.4s ease-in forwards;--a:calc(var(--i)*120deg)}
+@keyframes evspin{0%{transform:translate(-50%,-50%) rotate(var(--a)) translateY(-90px) rotate(calc(-1*var(--a)))}100%{transform:translate(-50%,-50%) rotate(calc(var(--a) + 1080deg)) translateY(0) rotate(calc(-1*var(--a) - 1080deg)) scale(.2);filter:brightness(4)}}
+@media (prefers-reduced-motion:reduce){.rv.now,.evotag,.evc,.evolve .burst{animation:none}}
 
 </style></head><body>
 <div class="app">
@@ -999,7 +1025,7 @@ function hubList(fromAct){
  ${S.shopOpen?T2('🏪','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'myshop','Sell cards · upgrades','hot'):
   T2(canOpen()?'🔑':'🔒','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'open',canOpen()?'Ready to open!':'Needs '+money(GOAL)+' + '+TITLES+' 🏆',canOpen()?'hot':'lock')}
  </div></div>`);
- bindAll({street:()=>{S.hubMode='street';save();hub();},free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,insp:inspectJob,battle:()=>teamPick('friendly'),tour:tourStart,store,binder,myshop:myShop,
+ bindAll({street:()=>{S.hubMode='street';save();hub();},free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,insp:inspectJob,battle:()=>arenaMenu(),tour:tourStart,store,binder,myshop:myShop,
   open(){if(!canOpen()){const need=[];if(S.cents<GOAL)need.push('save '+money(GOAL-S.cents)+' more');if(S.trophies<TITLES)need.push('win '+(TITLES-S.trophies)+' more tournament title'+(TITLES-S.trophies>1?'s':''));toast('🔒 You need to '+need.join(' and ')+'!',2400);sfx.bad();return;}
    modal(`<div class="big">🏪</div><h2>Open your own shop?</h2><p>It costs <b>${money(GOAL)}</b>. You will have ${money(S.cents-GOAL)} left.</p>`,[['Open it! 🎉',()=>{S.cents-=GOAL;S.shopOpen=true;S.up=S.up||{};S.stock=S.stock||[];save();confetti();setTimeout(confetti,400);fanfare();FX.stamp('GRAND OPENING!','small','#ffd43b');shout('Your shop is open! Put your extra cards on the shelf and pick a price.');setTimeout(myShop,900);}],['Not yet',null,'ghost']]);}});
  if(fromAct)maybeMaster();}
@@ -1012,7 +1038,7 @@ const BLD=[
  {k:'cash',x:800,w:260,door:930,e:'🧾',n:'Corner Shop',z:[['收','ㄕㄡ'],['銀','ㄧㄣˊ'],['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],d:'Cashier job · 35–50¢ a customer + tips',go:()=>cashier(false)},
  {k:'sort',x:1110,w:280,door:1250,e:'🗂️',n:'Card Warehouse',z:[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],d:'Sorting job · 50¢ a row',go:()=>sortJob()},
  {k:'insp',x:1440,w:250,door:1565,e:'🔍',n:'Inspector Office',z:[['鑑','ㄐㄧㄢˋ'],['定','ㄉㄧㄥˋ'],['真','ㄓㄣ'],['假','ㄐㄧㄚˇ']],d:'Real or fake? 40–60¢ a card',go:()=>inspectJob()},
- {k:'arena',x:1750,w:340,door:1920,e:'⚔️',n:'Battle Arena',z:[['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']],d:'Friendly battle · win $1.50',go:()=>teamPick('friendly')},
+ {k:'arena',x:1750,w:340,door:1920,e:'⚔️',n:'Battle Arena',z:[['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']],d:'Friendly battle or Rival Road',go:()=>arenaMenu()},
  {k:'stadium',x:2150,w:400,door:2350,e:'🏆',n:'Card Quest Stadium',z:[['錦','ㄐㄧㄣˇ'],['標','ㄅㄧㄠ'],['賽','ㄙㄞˋ']],d:'Tournament · $1 entry, win $5 + Prize card',go:()=>tourStart()},
  {k:'lot',x:2610,w:330,door:2775,e:'🏪',n:'',z:[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],d:'',go:()=>lotGo()}];
 const WORLD_W=3000;
@@ -1152,7 +1178,7 @@ function lotGo(){if(S.shopOpen)return myShop();if(canOpen())return modal(`<div c
 function kidTalk(k){modal(`<div style="width:90px;margin:0 auto">${kidSVG(k.f[1],k.f[2])}</div><h2>${k.f[0]}: “Want to battle?”</h2><p>Winner gets $1.50!</p>`,[['⚔️ Battle!',()=>{PEND={kind:'friendly',foe:k.f,opp:oppTeam('friendly'),sel:[]};teamPick('friendly');}],['Maybe later',null,'ghost']]);}
 
 /* chained result screen */
-const NEXT={insp:['Battle',()=>teamPick('friendly')],myshop:['My shop',()=>myShop()],cash:['Sorting job',sortJob],sort:['Battle',()=>teamPick('friendly')],battle:['Card store',()=>store()],tour:['Card store',()=>store()]};
+const NEXT={insp:['Battle',()=>teamPick('friendly')],myshop:['My shop',()=>myShop()],cash:['Sorting job',sortJob],sort:['Battle',()=>teamPick('friendly')],battle:['Card store',()=>store()],tour:['Card store',()=>store()],rival:['Rival Road',()=>rivalRoad()]};
 function result(kind,head,body,tip){RUN++;S.acts++;save();
  if(RUN>=3)return breakScreen(head,body);
  const n=NEXT[kind];
@@ -1316,9 +1342,9 @@ function openPack(free,set){set=set||1;if(free){set=S.freePacks<=2?2:1;if(!(S.fr
 /* ---------- binder ---------- */
 function binder(){
  setScreen('binder',`<div class="hub"><div class="panel"><h2 class="h">📒 My binder ${zh([['收','ㄕㄡ'],['藏','ㄘㄤˊ'],['冊','ㄘㄜˋ']])} · ${Object.keys(S.owned).length}/${C.length}</h2>
- ${[1,2].map(st=>`<h3 class="seth">${SETS[st].e} ${SETS[st].n} · ${C.filter(c=>c.set===st&&S.owned[c.id]).length}/${C.filter(c=>c.set===st).length}</h3><div class="cgrid">${C.filter(c=>c.set===st).map(c=>S.owned[c.id]?`<button class="pickc" data-a="see" data-v="${c.id}">${cardHTML(c)}${S.owned[c.id]>1?`<span class="cnt">×${S.owned[c.id]}</span>`:''}</button>`:`<div class="ghostc" style="position:relative">${backSVG()}<span class="cnt" style="background:${c.r==='promo'?'#7048e8':'#868e96'}">${c.r==='promo'?'✦ prize':'#'+c.id}</span></div>`).join('')}</div>`).join('')}</div>
+ ${[1,2].map(st=>`<h3 class="seth">${SETS[st].e} ${SETS[st].n} · ${C.filter(c=>c.set===st&&S.owned[c.id]).length}/${C.filter(c=>c.set===st).length}</h3><div class="cgrid">${C.filter(c=>c.set===st).map(c=>S.owned[c.id]?`<button class="pickc" data-a="see" data-v="${c.id}">${cardHTML(c)}${S.owned[c.id]>1?`<span class="cnt">×${S.owned[c.id]}</span>`:''}${S.owned[c.id]>=3&&evoTo(c.id)?'<span class="evotag">✨ Evolve!</span>':''}</button>`:`<div class="ghostc" style="position:relative">${backSVG()}<span class="cnt" style="background:${c.r==='promo'?'#7048e8':'#868e96'}">${c.r==='promo'?'✦ prize':'#'+c.id}</span></div>`).join('')}</div>`).join('')}</div>
  <div class="row"><button class="btn ghost" data-a="home">🏠 Home</button></div></div>`);
- bindAll({home:()=>hub(),see(id){const c=byId(+id);sfx.flip();modal(`<div style="width:min(260px,70vw);margin:0 auto">${cardHTML(c)}</div><p><b>${c.name}</b> · ${T[c.type].n} type · weak to ${T[WEAK[c.type]].i}</p>`,[['Close',null,'ghost']]);}});}
+ bindAll({home:()=>hub(),see(id){const c=byId(+id);sfx.flip();modal(`<div style="width:min(260px,70vw);margin:0 auto">${cardHTML(c)}</div><p><b>${c.name}</b> · ${T[c.type].n} type · weak to ${T[WEAK[c.type]].i}</p>${evolveInfo(c)}`,[['Close',null,'ghost']]);const eb=$('evob');if(eb)eb.onclick=()=>{eb.closest('.modal').remove();evolveGo(c);};}});}
 
 /* ---------- Lucas's own shop: stock, prices, upgrades ---------- */
 const fair=c=>c.r==='promo'?1000:R[c.r].p;
@@ -1501,32 +1527,32 @@ let PEND=null;
 /* opponents are matched to Lucas's own best 3 cards, so battles stay fair as his collection grows */
 const pw=c=>c.hp+c.atk[1].d+(c.r!=='common'?15:0);
 function oppTeam(kind,round){const mine=Object.keys(S.owned).map(Number).map(byId),myP=mine.map(pw).sort((a,b)=>b-a).slice(0,3).reduce((a,b)=>a+b,0);
- const ratio=kind==='friendly'?1:[.95,1.05,1.15][round],tgt=myP*ratio,pool=C.filter(c=>c.r!=='promo'||(kind==='tour'&&round===2&&tgt>800));let best=null;
- for(let i=0;i<60;i++){const t=shuffle(pool).slice(0,3),d=Math.abs(t.reduce((a,c)=>a+pw(c),0)-tgt);if(!best||d<best[0])best=[d,t];}
+ const ratio=kind==='friendly'?1:[.95,1.05,1.15][round],tgt=myP*ratio,cup=kind==='tour'&&TR&&cupBy(TR.cup);let pool=C.filter(c=>c.r!=='promo'||(kind==='tour'&&round===2&&tgt>800));if(cup){const p2=pool.filter(cup.ok);if(p2.length>=3)pool=p2;}let best=null;
+ for(let i=0;i<80;i++){const t=shuffle(pool).slice(0,3),d=Math.abs(t.reduce((a,c)=>a+pw(c),0)-tgt)+(cup&&cup.team&&!cup.team(t.map(c=>c.id))?9999:0);if(!best||d<best[0])best=[d,t];}
  return best[1].map(c=>c.id);}
 function teamPick(kind,round){
  const foe=PEND&&PEND.kind===kind&&PEND.round===round?PEND.foe:pick(FOES);const opp=PEND&&PEND.kind===kind&&PEND.round===round?PEND.opp:oppTeam(kind,round||0);
  const keep=(PEND&&PEND.kind===kind&&PEND.round===round&&PEND.sel)||[];PEND={kind,round,foe,opp,sel:keep};
- const mode=S.pickSort||'power',mine=Object.keys(S.owned).map(Number).sort((a,b)=>mode==='power'?pw(byId(b))-pw(byId(a))||a-b:a-b),need=Math.min(3,mine.length);let sel=(PEND.sel||[]).filter(x=>mine.includes(x));
+ const cup=kind==='tour'&&TR&&cupBy(TR.cup)&&TR.cup!=='open'?cupBy(TR.cup):null;const mode=S.pickSort||'power',mine=Object.keys(S.owned).map(Number).filter(id=>!cup||cup.ok(byId(id))).sort((a,b)=>mode==='power'?pw(byId(b))-pw(byId(a))||a-b:a-b),need=Math.min(3,mine.length);let sel=(PEND.sel||[]).filter(x=>mine.includes(x));
  const beats=c=>opp.filter(i=>WEAK[byId(i).type]===c.type).map(i=>byId(i));
  setScreen('pick',`<div class="hub"><div class="panel"><div class="who" style="justify-content:center"><div class="mini">${kidSVG(foe[1],foe[2])}</div><span>${foe[0]}’s team: ${opp.map(i=>{const t=T[byId(i).type];return `<span title="${t.n}" style="font-size:1.6rem">${t.i}</span>`;}).join(' ')}</span></div>
- <p style="text-align:center;font-weight:700;margin:6px 0">Pick <b>${need}</b> cards for your team. Tip: check what ${foe[0]}’s cards are weak to!</p>
+ ${cup?`<p class="cuprule">${cup.e} <b>${cup.n}</b> rule: ${cup.d}${cup.team?' · now: <b id="thp">0</b>/200':''}</p>`:''}<p style="text-align:center;font-weight:700;margin:6px 0">Pick <b>${need}</b> cards for your team. Tip: check what ${foe[0]}’s cards are weak to!</p>
  <div class="row" style="font-weight:800">${opp.map(i=>{const c=byId(i);return `<span>${T[c.type].i} is weak to ${T[WEAK[c.type]].i}</span>`;}).join(' · ')}</div></div>
  <div class="row" style="margin:4px 0"><span style="font-weight:800">Sort:</span><button class="btn small ${mode==='power'?'gold':'ghost'}" data-a="srt" data-v="power">💪 Strongest first</button><button class="btn small ${mode==='num'?'gold':'ghost'}" data-a="srt" data-v="num">🔢 Card number</button></div>
  <div class="cgrid">${mine.map(id=>{const c=byId(id),bt=beats(c);return `<button class="pickc ${sel.includes(id)?'sel':''}" data-a="p" data-v="${id}">${cardHTML(c)}${bt.length?`<span class="x2tag">×2 vs ${bt.map(x=>T[x.type].i).join('')}</span>`:''}</button>`;}).join('')}</div>
  <div class="row" style="position:sticky;bottom:0;padding:6px;background:var(--bg)"><button class="btn gold" id="fight" disabled>⚔️ Battle! (<span id="pc">0</span>/${need})</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div>`);
- bindAll({srt(v){S.pickSort=v;save();PEND.sel=sel;teamPick(kind,round);},home:()=>{PEND=null;hub();},p(id,b){id=+id;if(sel.includes(id)){sel=sel.filter(x=>x!==id);b.classList.remove('sel');}else{if(sel.length>=need){sfx.bad();toast('Only '+need+' cards!');return;}sel.push(id);b.classList.add('sel');}sfx.pop();$('pc').textContent=sel.length;$('fight').disabled=sel.length!==need;}});
- $('pc').textContent=sel.length;$('fight').disabled=sel.length!==need;
+ bindAll({srt(v){S.pickSort=v;save();PEND.sel=sel;teamPick(kind,round);},home:()=>{PEND=null;hub();},p(id,b){id=+id;if(sel.includes(id)){sel=sel.filter(x=>x!==id);b.classList.remove('sel');}else{if(sel.length>=need){sfx.bad();toast('Only '+need+' cards!');return;}sel.push(id);b.classList.add('sel');}sfx.pop();upd();}});
+ const upd=()=>{$('pc').textContent=sel.length;let ok=sel.length===need;if(cup&&cup.team){const h=sel.reduce((a,id)=>a+byId(id).hp,0);$('thp').textContent=h;$('thp').style.color=h>200?'#e03131':'';if(h>200)ok=false;}$('fight').disabled=!ok;};upd();
  $('fight').onclick=()=>{audio();startBattle(sel,PEND);};}
 
 /* ---------- battle ---------- */
 let B=null;
-function startBattle(team,p){B={kind:p.kind,round:p.round||0,foe:p.foe,me:{team,idx:0,hp:byId(team[0]).hp,en:1},op:{team:p.opp,idx:0,hp:byId(p.opp[0]).hp,en:1},turn:'me',drew:false,busy:false,stars:0};PEND=null;
+function startBattle(team,p){B={kind:p.kind,round:p.round||0,foe:p.foe,me:{team,idx:0,hp:byId(team[0]).hp,en:1,hps:team.map(id=>byId(id).hp),ko:[]},op:{team:p.opp,idx:0,hp:byId(p.opp[0]).hp,en:1,hps:p.opp.map(id=>byId(id).hp),ko:[]},turn:'me',drew:false,busy:false,stars:0};PEND=null;
  setScreen('battle',`<div class="arena"><div class="side opp" id="sOpp"></div><div class="mid" id="mid"></div><div class="side me" id="sMe"></div><div class="ctrl" id="ctrl"></div></div>`);
  renderSide('op');renderSide('me');B.busy=true;renderCtrl();msg(`${B.foe[0]} wants to battle!`);vsIntro(()=>{cardEnter('me');setTimeout(()=>cardEnter('op'),250);B.busy=false;msg(`Your turn first. Draw an energy card ⚡`);say(B.foe[0]+' wants to battle! Draw an energy card.');renderCtrl();});}
 const act=s=>byId(B[s].team[B[s].idx]);
 function renderSide(s){const P=B[s],c=act(s),el=$(s==='me'?'sMe':'sOpp'),pct=P.hp/c.hp*100;if(!el||!c)return;
- const dots=P.team.map((_,i)=>i<P.idx?'✖':'●').join('');
+ const dots=P.team.map((id,i)=>`<span style="color:${P.ko[i]?'#868e96':T[byId(id).type].c}">${P.ko[i]?'✖':i===P.idx?'◉':'●'}</span>`).join('');
  el.innerHTML=`<div class="who">${s==='me'?`<div class="mini av me" style="width:38px;flex-basis:38px">${LUCAS}</div><span style="color:var(--lucas)">Lucas</span>`:`<div class="mini">${kidSVG(B.foe[1],B.foe[2])}</div><span style="color:var(--red)">${B.foe[0]}</span>`}<span class="dots">${dots}</span><span class="enb" id="en-${s}">⚡${P.en}</span></div>
  <div class="slot" id="slot-${s}">${cardHTML(c)}</div><div class="hp"><div class="bar"><i class="${pct<=25?'crit':pct<=50?'low':''}" style="width:${pct}%"></i></div><span>${P.hp}/${c.hp}</span></div>`;}
 function setEn(s){const e=$('en-'+s);if(e&&B){e.textContent='⚡'+B[s].en;e.classList.remove('pulse');void e.offsetWidth;e.classList.add('pulse');}}
@@ -1535,8 +1561,9 @@ function renderCtrl(){if(!$('ctrl'))return;const c=act('me'),me=B.me,my=B.turn==
  $('ctrl').innerHTML=`<div class="enpool">Your energy: ${me.en?'⚡'.repeat(me.en):'—'} (${me.en})</div>
  <button class="btn gold" data-a="draw" ${!my||B.drew?'disabled':''}>⚡ Draw energy</button>
  ${c.atk.map((a,i)=>`<button class="btn" data-a="atk" data-v="${i}" ${!my||me.en<a.c?'disabled':''}>${'⚡'.repeat(a.c)} ${a.n} · ${a.d}</button>`).join('')}
+ ${benchAlive('me').length?`<button class="btn ghost" data-a="sw" ${!my||B.switched||me.en<retreatCost(c)?'disabled':''}>🔄 Switch ${'⚡'.repeat(retreatCost(c))}</button>`:''}
  <button class="btn ghost" data-a="end" ${!my||!B.drew?'disabled':''}>End turn</button>`;
- bindAll({draw:meDraw,atk:meAttack,end:()=>{if(B.turn!=='me')return;endMyTurn();}});}
+ bindAll({draw:meDraw,atk:meAttack,sw:()=>doSwitch(false),end:()=>{if(B.turn!=='me')return;endMyTurn();}});}
 function meDraw(){if(B.drew||B.turn!=='me'||B.busy)return;const w=abil(act('me'))&&abil(act('me')).k==='wind'?1:0,n=(Math.random()<.6?1:2)+w;B.me.en+=n;B.drew=true;sfx.energy();setEn('me');{const bt=main.querySelector('[data-a=draw]');if(bt){const [ex,ey]=ctr(bt);FX.emit(ex,ey,'spark',14+n*6,{speed:6});}}setTimeout(()=>{const ep=main.querySelector('.enpool');if(ep){ep.classList.add('pulse');const [px,py]=ctr(ep);FX.emit(px,py,'gold',10,{speed:4});}},60);msg(`You drew <b>+${n} energy</b>! ${'⚡'.repeat(n)}${w?' (Tailwind +1)':''}<br>Now attack, or end your turn to save energy.`);renderCtrl();}
 function calc(att,def,a,bonus){bonus=bonus||0;const pa=abil(att),pd=abil(def),ab=pa&&pa.k==='plus'?10:0,plus=ab+bonus,shield=pd&&pd.k==='shield'?10:0,weak=WEAK[def.type]===att.type;
  const raw=a.d+plus,dmg=Math.max(0,raw*(weak?2:1)-shield);
@@ -1573,7 +1600,9 @@ function hit2(target,dmg,label,info){const atkSide=target==='op'?'me':'op',P=B[t
   P.hp=Math.max(0,P.hp-dmg);setTimeout(()=>renderSide(target),350);msg(`${label} <b>${dmg} damage!</b>`);
   setTimeout(()=>{if(SCREEN!=='battle')return;if(P.hp===0){const k=$('slot-'+target),kc=act(target),[kx,ky]=ctr(k);sfx.ko();boom();FX.emit(kx,ky,kc.type,60,{speed:10,size:5});FX.emit(kx,ky,'gold',24,{speed:7});FX.ring(kx,ky,'#ffd43b',150,7);FX.flash('#fff');FX.stamp('KO!');
     k.classList.add('ko');msg(`${kc.name} is knocked out! 💫`);
-    setTimeout(()=>{if(++P.idx>=P.team.length)return endBattle(target==='op');P.hp=act(target).hp;renderSide(target);cardEnter(target);msg(`${target==='op'?B.foe[0]+' sends out':'Go,'} <b>${act(target).name}</b>!`);setTimeout(()=>target==='op'?endMyTurn():startMyTurn(),1200);},1300);}
+    setTimeout(()=>{P.ko[P.idx]=true;P.hps[P.idx]=0;const alive=benchAlive(target);if(!alive.length)return endBattle(target==='op');
+     const bring=nx=>{P.idx=nx;P.hp=P.hps[nx];renderSide(target);cardEnter(target);msg(`${target==='op'?B.foe[0]+' sends out':'Go,'} <b>${act(target).name}</b>!`);setTimeout(()=>target==='op'?endMyTurn():startMyTurn(),1200);};
+     if(target==='me'&&alive.length>1)chooseBench('Your card was knocked out! Who goes next?',bring);else bring(target==='op'?oppPick():alive[0]);},1300);}
    else{target==='op'?endMyTurn():startMyTurn();}},1000);}),450);}
 function cardEnter(s){const sl=$('slot-'+s);if(!sl)return;sl.classList.add('enter');whoosh();setTimeout(()=>{const [x,y]=ctr(sl);FX.ring(x,y,s==='me'?'#4dabf7':'#ff6b6b',90);FX.emit(x,y+50,'rock',8,{dir:-Math.PI/2,spread:2.4,speed:4,life:22,size:3});tone(120,.15,'square',.1);},500);}
 function vsIntro(then){if(RM){then();return;}const me=act('me'),op=act('op'),v=document.createElement('div');v.className='vs';
@@ -1589,24 +1618,29 @@ function oppTurn(){if(SCREEN!=='battle')return;const op=B.op,c=act('op'),mine=ac
  if(!can){msg(`${B.foe[0]} draws energy and waits… ⚡ (${op.en})`);setTimeout(startMyTurn,1300);return;}
  op.en-=can.c;setEn('op');const K=calc(c,mine,can);
  msg(`${c.name} uses <b>${can.n}</b>!${K.mods?'<br>'+K.why.replace(/^/,''):''}`);setTimeout(()=>hit2('me',K.dmg,`${c.name} used ${can.n}!`,{card:c,atk:can,weak:K.weak}),900);}
-function startMyTurn(){if(SCREEN!=='battle')return;B.turn='me';B.drew=false;B.busy=false;const c=act('me'),ma=abil(c);let h='';if(ma&&ma.k==='heal'&&B.me.hp<c.hp){B.me.hp=Math.min(c.hp,B.me.hp+10);renderSide('me');{const [hx,hy]=ctr($('slot-me'));FX.emit(hx,hy,'heal',18,{dir:-Math.PI/2,spread:1.4,speed:3});}h='🌿 Regrow healed 10 HP! ';sfx.good();}msg(h+`Your turn! Draw an energy card ⚡`);renderCtrl();}
+function startMyTurn(){if(SCREEN!=='battle')return;B.turn='me';B.drew=false;B.busy=false;B.switched=false;const c=act('me'),ma=abil(c);let h='';if(ma&&ma.k==='heal'&&B.me.hp<c.hp){B.me.hp=Math.min(c.hp,B.me.hp+10);renderSide('me');{const [hx,hy]=ctr($('slot-me'));FX.emit(hx,hy,'heal',18,{dir:-Math.PI/2,spread:1.4,speed:3});}h='🌿 Regrow healed 10 HP! ';sfx.good();}msg(h+`Your turn! Draw an energy card ⚡`);renderCtrl();}
 function endBattle(won){if(SCREEN!=='battle')return;B.busy=true;banner(won,()=>endBattle2(won));}
 function endBattle2(won){const st=B.stars;
  if(B.kind==='friendly'){if(won){S.cents+=150;sfx.win();confetti();}else{S.cents+=25;sfx.bad();}save();restock();
   return result('battle',won?'🏆 You won!':'Good battle!',`<div class="big">${won?'🥇':'🤝'}</div><p style="font-size:1.2rem;font-weight:800">${won?'You won $1.50!':B.foe[0]+' won this time. You still get 25¢ for a good try.'}</p><p>⭐ ${st} stars from your math</p>`,'In the real game, check the weakness before you attack. ×2 can win the match!');}
+ if(B.kind==='rival')return rivalAfter(won);
  tourAfter(won);}
 
+
+/* ---------- bench + switching ---------- */
+const retreatCost=c=>c.hp<=70?1:c.hp<=100?2:3;
+function benchAlive(s){const P=B[s];return P.team.map((_,i)=>i).filter(i=>i!==P.idx&&!P.ko[i]);}
+function oppPick(){const P=B.op,mine=act('me'),al=benchAlive('op');return al.find(i=>WEAK[mine.type]===byId(P.team[i]).type)??al[0];}
+function chooseBench(title,cb){const P=B.me,foe=act('op'),al=benchAlive('me');
+ const m=modal(`<h2>${title}</h2><div class="row">${al.map(i=>{const c=byId(P.team[i]),x2=WEAK[foe.type]===c.type,risky=WEAK[c.type]===foe.type;return `<button class="pickc bench" data-i="${i}" style="width:clamp(100px,26vw,150px)">${cardHTML(c)}<span class="bhp">❤️ ${P.hps[i]}/${c.hp}</span>${x2?'<span class="x2tag">×2 vs '+foe.name+'</span>':risky?'<span class="x2tag" style="background:#e03131">Weak to '+foe.name+'</span>':''}</button>`;}).join('')}</div>`,[]);
+ m.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{m.remove();sfx.pop();cb(+b.dataset.i);});}
+function doSwitch(){const me=B.me,c=act('me'),cost=retreatCost(c);if(B.turn!=='me'||B.busy||B.switched||me.en<cost||!benchAlive('me').length)return;
+ const m=chooseBench(`Switch ${c.name} out for ${'⚡'.repeat(cost)}?`,i=>{me.en-=cost;me.hps[me.idx]=me.hp;const old=c.name;me.idx=i;me.hp=me.hps[i];B.switched=true;setEn('me');renderSide('me');cardEnter('me');renderCtrl();msg(`Come back, ${old}! Go, <b>${act('me').name}</b>!`);});
+ const mm=document.querySelector('.modal:last-of-type .row:last-child');if(mm){const x=document.createElement('button');x.className='btn ghost';x.textContent='Cancel';x.onclick=()=>x.closest('.modal').remove();mm.appendChild(x);}}
 /* ---------- tournament ---------- */
 let TR=null;
 const RNAMES=['Round 1','Semi-final','Final'];
-function tourStart(){if(Object.keys(S.owned).length<3){toast('You need 3 cards');return;}
- setScreen('tour',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🏆 Card Quest Cup ${zh([['錦','ㄐㄧㄣˇ'],['標','ㄅㄧㄠ'],['賽','ㄙㄞˋ']])}</h2>
- <p style="font-weight:700">Win 3 battles in a row to be champion!<br>Entry costs <b>$1.00</b>. You have ${money(S.cents)}.</p>
- <div class="brk">${RNAMES.map(r=>`<div>${r}</div>`).join('')}<div>🏆</div></div>
- <div class="tip" style="text-align:left">🏆 Champion: <b>$5.00</b> + a trophy + an exclusive <b>✦ Prize card</b> or Legend (you can’t buy these!)<br>🥈 Lose the final: <b>$1.50</b> + a <b>Holo or Legend</b> card</div>
- <div class="row"><button class="btn gold" data-a="go">Pay $1.00 and enter ▶</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
- bindAll({home:()=>hub(),go(){if(S.cents<100){sfx.bad();toast('You need $1.00. Try a job! 🧾');return;}S.cents-=100;save();sfx.coin();TR={round:0};tourBracket();}});}
-function tourBracket(note){setScreen('tour',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🏆 Card Quest Cup</h2>${note||''}
+function tourBracket(note){setScreen('tour',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">${(cupBy(TR.cup)||CUPS[0]).e} ${(cupBy(TR.cup)||CUPS[0]).n}</h2>${note||''}
  <div class="brk">${RNAMES.map((r,i)=>`<div class="${i<TR.round?'done':i===TR.round?'now':''}">${i<TR.round?'✅ ':''}${r}</div>`).join('')}<div>🏆</div></div>
  <p style="font-weight:700">Next: <b>${RNAMES[TR.round]}</b>. ${TR.round===2?'The best player is waiting!':'Pick a strong team.'}</p>
  <div class="row"><button class="btn gold" data-a="go">Pick my team ▶</button></div></div></div>`);
@@ -1614,19 +1648,19 @@ function tourBracket(note){setScreen('tour',`<div class="hub"><div class="panel"
 function tourAfter(won){
  if(won&&TR.round<2){TR.round++;sfx.win();return tourBracket('<div class="big">✅</div><p style="font-weight:800">You won! On to the next round.</p>');}
  let c=null,head,body;
- if(won){S.cents+=500;S.trophies++;c=prizeCard([['promo',6],['legend',4]]);head='🏆 CHAMPION!';sfx.win();}
+ if(won){S.cents+=500;S.trophies++;S.cupWins=S.cupWins||{};S.cupWins[TR.cup||'open']=(S.cupWins[TR.cup||'open']||0)+1;c=prizeCard([['promo',6],['legend',4]]);head='🏆 CHAMPION!';sfx.win();}
  else if(TR.round===2){S.cents+=150;c=prizeCard([['holo',8],['legend',2]]);head='🥈 Runner-up!';sfx.good();}
  else{head='Out in '+RNAMES[TR.round];sfx.bad();}
- save();restock();
+ S.cupOffer=null;save();restock();
  const show=()=>result('tour',head,`${c?`<p style="font-weight:800">Prize card${won?' and $5.00':' and $1.50'}:</p><div style="width:min(200px,55vw);margin:0 auto">${cardHTML(c)}</div><p><b>${c.name}</b> · ${R[c.r].n}</p>`:`<div class="big">💪</div><p style="font-weight:800">Practice with friendly battles and try again!</p>`}`,
   'At a real tournament, shake hands and say “good game” whether you win or lose.');
- TR=null;if(c)bigReveal(c,won?'🏆 Champion prize!':'🥈 Runner-up prize!',won?'The Card Quest Cup winner gets an exclusive card!':'Great final! Here is your prize.',show);else show();}
+ const cupN=(cupBy(TR.cup)||CUPS[0]).n;TR=null;if(c)bigReveal(c,won?'🏆 Champion prize!':'🥈 Runner-up prize!',won?'The '+cupN+' winner gets an exclusive card!':'Great final! Here is your prize.',show);else show();}
 
 /* ---------- test hook ---------- */
 window.__test={
  state:()=>({screen:SCREEN,cents:S.cents,stars:S.stars,owned:Object.keys(S.owned).length,turn:B&&B.turn,meHp:B&&B.me.hp,opHp:B&&B.op.hp,q:!!(B&&B.q),change:CJ&&CJ.pay-CJ.price}),
  give:c=>{S.cents+=c;save();},
- solve:()=>{if(SCREEN==='insp'&&IJ){if(IJ.phase==='judge')return main.querySelector(IJ.F?'[data-a=fake]':'[data-a=real]').click();if(IJ.phase==='find'){const r=IJ.F.reg.find(x=>!IJ.found.includes(x)),g=region(IJ.F.card,r);return g==='edge'?inspTap(4,120):inspTap((g[0]+g[2])/2,(g[1]+g[3])/2);}if(IJ.phase==='done'){const b=$('ibtn').querySelector('button');return b&&b.click();}}{const sp=document.querySelector('.spot.ready');if(sp){sp.click();return;}}if(REV){REV.querySelector('.flip').click();return REV.querySelector('.row .btn').click();}if(SCREEN==='battle'&&B){if(B.q&&B.q.go)return B.q.go();if(B.turn==='me'&&!B.busy){if(!B.drew)return meDraw();const c=act('me');const i=[1,0].find(i=>c.atk[i].c<=B.me.en);if(i!==undefined)return meAttack(i);return endMyTurn();}}
+ solve:()=>{{const bb=document.querySelector('.modal .bench');if(bb)return bb.click();}if(SCREEN==='insp'&&IJ){if(IJ.phase==='judge')return main.querySelector(IJ.F?'[data-a=fake]':'[data-a=real]').click();if(IJ.phase==='find'){const r=IJ.F.reg.find(x=>!IJ.found.includes(x)),g=region(IJ.F.card,r);return g==='edge'?inspTap(4,120):inspTap((g[0]+g[2])/2,(g[1]+g[3])/2);}if(IJ.phase==='done'){const b=$('ibtn').querySelector('button');return b&&b.click();}}{const sp=document.querySelector('.spot.ready');if(sp){sp.click();return;}}if(REV){REV.querySelector('.flip').click();return REV.querySelector('.row .btn').click();}if(SCREEN==='battle'&&B){if(B.q&&B.q.go)return B.q.go();if(B.turn==='me'&&!B.busy){if(!B.drew)return meDraw();const c=act('me');const i=[1,0].find(i=>c.atk[i].c<=B.me.en);if(i!==undefined)return meAttack(i);return endMyTurn();}}
   if(SCREEN==='cash'&&CJ){if($('give').disabled)return;let w=CJ.pay-CJ.price;$('change').innerHTML='';for(const [k,v] of CO)while(w>=v){addCoin(k);w-=v;}return giveChange();}
   if(SCREEN==='sort'&&SJ){const b=main.querySelector(`.sortc[data-v="${SJ.order[SJ.pos]}"]:not(.used)`);return b&&b.click();}
   if(REV){REV.querySelector('.flip').click();return REV.querySelector('.row .btn').click();}
@@ -1689,6 +1723,53 @@ function deskStep(){const n=DK.n,o=DK.o;let carry=0,borrow=0,txt='';
   if(s===DK.steps){const r=$('dkcol').querySelector(`.rb[data-r="${c}"]`);if(r){r.textContent=DK.R[c].trim();r.classList.add('good');}}}
  if(DK.steps>=n-1){$('dkmsg').innerHTML=txt+`<br>✅ So ${opTxt(o)} = <b>${o.m?money(DK.res):DK.res}</b>`;$('dkhelp').style.display='none';}
  else $('dkmsg').innerHTML=`Column ${DK.steps+1}: `+txt;DK.steps++;}
+/* ---------- Cups (tournament rules), Rival Road (story), Evolve ---------- */
+const CUPS=[{k:'open',e:'🏆',n:'Open Cup',d:'Any cards you like',ok:()=>true},
+ {k:'rookie',e:'🌱',n:'Rookie Cup',d:'Common cards only',ok:c=>c.r==='common'},
+ {k:'small',e:'🐜',n:'Small Team Cup',d:'Your 3 cards’ HP must add up to 200 or less',ok:()=>true,team:t=>t.reduce((a,id)=>a+byId(id).hp,0)<=200},
+ {k:'noboss',e:'🚫',n:'No-Boss Cup',d:'No Legend or Prize cards',ok:c=>c.r!=='legend'&&c.r!=='promo'},
+ {k:'dragon',e:'🐉',n:'Dragon Kingdom Cup',d:'Dragon Kingdom cards only',ok:c=>c.set===2},
+ ...Object.keys(T).map(t=>({k:t,e:T[t].i,n:T[t].n+' Cup',d:`${T[t].n} cards only`,ok:c=>c.type===t}))];
+const cupBy=k=>CUPS.find(c=>c.k===k);
+function cupCanEnter(cup){const mine=Object.keys(S.owned).map(Number).map(byId).filter(cup.ok);if(mine.length<3)return false;
+ if(cup.team){const hs=mine.map(c=>c.hp).sort((a,b)=>a-b);return hs[0]+hs[1]+hs[2]<=200;}return true;}
+function cupOffer(){if(!S.cupOffer||S.cupOffer.some(k=>!cupBy(k))){const others=shuffle(CUPS.slice(1).map(c=>c.k)).filter(k=>cupCanEnter(cupBy(k))).slice(0,2);S.cupOffer=['open',...others];save();}return S.cupOffer;}
+function tourStart(){if(Object.keys(S.owned).length<3){toast('You need 3 cards');return;}const offer=cupOffer();S.cupWins=S.cupWins||{};
+ setScreen('tour',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🏆 Card Quest Stadium ${zh([['錦','ㄐㄧㄣˇ'],['標','ㄅㄧㄠ'],['賽','ㄙㄞˋ']])}</h2>
+ <p style="font-weight:700">Today’s cups. Pick one! Win 3 battles in a row to be champion.<br>Entry <b>$1.00</b> · you have ${money(S.cents)}</p>
+ <div class="cups">${offer.map(k=>{const c=cupBy(k),can=cupCanEnter(c);return `<button class="cupb ${can?'':'off'}" data-a="cup" data-v="${k}"><span class="e">${c.e}</span><b>${c.n}</b><small>${c.d}</small>${S.cupWins[k]?`<span class="won">🏅 won ×${S.cupWins[k]}</span>`:''}${can?'':'<small style="color:#e03131">You need more cards for this one</small>'}</button>`;}).join('')}</div>
+ <div class="tip" style="text-align:left">🏆 Champion: <b>$5.00</b> + a title + an exclusive <b>✦ Prize card</b> or Legend<br>🥈 Lose the final: <b>$1.50</b> + a Holo or Legend card<br>🔄 New cups appear after every tournament.</div>
+ <div class="row"><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
+ bindAll({home:()=>hub(),cup(k){const c=cupBy(k);if(!cupCanEnter(c)){sfx.bad();toast('You need 3 cards that follow the rule!');return;}if(S.cents<100){sfx.bad();toast('You need $1.00. Try a job! 🧾');return;}
+  modal(`<div class="big">${c.e}</div><h2>${c.n}</h2><p><b>Rule:</b> ${c.d}.<br>Pay $1.00 to enter?</p>`,[['Enter! ▶',()=>{S.cents-=100;save();sfx.coin();TR={round:0,cup:k};tourBracket();}],['Not now',null,'ghost']]);}});}
+/* Rival Road: six rivals with their own decks, beaten in order */
+const RIVALS=[{n:'Sprout Sam',f:['#5c940d','#ffdbac'],deck:[4,27,74],e:'🌱',say:'My leafy team grows stronger every day!',cash:100},
+ {n:'Splash Kai',f:['#1c7ed6','#c68642'],deck:[3,77,34],e:'💧',say:'Water beats fire. Just saying!',cash:150},
+ {n:'Blaze Leo',f:['#e03131','#f1c27d'],deck:[24,73,10],e:'🔥',say:'Feel the heat of my fire deck!',cash:200},
+ {n:'Rocky Ben',f:['#5c5f66','#ffdbac'],deck:[99,49,15],e:'🪨',say:'My rock cards never back down.',cash:250},
+ {n:'Storm Ryan',f:['#7048e8','#ffe0bd'],deck:[104,62,16],e:'🌪️',say:'Lightning and wind. Good luck!',cash:300},
+ {n:'Champion Max',f:['#ffd43b','#e0ac69'],deck:[114,13,108],e:'👑',say:'I am the Champion. Show me your best!',cash:500}];
+function arenaMenu(){modal(`<div class="big">⚔️</div><h2>Battle Arena ${zh([['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']])}</h2><p>Practice against a kid, or take on the Rival Road!</p>`,[['🤝 Friendly battle',()=>teamPick('friendly')],['🛣️ Rival Road',rivalRoad,'gold']]);}
+function rivalRoad(){const st=S.rivalStage||0;
+ setScreen('rival',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🛣️ Rival Road ${zh([['對','ㄉㄨㄟˋ'],['手','ㄕㄡˇ'],['之','ㄓ'],['路','ㄌㄨˋ']])}</h2><p style="font-weight:700">Beat each rival to win their badge. The Champion waits at the end!</p>
+ <div class="road">${RIVALS.map((r,i)=>`<button class="rv ${i<st?'done':i===st?'now':'lock'}" data-a="rv" data-v="${i}"><div class="rva">${kidSVG(r.f[0],r.f[1])}</div><div class="rvt"><b>${i+1}. ${r.n}</b><small>${i<st?'Badge won! '+r.e:i===st?'Tap to battle!':'🔒 Beat '+RIVALS[i-1].n+' first'}</small><span>${r.deck.map(id=>T[byId(id).type].i).join(' ')}</span></div><span class="badge2">${i<st?r.e:i===st?'⚔️':'🔒'}</span></button>`).join('')}</div>
+ <div class="row"><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
+ bindAll({home:()=>hub(),rv(v){v=+v;if(v>st){sfx.bad();toast('🔒 Beat '+RIVALS[v-1].n+' first!');return;}const r=RIVALS[v];
+  modal(`<div style="width:100px;margin:0 auto">${kidSVG(r.f[0],r.f[1])}</div><h2>${r.n}</h2><p style="font-size:1.1rem">“${r.say}”</p><div class="row">${r.deck.map(id=>`<div style="width:90px">${cardHTML(byId(id))}</div>`).join('')}</div><p>Win: <b>${money(r.cash)}</b> + a card from this deck${v<st?' (rematch: half money)':''}</p>`,
+   [['⚔️ Battle!',()=>{PEND={kind:'rival',round:v,foe:[r.n,r.f[0],r.f[1]],opp:r.deck.slice(),sel:[]};teamPick('rival',v);}],['Not yet',null,'ghost']]);}});}
+function rivalAfter(won){const v=B.round,r=RIVALS[v],first=v===(S.rivalStage||0);
+ if(!won){save();return result('rival','Good battle!',`<div class="big">💪</div><p style="font-weight:800">${r.n}: “Come back when you’re stronger!”</p><p>Tip: look at the ×2 tags and use 🔄 Switch.</p>`,'Real players learn the most from the games they lose.');}
+ const cash=first?r.cash:Math.round(r.cash/2);S.cents+=cash;if(first){S.rivalStage=v+1;S.badges=(S.badges||[]).concat(r.e);}const prize=pick(r.deck.map(byId));save();
+ const show=()=>result('rival',first?`${r.e} Badge won!`:'🏆 You won the rematch!',`<p style="font-size:1.2rem;font-weight:800">${r.n}: “Wow, you’re good!”</p><p>+${money(cash)}${first&&v<5?` · Next rival: <b>${RIVALS[v+1].n}</b>`:''}</p>${first&&v===5?'<p style="font-weight:900;color:#d9480f">👑 You beat the Champion! You are the new Card Quest Champion!</p>':''}`,'Good players say “thanks for the battle” to their rivals.');
+ bigReveal(prize,`${r.e} ${r.n}’s card!`,'Your rival gives you a card from their deck!',show);}
+/* Evolve: trade 3 copies for the evolved card */
+const evoTo=id=>C.find(c=>EVO[c.id]===id);
+function evolveInfo(c){const to=evoTo(c.id);if(!to)return '';const n=S.owned[c.id]||0;
+ return `<div class="evo"><b>✨ Evolves into ${to.name}</b> ${S.owned[to.id]?'':'<span class="newtag" style="position:static">NEW</span>'}<div class="evbar">${[0,1,2].map(i=>`<span class="${i<n?'on':''}"></span>`).join('')}</div><small>Trade 3 copies of ${c.name}. You have ${n}.</small>${n>=3?`<button class="btn gold" id="evob">✨ Evolve!</button>`:''}</div>`;}
+function evolveGo(c){const to=evoTo(c.id);if(!to||(S.owned[c.id]||0)<3)return;S.owned[c.id]-=3;if(S.owned[c.id]<=0)delete S.owned[c.id];save();
+ const d=document.createElement('div');d.className='evolve';d.innerHTML=`<div class="burst"></div><h2>✨ ${c.name} is evolving! ✨</h2><div class="evring">${[0,1,2].map(i=>`<div class="evc" style="--i:${i}">${cardHTML(c)}</div>`).join('')}</div>`;document.body.appendChild(d);
+ riser(2200);let t=0;const sp=setInterval(()=>{t++;const [x,y]=[innerWidth/2,innerHeight/2];FX.emit(x,y,c.type,6,{speed:6,size:4});if(t%4===0)tone(400+t*30,.1,'triangle',.06);},90);
+ setTimeout(()=>{clearInterval(sp);FX.flash('#fff');boom();d.remove();bigReveal(to,'✨ Evolution!',`${c.name} evolved into ${to.name}!`,()=>binder());},RM?100:2400);}
 /* ---------- start (keep this file last) ---------- */
 hud();title();
 
