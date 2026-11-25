@@ -2263,4 +2263,7 @@ function breakScreen(){LROW=0;const s=cScreen('<div class="lbreak"><div style="f
 window.__test=Object.assign(window.__test||{},{career:()=>({money:C&&C.money,stars:C&&C.stars,lv:C&&lvOf(C.stars),badges:C&&totalBadges(),learn:C&&C.learn}),
   learn:k=>learnJob(k),hint:()=>LQ&&LQ.hint&&LQ.hint(),allHints:()=>LKEYS.map(k=>LBANK[k].map(q=>{const h=hintFor(k,q);return h?null:k+':'+q[0];})).flat().filter(Boolean),lq:()=>LQ&&{k:LQ.k,id:LQ.q&&LQ.q[0],done:!!LQ.done},solve:()=>LQ&&LQ.solve&&LQ.solve(),banks:()=>Object.fromEntries(LKEYS.map(k=>[k,LBANK[k].length]))});
 
-</script></body></html>
+</script><!-- version badge: bump data-v on every update -->
+<div id="kaVer" data-v="1.0" data-d="2026-11-24" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.0 · 2026-11-24</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+</body></html>

@@ -266,7 +266,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
     </section>
     <section class="scr" id="zoo">
       <div class="tabs" id="zTabs"></div>
-      <div class="field" id="field"><svg id="fieldSvg" preserveAspectRatio="xMidYMid slice"></svg><div class="ztoys" id="zToys"><button data-m="ball" aria-label="Ball">⚽</button><button data-m="bath" aria-label="Bath">🛁</button><button data-m="dance" aria-label="Dance">🎵</button><button data-m="night" aria-label="Night">🌙</button><button data-m="hide" aria-label="Hide and seek">🙈</button></div></div>
+      <div class="field" id="field"><svg id="fieldSvg" preserveAspectRatio="xMidYMid slice"></svg><div class="ztoys" id="zToys"><button data-m="ball" aria-label="Ball">⚽</button><button data-m="bath" aria-label="Bath">🛁</button><button data-m="dance" aria-label="Dance">🎵</button><button data-m="night" aria-label="Night">🌙</button><button data-m="hide" aria-label="Hide and seek">🙈</button><button id="zSong" aria-label="Next song" style="display:none">🔀</button></div></div>
       <div class="bar">
         <button class="big b3" id="zFeed"><span class="em">🍎</span><span><span class="en">Feed babies</span><small class="zh" id="zFeedZh"></small></span></button>
         <button class="big b1" id="zBuildB"><span class="em">🧱</span><span><span class="en">Build</span><small class="zh" id="zBuild2"></small></span></button>
@@ -941,16 +941,23 @@ $('zFeed').onclick=()=>{ac();Z.feed=!Z.feed;$('zFeed').classList.toggle('on',Z.f
  if(!S.snacks){Z.feed=false;$('zFeed').classList.remove('on');say('No snacks left! Play a job to earn snacks.','沒有點心了!玩任務賺點心吧!');return;}
  const here=babies.filter(d=>(d.area||'home')===Z.area);if(!here.length){Z.area=babies[0].area||'home';zooStart();Z.feed=true;$('zFeed').classList.add('on');}
  say('Tap a baby with a bottle to feed it!','按有奶瓶的寶寶來餵牠!');};
-/* dance party music: bouncy 120 bpm loop with drums, bass and a happy tune */
+/* dance party: 4 songs, each with its own dance move */
+const SONGS=[
+ {n:['Dino Stomp','恐龍踏踏舞'],mv:['Hop!','跳一跳!'],move:'hop',bpm:120,mel:[659,0,784,659,880,0,784,0,659,0,587,523,587,0,659,0,523,0,587,659,784,0,880,784,659,0,587,0,523,0,0,0],
+  b:(st,w)=>{if(st%2===0)tone([131,131,196,196,175,175,196,196][(st>>2)%8],.22,'triangle',.22,w,master);},d:(st,w)=>{if(st%4===0)tone(150,.16,'sine',.5,w,master,45);if(st%8===4)tone(240,.1,'triangle',.2,w,master,140);if(st%2===1)tone(7000,.025,'square',.025,w,master);}},
+ {n:['Jungle Bongo','叢林手鼓'],mv:['Conga line! Follow the leader!','排成一排!跟著走!'],move:'conga',bpm:104,mel:[523,0,440,0,392,440,523,0,587,0,523,0,440,0,0,0,392,0,440,523,587,0,659,0,587,523,440,0,392,0,0,0],
+  b:(st,w)=>{if(st%4===0)tone([110,147,131,98][(st>>3)%4],.3,'triangle',.24,w,master);},d:(st,w)=>{if(st%4===0)tone(220,.12,'sine',.35,w,master,150);if(st%4===2)tone(330,.1,'sine',.25,w,master,250);if(st%8===7)tone(420,.07,'sine',.2,w,master,300);if(st%2===1)tone(5000,.02,'square',.015,w,master);}},
+ {n:['Disco Dino','迪斯可恐龍'],mv:['Spin around!','轉圈圈!'],move:'spin',bpm:126,mel:[784,0,784,659,0,659,587,0,659,0,784,0,880,0,784,0,659,0,659,587,0,587,523,0,587,0,659,0,523,0,0,0],
+  b:(st,w)=>{const r=[131,131,175,196][(st>>3)%4];tone(st%2?r*2:r,.11,'square',.08,w,master);},d:(st,w)=>{if(st%2===0)tone(140,.14,'sine',.5,w,master,45);if(st%8===4)tone(900,.06,'square',.06,w,master,300);if(st%2===1)tone(8000,.06,'square',.03,w,master);}},
+ {n:['Sleepy Sway','搖搖晃晃'],mv:['Sway side to side!','左右搖一搖!'],move:'sway',bpm:96,bar:6,mel:[659,0,523,0,523,0,587,0,494,0,494,0,523,0,659,0,784,0,698,0,659,0,587,0],
+  b:(st,w)=>{if(st%6===0)tone([131,196,175,196][Math.floor(st/6)%4],.6,'sine',.25,w,master);},d:(st,w)=>{if(st%6===0)tone(120,.12,'sine',.25,w,master,50);if(st%6===2||st%6===4)tone(2500,.03,'triangle',.03,w,master);}}];
 let danceT=null,dStep=0,dNext=0;
-const DMEL=[659,0,784,659,880,0,784,0,659,0,587,523,587,0,659,0, 523,0,587,659,784,0,880,784,659,0,587,0,523,0,0,0];
-const DBASS=[131,131,196,196,175,175,196,196];
-function danceSched(){const a=AC;if(!a)return;while(dNext<a.currentTime+.3){const w=dNext-a.currentTime,st=dStep%32;
-  if(st%4===0)tone(150,.16,'sine',.5,w,master,45);if(st%8===4)tone(240,.1,'triangle',.2,w,master,140);if(st%2===1)tone(7000,.025,'square',.025,w,master);
-  if(st%2===0)tone(DBASS[(st>>2)%8],.22,'triangle',.22,w,master);const n=DMEL[st];if(n)tone(n,.2,'square',.07,w,master);if(n&&st%4===0)tone(n*2,.12,'sine',.05,w+.01,master);
-  dStep++;dNext+=.125;}}
-function danceOn(){const a=ac();if(!a)return;musicOff();if(!danceT){dStep=0;dNext=a.currentTime+.05;danceT=setInterval(danceSched,60);Z.beat0=performance.now();}}
-function danceOff(){if(danceT){clearInterval(danceT);danceT=null;}}
+function danceSched(){const a=AC;if(!a)return;const S2=SONGS[Z.song||0],dt=60/S2.bpm/2;while(dNext<a.currentTime+.3){const w=dNext-a.currentTime,st=dStep%S2.mel.length;
+  S2.d(st,w);S2.b(st,w);const n=S2.mel[st];if(n){tone(n,dt*1.6,S2.move==='sway'?'sine':'square',S2.move==='sway'?.12:.07,w,master);if(st%4===0)tone(n*2,.12,'sine',.04,w+.01,master);}
+  dStep++;dNext+=dt;}}
+function danceOn(){const a=ac();if(!a)return;musicOff();danceOff();dStep=0;dNext=a.currentTime+.05;danceT=setInterval(danceSched,60);Z.beat0=performance.now();Z.beat=-1;const mv=SONGS[Z.song||0].move;Z.cdir=1;Z.ds.forEach((o,k)=>{if(mv==='conga'&&!o.fly){o.x=Math.max(0,Z.W*.45-k*110*o.s);o.y=Z.H*.6;}o.hx=o.x;o.tilt=0;});
+ const S2=SONGS[Z.song||0];say(`${S2.n[0]}! ${S2.mv[0]}`,`${S2.n[1]}!${S2.mv[1]}`);const b=$('zSong');if(b)b.style.display='';}
+function danceOff(){if(danceT){clearInterval(danceT);danceT=null;}const b=$('zSong');if(b&&Z.mode!=='dance')b.style.display='none';}
 /* storybook (crayon) hiding spots for hide & seek: each is about s wide, sitting on the ground at y=b */
 function hideObj(k,c,b,s){const R=(x0,y0,x1,y1,n)=>subdiv([[x0,y0],[x1,y0],[x1,y1],[x0,y1]],n||3),cr=(p,h,w)=>crayon(p,h,w||2.6),E=ellPts;let o='';
  if(k==='bush'){o+=cr(E(c-s*.24,b-s*.24,s*.27,s*.24),'#51cf66')+cr(E(c+s*.24,b-s*.24,s*.27,s*.24),'#51cf66')+cr(E(c,b-s*.42,s*.32,s*.3),'#69db7c')+cr(R(c-s*.42,b-s*.18,c+s*.42,b,4),'#51cf66');
@@ -994,9 +1001,9 @@ const SING=[523,587,659,698,784,880,988,1047];
 function svgEl(tag,attrs,txt){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(txt!==undefined)e.textContent=txt;return e;}
 function fxPop(x,y,ch,opt){opt=opt||{};const e=svgEl('text',{x:0,y:0,'text-anchor':'middle','font-size':opt.size||26},ch);$('fieldSvg').querySelector('#fxLayer')?.appendChild(e);
  Z.fx.push({e,x,y,vx:opt.vx??(Math.random()-.5)*30,vy:opt.vy??-(40+Math.random()*40),life:opt.life||1.4,t:0});}
-function toyButtons(){$('zToys').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.m===Z.mode);
+function toyButtons(){$('zSong').onclick=()=>{ac();SFX.click();Z.song=((Z.song||0)+1)%SONGS.length;danceOn();};$('zToys').querySelectorAll('button[data-m]').forEach(b=>{b.classList.toggle('on',b.dataset.m===Z.mode);
  b.onclick=()=>{ac();SFX.click();const m=b.dataset.m;Z.mode=Z.mode===m?null:m;if(Z.mode){Z.feed=false;$('zFeed').classList.remove('on');}zooStart();
-  if(Z.mode){const needDinos=Z.mode!=='night'&&Z.mode!=='ball';if(needDinos&&!Z.ds.length){say('No dinos here yet!','這裡還沒有恐龍!');Z.mode=null;zooStart();return;}say(...TOYSAY[Z.mode]);}};});}
+  if(Z.mode){const needDinos=Z.mode!=='night'&&Z.mode!=='ball';if(needDinos&&!Z.ds.length){say('No dinos here yet!','這裡還沒有恐龍!');Z.mode=null;zooStart();return;}if(Z.mode!=='dance')say(...TOYSAY[Z.mode]);}};});}
 function toyInit(){if(Z.mode==='dance')danceOn();else if(danceT){danceOff();musicOn();}Z.fx=[];Z.ball=null;Z.kicks=0;Z.kcool=0;Z.stars=0;Z.found=0;Z.beat=-1;Z.note=0;toyButtons();const svg=$('fieldSvg'),W=Z.W,H=Z.H,M=Z.mode;if(!M)return;
  const base=Math.min(H*.26,W*.22,150)/100;
  if(M==='ball'){const g=svgEl('g',{class:'zball',style:'cursor:pointer'});g.appendChild(svgEl('text',{x:0,y:0,'text-anchor':'middle','dominant-baseline':'central','font-size':Math.max(34,46*base)},'⚽'));svg.querySelector('#fxLayer').appendChild(g);
@@ -1044,7 +1051,14 @@ function toyTick(t,dt){const W=Z.W,H=Z.H;
   b.g.setAttribute('transform',`translate(${b.x.toFixed(1)},${(b.y-b.h).toFixed(1)}) rotate(${b.rot.toFixed(0)})`);
   Z.kcool-=dt;if(Z.kcool<=0&&b.h<20)for(const o of Z.ds){if(o.fly)continue;const cx=o.x+50*o.s;if(Math.abs(cx-b.x)<30+30*o.s){const dir=b.x>=cx?1:-1;kickBall(dir*(260+Math.random()*160),230);o.vj=220;Z.kicks++;Z.kcool=.9;o.kk=(o.kk||0)+1;if(o.kk===3&&fixNeed(o,'play')){Z.kcool=2;break;}if(o.kk===6&&!o.d.need){Z.kcool=2;getNeed(o,'dirty',`Oh no! ${o.d.name} got muddy playing ball!`,`哎呀!${o.d.name}踢球踢得髒兮兮!`);break;}
    if(Z.kicks<=20)say(`${Z.kicks}!`,`${Z.kicks}!`);if(Z.kicks===10){confetti(30);setTimeout(()=>say('Ten kicks! Goal!','踢了十下!進球!'),600);}break;}}}
- if(Z.mode==='dance'){const bt=Math.floor((t-(Z.beat0||0))/500);if(bt!==Z.beat){Z.beat=bt;Z.ds.forEach((o,k)=>{if((bt+k)%2===0&&o.jump===0)o.vj=210;if(bt%4===0)o.vx=-o.vx;});}}
+ if(Z.mode==='dance'){const S2=SONGS[Z.song||0],bms=60000/S2.bpm*((S2.bar||8)===6?1:1),ph=(t-(Z.beat0||0))/bms,bt=Math.floor(ph),nb=bt!==Z.beat;if(nb)Z.beat=bt;
+  Z.ds.forEach((o,k)=>{o.hx=o.hx??o.x;const w=100*o.s;
+   if(S2.move==='hop'){o.tilt=0;if(nb){if((bt+k)%2===0&&o.jump===0)o.vj=210;if(bt%4===0)o.vx=-o.vx;}}
+   else if(S2.move==='sway'){o.x=o.hx+Math.sin(ph*Math.PI/ ((S2.bar||8)===6?1.5:1)+k)*22;o.tilt=Math.sin(ph*Math.PI/1.5+k)*12;o.vx=Math.cos(ph*Math.PI/1.5+k)>0?20:-20;}
+   else if(S2.move==='spin'){if(nb){o.vx=-o.vx;if(bt%2===0&&o.jump===0)o.vj=300;}o.tilt=Math.sin(ph*Math.PI*2)*8;}
+   else if(S2.move==='conga'){Z.cdir=Z.cdir||1;const sp=55;o.x+=Z.cdir*sp*dt;o.vx=Z.cdir*sp;o.ph+=dt*10;o.tilt=(bt%2?1:-1)*7;if(nb&&k===0&&o.jump===0)o.vj=150;
+    if((Z.cdir>0&&o.x>Z.W-w)||(Z.cdir<0&&o.x<0)){Z.cdir=-Z.cdir;}}});}
+ else Z.ds.forEach(o=>{o.tilt=0;});
  if(Z.mode==='night'&&Math.random()<dt*1.2&&Z.ds.length){const o=pick(Z.ds);fxPop(o.x+70*o.s,o.y,'💤',{size:20,life:2.2,vy:-25,vx:12});}}
 /* ---------- dinos play with each other: say hi, high-five, cuddle a baby, chase, roar ---------- */
 function socialTick(dt){Z.socT=(Z.socT??3)-dt;const ds=Z.ds.filter(o=>!o.fly&&!o.drag);ds.forEach(o=>{o.cd=(o.cd??(1+Math.random()*3))-dt;});if(Z.socT>0)return;
@@ -1082,7 +1096,7 @@ function zooTick(t){const dt=Math.min(.05,(t-Z.last)/1000);Z.last=t;const W=Z.W;
   if(o.fly)o.y=Math.max(4,o.y+Math.sin(t/600+o.ph)*.4);
   if(o.vj||o.jump>0){o.jump+=o.vj*dt;o.vj-=700*dt;if(o.jump<=0){o.jump=0;o.vj=0;}}
   const left=o.vx<0;o.g.setAttribute('transform',`translate(${o.x.toFixed(1)},${(o.y-o.jump).toFixed(1)})`);
-  o.body.setAttribute('transform',left?`translate(${w},0) scale(${-o.s},${o.s})`:`scale(${o.s})`);
+  o.body.setAttribute('transform',(o.tilt?`rotate(${o.tilt.toFixed(1)} ${w/2} ${80*o.s}) `:'')+(left?`translate(${w},0) scale(${-o.s},${o.s})`:`scale(${o.s})`));
   const b=o.pause<=0?Math.sin(o.ph)*2.2:0;o.legs.forEach(l=>l.setAttribute('transform',`translate(0,${(l.dataset.leg==='0'?b:-b).toFixed(2)})`));
   o.wings.forEach(l=>l.setAttribute('transform',`translate(50,40) scale(1,${(1-Math.abs(Math.sin(t/180))*.5).toFixed(2)}) translate(-50,-40)`));}
  Z.raf=requestAnimationFrame(zooTick);}
@@ -1337,4 +1351,7 @@ window.__test={state:()=>({step:S.step,screen:SCREEN,scene:!!document.querySelec
  give:n=>{CUR=CUR??0;earnBricks(n);save();showWallet();},snacks:n=>{S.snacks=n;save();showWallet();}};
 </script>
 <script src="../../../tracker.js" data-game="dino-world"></script>
+<!-- version badge: bump data-v on every update -->
+<div id="kaVer" data-v="1.1" data-d="2026-11-24" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-24</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>
