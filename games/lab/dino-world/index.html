@@ -861,8 +861,14 @@ function afterName(en,z,go,em){const st=$('nStage');$('nTxt').innerHTML=bi(en,z)
 
 /* ---------- naming: pick a name, then drag the letters ---------- */
 const NAMES=['REX','DOT','MAX','ZIP','BOB','GUS','KIT','BEN','SAM','TED','POP','BUD','MEG','JET','FIN','DAN','LIZ','NED','TOM','LULU','BO','TAD','ROO','SUE'].filter(n=>n.length<=3);
+NAMES.push('ACE','AMY','BEA','CAL','DAX','ELI','FOX','GIL','HAL','IVY','JAX','KAI','LEO','MIA','OLI','RAY','ROY','SKY','VAL','WES','ZED','ZOE','ODIE','BUZZ','KOKO','MOMO');
+const RESERVED=['PIP','MOM'];
+// every dino gets its own name: never reuse one already in the zoo (or Pip/Mom's)
+function usedNames(skip){return new Set(S.dinos.filter(d=>d!==skip).map(d=>String(d.name).toUpperCase()).concat(RESERVED));}
+function freshNames(n,skip){const used=usedNames(skip);const out=shuffle(NAMES.filter(x=>!used.has(x))).slice(0,n);const C='BDGKMNPRSTZ',V='AEIOU';let k=0;
+ while(out.length<n&&k<500){k++;const x=C[rnd(C.length)]+V[rnd(V.length)]+C[rnd(C.length)];if(!used.has(x)&&!out.includes(x)&&!/^(DIK|DIN|PIS|PUS|NIP|TIT|KOK|PUK|SUK|ZIT|BUM|PEE|POO|DUM)$/.test(x))out.push(x);}return out;}
 let NM=null,spellBusy=false;
-function nameDino(t,cols,baby,done){show('name');const used=S.dinos.map(d=>d.name);const choices=shuffle(NAMES.filter(n=>!used.includes(n))).slice(0,3);
+function nameDino(t,cols,baby,done){show('name');const choices=freshNames(3);
  const art=`<svg viewBox="-6 -14 112 98" style="width:min(48vw,24vh,220px);overflow:visible">${dinoSVG(t,cols)}</svg>`;
  $('nTxt').innerHTML=bi(baby?'Pick a name for the baby!':'Pick a name for your dino!',baby?'幫寶寶選一個名字!':'幫你的恐龍選一個名字!');
  say(`Pick a name! ${choices.join('? ')}?`,baby?'幫寶寶選一個名字!':'幫你的恐龍選一個名字!');
@@ -1196,7 +1202,7 @@ const MG={
     api.prompt('Brush away the sand to find letters!','把沙子刷掉,找到字母!');
     const dig=$('dig'),sands=[...dig.querySelectorAll('.sand')];let down=false,left=sands.length;const lastHit=new WeakMap();
     const brushAt=(x,y)=>{for(const s of sands){if(s.dataset.hp==='0')continue;const r=s.getBoundingClientRect();if(x<r.left||x>r.right||y<r.top||y>r.bottom)continue;const t=performance.now();if(t-(lastHit.get(s)||0)<120)continue;lastHit.set(s,t);
-      const hp=+s.dataset.hp-1;s.dataset.hp=hp;s.style.opacity=hp/3;SFX.brush();if(hp===0){left--;s.style.display='none';if(left===0)spell();}}};
+      const hp=+s.dataset.hp-1;s.dataset.hp=hp;s.style.opacity=hp/3;SFX.brush();if(hp===0){left--;s.style.display='none';if(left===0){down=false;setTimeout(spell,500);}}}};
     dig.addEventListener('pointerdown',e=>{down=true;brushAt(e.clientX,e.clientY);});dig.addEventListener('pointermove',e=>{if(down)brushAt(e.clientX,e.clientY);});dig.addEventListener('pointerup',()=>down=false);dig.addEventListener('pointerleave',()=>down=false);
     const tiles=[...dig.querySelectorAll('.fl')];tiles.forEach(t=>t.onclick=()=>{});
     SOLVE=()=>{sands.forEach(s=>{if(s.dataset.hp!=='0'){s.dataset.hp='0';s.style.display='none';left--;}});spell();};
@@ -1285,6 +1291,9 @@ showWallet();
 if('speechSynthesis' in window)try{speechSynthesis.onvoiceschanged=()=>{for(const k in vcache)delete vcache[k];voiceNote();};setTimeout(voiceNote,600);}catch(e){}
 try{window.KA&&KA.setKid&&KA.setKid(KID);}catch(e){}
 trainAt=Math.min(S.ch+1,4);
+// fix saves where two dinos ended up with the same name
+(function dedupeNames(){try{const seen=new Set();let ch=false;S.dinos.forEach(d=>{const n=String(d.name||'').toUpperCase();if(!n||seen.has(n)){d.name=null;ch=true;}else seen.add(n);});
+ S.dinos.forEach(d=>{if(!d.name){d.name=freshNames(1,d)[0];seen.add(d.name);}});if(ch)save();}catch(e){}})();
 // Expose for automated playtests. Harmless for players.
 window.__test={state:()=>({step:S.step,screen:SCREEN,scene:!!document.querySelector('.scene'),game:A&&SCREEN==='game'?A.id:null,n:A?A.n:0,ch:S.ch,cur:CUR,bricks:binCount(),snacks:S.snacks,dinos:S.dinos.map(d=>d.name+':'+d.t+':'+(d.stage??2)+':'+(d.area||'home')),done:Object.keys(S.done),goal:Object.keys(S.goal),build:B&&{k:B.k,n:B.P.length}}),
  solve:()=>{if(SOLVE)SOLVE();},go:(id,ci,mj)=>{ac();startGame(id,ci,mj);},station:i=>openStation(i),zoo:()=>goZoo(),map:()=>goMap(),
