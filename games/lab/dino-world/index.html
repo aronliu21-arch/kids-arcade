@@ -975,14 +975,15 @@ function toyInit(){if(Z.mode==='dance')danceOn();else if(danceT){danceOff();musi
     if(Z.stars>=n){confetti(30);say(`${n}! You counted ${n} stars! Good night, dinos!`,`${n}!你數了${n}顆星星!恐龍晚安!`);}else say(`${Z.stars}!`,`${Z.stars}!`);});top.appendChild(st);}
   Z.ds.forEach(o=>{o.zz=0;});}
  if(M==='dance'){Z.ds.forEach(o=>{o.pause=0;});}
- if(M==='hide'){const n=Math.min(10,Math.max(6,Z.ds.length+4)),L=svg.querySelector('#coverLayer');const cols=Math.ceil(n/2);
-  const fs=Math.max(66,Math.min(150*base,W/cols*1.05));const HIDE={home:['🏠','🛖','⛺','🚗','🚌','🛻','📦','🎁','🧺','🪣','🛝','⛲','🗿','🌻','🌷'],jungle:['🌴','🌳','🍄','🪵','🎋','🌿','🗿','🛖'],beach:['⛱️','🏖️','🛶','⛵','🐚','🏰','🧺','🪣','🌴'],snow:['⛄','🏔️','🧊','🌲','🛷','🏠','🎄'],volcano:['🌋','🪨','🗿','🏕️','🪵','⛰️']};
-  const pool=shuffle(HIDE[Z.area]||HIDE.home).concat(shuffle(['🌳','🪨','🌲','🌵','🍄','🪵','🌻','🏠','🚂','🎪','🏰','🚜'])),em=[...new Set(pool)];
-  const spots=Array.from({length:n},(_,i)=>{const row=i%2,c=Math.floor(i/2);return {x:W*(c+.5+(row?.28:0))/cols,y:H*(row?.95:.7),d:null,row};}).sort((a,b)=>a.row-b.row);
+ if(M==='hide'){const n=Math.min(5,Math.max(3,Z.ds.length+1)),L=svg.querySelector('#coverLayer');const two=n>3&&W<H*1.1,cols=two?Math.ceil(n/2):n;
+  const HIDE={home:['🏠','🛖','⛺','🚗','🚌','🛻','📦','🎁','🚂','🎪','🗿'],jungle:['🌴','🌳','🍄','🪵','🗿','🛖'],beach:['🏖️','🛶','⛵','🏰','🐚','🌴'],snow:['⛄','🏔️','🧊','🌲','🛷','🏠'],volcano:['🌋','🪨','🗿','🏕️','⛰️','🪵']};
+  const em=[...new Set(shuffle(HIDE[Z.area]||HIDE.home).concat(shuffle(['🌳','🪨','🌲','🏠','🚂','🎪','🚜','📦'])))];
+  const fs=Math.max(60,Math.min(W/cols*.66,H*(two?.3:.46),160*base));
+  const spots=Array.from({length:n},(_,i)=>{const row=two?(i<cols?0:1):0,c=two?(i%cols):i,cn=two&&row?n-cols:cols;return {x:W*(c+.5+(two&&row?.25:0))/cn,y:two?(row?H*.9:H*.6):H*.88,d:null,row};});
   const pick2=shuffle(spots.map((_,i)=>i)).slice(0,Z.ds.length);
-  Z.ds.forEach((o,k)=>{const sp=spots[pick2[k]];sp.d=o;o.hide=sp;const side=Math.random()<.5?-1:1;
-   o.x=sp.x-50*o.s+side*(fs*.42+15*o.s);o.y=sp.y-fs*.08-72*o.s;o.g.classList.add('peek');o.vx=side*Math.abs(o.vx||20);o.vj=0;o.jump=0;});
-  spots.forEach((sp,si)=>{const c=svgEl('text',{x:sp.x,y:sp.y,'text-anchor':'middle','font-size':fs,class:'zcov'},em[si%em.length]);c.style.transformOrigin=`${sp.x}px ${sp.y}px`;c.style.transformBox='view-box';sp.c=c;
+  Z.ds.forEach((o,k)=>{const sp=spots[pick2[k]];sp.d=o;o.hide=sp;const side=Math.random()<.5?-1:1;o.s=Math.min(o.s,fs*.72/100);const wd=100*o.s;
+   o.x=sp.x-wd/2+side*Math.max(0,fs*.4-wd*.36);o.y=sp.y-fs*.12-80*o.s+Math.random()*12;o.vx=side*Math.abs(o.vx||20);o.vj=0;o.jump=0;o.g.classList.add('peek');});
+  spots.forEach((sp,si)=>{const c=svgEl('text',{x:sp.x,y:sp.y-fs*.05,'text-anchor':'middle','font-size':fs,class:'zcov'},em[si%em.length]);c.style.transformOrigin=`${sp.x}px ${sp.y}px`;c.style.transformBox='view-box';sp.c=c;
    c.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();ac();seek(sp);});L.appendChild(c);});
   Z.hideN=Z.ds.length;}}
 function seek(sp){const c=sp.c;c.classList.remove('wig');void c.getBBox();c.classList.add('wig');
