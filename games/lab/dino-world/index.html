@@ -55,7 +55,9 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 .reset{margin-top:14px;font-size:.8rem;font-weight:700;color:var(--muted);background:#fff8;border:1px solid currentColor;border-radius:999px;padding:6px 14px;min-height:36px}
 /* map */
 .mapbox,.field{flex:1;min-height:260px;border:4px solid var(--ink);border-radius:20px;overflow:hidden;position:relative;background:#8ce99a}
-.mapbox{background:#a5d8ff}
+.mapbox{background:#fff4e6}
+.bk{cursor:pointer}.openbook{animation:openbook .65s ease-in forwards;transform-box:fill-box;transform-origin:center}@keyframes openbook{60%{transform:scale(1.15) rotate(-3deg)}to{transform:scale(1.6);opacity:0}}
+.bk.shake{transform-box:fill-box}
 .critter{cursor:pointer}.boing{animation:boing .5s;transform-box:fill-box;transform-origin:center bottom}@keyframes boing{40%{transform:scale(1.25,.85)}70%{transform:scale(.9,1.15)}}
 .fogaway{animation:fogout 2.2s .6s forwards}@keyframes fogout{to{opacity:0;transform:translate(60px,-30px) scale(1.4)}}
 .mapbox svg,.field svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
@@ -654,53 +656,44 @@ function critter(k,x,y,R){let o=`<g class="critter" data-k="${k}">`;
  return o+'</g>';}
 function trainSVG(s){const r=(x,y,w,h,c,sw)=>crayon(subdiv([[x,y],[x+w,y],[x+w,y+h],[x,y+h]],2),c,sw||2.2);
  return `<g transform="scale(${s})">${r(-34,-30,44,26,'#e03131')}${r(4,-46,26,42,'#1c7ed6')}${r(9,-40,16,12,'#d0ebff',1.6)}${r(-28,-44,9,15,'#495057',1.8)}<circle cx="-24" cy="-52" r="5" fill="#fff" opacity=".85">${an('<animate attributeName="cy" values="-52;-70" dur="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values=".9;0" dur="1.6s" repeatCount="indefinite"/>')}</circle><circle cx="-18" cy="-62" r="6" fill="#fff" opacity=".7"/>${r(-38,-8,72,6,'#ffd43b',1.8)}${[-22,2,22].map(x=>crayon(ellPts(x,2,8,8,12),'#343a40',1.8)).join('')}</g>`;}
-function mapDraw(){const r={width:$('mapBox').clientWidth,height:$('mapBox').clientHeight};const land=r.width/Math.max(1,r.height)>=1.05;const L=MAPL=land?MAPS.land:MAPS.port;const {W,H,R}=L;const st=L.st;
- SG=[1,2,3,4].map(k=>bez(st[k-2]||st[k-1],st[k-1],st[k],st[k+1]||st[k]));
- const mid3=bpt(SG[2],.5);L.rv[1]=mid3;
- let o=`<rect width="${W}" height="${H}" fill="#a5d8ff"/><rect width="${W}" height="${H}" fill="url(#skyh)"/>`;
- for(let i=0;i<9;i++){const wx=(i*173)%W,wy=(i*271)%H;o+=`<path class="critter" data-k="wave" d="M${wx} ${wy} q12 -10 24 0 t24 0" stroke="#e7f5ff" stroke-width="4" fill="none" stroke-linecap="round">${an(`<animateTransform attributeName="transform" type="translate" values="0 0;14 0;0 0" dur="${3+i%3}s" repeatCount="indefinite"/>`)}</path>`;}
- const [ix,iy,irx,iry]=L.isl;const isl=Array.from({length:56},(_,i)=>{const a=i/56*6.2832;const k=1+.045*Math.sin(5*a+1)+.03*Math.cos(3*a);return [ix+irx*k*Math.cos(a),iy+iry*k*Math.sin(a)];});
- o+=crayon(isl,'#d8f5a2',3.2);
- const newly=[];st.forEach((p,i)=>{const open=i===0||i-1<=S.ch;const r=region(i,p,L,open);
-  if(open&&i>0&&!S.seen['col'+i]){o+=sketchify(r)+`<g class="colorin">${r}</g>`;newly.push(i);}else o+=open?r:sketchify(r);});
- o+=`<path d="M${L.rv[0].join(' ')} Q${(L.rv[0][0]+mid3[0])/2+40} ${(L.rv[0][1]+mid3[1])/2} ${mid3.join(' ')} T${L.rv[2].join(' ')}" stroke="#74c0fc" stroke-width="${R*.38}" fill="none" stroke-linecap="round"/><path d="M${L.rv[0].join(' ')} Q${(L.rv[0][0]+mid3[0])/2+40} ${(L.rv[0][1]+mid3[1])/2} ${mid3.join(' ')} T${L.rv[2].join(' ')}" stroke="#e7f5ff" stroke-width="2" stroke-dasharray="6 10" fill="none"/>`;
- // track: finished = bright rails on ties, future = pencil dashes
- SG.forEach((b,i)=>{const open=i<=S.ch;const d=bstr(b);
-  o+=open?`<path d="${d}" stroke="#8b5e34" stroke-width="${R*.42}" stroke-dasharray="5 9" fill="none"/><path d="${d}" stroke="#e8590c" stroke-width="${R*.11}" fill="none" stroke-linecap="round"/>`:`<path d="${d}" stroke="#868e96" stroke-width="${R*.07}" stroke-dasharray="8 9" fill="none" stroke-linecap="round"/>`;});
- const ang=b=>{const d=bdir(b,.5);return Math.atan2(d[1],d[0])*180/Math.PI;};
- o+=`<g transform="translate(${mid3[0]},${mid3[1]}) rotate(${ang(SG[2])})">${crayon(subdiv([[-R*.9,-R*.42],[R*.9,-R*.42],[R*.9,R*.42],[-R*.9,R*.42]],2),'#c08552',2)}${[-.6,-.2,.2,.6].map(t=>`<path d="M${t*R} ${-R*.42} v${R*.84}" stroke="${INK}" stroke-width="1.4"/>`).join('')}</g>`;
- const tp=bpt(SG[3],.5);o+=`<g transform="translate(${tp[0]},${tp[1]}) rotate(${ang(SG[3])})">${crayon(semiPts(-R*1.1,-R*1.1,R*2.2,R*1.1).map(([a,b])=>[a,b]),'#adb5bd',2.4)}${crayon(semiPts(-R*.45,-R*.5,R*.9,R*.5),'#343a40',1.6)}</g>`;
- // stations
- const info=[['🏞','My Zoo','我的動物園']].concat(CH.map(c=>[c.em,c.en,c.zh]));const fs=land?19:23;
- st.forEach((p,i)=>{const open=i===0||i-1<=S.ch,done=i>0&&i-1<S.ch,cur=i>0&&i-1===S.ch;const [x,y]=p;
-  o+=`<g class="stn" data-i="${i}">${cur?`<circle cx="${x}" cy="${y}" r="${R*1.3}" fill="#ffd43b" opacity=".55">${an(`<animate attributeName="r" values="${R*1.15};${R*1.42};${R*1.15}" dur="1.4s" repeatCount="indefinite"/>`)}</circle>`:''}
-   ${open?crayon(ellPts(x,y,R,R,18),'#fff',3):sketchify(crayon(ellPts(x,y,R,R,18),'#fff',3))}<text x="${x}" y="${y+R*.33}" text-anchor="middle" font-size="${R*.92}" ${open?'':'fill="#adb5bd" font-weight="900"'}>${open?info[i][0]:'?'}</text>
-   ${done?`<g transform="translate(${x+R*.78},${y-R*.78})">${crayon(subdiv([[0,-R*.42],[R*.12,-R*.12],[R*.42,-R*.1],[R*.18,R*.1],[R*.26,R*.4],[0,R*.22],[-R*.26,R*.4],[-R*.18,R*.1],[-R*.42,-R*.1],[-R*.12,-R*.12]],1),'#ffd43b',1.6)}</g>`:''}
-   ${crayon(subdiv([[x-R*1.55,y+R*1.12],[x+R*1.55,y+R*1.12],[x+R*1.55,y+R*2.35],[x-R*1.55,y+R*2.35]],3),'#fff',2)}
-   <text x="${x}" y="${y+R*1.58}" text-anchor="middle" font-size="${fs}" font-weight="900" fill="${INK}">${info[i][1]}</text>${svgRuby(info[i][2],x,y+R*2.22,fs*.82,'middle')}</g>`;
-  // rescued babies wait at finished stations
-  if(done&&CH[i-1].baby){const b=CH[i-1].baby,s=R*.011,bx=x-R*2.25,by=y-R*.35;o+=`<g transform="translate(${bx},${by}) scale(${s})">${dinoSVG(b.t,b.c)}</g>`;}
-  if(i===4&&S.ch>=4){o+=`<g transform="translate(${x-R*2.5},${y-R*.9}) scale(${R*.016})">${dinoSVG('trike',MOMC)}</g>`;}});
- if(newly.length){newly.forEach(k=>S.seen['col'+k]=1);save();setTimeout(()=>{SFX.grow();say('Look! A new page of the map is colored in!','你看!地圖又塗上新的顏色了!');},700);}
- Object.entries(L.cr).forEach(([k,[x,y]])=>o+=critter(k,x,y,R));
- // title
- const [tx,ty,ta]=L.title;o+=crayon(subdiv(ta==='start'?[[tx-8,ty-34],[tx+260,ty-34],[tx+260,ty+14],[tx-8,ty+14]]:[[tx-170,ty-36],[tx+170,ty-36],[tx+170,ty+14],[tx-170,ty+14]],3),'#fff9db',2.4);
- o+=`<text x="${ta==='start'?tx+6:tx-160}" y="${ty}" font-size="24" font-weight="900" fill="${INK}">Dino Island</text>${svgRuby('恐龍島',ta==='start'?tx+170:tx+80,ty,24,'start')}`;
- // train with Pip, parked just past the station so it never covers it
- o+=`<g id="train"><g id="trainBody">${trainSVG(R/46)}<g transform="translate(${-R*.05},${-R*1.35}) scale(${R*.0055})">${dinoSVG('babytrike',PIPC)}</g></g></g>`;
- $('mapSvg').setAttribute('viewBox',`0 0 ${W} ${H}`);$('mapSvg').innerHTML=o;placeTrain(restU(Math.min(trainAt,4)));
- $('mapSvg').querySelectorAll('.stn').forEach(g=>g.addEventListener('click',()=>tapStation(+g.dataset.i)));
+/* ---------- bookshelf: one storybook per chapter ---------- */
+const SHELF={land:{W:1000,H:640,bw:200,bh:350,pos:[[70,575],[305,575],[540,575],[775,575]],shelves:[575]},port:{W:600,H:1060,bw:250,bh:370,pos:[[35,568],[315,568],[35,1018],[315,1018]],shelves:[568,1018]}};
+function bookSVG(ci,x,yb,w,h,state){const c=CH[ci];const y=yb-h;const cw=w-24,chh=h*.58;const ax=x+14,ay=y+16;let o='';const col=['#69db7c','#ffd43b','#74c0fc','#ff8787'][ci];
+ const cover=crayon(subdiv([[x,y],[x+w,y],[x+w,yb],[x,yb]],3),col,3)+`<rect x="${x+4}" y="${y+4}" width="8" height="${h-8}" fill="#000" opacity=".12"/>`;
+ let art=areaArt(c.key,cw,chh);const fr=CAST[c.friend];if(fr&&!c.hideFriend){const s=Math.min(chh*.55,cw*.4)/100;art+=`<g transform="translate(${cw*.62-50*s},${chh*.92-80*s}) scale(${s})">${dinoSVG(fr.t,fr.c)}</g>`;}
+ const ps=chh*.32/100;art+=`<g transform="translate(${cw*.14},${chh*.92-80*ps}) scale(${ps})">${dinoSVG('babytrike',PIPC)}</g>`;
+ const pic=`<svg x="${ax}" y="${ay}" width="${cw}" height="${chh}" viewBox="0 0 ${cw} ${chh}" preserveAspectRatio="xMidYMid slice">${art}</svg><rect x="${ax}" y="${ay}" width="${cw}" height="${chh}" rx="6" fill="none" stroke="${INK}" stroke-width="2.4"/>`;
+ const fs=w*.12;const plate=crayon(subdiv([[x+12,y+chh+28],[x+w-12,y+chh+28],[x+w-12,yb-14],[x+12,yb-14]],2),'#fffdf6',2)+
+  `<text x="${x+w/2}" y="${y+chh+28+fs*1.3}" text-anchor="middle" font-size="${fs*.8}" font-weight="900" fill="${INK}">${ci+1} · ${c.en.replace(' Station','')}</text>${svgRuby(c.zh.replace('站',''),x+w/2,y+chh+28+fs*2.85,fs*.9,'middle')}`;
+ let book=cover+pic+plate;
+ if(state==='lock')book=sketchify(book)+`<g opacity=".85"><path d="M${x} ${y+h*.42}H${x+w}M${x+w*.5} ${y}V${yb}" stroke="#e8590c" stroke-width="${w*.05}" opacity=".55"/>${crayon(ellPts(x+w*.5,y+h*.42,w*.12,w*.12,14),'#ffa94d',2)}<text x="${x+w*.5}" y="${y+h*.42+w*.06}" text-anchor="middle" font-size="${w*.15}" font-weight="900" fill="#fff">?</text></g>`;
+ else if(state==='new')book=sketchify(book)+`<g class="colorin">${book}</g>`;
+ o+=`<g class="bk" data-ci="${ci}">`;
+ if(state==='next'||state==='new')o+=`<rect x="${x-8}" y="${y-8}" width="${w+16}" height="${h+16}" rx="14" fill="#ffd43b" opacity=".45">${an(`<animate attributeName="opacity" values=".25;.6;.25" dur="1.6s" repeatCount="indefinite"/>`)}</rect>`;
+ o+=`<g>${state==='next'||state==='new'?an(`<animateTransform attributeName="transform" type="translate" values="0 0;0 -10;0 0" dur="1.6s" repeatCount="indefinite"/>`):''}${book}`;
+ // bookmark ribbon while a book is half read
+ const k=(S.step||{})[ci]||0,len=c.flow.length;if(state!=='lock'&&k>0&&k<len)o+=`<path d="M${x+w*.72} ${y-18} h${w*.12} v${h*.25} l-${w*.06} -${w*.07} l-${w*.06} ${w*.07}z" fill="#e03131" stroke="${INK}" stroke-width="2"/>`;
+ if(state==='done'){o+=`<g transform="translate(${x+w-12},${y+14})">${crayon(subdiv([[0,-w*.13],[w*.04,-w*.04],[w*.13,-w*.03],[w*.06,w*.03],[w*.08,w*.12],[0,w*.07],[-w*.08,w*.12],[-w*.06,w*.03],[-w*.13,-w*.03],[-w*.04,-w*.04]],1),'#ffd43b',2)}</g>`;
+  const bb=c.baby;const s=w*.0042;if(bb)o+=`<g transform="translate(${x+w*.12},${y-80*s+4}) scale(${s})">${dinoSVG(bb.t,bb.c)}</g>`;else o+=`<g transform="translate(${x+w*.05},${y-80*s*1.3+4}) scale(${s*1.3})">${dinoSVG('trike',MOMC)}</g><g transform="translate(${x+w*.55},${y-80*s*.9+4}) scale(${s*.9})">${dinoSVG('babytrike',PIPC)}</g>`;}
+ return o+'</g></g>';}
+function mapDraw(){const box=$('mapBox');const land=box.clientWidth/Math.max(1,box.clientHeight)>=1.05;const L=land?SHELF.land:SHELF.port;const {W,H,bw,bh}=L;
+ let o=`<rect width="${W}" height="${H}" fill="#fff4e6"/>`;for(let x=0;x<W;x+=60)o+=`<path d="M${x+30} 0V${H}" stroke="#ffe8cc" stroke-width="22"/>`;
+ for(let x=20;x<W;x+=60)for(let y=40;y<H;y+=90)o+=`<circle cx="${x+((y/90)%2)*30}" cy="${y}" r="3" fill="#ffc9c9" opacity=".6"/>`;
+ const tw=land?400:460,tx=W/2;o+=crayon(subdiv([[tx-tw/2,12],[tx+tw/2,12],[tx+tw/2,112],[tx-tw/2,112]],3),'#c08552',3)+`<text x="${tx}" y="52" text-anchor="middle" font-size="32" font-weight="900" fill="#fff">Milo's Dino Books</text>${svgRuby('恐龍故事書',tx,100,28,'middle').replace(/fill="#5c3d2e"/g,'fill="#fff"').replace(/fill="#868e96"/g,'fill="#ffe8cc"')}`;
+ L.shelves.forEach(yb=>{o+=crayon(subdiv([[20,yb],[W-20,yb],[W-20,yb+26],[20,yb+26]],4),'#a0703c',3)+`<rect x="40" y="${yb+26}" width="16" height="${land?H-yb-26:40}" fill="#8b5e34"/><rect x="${W-56}" y="${yb+26}" width="16" height="${land?H-yb-26:40}" fill="#8b5e34"/>`;});
+ const newly=[];
+ CH.forEach((c,ci)=>{const [x,yb]=L.pos[ci];let st=ci<S.ch?'done':ci===S.ch?'next':'lock';if(st!=='lock'&&ci>0&&!S.seen['col'+(ci+1)]){st='new';newly.push(ci+1);}o+=bookSVG(ci,x,yb,bw,bh,st);});
+ $('mapSvg').setAttribute('viewBox',`0 0 ${W} ${H}`);$('mapSvg').innerHTML=o;
+ if(newly.length){newly.forEach(k=>S.seen['col'+k]=1);save();setTimeout(()=>{SFX.grow();say('A new book is ready to read!','有一本新的故事書可以讀了!');},700);}
+ $('mapSvg').querySelectorAll('.bk').forEach(g=>g.addEventListener('click',()=>tapStation(+g.dataset.ci+1)));
  $('mapSvg').querySelectorAll('.critter').forEach(g=>g.addEventListener('click',e=>{e.stopPropagation();ac();const c=CRIT[g.dataset.k];if(!c)return;SFX.pop();g.classList.remove('boing');void g.getBBox();g.classList.add('boing');toast(bi(c[0],c[1]));say(c[0],c[1]);}));
  SOLVE=()=>tapStation(Math.min(S.ch+1,4));}
-function placeTrain(u){const {p,d}=upos(u);const left=d[0]<0;const R=MAPL.R;$('train').setAttribute('transform',`translate(${p[0]},${p[1]-R*.12})`);$('trainBody').setAttribute('transform',left?'scale(-1,1)':'');}
-function goMap(){musicOn();BACK=null;show('map');say('Where shall the Dino Train go?','恐龍火車要去哪裡?');}
-function tapStation(i){if(trainBusy)return;ac();if(i>0&&i-1>S.ch){SFX.boing();say('Not yet! That place is still in the fog.','還不行!那裡還在霧裡。');return;}
- const from=Math.min(trainAt,4),to=i;const u0=restU(from),u1=i===0?0:i<4?i:4;const info=i===0?['My Zoo','我的動物園']:[CH[i-1].en,CH[i-1].zh];
- if(from===to){trainAt=to;enter(i);return;}
- trainBusy=true;SFX.toot();toast('🦕 '+bi(`Choo choo! Next stop: ${info[0]}!`,`嘟嘟!下一站:${info[1]}!`),1800);sayParts(parts(`Choo choo! Next stop: ${info[0]}!`,`嘟嘟!下一站:${info[1]}!`),1.6);
- const dur=REDUCED?1:Math.max(700,Math.abs(u1-u0)*900);const t0=performance.now();
- const go=()=>{const k=Math.min(1,(performance.now()-t0)/dur);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;placeTrain(u0+(u1-u0)*e);if(k<1)return requestAnimationFrame(go);trainBusy=false;trainAt=to;setTimeout(()=>enter(i),350);};
- requestAnimationFrame(go);}
+function goMap(){musicOn();BACK=null;show('map');say('Which book shall we read?','我們要讀哪一本書?');}
+function tapStation(i){if(trainBusy)return;ac();if(i===0)return goZoo();const ci=i-1;
+ if(ci>S.ch){SFX.boing();say('Not yet! Finish the book before it first.','還不行!先讀完前面那本書。');const g=$('mapSvg').querySelector(`.bk[data-ci="${ci}"]`);if(g){g.classList.remove('shake');void g.getBBox();g.classList.add('shake');}return;}
+ trainBusy=true;SFX.page();const g=$('mapSvg').querySelector(`.bk[data-ci="${ci}"]`);if(g&&!REDUCED)g.classList.add('openbook');
+ const c=CH[ci];const k=(S.step||{})[ci]||0;say(k>0&&k<c.flow.length?'Let’s keep reading!':`${c.en.replace(' Station','')}! Let’s read!`,k>0&&k<c.flow.length?'我們繼續讀!':`${c.zh}!我們來讀吧!`);
+ setTimeout(()=>{trainBusy=false;enter(i);},REDUCED?0:650);}
 function enter(i){if(i===0)return goZoo();openStation(i-1);}
 
 /* ---------- the book: each chapter is a run of pages, puzzles and a build; a bookmark remembers the page ---------- */
