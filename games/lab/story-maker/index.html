@@ -45,7 +45,8 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
 .q{display:flex;align-items:center;gap:10px;justify-content:space-between;font-size:clamp(20px,2.6vw,26px);font-weight:900;margin:2px 0 10px}
 .opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
 .opt{background:#fff;border-radius:16px;box-shadow:0 4px 0 #e6d6bb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 4px;min-height:86px}
-.opt .e{font-size:34px;line-height:1.1}.opt .t{font-size:15px;font-weight:700;text-align:center}
+.opt .e{font-size:34px;line-height:1.1}
+.opt.drawown{background:#fff0e0;border:3px dashed #e8590c}.opt .t{font-size:15px;font-weight:700;text-align:center}
 .opt:active{transform:translateY(3px);box-shadow:0 1px 0 #e6d6bb}
 .big2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .opt.big{min-height:120px}.opt.big .e{font-size:44px}.opt.big .t{font-size:18px}
@@ -54,6 +55,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
 .lp{background:#fff;border:3px solid #e6d6bb;padding:0 14px;font-weight:800}.lp.on{border-color:#e8590c;background:#fff0e0}
 #mixBox{background:#fff;border-radius:16px;padding:12px;margin-top:12px;box-shadow:0 3px 0 #e6d6bb}
 .mixw{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.mw{background:#f1f3f5;border:2px solid #e6d6bb;padding:0 12px;font-size:15px;min-height:44px}.mw.on{background:#d3f9d8;border-color:#2f9e44}
+.goal{display:flex;gap:6px;flex-wrap:wrap;width:100%;font-size:14px}.goal span{background:#fff;border-radius:999px;padding:4px 10px;box-shadow:0 2px 0 #e6d6bb}.goal .bad{background:#fff5f5}.goal .ok{background:#ebfbee}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .wtext{font-size:clamp(19px,2.4vw,24px);line-height:1.6;white-space:pre-wrap}
 .wctl{display:flex;gap:10px;align-items:center;justify-content:center;margin:10px 0}
@@ -72,6 +74,8 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
 #draw .tool.sel{background:#ffd43b;color:#222}
 #draw .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:8px;min-height:0}
 #dc{background:#fff;border-radius:12px;touch-action:none;max-width:100%;max-height:100%}
+#draw .emo{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}#draw .emo button{background:#5a4a38;font-size:28px;min-width:52px;flex:none}#draw .emo button.sel{background:#ffd43b}#draw .emo span{color:#ffd43b;font-weight:800;white-space:nowrap;padding:0 6px}
+@media (max-height:500px){#draw .bar{flex-wrap:nowrap;overflow-x:auto;padding:2px 4px;gap:4px}#draw .what{display:none}#draw .sw{width:30px;height:30px;min-width:30px;min-height:30px;border-width:2px}#draw .tool,#draw .btn{min-height:38px;font-size:15px;flex:none}#draw .emo button{font-size:20px;min-width:40px;min-height:38px}#draw .emo span{display:none}#draw .stage{padding:3px}}
 #draw .what{color:#ffd43b;font-weight:800;padding:0 8px}
 #dc.trans{background-color:#fff;background-image:linear-gradient(45deg,#eee 25%,transparent 25%,transparent 75%,#eee 75%),linear-gradient(45deg,#eee 25%,transparent 25%,transparent 75%,#eee 75%);background-size:32px 32px;background-position:0 0,16px 16px}
 #intro{position:fixed;inset:0;z-index:50;background:#fbf1dc;display:flex;align-items:center;justify-content:center}
@@ -110,7 +114,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
     <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
     <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
   </div>
-  <p class="ver">Test sample · 測試版 · v0.7</p>
+  <p class="ver">Test sample · 測試版 · v0.8</p>
 </div></section>
 <!-- SHELF -->
 <section id="shelf" class="screen">
@@ -139,6 +143,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
     <button class="btn" id="dCancel">Cancel 取消</button><button class="btn go" id="dDone">✓ Done 完成</button>
   </div>
   <div class="bar" id="dbar2"></div>
+  <div class="bar emo" id="dbar3"></div>
   <div class="stage"><canvas id="dc" width="800" height="600"></canvas></div>
 </div>
 <div class="toast" id="toast"></div>
@@ -157,7 +162,7 @@ function sticker(src){if(stickers[src])return stickers[src];const o={ready:false
 let AC=null;function boing(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;
   o.type='sine';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(660,t+.12);o.frequency.exponentialRampToValueAtTime(330,t+.3);
   g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}}
-const VERSION='v0.7';
+const VERSION='v0.8';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2400)};
@@ -166,8 +171,9 @@ const DEFLANG={nora:'zh',lucas:'en',milo:'zh'};
 let kid=null,story=null,dirty=false,hist=[];
 const Z=()=>story&&story.lang==='zh';
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));window.scrollTo(0,0);if(id!=='build'&&id!=='watch')stopStage()}
-function speak(t){try{speechSynthesis.cancel();if(!t)return;const runs=t.match(/[　-〿一-鿿＀-￯]+|[^　-〿一-鿿＀-￯]+/g)||[t];let u;
-  runs.filter(r=>r.trim()).forEach(r=>{u=new SpeechSynthesisUtterance(r);u.lang=/[一-鿿]/.test(r)?'zh-TW':'en-US';u.rate=.95;speechSynthesis.speak(u)});return u}catch(e){}}
+function speak(t){try{speechSynthesis.cancel();if(!t)return;
+  const clean=t.replace(/[“”"「」『』*_~#…—–]/g,' ').replace(/\s+/g,' ').trim();if(!/[\p{L}\p{N}]/u.test(clean))return;
+  const u=new SpeechSynthesisUtterance(clean);u.lang=/[一-鿿]/.test(clean)?'zh-TW':'en-US';u.rate=.95;speechSynthesis.speak(u);return u}catch(e){}}
 
 /* ================= illustrated backgrounds (drawn once, cached) ================= */
 const W=800,H=600,BGC={};
@@ -217,7 +223,8 @@ const BG={
    x.fillStyle='#ffec99';x.beginPath();x.moveTo(0,H);x.lineTo(0,430);x.quadraticCurveTo(400,400,800,440);x.lineTo(W,H);x.fill();palm(x,680,540,170);x.fillStyle='#fff';x.fillRect(250,420,6,110);poly(x,[[170,430],[253,370],[336,430]],'#ff6b6b')},
  home:x=>{x.fillStyle=grad(x,'#a5d8ff','#e7f5ff');x.fillRect(0,0,W,H);cloud(x,600,100,36);hills(x,440,'#8ce99a',12);x.fillStyle='#ffe8cc';x.fillRect(260,260,280,200);poly(x,[[240,270],[400,150],[560,270]],'#e8590c');
    x.fillStyle='#8d5524';x.fillRect(375,360,50,100);x.fillStyle='#74c0fc';x.fillRect(290,300,60,50);x.fillRect(450,300,60,50);tree(x,140,470,110);tree(x,680,470,100,'#37b24d');for(let i=0;i<14;i++)circ(x,40+i*55,500+(i%2)*15,7,i%2?'#ff8787':'#ffd43b')}};
-function bgCanvas(k){if(BGC[k])return BGC[k];const c=document.createElement('canvas');c.width=W;c.height=H;try{(BG[k]||BG.meadow)(c.getContext('2d'))}catch(e){console.warn(e)}BGC[k]=c;return c}
+function bgCanvas(k){if(BGC[k])return BGC[k];const c=document.createElement('canvas');c.width=W;c.height=H;
+  if(k&&k.startsWith('img:')){const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);const im=new Image();im.onload=()=>x.drawImage(im,0,0,W,H);im.src=(story&&story.imgs[k.slice(4)])||'';BGC[k]=c;return c}try{(BG[k]||BG.meadow)(c.getContext('2d'))}catch(e){console.warn(e)}BGC[k]=c;return c}
 
 /* ================= emoji → sticker ================= */
 const EMO={};
@@ -234,58 +241,123 @@ const PLACES=[['🏰','castle','城堡','in a sparkly castle','to a sparkly cast
   ['🐠','sea','海底','under the sea','down under the sea','住在海底','潛到了海底'],['🍭','candy','糖果鎮','in Candy Town','to Candy Town','住在糖果鎮','來到了糖果鎮'],['🏙️','city','城市','in a busy city','to the big city','住在熱鬧的城市','來到了大城市'],
   ['🏔️','snow','雪山','on a snowy mountain','up a snowy mountain','住在雪山上','爬上了雪山'],['🌋','dino','恐龍島','on Dino Island','to Dino Island','住在恐龍島上','來到了恐龍島'],['🦇','cave','山洞','in a secret cave','into a dark cave','住在祕密山洞裡','走進了黑漆漆的山洞'],
   ['☁️','sky','雲上','up in the clouds','up into the clouds','住在雲朵上','飛到了雲朵上'],['🌲','forest','森林','in a quiet forest','into the forest','住在安靜的森林裡','走進了森林'],['🏖️','beach','海灘','by the beach','to the beach','住在海邊','來到了海灘'],['🏡','home','家','in a cozy little house','back home','住在溫暖的小房子裡','回到了家']];
-const WANTS=[['💎','treasure','寶藏','find a hidden treasure','找到藏起來的寶藏','💎','treasure map','藏寶圖'],['🤝','a friend','朋友','make a new friend','交到新朋友','','friendship bracelet','友誼手環'],['🏆','win','贏比賽','win the big game','贏得大比賽','🏆','lucky ball','幸運球'],['⭐','the stars','星星','fly to the stars','飛到星星上','⭐','star map','星星地圖'],
-  ['🐶','lost puppy','小狗','find a lost puppy','找到走丟的小狗','🐶','puppy’s collar','小狗的項圈'],['🎂','giant cake','大蛋糕','bake the biggest cake ever','烤出世界最大的蛋糕','🎂','secret recipe','祕密食譜'],['🦸','be a hero','當英雄','become a real hero','成為真正的英雄','','hero cape','英雄披風'],['🎤','sing','唱歌','sing on a big stage','在大舞台上唱歌','🎤','golden microphone','金麥克風']];
-const PROBLEMS=[['⛈️','storm','暴風雨','a huge storm blew everything away','一場大風暴把東西都吹走了',{fx:'storm'}],['🦊','a thief','小偷',c=>`a sneaky fox stole the ${c.goalEn||'magic map'}`,c=>`一隻狡猾的狐狸偷走了${c.goalZh||'魔法地圖'}`,{add:['🦊','Sly Fox','狡猾狐狸','villain'],dropGoal:true}],
-  ['💤','sleep spell','睡著了','everyone fell fast asleep','大家都睡著了,叫都叫不醒',{fx:'stars'}],['🥚','strange egg','怪蛋','a mysterious glowing egg appeared','出現了一顆會發光的神祕蛋',{prop:'🥚',fx:'sparkle'}],
-  ['🎨','colors gone','顏色不見','all the colors in the world disappeared','世界上的顏色全部不見了',{gray:true}],['🕳️','giant hole','大洞','a giant hole opened in the ground','地上裂開了一個大洞',{fx:'shake'}],
-  ['👾','monster','怪獸','a hungry monster showed up','一隻肚子餓的怪獸出現了',{add:['👾','Grumbles','咕嚕怪','villain']}],['🗺️','got lost','迷路',c=>`${c.H} got completely lost`,c=>`${c.H}完全迷路了`,{}]];
+const DETAIL={castle:['where the towers sparkled in the sun','那裡的高塔在陽光下閃閃發亮'],jungle:['where monkeys swung from vine to vine','那裡的猴子在藤蔓間盪來盪去'],moon:['where every step was a giant bounce','在那裡每走一步都會彈得好高'],
+  sea:['where fish glowed like tiny lanterns','那裡的小魚像小燈籠一樣發光'],candy:['where the rivers were made of chocolate','那裡的河流是巧克力做的'],city:['full of honking cars and tall, tall towers','到處都是嘟嘟叫的車子和好高好高的大樓'],
+  snow:['where the wind sang icy songs','那裡的風會唱冰冰涼涼的歌'],dino:['where a sleepy volcano rumbled','那裡有一座會打呼的火山'],cave:['where crystals glowed in the dark','那裡的水晶在黑暗中發光'],
+  sky:['where you could nap on fluffy clouds','在那裡可以躺在軟綿綿的雲上睡午覺'],forest:['where the trees whispered secrets','那裡的大樹會說悄悄話'],beach:['where the waves went swish, swish','那裡的海浪唰唰唰地響'],home:['that smelled like warm cookies','屋子裡總是飄著餅乾香']};
+const TRAITS=[['💪','brave','勇敢',c=>`${c.H} was super brave, but sometimes rushed in too fast.`,c=>`${c.H}超級勇敢,不過有時候衝太快。`],['🙈','shy','害羞',c=>`${c.H} was a little shy, but had the kindest heart.`,c=>`${c.H}有一點害羞,但心地超善良。`],
+  ['🔍','curious','好奇',c=>`${c.H} was very curious and always asked, “Why?”`,c=>`${c.H}很好奇,總是問:「為什麼?」`],['😜','funny','愛搞笑',c=>`${c.H} loved telling jokes and making everyone laugh.`,c=>`${c.H}最愛講笑話,讓大家哈哈笑。`],
+  ['🤸','clumsy','笨手笨腳',c=>`${c.H} tripped over everything, but never gave up.`,c=>`${c.H}常常跌倒,可是從來不放棄。`],['🧠','smart','聰明',c=>`${c.H} was clever and loved solving puzzles.`,c=>`${c.H}很聰明,最愛解謎題。`]];
+// [emoji, label, labelZh, phrase, phraseZh, prop, goal noun, goal noun zh, why, whyZh]
+const WANTS=[['💎','treasure','寶藏','find a hidden treasure','找到藏起來的寶藏','💎','treasure map','藏寶圖','Legend said it could grant one wish.','傳說它可以實現一個願望。'],
+  ['🤝','a friend','朋友','make a new friend','交到新朋友','','friendship bracelet','友誼手環','Playing alone was not much fun.','一個人玩一點都不好玩。'],
+  ['🏆','win','贏比賽','win the big game','贏得大比賽','🏆','lucky ball','幸運球','The whole town would be cheering.','全鎮的人都會來加油。'],
+  ['⭐','the stars','星星','fly to the stars','飛到星星上','⭐','star map','星星地圖','Every night, the stars seemed to wave hello.','每天晚上,星星好像都在揮手打招呼。'],
+  ['🐶','lost puppy','小狗','find a lost puppy','找到走丟的小狗','🐶','puppy’s collar','小狗的項圈','Its little bark echoed from far away.','遠遠的地方傳來小狗汪汪的叫聲。'],
+  ['🎂','giant cake','大蛋糕','bake the biggest cake ever','烤出世界最大的蛋糕','🎂','secret recipe','祕密食譜','A cake big enough for the whole town!','大到可以請全鎮的人吃!'],
+  ['🦸','be a hero','當英雄','become a real hero','成為真正的英雄','','hero cape','英雄披風','A real hero helps everyone.','真正的英雄會幫助每一個人。'],
+  ['🎤','sing','唱歌','sing on a big stage','在大舞台上唱歌','🎤','golden microphone','金麥克風','Every day, the songs got a little better.','每天練習,歌聲越來越好聽。']];
+// [emoji, label, labelZh, phrase, phraseZh, effect, fix, fixZh]
+const PROBLEMS=[['⛈️','storm','暴風雨','a huge storm blew everything away','一場大風暴把東西都吹走了',{fx:'storm'},'calmed the wild storm','讓暴風雨停了下來'],
+  ['🦊','a thief','小偷',c=>`a sneaky fox stole the ${c.goalEn||'magic map'}`,c=>`一隻狡猾的狐狸偷走了${c.goalZh||'魔法地圖'}`,{add:['🦊','Sly Fox','狡猾狐狸','villain'],say:['Ha ha! Now it’s mine!','哈哈!現在是我的了!'],dropGoal:true},c=>`got the ${c.goalEn||'magic map'} back`,c=>`拿回了${c.goalZh||'魔法地圖'}`],
+  ['💤','sleep spell','睡著了','everyone fell fast asleep and would not wake up','大家都睡著了,怎麼叫都叫不醒',{fx:'stars'},'woke everyone up','把大家都叫醒了'],
+  ['🥚','strange egg','怪蛋','a mysterious glowing egg appeared','出現了一顆會發光的神祕蛋',{prop:'🥚',fx:'sparkle'},'found where the egg belonged, and it hatched','幫蛋找到了家,蛋還孵出來了'],
+  ['🎨','colors gone','顏色不見','all the colors in the world disappeared','世界上的顏色全部不見了',{gray:true},'brought all the colors back','把所有的顏色都找回來了'],
+  ['🕳️','giant hole','大洞','a giant hole opened in the ground','地上裂開了一個大洞',{fx:'shake'},'filled the giant hole','把大洞補好了'],
+  ['👾','monster','怪獸','a hungry monster showed up','一隻肚子好餓的怪獸出現了',{add:['👾','Grumbles','咕嚕怪','villain'],say:['GRRR! I’m sooo hungry!','咕嚕嚕!我好餓好餓!']},'made sure the monster was never hungry again','讓怪獸再也不會餓肚子'],
+  ['🗺️','got lost','迷路',c=>`${c.H} got completely lost`,c=>`${c.H}完全迷路了`,{},'found the way home','找到了回家的路']];
 const ACTIONS=[['🔦','explore','探險','explore and look around','到處探險看看',{}],['🙋','ask for help','找人幫忙','ask for help','找人幫忙',{}],['🫣','hide & plan','躲起來','hide and make a clever plan','先躲起來想個好辦法',{}],['💪','be brave','勇敢','be brave and face it','勇敢面對',{}],
   ['✨','magic','魔法','try some magic','試試魔法',{fx:'sparkle'}],['⚙️','build a machine','做機器','build an amazing machine','做一台超厲害的機器',{prop:'⚙️'}],['👣','follow footprints','跟著腳印','follow the mysterious footprints','跟著神祕的腳印走',{}],['🎈','fly up','飛起來','fly up high','飛到高高的天上',{heroMode:'fly'}],['🏃','run fast','快跑','run as fast as possible','用最快的速度跑',{heroMode:'wander'}]];
-const MEETS=[['🦉','Hoot','咕咕','wise owl','聰明的貓頭鷹','friend','fly'],['🐰','Bun','小白','bunny','小兔子','friend','bounce'],['🧚','Pixie','小仙','fairy','小仙子','friend','fly'],['👻','Boo','啵啵','friendly ghost','友善的小幽靈','friend','fly'],
-  ['👽','Zib','奇比','alien','外星人','friend','bounce'],['🐢','Shelly','慢慢','turtle','烏龜','friend','wander'],['🦊','Sly Fox','狡猾狐狸','sneaky fox','狐狸','villain','stay'],['👹','Grumpy','山怪','grumpy troll','愛生氣的山怪','villain','stay'],['🐲','Blaze','大火龍','big dragon','大火龍','villain','fly'],['🙅','nobody','沒有人','','','none','']];
-const TWISTS=[['💥','earthquake','地震','the ground began to shake','地面開始搖晃',{fx:'shake'}],['🆘','"Help!"','救命','a tiny voice cried, "Help me!"','一個小小的聲音喊:「救救我!」',{}],['✨','something glows','發光','something started to glow','有東西開始發光',{fx:'sparkle'}],
+const SILLY=[['everyone’s hair turned bright pink','大家的頭髮都變成了粉紅色'],['it started raining jelly beans','天上開始下雷根糖'],['HERO hiccuped bubbles for ten whole minutes','HERO打嗝打出泡泡,打了整整十分鐘'],['a cow floated by wearing sunglasses','一頭戴著太陽眼鏡的牛飄了過去']];
+const RESULTS=[['✅','It worked!','成功了!',c=>`It worked! ${c.H} cheered, “Yes!”`,c=>`成功了!${c.H}歡呼:「耶!」`,{fx:'sparkle',mood:'😄',say:['Yes!','耶!']}],
+  ['😅','Oops!','糟糕!','But oops! It did not work, and things got even trickier.','可是糟糕!沒有成功,事情變得更麻煩了。',{mood:'😣',say:['Uh-oh…','哎呀……']}],
+  ['🤪','Something silly','好好笑',c=>{const s=SILLY[Math.floor(Math.random()*SILLY.length)];c._s=s;return`Instead, ${s[0].replace('HERO',c.H)}!`},c=>{const s=c._s||SILLY[0];return`結果,${s[1].replace('HERO',c.H)}!`},{fx:'bubbles',mood:'🤣',say:['Hee hee!','嘻嘻!']}],
+  ['🔎','Found a clue','找到線索',c=>`Along the way, ${c.H} found a clue: a glowing footprint pointing the way.`,c=>`路上,${c.H}找到一個線索:一個會發光的腳印指著方向。`,{prop:'👣',mood:'🤔',say:['A clue!','有線索!']}],
+  ['🩹','A little hurt','受了點傷',c=>`${c.H} fell and scraped a knee. It hurt, but ${c.H} got back up.`,c=>`${c.H}跌倒擦傷了膝蓋。好痛,可是${c.H}又站了起來。`,{mood:'🥹',say:['I can do it!','我可以的!']}]];
+// [emoji, name, nameZh, type, typeZh, role, move, say, sayZh]
+const MEETS=[['🦉','Hoot','咕咕','wise owl','聰明的貓頭鷹','friend','fly','Hoo! I know a secret path!','咕咕!我知道一條祕密小路!'],['🐰','Bun','小白','bunny','小兔子','friend','bounce','Hop on! I’m super fast!','跳上來!我超快的!'],
+  ['🧚','Pixie','小仙','fairy','小仙子','friend','fly','I have a little magic dust!','我有一點點魔法粉!'],['👻','Boo','啵啵','friendly ghost','友善的小幽靈','friend','fly','Boo! Don’t worry, I’m friendly!','啵!別怕,我很友善!'],
+  ['👽','Zib','奇比','alien','外星人','friend','bounce','Zib zab! I come in peace!','奇比奇比!我是來交朋友的!'],['🐢','Shelly','慢慢','turtle','烏龜','friend','wander','Slow and steady!','慢慢來,比較快!'],
+  ['🦊','Sly Fox','狡猾狐狸','sneaky fox','狐狸','villain','stay','Ha! You’ll never catch me!','哈!你抓不到我!'],['👹','Grumpy','山怪','grumpy troll','愛生氣的山怪','villain','stay','Nobody crosses MY bridge!','誰都不准過我的橋!'],
+  ['🐲','Blaze','大火龍','big dragon','大火龍','villain','fly','ROAR! Go away!','吼!走開!'],['🙅','nobody','沒有人','','','none','']];
+const TWISTS=[['💥','earthquake','地震','the ground began to shake','地面開始搖晃',{fx:'shake'}],['🆘','"Help!"','救命','a tiny voice cried, “Help me!”','一個小小的聲音喊:「救救我!」',{}],['✨','something glows','發光','something started to glow','有東西開始發光',{fx:'sparkle'}],
   ['🍬','candy snow','糖果雪','it started to snow candy','天上開始下糖果',{fx:'candy'}],['⛈️','storm','暴風雨','a wild storm rolled in','一場暴風雨來了',{fx:'storm'}],['🌈','rainbow','彩虹','a giant rainbow appeared','出現了一道超大的彩虹',{prop:'🌈',fx:'sparkle'}],
   ['🌙','night falls','天黑了','night fell and the stars came out','天黑了,星星都出來了',{fx:'stars'}],['🚪','magic door','魔法門','a magic door appeared','出現了一扇魔法門',{prop:'🚪'}],['❄️','snow','下雪','it began to snow','開始下雪了',{fx:'snow'}],['🫧','bubbles','泡泡','bubbles floated everywhere','到處都是泡泡',{fx:'bubbles'}]];
-const ENDINGS=[['🦸','saves the day','拯救大家',c=>`In the end, ${c.H} saved the day and everyone cheered!`,c=>`最後,${c.H}拯救了大家,大家都在歡呼!`,{fx:'confetti'}],
-  ['✅','gets the wish','願望成真',c=>`At last, ${c.H} got to ${c.wantEn||'have a happy day'}!`,c=>`終於,${c.H}${c.wantZh?'可以'+c.wantZh:'過了快樂的一天'}!`,{fx:'confetti',goal:true}],
+const CLIMAX=[['🤝','teamwork','團隊合作',c=>`${c.H} and ${c.F} worked together as a team`,c=>`${c.H}和${c.F}一起合作`,{villain:'run'}],
+  ['💡','clever trick','聰明妙計',c=>`${c.H} thought of a super clever trick`,c=>`${c.H}想到了一個超聰明的妙計`,{villain:'run'}],
+  ['💖','kindness','善良',c=>`${c.H} chose kindness instead of anger, and it turned out the trouble-maker was just lonely`,c=>`${c.H}選擇了善良,沒有生氣,原來搗蛋的人只是太寂寞了`,{villain:'friend'}],
+  ['💪','courage','勇氣',c=>`${c.H} took a deep breath and stood tall`,c=>`${c.H}深深吸一口氣,勇敢地站了出來`,{villain:'run'}],
+  ['✨','magic','魔法',c=>`${c.H} waved a magic spell, ZAP`,c=>`${c.H}揮了揮魔法,咻`,{villain:'run'}],
+  ['😂','a big laugh','逗大家笑',c=>`${c.H} told the silliest joke ever, and everyone laughed`,c=>`${c.H}講了一個超好笑的笑話,大家都笑翻了`,{villain:'friend'}]];
+const ENDINGS=[['🎉','big party','大派對',c=>`That night, everyone threw a giant party${c.wantEn?`, and ${c.H} finally got to ${c.wantEn}`:''}!`,c=>`那天晚上,大家開了一個超大派對${c.wantZh?`,${c.H}終於可以${c.wantZh}`:''}!`,{fx:'confetti'}],
+  ['🏡','happy at home','開心回家',c=>`${c.H} went home tired but happy, ready for sweet dreams.`,c=>`${c.H}回到家,雖然好累,但是好開心,準備做個好夢。`,{bg:'home',fx:'stars'}],
   ['🤝','best friends','好朋友',c=>`${c.H} and ${c.F} became best friends forever.`,c=>`${c.H}和${c.F}變成了永遠的好朋友。`,{fx:'hearts'}],
-  ['🤧','giant sneeze','大噴嚏',c=>`${c.H} sneezed so hard that the trouble flew all the way to the moon!`,c=>`${c.H}打了一個超大的噴嚏,把麻煩噴到月亮上去了!`,{fx:'confetti'}],
-  ['🍌','banana slip','香蕉滑倒','Everyone slipped on a giant banana and laughed all day long.','大家都踩到超大香蕉滑倒,笑了一整天。',{prop:'🍌',fx:'confetti'}],
+  ['😲','surprise!','大驚喜','Then came the biggest surprise: a tiny baby dragon peeked out and said, “Hi!”','接著出現最大的驚喜:一隻小小的龍寶寶探出頭說:「嗨!」',{prop:'🐣',fx:'sparkle'}],
   ['😴','just a dream?','一場夢?',c=>`Then ${c.H} woke up… it was all a dream! Or was it?`,c=>`然後${c.H}醒來了……原來是一場夢!真的嗎?`,{fx:'stars'}],
-  ['🐣','surprise baby','驚喜寶寶','The big surprise was… a tiny baby dragon!','最大的驚喜是……一隻小小的龍寶寶!',{prop:'🐣',fx:'sparkle'}],
-  ['👋','goodbye','說再見',c=>`${c.H} had to say goodbye, but promised to come back one day.`,c=>`${c.H}必須說再見,但答應有一天會回來。`,{fx:'rain'}],
-  ['💖','lesson learned','學到一課',c=>`${c.H} learned that friends matter more than anything.`,c=>`${c.H}學到了:朋友比什麼都重要。`,{fx:'hearts'}]];
-const LASTS=[['🔚','The End','全劇終','The End.','全劇終。'],['💖','happily ever after','快樂生活','And they all lived happily ever after.','從此以後,他們過著快樂的生活。'],['👀','to be continued','待續','But maybe the adventure is not over yet…','不過,冒險也許還沒有結束……']];
+  ['🗺️','new adventure','新冒險',c=>`But then ${c.H} spotted a strange new map… another adventure was waiting!`,c=>`可是這時,${c.H}看到一張奇怪的新地圖……新的冒險在等著呢!`,{prop:'🗺️'}]];
+const LESSONS=[['🤝','teamwork','合作',c=>`${c.H} learned that friends can do more together.`,c=>`${c.H}學到了:朋友一起合作,可以做到更多事。`],['💖','kindness','善良',c=>`${c.H} learned that being kind is a super power.`,c=>`${c.H}學到了:善良就是超能力。`],
+  ['🏃','never give up','不放棄',c=>`${c.H} learned to never, ever give up.`,c=>`${c.H}學到了:永遠不要放棄。`],['😨','scared is OK','害怕沒關係',c=>`${c.H} learned that it is OK to be scared. Brave people feel scared too.`,c=>`${c.H}學到了:害怕沒關係,勇敢的人也會害怕。`],
+  ['🧩','mistakes help','錯了也沒關係',c=>`${c.H} learned that mistakes help us learn.`,c=>`${c.H}學到了:犯錯可以幫助我們學習。`],['😂','laughter helps','笑一笑',c=>`${c.H} learned that a good laugh makes everything better.`,c=>`${c.H}學到了:笑一笑,什麼都會變好。`]];
 const STEPS={
- begin:[{id:'hero',q:['Who is your hero?','誰是主角?'],opts:HEROES,draw:true},{id:'place',q:['Where do they live?','住在哪裡?'],opts:PLACES},{id:'want',q:['What do they want most?','最想要什麼?'],opts:WANTS},{id:'problem',q:['Uh oh! What goes wrong?','糟糕!發生什麼事?'],opts:PROBLEMS}],
- middle:[{id:'action',q:['What does HERO do?','HERO 決定怎麼做?'],opts:ACTIONS},{id:'meet',q:['Who do they meet?','遇到了誰?'],opts:MEETS},{id:'go',q:['Where do they go?','去哪裡?'],opts:[['📍','stay here','待在這裡'],...PLACES]},{id:'twist',q:['Then suddenly…','然後突然……'],opts:TWISTS}],
- end:[{id:'ending',q:['How does it end?','怎麼結束?'],opts:ENDINGS},{id:'last',q:['The last line','最後一句'],opts:LASTS}]};
-function ctx(){const z=Z(),h=story.hero||{};const fr=[...curScene().actors].reverse().find(a=>a.role==='friend');
-  return{z,H:h.name||(z?'主角':'our hero'),F:fr?fr.name:(z?'新朋友':'a new friend'),goalEn:story.want?story.want[6]:'',goalZh:story.want?story.want[7]:'',wantEn:story.want?story.want[3]:'',wantZh:story.want?story.want[4]:''}}
+ begin:[{id:'hero',q:['Who is your hero?','誰是主角?'],opts:HEROES,draw:true},{id:'trait',q:['What is HERO like?','HERO 是什麼個性?'],opts:TRAITS},{id:'place',q:['Where does HERO live?','HERO 住在哪裡?'],opts:PLACES},{id:'want',q:['What does HERO want most?','HERO 最想要什麼?'],opts:WANTS},{id:'problem',q:['Uh oh! What goes wrong?','糟糕!發生什麼事?'],opts:PROBLEMS}],
+ middle:[{id:'action',q:['What does HERO do?','HERO 決定怎麼做?'],opts:ACTIONS},{id:'result',q:['What happens?','結果呢?'],opts:RESULTS},{id:'meet',q:['Who does HERO meet?','HERO 遇到了誰?'],opts:MEETS},{id:'go',q:['Where to next?','接下來去哪裡?'],opts:[['📍','stay here','待在這裡'],...PLACES]},{id:'twist',q:['Then suddenly…','然後突然……'],opts:TWISTS}],
+ end:[{id:'climax',q:['The big moment! How does HERO fix the problem?','關鍵時刻!HERO 要怎麼解決問題?'],opts:CLIMAX},{id:'ending',q:['How does the story end?','故事怎麼結束?'],opts:ENDINGS},{id:'lesson',q:['What did HERO learn?','HERO 學到了什麼?'],opts:LESSONS}]};
+function ctx(){const z=Z(),h=story.hero||{};const fr=[...curScene().actors].reverse().find(a=>a.role==='friend');const w=story.want;
+  return{z,H:h.name||(z?'主角':'our hero'),F:fr?fr.name:(z?'新朋友':'a new friend'),goalEn:w?w[6]:'',goalZh:w?w[7]:'',wantEn:w?w[3]:'',wantZh:w?w[4]:''}}
 const val=(v,c)=>typeof v==='function'?v(c):v;
 const curScene=()=>story.scenes[story.scenes.length-1];
 function newScene(kind){const prev=story.scenes.length?curScene():null;
-  const sc={kind,bg:prev?prev.bg:'meadow',fx:'none',gray:false,actors:prev?JSON.parse(JSON.stringify(prev.actors.filter(a=>a.role!=='prop'||a.keep))):[],lines:[],step:0};
+  const sc={kind,bg:prev?prev.bg:'meadow',fx:'none',gray:prev?!!prev.gray:false,actors:prev?JSON.parse(JSON.stringify(prev.actors.filter(a=>a.role!=='prop'||a.keep))).map(a=>{delete a.say;delete a.mood;return a}):[],lines:[],step:0};
   story.scenes.push(sc);return sc}
 function addActor(sc,a){a.id='a'+Math.random().toString(36).slice(2,8);sc.actors.push(a);return a}
-function choose(oi){const sc=curScene(),st=STEPS[sc.kind][sc.step],o=st.opts[oi];hist.push(JSON.stringify({scenes:story.scenes,hero:story.hero,want:story.want,title:story.title}));
-  const c=ctx(),z=c.z;let line='';
-  if(st.id==='hero'){story.hero={e:o[0],name:z?o[2]:o[1],type:z?o[4]:o[3]};sc.actors=sc.actors.filter(a=>a.role!=='hero');addActor(sc,{role:'hero',e:o[0],name:story.hero.name,x:.32,y:.9,s:.34,m:'wander'});
-    line=z?`從前從前,有一${o[5]}${o[4]}叫做${story.hero.name}。`:`Once upon a time, there was a ${o[3]} named ${story.hero.name}.`;if(!story.title)story.title=z?`${story.hero.name}的大冒險`:`${story.hero.name}'s Big Adventure`}
-  else if(st.id==='place'){sc.bg=o[1];line=z?`${c.H}${o[5]}。`:`${c.H} lived ${o[3]}.`}
-  else if(st.id==='go'){if(oi===0)line='';else{const p=PLACES[oi-1];sc.bg=p[1];line=z?`接著,${c.H}${p[6]}。`:`Then ${c.H} went ${p[4]}.`}}
-  else if(st.id==='want'){story.want=o;sc.actors=sc.actors.filter(a=>a.role!=='goal');if(o[5])addActor(sc,{role:'goal',e:o[5],name:'',x:.84,y:.42,s:.14,m:'float',keep:true});line=z?`${c.H}最想要${o[4]}。`:`More than anything, ${c.H} wanted to ${o[3]}.`}
-  else if(st.id==='meet'){if(o[5]!=='none'){addActor(sc,{role:o[5],e:o[0],name:z?o[2]:o[1],x:o[5]==='villain'?.75:.62,y:.9,s:.3,m:o[6]});
-      line=o[5]==='villain'?(z?`糟糕!${o[4]}${o[2]}擋住了去路!`:`Oh no! ${o[1]} the ${o[3]} blocked the way!`):(z?`${c.H}遇到了${o[4]}${o[2]},牠想要幫忙。`:`${c.H} met ${o[1]}, a ${o[3]} who wanted to help.`)}
-    else line=z?`路上一個人也沒有,好安靜。`:`The path was quiet. Nobody was around.`}
-  else if(st.id==='last'){line=z?o[4]:o[3]}
-  else{const ef=o[5]||{};const tpl={problem:[x=>`But one day, ${x}!`,x=>`可是有一天,${x}!`],action:[x=>`${c.H} decided to ${x}.`,x=>`${c.H}決定${x}。`],twist:[x=>`Suddenly, ${x}!`,x=>`突然,${x}!`],ending:[x=>x,x=>x]}[st.id];
-    line=tpl[z?1:0](val(z?o[4]:o[3],c));
+const heroOf=sc=>sc.actors.find(a=>a.role==='hero');
+function sayBy(sc,a,en,zh){if(!a)return;a.say=Z()?zh:en;sc.sayId=a.id}
+function saveHist(){hist.push(JSON.stringify({scenes:story.scenes,hero:story.hero,want:story.want,title:story.title,trait:story.trait,problem:story.problem,solved:story.solved}))}
+const DRAWABLE={hero:['My hero','我的主角',true,'What is your hero’s name?','主角叫什麼名字?'],place:['Draw the place','畫出這個地方',false,'What is this place called?','這個地方叫什麼?'],
+  go:['Draw the new place','畫出新的地方',false,'What is this place called?','這個地方叫什麼?'],want:['What do they want? Draw it','畫出最想要的東西',true,'What is it?','這是什麼?'],
+  problem:['Draw the trouble-maker','畫出搗蛋鬼',true,'Who or what is it?','這是誰或什麼?'],meet:['Draw who they meet','畫出遇到的角色',true,'What is their name?','他叫什麼名字?'],twist:['Draw what appears','畫出突然出現的東西',true,'What is it?','這是什麼?']};
+function drawOwn(id){const D=DRAWABLE[id],z=Z();const st=STEPS[curScene().kind].find(x=>x.id===id);drawEmojis=st?st.opts.map(o=>o[0]).filter(e=>e!=='📍'&&e!=='🙅'):[];openDraw(z?D[1]:D[0],null,img=>{if(!img)return;let nm=(prompt(z?D[4]:D[3],'')||'').trim();
+  const sc=curScene(),c=ctx(),key='i'+Date.now().toString(36);story.imgs[key]=img;saveHist();let line='';const hero=heroOf(sc);
+  if(id==='hero'){nm=nm||(z?'小英雄':'Hero');story.hero={img:key,name:nm,type:z?'英雄':'hero'};sc.actors=sc.actors.filter(a=>a.role!=='hero');const h=addActor(sc,{role:'hero',img:key,name:nm,x:.32,y:.9,s:.36,m:'wander'});
+    sayBy(sc,h,'Hi! I’m '+nm+'!','嗨!我是'+nm+'!');line=z?`從前從前,有一個英雄叫做${nm}。`:`Once upon a time, there was a hero named ${nm}.`;if(!story.title)story.title=z?`${nm}的大冒險`:`${nm}'s Big Adventure`}
+  else if(id==='place'||id==='go'){nm=nm||(z?'一個神祕的地方':'a mysterious place');sc.bg='img:'+key;line=id==='place'?(z?`${c.H}住在${nm}。`:`${c.H} lived in ${nm}.`):(z?`接著,${c.H}來到了${nm}。`:`Then ${c.H} went to ${nm}.`)}
+  else if(id==='want'){nm=nm||(z?'一個神祕的寶物':'a mysterious treasure');story.want=['🎨',nm,nm,nm,nm,'',nm,nm,'',''];sc.actors=sc.actors.filter(a=>a.role!=='goal');addActor(sc,{role:'goal',img:key,name:'',x:.84,y:.42,s:.16,m:'float',keep:true});
+    line=z?`${c.H}最想要${nm}。`:`More than anything, ${c.H} wanted ${nm}.`}
+  else if(id==='problem'){nm=nm||(z?'搗蛋鬼':'a trouble-maker');story.problem='custom';story.solved=false;story.customProblem=nm;const v=addActor(sc,{role:'villain',img:key,name:nm,x:.74,y:.9,s:.32,m:'stay'});
+    sayBy(sc,v,'Hee hee! Trouble time!','嘻嘻!搗蛋時間到!');line=z?`可是有一天,${nm}出現了,惹出了大麻煩!`:`But one day, ${nm} showed up and caused big trouble!`}
+  else if(id==='meet'){nm=nm||(z?'新朋友':'a new friend');const a=addActor(sc,{role:'friend',img:key,name:nm,x:.62,y:.9,s:.3,m:'bounce'});sayBy(sc,a,'Hi! Can I help?','嗨!我可以幫忙嗎?');line=z?`${c.H}遇到了${nm}。${nm}說:「我可以幫忙嗎?」`:`${c.H} met ${nm}. “Can I help?” asked ${nm}.`}
+  else if(id==='twist'){nm=nm||(z?'一個奇怪的東西':'something strange');addActor(sc,{role:'prop',img:key,name:'',x:.55+Math.random()*.25,y:.88,s:.2,m:'bounce'});sc.fx='sparkle';line=z?`突然,${nm}出現了!`:`Suddenly, ${nm} appeared!`}
+  if(line)sc.lines.push(line);sc.step++;touch();renderBuild()},DRAWABLE[id][2])}
+function choose(oi){const sc=curScene(),st=STEPS[sc.kind][sc.step],o=st.opts[oi];snap();
+  const c=ctx(),z=c.z;let line='';const hero=heroOf(sc);
+  if(st.id==='hero'){story.hero={e:o[0],name:z?o[2]:o[1],type:z?o[4]:o[3]};sc.actors=sc.actors.filter(a=>a.role!=='hero');const h=addActor(sc,{role:'hero',e:o[0],name:story.hero.name,x:.32,y:.9,s:.34,m:'wander'});
+    line=z?`從前從前,有一${o[5]}${o[4]}叫做${story.hero.name}。`:`Once upon a time, there was a ${o[3]} named ${story.hero.name}.`;sayBy(sc,h,'Hi! I’m '+story.hero.name+'!','嗨!我是'+story.hero.name+'!');
+    if(!story.title)story.title=z?`${story.hero.name}的大冒險`:`${story.hero.name}'s Big Adventure`}
+  else if(st.id==='trait'){story.trait=o[1];line=val(z?o[4]:o[3],c)}
+  else if(st.id==='place'){sc.bg=o[1];const d=DETAIL[o[1]]||['',''];line=z?`${c.H}${o[5]},${d[1]}。`:`${c.H} lived ${o[3]}, ${d[0]}.`}
+  else if(st.id==='go'){if(oi===0)line=z?`${c.H}決定待在原地,仔細看看四周。`:`${c.H} decided to stay and look around carefully.`;else{const p=PLACES[oi-1],d=DETAIL[p[1]]||['',''];sc.bg=p[1];line=z?`接著,${c.H}${p[6]},${d[1]}。`:`Then ${c.H} went ${p[4]}, ${d[0]}.`}}
+  else if(st.id==='want'){story.want=o;sc.actors=sc.actors.filter(a=>a.role!=='goal');if(o[5])addActor(sc,{role:'goal',e:o[5],name:'',x:.84,y:.42,s:.14,m:'float',keep:true});
+    line=z?`${c.H}最想要${o[4]}。${o[9]}`:`More than anything, ${c.H} wanted to ${o[3]}. ${o[8]}`}
+  else if(st.id==='meet'){if(o[5]!=='none'){const a=addActor(sc,{role:o[5],e:o[0],name:z?o[2]:o[1],x:o[5]==='villain'?.75:.62,y:.9,s:.3,m:o[6]});sayBy(sc,a,o[7],o[8]);
+      line=o[5]==='villain'?(z?`糟糕!${o[4]}${o[2]}跳了出來,大吼:「${o[8]}」`:`Oh no! ${o[1]} the ${o[3]} jumped out. “${o[7]}” growled ${o[1]}.`):(z?`${c.H}遇到了${o[4]}${o[2]}。${o[2]}說:「${o[8]}」`:`${c.H} met ${o[1]}, a ${o[3]}. “${o[7]}” said ${o[1]}.`)}
+    else line=z?`路上一個人也沒有,只有風在輕輕地吹。`:`Nobody was around. Only the wind whispered softly.`}
+  else if(st.id==='lesson'){line=val(z?o[4]:o[3],c)+(z?'全劇終。':' The End.')}
+  else{const ef=o[5]||{};
+    if(st.id==='problem'){story.problem=oi;story.solved=false;line=z?`可是有一天,${val(o[4],c)}!`:`But one day, ${val(o[3],c)}!`}
+    else if(st.id==='action')line=z?`${c.H}決定${o[4]}。`:`${c.H} decided to ${o[3]}.`;
+    else if(st.id==='twist')line=z?`突然,${o[4]}!`:`Suddenly, ${o[3]}!`;
+    else if(st.id==='result'){const en=val(o[3],c),zh=val(o[4],c);line=z?zh:en}
+    else if(st.id==='climax'){const p=PROBLEMS[story.problem];const fix=story.problem==='custom'?(z?`解決了${story.customProblem}惹的麻煩`:`stopped ${story.customProblem}’s trouble`):p?val(z?p[7]:p[6],c):(z?'拯救了大家':'saved the day');line=z?`${val(o[4],c)},${c.H}${fix}!`:`${val(o[3],c)}, and ${c.H} ${fix}!`;story.solved=true;
+      sc.gray=false;if(sc.fx==='storm'||sc.fx==='shake')sc.fx='none';
+      sc.actors.filter(a=>a.role==='villain').forEach(a=>{if(ef.villain==='friend'){a.role='friend';a.mood='💖';sayBy(sc,a,'Thank you! Can I be your friend?','謝謝你!我可以當你的朋友嗎?')}else sc.actors=sc.actors.filter(x=>x!==a)});
+      if(hero){hero.mood='😄';if(ef.villain!=='friend'||!sc.actors.some(a=>a.mood==='💖'))sayBy(sc,hero,'We did it!','我們成功了!')}sc.fx='confetti'}
+    else if(st.id==='ending'){line=val(z?o[4]:o[3],c);if(ef.bg)sc.bg=ef.bg}
     if(ef.fx)sc.fx=ef.fx;if(ef.gray)sc.gray=true;if(ef.prop)addActor(sc,{role:'prop',e:ef.prop,name:'',x:.55+Math.random()*.25,y:.88,s:.16,m:'bounce'});
-    if(ef.add)addActor(sc,{role:ef.add[3],e:ef.add[0],name:z?ef.add[2]:ef.add[1],x:.74,y:.9,s:.3,m:'stay'});if(ef.dropGoal)sc.actors=sc.actors.filter(a=>a.role!=='goal');
-    if(ef.heroMode){const hh=sc.actors.find(a=>a.role==='hero');if(hh)hh.m=ef.heroMode}
-    if(st.id==='ending'&&sc.gray)sc.gray=false}
+    if(ef.add){const v=addActor(sc,{role:ef.add[3],e:ef.add[0],name:z?ef.add[2]:ef.add[1],x:.74,y:.9,s:.3,m:'stay'});if(ef.say)sayBy(sc,v,ef.say[0],ef.say[1])}
+    else if(st.id==='problem'&&hero)sayBy(sc,hero,'Oh no!','糟糕!');
+    if(ef.dropGoal)sc.actors=sc.actors.filter(a=>a.role!=='goal');
+    if(ef.heroMode&&hero)hero.m=ef.heroMode;
+    if(ef.mood&&hero){hero.mood=ef.mood;if(ef.say)sayBy(sc,hero,ef.say[0],ef.say[1])}}
   if(line)sc.lines.push(line);sc.step++;touch();if(kid==='milo'&&line)speak(mix(line));renderBuild(true)}
 
 /* ================= mix languages: flip chosen words into the other language ================= */
@@ -348,6 +420,11 @@ function mountStage(el,getScene,opts={}){stopStage();const box=document.createEl
       if(a.m!=='fly'&&a.m!=='float'){const ss=1-clamp(s.h/160,0,.6);g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(s.x,s.y,ww*.38*ss,ww*.09*ss,0,0,7);g.fill()}
       g.save();g.translate(s.x,s.y-s.h);g.rotate(reduced?0:Math.sin(t*.8+s.phase)*(a.m==='fly'?.12:.05));const br=a.m==='stay'&&!reduced?Math.sin(t*2.2+s.phase)*.025:0;
       g.scale((1-s.sq*.5-br*.5)*s.face*(a.e&&!a.img?-1:1),1+s.sq+br);g.drawImage(sp.c,-ww/2,-hh,ww,hh);g.restore();
+      if(a.mood&&!reduced){g.font='38px serif';g.textAlign='center';g.fillText(a.mood,s.x+ww*.42,s.y-s.h-hh*.8)}
+      if(a.say&&sc.sayId===a.id){g.font='700 24px -apple-system,system-ui,"PingFang TC",sans-serif';g.textAlign='center';const lines=wrap(g,mix(a.say),300),bw=Math.max(...lines.map(l=>g.measureText(l).width))+30,bh=lines.length*28+18;
+        let bx=clamp(s.x-bw/2,8,W-bw-8),by=Math.max(opts.caption?96:8,s.y-s.h-hh-bh-22);g.fillStyle='#fff';g.strokeStyle='#2b2118';g.lineWidth=3;g.beginPath();g.roundRect?g.roundRect(bx,by,bw,bh,16):g.rect(bx,by,bw,bh);g.fill();g.stroke();
+        g.beginPath();g.moveTo(clamp(s.x-12,bx+14,bx+bw-30),by+bh-2);g.lineTo(clamp(s.x,bx+20,bx+bw-20),by+bh+18);g.lineTo(clamp(s.x+12,bx+30,bx+bw-14),by+bh-2);g.fill();g.stroke();
+        g.fillStyle='#2b2118';lines.forEach((l,k)=>g.fillText(l,bx+bw/2,by+32+k*28))}
       if(a.name&&opts.labels!==false){g.font='700 20px -apple-system,system-ui,"PingFang TC",sans-serif';g.textAlign='center';const tw=g.measureText(a.name).width+16;g.fillStyle='rgba(255,255,255,.85)';g.beginPath();g.roundRect?g.roundRect(s.x-tw/2,s.y+6,tw,26,13):g.rect(s.x-tw/2,s.y+6,tw,26);g.fill();g.fillStyle='#2b2118';g.fillText(a.name,s.x,s.y+25)}}
     for(const q of fxp){const kk=q.age/q.life;
       if(q.ty==='sparkle'){g.globalAlpha=Math.sin(kk*Math.PI);g.fillStyle='#ffd43b';g.beginPath();for(let i=0;i<8;i++){const aa=i*Math.PI/4,rr=i%2?q.s*.35:q.s;g.lineTo(q.x+Math.cos(aa)*rr,q.y+Math.sin(aa)*rr)}g.fill()}
@@ -360,9 +437,9 @@ function mountStage(el,getScene,opts={}){stopStage();const box=document.createEl
     for(let i=parts.length-1;i>=0;i--){const q=parts[i];q.t+=1/60;q.x+=q.vx;q.y+=q.vy;q.vy+=.15;if(q.t>1.2){parts.splice(i,1);continue}g.globalAlpha=1-q.t/1.2;g.font='34px serif';g.textAlign='center';g.fillText(q.e,q.x,q.y);g.globalAlpha=1}
     cv.style.filter=sc.gray?'grayscale(1)':'';
     if(opts.caption){const ln=mix(sc.lines[sc.lines.length-1]);if(ln){g.font='600 24px -apple-system,system-ui,"PingFang TC",sans-serif';g.textAlign='center';const words=wrap(g,ln,W-80);const bh=words.length*30+18;
-      g.fillStyle='rgba(0,0,0,.55)';g.fillRect(20,14,W-40,bh);g.fillStyle='#fff';words.forEach((w2,i)=>g.fillText(w2,W/2,14+34+i*30))}}}
+      const cy=14;g.fillStyle='rgba(0,0,0,.55)';g.fillRect(20,cy,W-40,bh);g.fillStyle='#fff';words.forEach((w2,i)=>g.fillText(w2,W/2,cy+34+i*30))}}}
   function wrap(g2,txt,mw){const out=[];let cur='';const tokens=/[一-鿿]/.test(txt)?[...txt]:txt.split(' ');const sep=/[一-鿿]/.test(txt)?'':' ';
-    for(const tk of tokens){const tt=cur?cur+sep+tk:tk;if(g2.measureText(tt).width>mw&&cur){out.push(cur);cur=tk}else cur=tt}if(cur)out.push(cur);return out.slice(-3)}
+    for(const tk of tokens){const tt=cur?cur+sep+tk:tk;if(g2.measureText(tt).width>mw&&cur&&!/^[,。!?、:;」,.!?]$/.test(tk)){out.push(cur);cur=tk}else cur=tt}if(cur)out.push(cur);return out.slice(-3)}
   cv.addEventListener('pointerdown',e=>{const sc=getScene();if(!sc)return;const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width,py=(e.clientY-r.top)*H/r.height;
     for(const a of[...sc.actors].reverse()){const s=stOf(a),sp=spriteOf(a);if(!sp||!sp.ready)continue;const hh=a.s*H,ww=hh*sp.c.width/sp.c.height;
       if(px>s.x-ww/2&&px<s.x+ww/2&&py>s.y-s.h-hh&&py<s.y-s.h){s.jump=1;s.hopT=0;s.target=null;boing();for(let i=0;i<7;i++)parts.push({x:s.x,y:s.y-hh*.7,vx:rand(-3,3),vy:rand(-6,-2),t:0,e:['💖','⭐','✨'][i%3]});if(a.name)speak(a.name);break}}});
@@ -403,23 +480,23 @@ function renderBuild(anim){if($('mixBox'))$('mixBox').style.display='none';const
   $('bTitle').textContent=story.title||(z?'新故事':'New story');
   const dots=steps.map((_,i)=>`<i class="${i<sc.step?'done':i===sc.step?'cur':''}"></i>`).join('');
   $('bProg').innerHTML=`<span class="sc">${story.scenes.map((s,i)=>`<b class="${i===story.scenes.length-1?'cur':''}">${s.kind==='begin'?'🌅':s.kind==='end'?'🏁':'📖'}</b>`).join('')}</span><span>${esc(sceneName(story.scenes.length-1))}</span><span class="dots">${dots}</span>`;
+  const w=story.want,pb=story.problem==='custom'?['🎨',story.customProblem,story.customProblem]:PROBLEMS[story.problem];
+  $('bProg').innerHTML+=(w||pb)?`<div class="goal">${w?`<span>🎯 ${esc(z?w[4]:w[3])}</span>`:''}${pb?`<span class="${story.solved?'ok':'bad'}">${story.solved?'✅':'⚠️'} ${esc(mix(z?pb[2]:pb[1]))}</span>`:''}${story.trait?`<span>${(TRAITS.find(t=>t[1]===story.trait)||[''])[0]} ${esc(z?(TRAITS.find(t=>t[1]===story.trait)||['',''," "])[2]:story.trait)}</span>`:''}</div>`:'';
   const P=$('bPanel');
   if(sc.step<steps.length){const st=steps[sc.step];const q=(z?st.q[1]:st.q[0]).replace('HERO',c.H);
     P.innerHTML=`${sc.step===0&&story.scenes.length===1?`<div class="langpick"><span>${z?'故事語言':'Story language'}:</span><button class="lp${z?'':' on'}" data-lg="en">🇺🇸 English</button><button class="lp${z?' on':''}" data-lg="zh">🇹🇼 中文</button></div>`:''}<div class="q"><span>${esc(q)}</span><button class="btn sm" id="qSay">🔊</button></div>
-      <div class="opts">${st.opts.map((o,i)=>`<button class="opt" data-o="${i}"><span class="e">${o[0]}</span><span class="t">${esc(st.id==='hero'?(z?o[4]:o[3]):(z?o[2]:o[1]))}</span></button>`).join('')}
-      ${st.draw?`<button class="opt" id="drawHero"><span class="e">🎨</span><span class="t">${z?'畫我自己的':'Draw my own'}</span></button>`:''}</div>
+      <div class="opts">${DRAWABLE[st.id]?`<button class="opt drawown" id="drawOwn"><span class="e">🎨</span><span class="t">${z?'畫我自己的':'Draw my own'}</span></button>`:''}${st.opts.map((o,i)=>`<button class="opt" data-o="${i}"><span class="e">${o[0]}</span><span class="t">${esc(st.id==='hero'?(z?o[4]:o[3]):(z?o[2]:o[1]))}</span></button>`).join('')}
+</div>
       <div class="tools">${story.scenes.length>1||sc.step?`<button class="btn sm" id="undo">↩️ ${z?'上一步':'Undo'}</button>`:''}<button class="btn sm" id="own">✏️ ${z?'我自己的點子':'My own idea'}</button>${story.scenes.some(s=>s.lines.length)?`<button class="btn sm" id="mixBtn">🔤 ${z?'混合語言 English':'Mix words 中文'}</button>`:''}${sc.lines.length?`<button class="btn sm" id="words">📝 ${z?'改文字':'Edit words'}</button>`:''}
 ${story.hero?`<button class="btn sm" id="rename">🏷️ ${z?'改名字':'Rename'}</button>`:''}</div>`;
     P.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>choose(+b.dataset.o));$('qSay').onclick=()=>speak(q);
-    if($('drawHero'))$('drawHero').onclick=()=>openDraw(z?'我的主角':'My hero',null,img=>{if(!img)return;story.imgs.hero=img;const nm=prompt(z?'主角叫什麼名字?':'What is your hero’s name?','')||(z?'小英雄':'Hero');
-      hist.push(JSON.stringify({scenes:story.scenes,hero:story.hero,want:story.want,title:story.title}));story.hero={img:'hero',name:nm,type:z?'英雄':'hero'};sc.actors=sc.actors.filter(a=>a.role!=='hero');
-      addActor(sc,{role:'hero',img:'hero',name:nm,x:.32,y:.9,s:.36,m:'wander'});sc.lines.push(z?`從前從前,有一個英雄叫做${nm}。`:`Once upon a time, there was a hero named ${nm}.`);if(!story.title)story.title=z?`${nm}的大冒險`:`${nm}'s Big Adventure`;sc.step++;touch();renderBuild()},true);
+    if($('drawOwn'))$('drawOwn').onclick=()=>drawOwn(st.id);
     if(anim!==true&&kid==='milo')speak(q)}
   else if(sc.kind!=='end'){P.innerHTML=`<div class="q"><span>${z?'這一段完成了!接下來呢?':'Scene done! What next?'}</span></div>
       <div class="big2"><button class="opt big go2" id="more"><span class="e">➡️</span><span class="t">${z?'繼續冒險':'Keep the adventure going'}</span></button><button class="opt big end2" id="finish"><span class="e">🏁</span><span class="t">${z?'結束故事':'End the story'}</span></button></div>
       <div class="tools"><button class="btn sm" id="undo">↩️ ${z?'上一步':'Undo'}</button><button class="btn sm" id="words">📝 ${z?'改文字':'Edit words'}</button><button class="btn sm" id="peek">▶ ${z?'看到目前為止':'Watch so far'}</button>${story.scenes.some(s=>s.lines.length)?`<button class="btn sm" id="mixBtn">🔤 ${z?'混合語言 English':'Mix words 中文'}</button>`:''}</div>`;
-    $('more').onclick=()=>{hist.push(JSON.stringify({scenes:story.scenes,hero:story.hero,want:story.want,title:story.title}));newScene('middle');touch();renderBuild()};
-    $('finish').onclick=()=>{hist.push(JSON.stringify({scenes:story.scenes,hero:story.hero,want:story.want,title:story.title}));newScene('end');touch();renderBuild()};
+    $('more').onclick=()=>{saveHist();newScene('middle');touch();renderBuild()};
+    $('finish').onclick=()=>{saveHist();newScene('end');touch();renderBuild()};
     $('peek').onclick=()=>{saveNow();watch(0,true)}}
   else{story.done=true;touch();saveNow();P.innerHTML=`<div class="q"><span>🎉 ${z?'故事完成了!已經存好了。':'Your story is finished and saved!'}</span></div>
       <div class="big2"><button class="opt big go2" id="watchAll"><span class="e">🎬</span><span class="t">${z?'播放我的故事':'Watch my story'}</span></button></div>
@@ -427,8 +504,8 @@ ${story.hero?`<button class="btn sm" id="rename">🏷️ ${z?'改名字':'Rename
     $('watchAll').onclick=()=>watch(0);$('retitle').onclick=()=>{const t=prompt(z?'故事的名字:':'Story name:',story.title);if(t){story.title=t.trim();touch();renderBuild()}};
     setTimeout(()=>{if($('watchAll')&&$('build').classList.contains('on')&&kid==='milo')watch(0)},1500)}
   if($('mixBtn'))$('mixBtn').onclick=mixPanel;
-  if($('undo'))$('undo').onclick=()=>{const h=hist.pop();if(!h){toast(z?'沒有上一步了':'Nothing to undo');return}const o=JSON.parse(h);Object.assign(story,o);story.done=false;touch();renderBuild()};
-  if($('own'))$('own').onclick=()=>{const t=prompt(z?'寫下你的點子:':'Type your own idea:','');if(t&&t.trim()){hist.push(JSON.stringify({scenes:story.scenes,hero:story.hero,want:story.want,title:story.title}));sc.lines.push(t.trim());sc.step++;touch();renderBuild()}};
+  if($('undo'))$('undo').onclick=()=>{const h=hist.pop();if(!h){toast(z?'沒有上一步了':'Nothing to undo');return}const o=JSON.parse(h);Object.assign(story,{trait:null,problem:null,solved:false},o);story.done=false;touch();renderBuild()};
+  if($('own'))$('own').onclick=()=>{const t=prompt(z?'寫下你的點子:':'Type your own idea:','');if(t&&t.trim()){saveHist();sc.lines.push(t.trim());sc.step++;touch();renderBuild()}};
   if($('words'))$('words').onclick=()=>{const t=prompt(z?'改這一段的文字:':'Change the words for this scene:',sc.lines.join(z?'':' '));if(t!=null){sc.lines=t.trim()?[t.trim()]:[];touch();renderBuild()}};
   P.querySelectorAll('[data-lg]').forEach(b=>b.onclick=()=>{story.lang=b.dataset.lg;touch();renderBuild()});
   if($('rename'))$('rename').onclick=()=>{const t=prompt(z?'主角的新名字:':'Hero’s new name:',story.hero.name);if(t&&t.trim()){const old=story.hero.name;story.hero.name=t.trim();
@@ -454,13 +531,17 @@ const dc=$('dc'),dx=dc.getContext('2d');let dColor=COLORS[0],dSize=10,dTool='pen
 $('dbar2').innerHTML=COLORS.map((c,i)=>`<button class="sw${i?'':' sel'}" style="background:${c}" data-col="${c}"></button>`).join('')+
   `<button class="tool sel" data-t="pen">✏️</button><button class="tool" data-t="fill">🪣</button><button class="tool" data-t="eraser">🧽</button><button class="tool" id="dSize">● ${dSize}</button>`;
 $('dbar2').querySelectorAll('[data-col]').forEach(b=>b.onclick=()=>{dColor=b.dataset.col;if(dTool==='eraser')setTool('pen');$('dbar2').querySelectorAll('.sw').forEach(x=>x.classList.toggle('sel',x===b))});
-function setTool(t){dTool=t;$('dbar2').querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('sel',x.dataset.t===t))}
+function setTool(t){dTool=t;if(t!=='stamp')$('dbar3').querySelectorAll('[data-em]').forEach(x=>x.classList.remove('sel'));$('dbar2').querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('sel',x.dataset.t===t))}
 $('dbar2').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>setTool(b.dataset.t));
 const SIZES=[4,10,20,36];$('dSize').onclick=()=>{dSize=SIZES[(SIZES.indexOf(dSize)+1)%SIZES.length];$('dSize').textContent='● '+dSize};
 function fitDraw(){const st=dc.parentElement.getBoundingClientRect();const s=Math.min((st.width-16)/CW,(st.height-16)/CH);dc.style.width=CW*s+'px';dc.style.height=CH*s+'px'}
 addEventListener('resize',()=>{if($('draw').classList.contains('on'))fitDraw()});
 function blank(){if(dTrans)dx.clearRect(0,0,CW,CH);else{dx.fillStyle='#fff';dx.fillRect(0,0,CW,CH)}}
-function openDraw(what,img,cb,trans){dCb=cb;dUndo=[];dDirty=false;dTrans=!!trans;CW=dTrans?640:800;CH=dTrans?640:600;dc.width=CW;dc.height=CH;
+const EMO_MORE=['😀','😎','🥳','😴','😡','👑','🎩','🕶️','🎀','⭐','❤️','🌈','☀️','🌙','☁️','⚡','🔥','💧','🌸','🌳','🍄','🏠','🚀','⚽','🎈','🎁','🍦','🍕','🐾','✨'];
+let drawEmojis=[],dStamp='';
+function fillEmo(){const list=[...new Set([...drawEmojis,...EMO_MORE])];$('dbar3').innerHTML=`<span>😀 ${Z()?'貼圖':'Stickers'}:</span>`+list.map(e=>`<button data-em="${e}">${e}</button>`).join('');
+  $('dbar3').querySelectorAll('[data-em]').forEach(b=>b.onclick=()=>{dStamp=b.dataset.em;setTool('stamp');$('dbar3').querySelectorAll('[data-em]').forEach(x=>x.classList.toggle('sel',x===b));toast(Z()?'點畫布貼上,再畫上去!':'Tap the canvas to stamp it, then draw on it!')})}
+function openDraw(what,img,cb,trans){fillEmo();dCb=cb;dUndo=[];dDirty=false;dTrans=!!trans;CW=dTrans?640:800;CH=dTrans?640:600;dc.width=CW;dc.height=CH;
   dc.classList.toggle('trans',dTrans);$('dWhat').textContent='🎨 '+what+(dTrans?' — draw just the character 只畫角色,不用畫背景':'');$('draw').classList.add('on');
   blank();if(img){const im=new Image();im.onload=()=>{if(dTrans){const r=Math.min(560/im.width,560/im.height);dx.drawImage(im,(CW-im.width*r)/2,(CH-im.height*r)/2,im.width*r,im.height*r)}else dx.drawImage(im,0,0,CW,CH)};im.src=img}
   if(kid==='milo'&&dSize<20){dSize=20;$('dSize').textContent='● 20'}requestAnimationFrame(fitDraw)}
@@ -476,7 +557,8 @@ function snap(){try{dUndo.push(dx.getImageData(0,0,CW,CH));if(dUndo.length>12)dU
 const dp=e=>{const r=dc.getBoundingClientRect();return{x:(e.clientX-r.left)*CW/r.width,y:(e.clientY-r.top)*CH/r.height}};
 let dDown=false,dLast=null;
 dc.addEventListener('pointerdown',e=>{e.preventDefault();dc.setPointerCapture(e.pointerId);snap();dDirty=true;const p=dp(e);
-  if(dTool==='fill'){flood(Math.round(p.x),Math.round(p.y),dColor);return}dDown=true;dLast=p;stroke(p,p)});
+  if(dTool==='fill'){flood(Math.round(p.x),Math.round(p.y),dColor);return}
+  if(dTool==='stamp'&&dStamp){const px={4:110,10:200,20:300,36:420}[dSize]||200;dx.font=px+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",serif';dx.textAlign='center';dx.textBaseline='middle';dx.fillText(dStamp,p.x,p.y);setTool('pen');return}dDown=true;dLast=p;stroke(p,p)});
 dc.addEventListener('pointermove',e=>{if(!dDown)return;for(const ev of(e.getCoalescedEvents?e.getCoalescedEvents():[e])){const p=dp(ev);stroke(dLast,p);dLast=p}});
 ['pointerup','pointercancel'].forEach(t=>dc.addEventListener(t,()=>dDown=false));
 function stroke(a,b){const er=dTool==='eraser';dx.globalCompositeOperation=er&&dTrans?'destination-out':'source-over';
