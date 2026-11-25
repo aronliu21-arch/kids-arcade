@@ -190,6 +190,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 .pg-head,.pghead{font-size:.9rem;color:var(--muted);font-weight:800}.pghead{flex:0 0 auto;padding:0 6px}
 .pg-who{font-weight:900;font-size:1.05rem;min-height:1.2em}
 .pg-line{flex:1;display:flex;flex-direction:column;justify-content:center}.pg-line .en{display:block;font-size:clamp(1.25rem,3.6vmin,2.1rem);line-height:1.3}.pg-line .zh{display:block;font-size:clamp(1.15rem,3.3vmin,1.9rem);margin-top:8px}
+.pg-mid{display:flex;flex-direction:column;align-items:center;gap:4px}.pgauto{border:3px solid var(--ink);border-radius:999px;background:#fff;font-weight:800;font-size:.85rem;padding:4px 10px;min-height:40px}.pgauto.on{background:#fff3bf}
 .pg-nav{display:flex;align-items:center;justify-content:space-between}.pg-num{color:var(--muted);font-weight:800}
 .pgbtn{width:76px;height:64px;border-radius:18px;border:4px solid var(--ink);background:var(--milo);color:#fff;font-size:1.8rem;box-shadow:0 4px 0 var(--ink);padding:0}#pgPrev{background:#fff;color:var(--ink)}
 @media (orientation:landscape) and (min-width:760px){#page .spread{flex-direction:row}.pg-art{border-bottom:0;border-right:3px solid #e0d2b8}.pg-txt{padding:20px 28px}}
@@ -245,7 +246,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
     <section class="scr" id="page">
       <div class="spread" id="pgSpread"><div class="pg-art" id="pgArt"></div>
         <div class="pg-txt"><div class="pg-head" id="pgHead"></div><div class="pg-who" id="pgWho"></div><div class="pg-line" id="pgLine"></div>
-          <div class="pg-nav"><button class="pgbtn" id="pgPrev" aria-label="Previous page">◀</button><span id="pgNum" class="pg-num"></span><button class="pgbtn" id="pgNext" aria-label="Next page">▶</button></div></div></div>
+          <div class="pg-nav"><button class="pgbtn" id="pgPrev" aria-label="Previous page">◀</button><span class="pg-mid"><button id="pgAuto" class="pgauto">🔊 Read to me ✓</button><span id="pgNum" class="pg-num"></span></span><button class="pgbtn" id="pgNext" aria-label="Next page">▶</button></div></div></div>
     </section>
     <section class="scr" id="station">
       <div class="pbar"><button class="rep" data-rep>🔊</button><div class="txt" id="sTxt"></div><button class="btn ghost" data-map style="min-height:48px">🚂</button></div>
@@ -312,7 +313,7 @@ function rec(o){try{if(window.KA&&KA.answer)KA.answer(o);}catch(e){}}
 const binCount=()=>SHAPES.reduce((a,s)=>a+S.bin[s].length,0);
 
 /* ---------- zhuyin beside Chinese ---------- */
-const ZY={'且':'ㄑㄧㄝˇ','並':'ㄅㄧㄥˋ','中':'ㄓㄨㄥ','事':'ㄕˋ','些':'ㄒㄧㄝ','人':'ㄖㄣˊ','何':'ㄏㄜˊ','佛':'ㄈㄛˊ','假':'ㄐㄧㄚˇ','停':'ㄊㄧㄥˊ','兒':'ㄦˊ','兩':'ㄌㄧㄤˇ','公':'ㄍㄨㄥ','其':'ㄑㄧˊ','冰':'ㄅㄧㄥ','別':'ㄅㄧㄝˊ','助':'ㄓㄨˋ','勒':'ㄌㄜˋ','包':'ㄅㄠ','十':'ㄕˊ','升':'ㄕㄥ','卡':'ㄎㄚˇ','同':'ㄊㄨㄥˊ','哭':'ㄎㄨ','器':'ㄑㄧˋ','四':'ㄙˋ','圖':'ㄊㄨˊ','地':'ㄉㄧˋ','坡':'ㄆㄛ','基':'ㄐㄧ','塔':'ㄊㄚˇ','塗':'ㄊㄨˊ','夫':'ㄈㄨ','夾':'ㄐㄧㄚˊ','奧':'ㄠˋ','姨':'ㄧˊ','學':'ㄒㄩㄝˊ','宮':'ㄍㄨㄥ','少':'ㄕㄠˇ','就':'ㄐㄧㄡˋ','屋':'ㄨ','巴':'ㄅㄚ','希':'ㄒㄧ','帳':'ㄓㄤˋ','床':'ㄔㄨㄤˊ','座':'ㄗㄨㄛˋ','弄':'ㄋㄨㄥˋ','彩':'ㄘㄞˇ','很':'ㄏㄣˇ','從':'ㄘㄨㄥˊ','快':'ㄎㄨㄞˋ','怎':'ㄗㄣˇ','思':'ㄙ','恩':'ㄣ','意':'ㄧˋ','慢':'ㄇㄢˋ','應':'ㄧㄥ','扇':'ㄕㄢˋ','才':'ㄘㄞˊ','扮':'ㄅㄢˋ','押':'ㄧㄚ','拔':'ㄅㄚˊ','拿':'ㄋㄚˊ','指':'ㄓˇ','插':'ㄔㄚ','搶':'ㄑㄧㄤˇ','摘':'ㄓㄞ','摸':'ㄇㄛ','擋':'ㄉㄤˇ','故':'ㄍㄨˋ','斧':'ㄈㄨˇ','日':'ㄖˋ','昂':'ㄤˊ','書':'ㄕㄨ','最':'ㄗㄨㄟˋ','月':'ㄩㄝˋ','本':'ㄅㄣˇ','椅':'ㄧˇ','樂':'ㄩㄝˋ','欺':'ㄑㄧ','歐':'ㄡ','比':'ㄅㄧˇ','池':'ㄔˊ','洋':'ㄧㄤˊ','派':'ㄆㄞˋ','流':'ㄌㄧㄡˊ','測':'ㄘㄜˋ','湯':'ㄊㄤ','溜':'ㄌㄧㄡ','滑':'ㄏㄨㄚˊ','潮':'ㄔㄠˊ','然':'ㄖㄢˊ','燙':'ㄊㄤˋ','父':'ㄈㄨˋ','片':'ㄆㄧㄢˋ','特':'ㄊㄜˋ','狐':'ㄏㄨˊ','狗':'ㄍㄡˇ','狸':'˙ㄌㄧ','猜':'ㄘㄞ','玻':'ㄅㄛ','理':'ㄌㄧˇ','留':'ㄌㄧㄡˊ','畫':'ㄏㄨㄚˋ','白':'ㄅㄞˊ','知':'ㄓ','矮':'ㄞˇ','福':'ㄈㄨˊ','科':'ㄎㄜ','種':'ㄓㄨㄥˇ','章':'ㄓㄤ','笑':'ㄒㄧㄠˋ','篷':'ㄆㄥˊ','籤':'ㄑㄧㄢ','粉':'ㄈㄣˇ','糖':'ㄊㄤˊ','級':'ㄐㄧˊ','缺':'ㄑㄩㄝ','罵':'ㄇㄚˋ','翻':'ㄈㄢ','而':'ㄦˊ','臉':'ㄌㄧㄢˇ','茶':'ㄔㄚˊ','藏':'ㄘㄤˊ','虹':'ㄏㄨㄥˊ','蛇':'ㄕㄜˊ','融':'ㄖㄨㄥˊ','衣':'ㄧ','解':'ㄐㄧㄝˇ','訊':'ㄒㄩㄣˋ','訥':'ㄋㄜˋ','詩':'ㄕ','該':'ㄍㄞ','說':'ㄕㄨㄛ','請':'ㄑㄧㄥˇ','謎':'ㄇㄧˊ','讀':'ㄉㄨˊ','變':'ㄅㄧㄢˋ','豬':'ㄓㄨ','貓':'ㄇㄠ','資':'ㄗ','趕':'ㄍㄢˇ','跑':'ㄆㄠˇ','躺':'ㄊㄤˇ','較':'ㄐㄧㄠˋ','輪':'ㄌㄨㄣˊ','輯':'ㄐㄧˊ','迷':'ㄇㄧˊ','逗':'ㄉㄡˋ','通':'ㄊㄨㄥ','邀':'ㄧㄠ','邏':'ㄌㄨㄛˊ','量':'ㄌㄧㄤˊ','錯':'ㄘㄨㄛˋ','閱':'ㄩㄝˋ','阿':'ㄚ','陪':'ㄆㄟˊ','陽':'ㄧㄤˊ','隊':'ㄉㄨㄟˋ','雌':'ㄘˊ','雨':'ㄩˇ','韻':'ㄩㄣˋ','頁':'ㄧㄝˋ','題':'ㄊㄧˊ','風':'ㄈㄥ','餅':'ㄅㄧㄥˇ','馬':'ㄇㄚˇ','鬼':'ㄍㄨㄟˇ','麥':'ㄇㄞˋ','麵':'ㄇㄧㄢˋ','麻':'ㄇㄚˊ','鼻':'ㄅㄧˊ','鯨':'ㄐㄧㄥ','魚':'ㄩˊ','螃':'ㄆㄤˊ','蟹':'ㄒㄧㄝˋ','龜':'ㄍㄨㄟ','椰':'ㄧㄝˊ','樹':'ㄕㄨˋ','浪':'ㄌㄤˋ','嘟':'ㄉㄨ','霧':'ㄨˋ','散':'ㄙㄢˋ','探':'ㄊㄢˋ','方':'ㄈㄤ','伸':'ㄕㄣ','呀':'˙ㄧㄚ','聞':'ㄨㄣˊ','脖':'ㄅㄛˊ','誰':'ㄕㄟˊ','躲':'ㄉㄨㄛˇ','葡':'ㄆㄨˊ','萄':'ㄊㄠˊ','飛':'ㄈㄟ','機':'ㄐㄧ','象':'ㄒㄧㄤˋ','兔':'ㄊㄨˋ','牛':'ㄋㄧㄡˊ','奶':'ㄋㄞˇ','老':'ㄌㄠˇ','虎':'ㄏㄨˇ','哥':'ㄍㄜ','花':'ㄏㄨㄚ','雞':'ㄐㄧ','球':'ㄑㄧㄡˊ','瓜':'ㄍㄨㄚ','五':'ㄨˇ','亮':'ㄌㄧㄤˋ','仔':'ㄗˇ','倒':'ㄉㄠˋ','傷':'ㄕㄤ','像':'ㄒㄧㄤˋ','六':'ㄌㄧㄡˋ','共':'ㄍㄨㄥˋ','剩':'ㄕㄥˋ','又':'ㄧㄡˋ','受':'ㄕㄡˋ','向':'ㄒㄧㄤˋ','問':'ㄨㄣˋ','或':'ㄏㄨㄛˋ','手':'ㄕㄡˇ','拍':'ㄆㄞ','於':'ㄩˊ','樣':'ㄧㄤˋ','橢':'ㄊㄨㄛˇ','幾':'ㄐㄧˇ','序':'ㄒㄩˋ','怕':'ㄆㄚˋ','射':'ㄕㄜˋ','減':'ㄐㄧㄢˇ','無':'ㄨˊ','熱':'ㄖㄜˋ','現':'ㄒㄧㄢˋ','發':'ㄈㄚ','等':'ㄉㄥˇ','筒':'ㄊㄨㄥˇ','箭':'ㄐㄧㄢˋ','細':'ㄒㄧˋ','繃':'ㄅㄥ','膝':'ㄒㄧ','買':'ㄇㄞˇ','貼':'ㄊㄧㄝ','跌':'ㄉㄧㄝ','跺':'ㄉㄨㄛˋ','轉':'ㄓㄨㄢˇ','那':'ㄋㄚˋ','電':'ㄉㄧㄢˋ','順':'ㄕㄨㄣˋ','黑':'ㄏㄟ','聊':'ㄌㄧㄠˊ','不':'ㄅㄨˋ','丟':'ㄉㄧㄡ','也':'ㄧㄝˇ','以':'ㄧˇ','任':'ㄖㄣˋ','保':'ㄅㄠˇ','信':'ㄒㄧㄣˋ','修':'ㄒㄧㄡ','做':'ㄗㄨㄛˋ','備':'ㄅㄟˋ','傳':'ㄔㄨㄢˊ','前':'ㄑㄧㄢˊ','務':'ㄨˋ','取':'ㄑㄩˇ','叢':'ㄘㄨㄥˊ','另':'ㄌㄧㄥˋ','可':'ㄎㄜˇ','員':'ㄩㄢˊ','喀':'ㄎㄚ','喔':'ㄛ','嗨':'ㄏㄞ','坐':'ㄗㄨㄛˋ','堆':'ㄉㄨㄟ','壞':'ㄏㄨㄞˋ','壯':'ㄓㄨㄤˋ','夠':'ㄍㄡˋ','守':'ㄕㄡˇ','岩':'ㄧㄢˊ','島':'ㄉㄠˇ','巡':'ㄒㄩㄣˊ','已':'ㄧˇ','庭':'ㄊㄧㄥˊ','強':'ㄑㄧㄤˊ','後':'ㄏㄡˋ','愛':'ㄞˋ','慶':'ㄑㄧㄥˋ','打':'ㄉㄚˇ','推':'ㄊㄨㄟ','搖':'ㄧㄠˊ','搬':'ㄅㄢ','晃':'ㄏㄨㄤˋ','更':'ㄍㄥˋ','會':'ㄏㄨㄟˋ','林':'ㄌㄧㄣˊ','橋':'ㄑㄧㄠˊ','每':'ㄇㄟˇ','沒':'ㄇㄟˊ','海':'ㄏㄞˇ','準':'ㄓㄨㄣˇ','滾':'ㄍㄨㄣˇ','漿':'ㄐㄧㄤ','灘':'ㄊㄢ','瓶':'ㄆㄧㄥˊ','皮':'ㄆㄧˊ','祝':'ㄓㄨˋ','空':'ㄎㄨㄥ','站':'ㄓㄢˋ','箱':'ㄒㄧㄤ','索':'ㄙㄨㄛˇ','經':'ㄐㄧㄥ','線':'ㄒㄧㄢˋ','繼':'ㄐㄧˋ','續':'ㄒㄩˋ','耶':'ㄧㄝ','聲':'ㄕㄥ','處':'ㄔㄨˋ','行':'ㄒㄧㄥˊ','護':'ㄏㄨˋ','讓':'ㄖㄤˋ','貝':'ㄅㄟˋ','走':'ㄗㄡˇ','跟':'ㄍㄣ','車':'ㄔㄜ','轟':'ㄏㄨㄥ','送':'ㄙㄨㄥˋ','邊':'ㄅㄧㄢ','鈕':'ㄋㄧㄡˇ','門':'ㄇㄣˊ','隆':'ㄌㄨㄥˊ','雪':'ㄒㄩㄝˇ','靜':'ㄐㄧㄥˋ','面':'ㄇㄧㄢˋ','頭':'ㄊㄡˊ','顆':'ㄎㄜ','食':'ㄕˊ','飽':'ㄅㄠˇ','餵':'ㄨㄟˋ','高':'ㄍㄠ','乾':'ㄍㄢ','二':'ㄦˋ','他':'ㄊㄚ','住':'ㄓㄨˋ','來':'ㄌㄞˊ','們':'˙ㄇㄣ','吃':'ㄔ','咕':'ㄍㄨ','喝':'ㄏㄜ','嚕':'ㄌㄨ','困':'ㄎㄨㄣˋ','圍':'ㄨㄟˊ','多':'ㄉㄨㄛ','巾':'ㄐㄧㄣ','晚':'ㄨㄢˇ','暖':'ㄋㄨㄢˇ','服':'˙ㄈㄨ','東':'ㄉㄨㄥ','案':'ㄢˋ','洗':'ㄒㄧˇ','淨':'ㄐㄧㄥˋ','溫':'ㄨㄣ','澡':'ㄗㄠˇ','狀':'ㄓㄨㄤˋ','第':'ㄉㄧˋ','糕':'ㄍㄠ','糟':'ㄗㄠ','舒':'ㄕㄨ','被':'ㄅㄟˋ','西':'˙ㄒㄧ','金':'ㄐㄧㄣ','顏':'ㄧㄢˊ','洛':'ㄌㄨㄛˋ','明':'ㄇㄧㄥˊ','的':'˙ㄉㄜ','恐':'ㄎㄨㄥˇ','龍':'ㄌㄨㄥˊ','世':'ㄕˋ','界':'ㄐㄧㄝˋ','點':'ㄉㄧㄢˇ','我':'ㄨㄛˇ','開':'ㄎㄞ','始':'ㄕˇ',
+const ZY={'亞':'ㄧㄚˋ','光':'ㄍㄨㄤ','剛':'ㄍㄤ','力':'ㄌㄧˋ','勇':'ㄩㄥˇ','叮':'ㄉㄧㄥ','合':'ㄏㄜˊ','咚':'ㄉㄨㄥ','哈':'ㄏㄚ','啦':'˙ㄌㄚ','善':'ㄕㄢˋ','喜':'ㄒㄧˇ','嘩':'ㄏㄨㄚ','噓':'ㄒㄩ','嚼':'ㄐㄧㄠˊ','囉':'˙ㄌㄨㄛ','天':'ㄊㄧㄢ','她':'ㄊㄚ','尾':'ㄨㄟˇ','度':'ㄉㄨˋ','彎':'ㄨㄢ','彼':'ㄅㄧˇ','敢':'ㄍㄢˇ','旁':'ㄆㄤˊ','早':'ㄗㄠˇ','曲':'ㄑㄩ','板':'ㄅㄢˇ','柔':'ㄖㄡˊ','條':'ㄊㄧㄠˊ','此':'ㄘˇ','氣':'˙ㄑㄧ','河':'ㄏㄜˊ','煙':'ㄧㄢ','琪':'ㄑㄧˊ','直':'ㄓˊ','管':'ㄍㄨㄢˇ','總':'ㄗㄨㄥˇ','舊':'ㄐㄧㄡˋ','良':'ㄌㄧㄤˊ','見':'ㄐㄧㄢˋ','認':'ㄖㄣˋ','近':'ㄐㄧㄣˋ','遠':'ㄩㄢˇ','重':'ㄓㄨㄥˋ','釘':'ㄉㄧㄥˋ','附':'ㄈㄨˋ','離':'ㄌㄧˊ','露':'ㄌㄨˋ','且':'ㄑㄧㄝˇ','並':'ㄅㄧㄥˋ','中':'ㄓㄨㄥ','事':'ㄕˋ','些':'ㄒㄧㄝ','人':'ㄖㄣˊ','何':'ㄏㄜˊ','佛':'ㄈㄛˊ','假':'ㄐㄧㄚˇ','停':'ㄊㄧㄥˊ','兒':'ㄦˊ','兩':'ㄌㄧㄤˇ','公':'ㄍㄨㄥ','其':'ㄑㄧˊ','冰':'ㄅㄧㄥ','別':'ㄅㄧㄝˊ','助':'ㄓㄨˋ','勒':'ㄌㄜˋ','包':'ㄅㄠ','十':'ㄕˊ','升':'ㄕㄥ','卡':'ㄎㄚˇ','同':'ㄊㄨㄥˊ','哭':'ㄎㄨ','器':'ㄑㄧˋ','四':'ㄙˋ','圖':'ㄊㄨˊ','地':'ㄉㄧˋ','坡':'ㄆㄛ','基':'ㄐㄧ','塔':'ㄊㄚˇ','塗':'ㄊㄨˊ','夫':'ㄈㄨ','夾':'ㄐㄧㄚˊ','奧':'ㄠˋ','姨':'ㄧˊ','學':'ㄒㄩㄝˊ','宮':'ㄍㄨㄥ','少':'ㄕㄠˇ','就':'ㄐㄧㄡˋ','屋':'ㄨ','巴':'ㄅㄚ','希':'ㄒㄧ','帳':'ㄓㄤˋ','床':'ㄔㄨㄤˊ','座':'ㄗㄨㄛˋ','弄':'ㄋㄨㄥˋ','彩':'ㄘㄞˇ','很':'ㄏㄣˇ','從':'ㄘㄨㄥˊ','快':'ㄎㄨㄞˋ','怎':'ㄗㄣˇ','思':'ㄙ','恩':'ㄣ','意':'ㄧˋ','慢':'ㄇㄢˋ','應':'ㄧㄥ','扇':'ㄕㄢˋ','才':'ㄘㄞˊ','扮':'ㄅㄢˋ','押':'ㄧㄚ','拔':'ㄅㄚˊ','拿':'ㄋㄚˊ','指':'ㄓˇ','插':'ㄔㄚ','搶':'ㄑㄧㄤˇ','摘':'ㄓㄞ','摸':'ㄇㄛ','擋':'ㄉㄤˇ','故':'ㄍㄨˋ','斧':'ㄈㄨˇ','日':'ㄖˋ','昂':'ㄤˊ','書':'ㄕㄨ','最':'ㄗㄨㄟˋ','月':'ㄩㄝˋ','本':'ㄅㄣˇ','椅':'ㄧˇ','樂':'ㄩㄝˋ','欺':'ㄑㄧ','歐':'ㄡ','比':'ㄅㄧˇ','池':'ㄔˊ','洋':'ㄧㄤˊ','派':'ㄆㄞˋ','流':'ㄌㄧㄡˊ','測':'ㄘㄜˋ','湯':'ㄊㄤ','溜':'ㄌㄧㄡ','滑':'ㄏㄨㄚˊ','潮':'ㄔㄠˊ','然':'ㄖㄢˊ','燙':'ㄊㄤˋ','父':'ㄈㄨˋ','片':'ㄆㄧㄢˋ','特':'ㄊㄜˋ','狐':'ㄏㄨˊ','狗':'ㄍㄡˇ','狸':'˙ㄌㄧ','猜':'ㄘㄞ','玻':'ㄅㄛ','理':'ㄌㄧˇ','留':'ㄌㄧㄡˊ','畫':'ㄏㄨㄚˋ','白':'ㄅㄞˊ','知':'ㄓ','矮':'ㄞˇ','福':'ㄈㄨˊ','科':'ㄎㄜ','種':'ㄓㄨㄥˇ','章':'ㄓㄤ','笑':'ㄒㄧㄠˋ','篷':'ㄆㄥˊ','籤':'ㄑㄧㄢ','粉':'ㄈㄣˇ','糖':'ㄊㄤˊ','級':'ㄐㄧˊ','缺':'ㄑㄩㄝ','罵':'ㄇㄚˋ','翻':'ㄈㄢ','而':'ㄦˊ','臉':'ㄌㄧㄢˇ','茶':'ㄔㄚˊ','藏':'ㄘㄤˊ','虹':'ㄏㄨㄥˊ','蛇':'ㄕㄜˊ','融':'ㄖㄨㄥˊ','衣':'ㄧ','解':'ㄐㄧㄝˇ','訊':'ㄒㄩㄣˋ','訥':'ㄋㄜˋ','詩':'ㄕ','該':'ㄍㄞ','說':'ㄕㄨㄛ','請':'ㄑㄧㄥˇ','謎':'ㄇㄧˊ','讀':'ㄉㄨˊ','變':'ㄅㄧㄢˋ','豬':'ㄓㄨ','貓':'ㄇㄠ','資':'ㄗ','趕':'ㄍㄢˇ','跑':'ㄆㄠˇ','躺':'ㄊㄤˇ','較':'ㄐㄧㄠˋ','輪':'ㄌㄨㄣˊ','輯':'ㄐㄧˊ','迷':'ㄇㄧˊ','逗':'ㄉㄡˋ','通':'ㄊㄨㄥ','邀':'ㄧㄠ','邏':'ㄌㄨㄛˊ','量':'ㄌㄧㄤˊ','錯':'ㄘㄨㄛˋ','閱':'ㄩㄝˋ','阿':'ㄚ','陪':'ㄆㄟˊ','陽':'ㄧㄤˊ','隊':'ㄉㄨㄟˋ','雌':'ㄘˊ','雨':'ㄩˇ','韻':'ㄩㄣˋ','頁':'ㄧㄝˋ','題':'ㄊㄧˊ','風':'ㄈㄥ','餅':'ㄅㄧㄥˇ','馬':'ㄇㄚˇ','鬼':'ㄍㄨㄟˇ','麥':'ㄇㄞˋ','麵':'ㄇㄧㄢˋ','麻':'ㄇㄚˊ','鼻':'ㄅㄧˊ','鯨':'ㄐㄧㄥ','魚':'ㄩˊ','螃':'ㄆㄤˊ','蟹':'ㄒㄧㄝˋ','龜':'ㄍㄨㄟ','椰':'ㄧㄝˊ','樹':'ㄕㄨˋ','浪':'ㄌㄤˋ','嘟':'ㄉㄨ','霧':'ㄨˋ','散':'ㄙㄢˋ','探':'ㄊㄢˋ','方':'ㄈㄤ','伸':'ㄕㄣ','呀':'˙ㄧㄚ','聞':'ㄨㄣˊ','脖':'ㄅㄛˊ','誰':'ㄕㄟˊ','躲':'ㄉㄨㄛˇ','葡':'ㄆㄨˊ','萄':'ㄊㄠˊ','飛':'ㄈㄟ','機':'ㄐㄧ','象':'ㄒㄧㄤˋ','兔':'ㄊㄨˋ','牛':'ㄋㄧㄡˊ','奶':'ㄋㄞˇ','老':'ㄌㄠˇ','虎':'ㄏㄨˇ','哥':'ㄍㄜ','花':'ㄏㄨㄚ','雞':'ㄐㄧ','球':'ㄑㄧㄡˊ','瓜':'ㄍㄨㄚ','五':'ㄨˇ','亮':'ㄌㄧㄤˋ','仔':'ㄗˇ','倒':'ㄉㄠˋ','傷':'ㄕㄤ','像':'ㄒㄧㄤˋ','六':'ㄌㄧㄡˋ','共':'ㄍㄨㄥˋ','剩':'ㄕㄥˋ','又':'ㄧㄡˋ','受':'ㄕㄡˋ','向':'ㄒㄧㄤˋ','問':'ㄨㄣˋ','或':'ㄏㄨㄛˋ','手':'ㄕㄡˇ','拍':'ㄆㄞ','於':'ㄩˊ','樣':'ㄧㄤˋ','橢':'ㄊㄨㄛˇ','幾':'ㄐㄧˇ','序':'ㄒㄩˋ','怕':'ㄆㄚˋ','射':'ㄕㄜˋ','減':'ㄐㄧㄢˇ','無':'ㄨˊ','熱':'ㄖㄜˋ','現':'ㄒㄧㄢˋ','發':'ㄈㄚ','等':'ㄉㄥˇ','筒':'ㄊㄨㄥˇ','箭':'ㄐㄧㄢˋ','細':'ㄒㄧˋ','繃':'ㄅㄥ','膝':'ㄒㄧ','買':'ㄇㄞˇ','貼':'ㄊㄧㄝ','跌':'ㄉㄧㄝ','跺':'ㄉㄨㄛˋ','轉':'ㄓㄨㄢˇ','那':'ㄋㄚˋ','電':'ㄉㄧㄢˋ','順':'ㄕㄨㄣˋ','黑':'ㄏㄟ','聊':'ㄌㄧㄠˊ','不':'ㄅㄨˋ','丟':'ㄉㄧㄡ','也':'ㄧㄝˇ','以':'ㄧˇ','任':'ㄖㄣˋ','保':'ㄅㄠˇ','信':'ㄒㄧㄣˋ','修':'ㄒㄧㄡ','做':'ㄗㄨㄛˋ','備':'ㄅㄟˋ','傳':'ㄔㄨㄢˊ','前':'ㄑㄧㄢˊ','務':'ㄨˋ','取':'ㄑㄩˇ','叢':'ㄘㄨㄥˊ','另':'ㄌㄧㄥˋ','可':'ㄎㄜˇ','員':'ㄩㄢˊ','喀':'ㄎㄚ','喔':'ㄛ','嗨':'ㄏㄞ','坐':'ㄗㄨㄛˋ','堆':'ㄉㄨㄟ','壞':'ㄏㄨㄞˋ','壯':'ㄓㄨㄤˋ','夠':'ㄍㄡˋ','守':'ㄕㄡˇ','岩':'ㄧㄢˊ','島':'ㄉㄠˇ','巡':'ㄒㄩㄣˊ','已':'ㄧˇ','庭':'ㄊㄧㄥˊ','強':'ㄑㄧㄤˊ','後':'ㄏㄡˋ','愛':'ㄞˋ','慶':'ㄑㄧㄥˋ','打':'ㄉㄚˇ','推':'ㄊㄨㄟ','搖':'ㄧㄠˊ','搬':'ㄅㄢ','晃':'ㄏㄨㄤˋ','更':'ㄍㄥˋ','會':'ㄏㄨㄟˋ','林':'ㄌㄧㄣˊ','橋':'ㄑㄧㄠˊ','每':'ㄇㄟˇ','沒':'ㄇㄟˊ','海':'ㄏㄞˇ','準':'ㄓㄨㄣˇ','滾':'ㄍㄨㄣˇ','漿':'ㄐㄧㄤ','灘':'ㄊㄢ','瓶':'ㄆㄧㄥˊ','皮':'ㄆㄧˊ','祝':'ㄓㄨˋ','空':'ㄎㄨㄥ','站':'ㄓㄢˋ','箱':'ㄒㄧㄤ','索':'ㄙㄨㄛˇ','經':'ㄐㄧㄥ','線':'ㄒㄧㄢˋ','繼':'ㄐㄧˋ','續':'ㄒㄩˋ','耶':'ㄧㄝ','聲':'ㄕㄥ','處':'ㄔㄨˋ','行':'ㄒㄧㄥˊ','護':'ㄏㄨˋ','讓':'ㄖㄤˋ','貝':'ㄅㄟˋ','走':'ㄗㄡˇ','跟':'ㄍㄣ','車':'ㄔㄜ','轟':'ㄏㄨㄥ','送':'ㄙㄨㄥˋ','邊':'ㄅㄧㄢ','鈕':'ㄋㄧㄡˇ','門':'ㄇㄣˊ','隆':'ㄌㄨㄥˊ','雪':'ㄒㄩㄝˇ','靜':'ㄐㄧㄥˋ','面':'ㄇㄧㄢˋ','頭':'ㄊㄡˊ','顆':'ㄎㄜ','食':'ㄕˊ','飽':'ㄅㄠˇ','餵':'ㄨㄟˋ','高':'ㄍㄠ','乾':'ㄍㄢ','二':'ㄦˋ','他':'ㄊㄚ','住':'ㄓㄨˋ','來':'ㄌㄞˊ','們':'˙ㄇㄣ','吃':'ㄔ','咕':'ㄍㄨ','喝':'ㄏㄜ','嚕':'ㄌㄨ','困':'ㄎㄨㄣˋ','圍':'ㄨㄟˊ','多':'ㄉㄨㄛ','巾':'ㄐㄧㄣ','晚':'ㄨㄢˇ','暖':'ㄋㄨㄢˇ','服':'˙ㄈㄨ','東':'ㄉㄨㄥ','案':'ㄢˋ','洗':'ㄒㄧˇ','淨':'ㄐㄧㄥˋ','溫':'ㄨㄣ','澡':'ㄗㄠˇ','狀':'ㄓㄨㄤˋ','第':'ㄉㄧˋ','糕':'ㄍㄠ','糟':'ㄗㄠ','舒':'ㄕㄨ','被':'ㄅㄟˋ','西':'˙ㄒㄧ','金':'ㄐㄧㄣ','顏':'ㄧㄢˊ','洛':'ㄌㄨㄛˋ','明':'ㄇㄧㄥˊ','的':'˙ㄉㄜ','恐':'ㄎㄨㄥˇ','龍':'ㄌㄨㄥˊ','世':'ㄕˋ','界':'ㄐㄧㄝˋ','點':'ㄉㄧㄢˇ','我':'ㄨㄛˇ','開':'ㄎㄞ','始':'ㄕˇ',
 '造':'ㄗㄠˋ','工':'ㄍㄨㄥ','作':'ㄗㄨㄛˋ','冒':'ㄇㄠˋ','險':'ㄒㄧㄢˇ','找':'ㄓㄠˇ','個':'˙ㄍㄜ','紅':'ㄏㄨㄥˊ','藍':'ㄌㄢˊ','黃':'ㄏㄨㄤˊ','綠':'ㄌㄩˋ','橘':'ㄐㄩˊ','紫':'ㄗˇ','色':'ㄙㄜˋ',
 '正':'ㄓㄥˋ','方':'ㄈㄤ','形':'ㄒㄧㄥˊ','長':'ㄔㄤˊ','三':'ㄙㄢ','角':'ㄐㄧㄠˇ','圓':'ㄩㄢˊ','半':'ㄅㄢˋ','星':'ㄒㄧㄥ','心':'ㄒㄧㄣ','菱':'ㄌㄧㄥˊ',
 '暴':'ㄅㄠˋ','腕':'ㄨㄢˋ','劍':'ㄐㄧㄢˋ','翼':'ㄧˋ','甲':'ㄐㄧㄚˇ','選':'ㄒㄩㄢˇ','一':'ㄧ','隻':'ㄓ','要':'ㄧㄠˋ','蓋':'ㄍㄞˋ','你':'ㄋㄧˇ','蓋':'ㄍㄞˋ',
@@ -357,9 +358,10 @@ function musicOn(){musicWanted=true;const a=ac();if(!a)return;musicG.gain.cancel
 function musicOff(){musicWanted=false;if(!AC)return;musicG.gain.cancelScheduledValues(AC.currentTime);musicG.gain.setTargetAtTime(0,AC.currentTime,.35);setTimeout(()=>{if(!musicWanted&&musicTimer){clearInterval(musicTimer);musicTimer=null;}},2500);}
 let lastParts=[];const vcache={};
 function voiceFor(l){if(vcache[l]!==undefined)return vcache[l];try{const vs=speechSynthesis.getVoices();const v=vs.find(v=>v.lang===l)||vs.find(v=>v.lang&&v.lang.replace('_','-').startsWith(l.slice(0,2)));if(vs.length)vcache[l]=v||null;return v||null;}catch(e){return null;}}
-function sayParts(parts,pitch){lastParts=parts;if(!S.snd||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();parts.forEach(([t,l])=>{const u=new SpeechSynthesisUtterance(t);u.lang=l;const v=voiceFor(l);if(v)u.voice=v;u.rate=l==='en-US'?.88:.8;u.pitch=pitch||1.15;speechSynthesis.speak(u);});}catch(e){}}
+function sayParts(parts,pitch,onEnd){lastParts=parts;let fired=false;const fin=()=>{if(!fired){fired=true;onEnd&&onEnd();}};const est=parts.reduce((a,[t,l])=>a+t.length*(l==='zh-TW'?330:85),0)+1200;
+ if(onEnd)setTimeout(fin,S.snd?est+2500:est);if(!S.snd||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();parts.forEach(([t,l],k)=>{const u=new SpeechSynthesisUtterance(t);u.lang=l;const v=voiceFor(l);if(v)u.voice=v;u.rate=l==='en-US'?.88:.8;u.pitch=pitch||1.15;if(k===parts.length-1&&onEnd)u.onend=()=>setTimeout(fin,50);speechSynthesis.speak(u);});}catch(e){}}
 function parts(en,z){const p=[];if(S.voice!=='zh'&&en)p.push([en,'en-US']);if(S.voice!=='en'&&z)p.push([typeof z==='string'?z:z.map(x=>x[0]).join(''),'zh-TW']);return p;}
-function say(en,z,extra,pitch){sayParts(parts(en,z).concat(extra||[]),pitch);}
+function say(en,z,extra,pitch,onEnd){sayParts(parts(en,z).concat(extra||[]),pitch,onEnd);}
 document.addEventListener('click',e=>{if(e.target.closest('[data-rep]'))sayParts(lastParts);});
 function setSnd(){$('snd').textContent=S.snd?'🔊':'🔇';if(master)master.gain.value=S.snd?1:0;}
 $('snd').onclick=()=>{S.snd=!S.snd;save();setSnd();if(!S.snd)try{speechSynthesis.cancel();}catch(e){}};
@@ -551,10 +553,57 @@ CH[3].flow=[P('nar','Chapter 4: The Volcano. The ground is hot, and the volcano 
  P('pip','A stone door! It has words on it.','一扇石頭門!上面有字。'),['g','mail'],
  P('nar','The door opens! Big rocks are in the way. A Long Neck can see over them. Let’s build one!','門開了!大石頭擋住了。腕龍可以看到石頭後面。我們來蓋一隻腕龍!'),['b'],['f']];
 OPENING.push(['nar','This is your story book. Tap ▶ to turn the page!','這是你的故事書。按▶翻頁!']);
+/* ---------- four storybooks, each with its own story, read aloud ---------- */
+CH[0].title=['The Hungry Jungle','餓肚子的叢林'];CH[1].title=['The Broken Bridge','壞掉的橋'];CH[2].title=['The Snowy Echo Cave','雪山回音洞'];CH[3].title=['Pip Finds Mommy','皮皮找媽媽'];
+CH[0].flow=[P('nar','Book 1: The Hungry Jungle.','第一本書:餓肚子的叢林。'),
+ P('nar','Deep in the green jungle lived a big, gentle Long Neck named Mama Lulu.','綠綠的叢林裡,住著一隻溫柔的腕龍,叫做露露媽媽。'),
+ P('nar','One morning the volcano rumbled. Boom! Mama Lulu’s baby ran off into the tall grass.','有一天早上,火山轟隆一聲!露露媽媽的寶寶跑進了高高的草叢。'),
+ P('pip','Hi! I’m Pip. I’m looking for my mommy too. Are you my mommy?','嗨!我是皮皮。我也在找媽媽。你是我的媽媽嗎?'),
+ P('neckmom','No, little one. But we can look together!','不是喔,小寶貝。可是我們可以一起找!'),
+ P('neckmom','The jungle dinos want to help, but they are too hungry to walk.','叢林恐龍想幫忙,可是牠們太餓了,走不動。'),
+ P('nar','Milo, can you share the fruit so everyone gets enough?','洛明,你可以分水果,讓大家都吃得飽嗎?'),['g','fruit'],
+ P('nar','Munch, munch! Now everyone is full and strong.','嚼嚼嚼!現在大家都吃飽了,好有力氣。'),
+ P('pip','Look! The jungle signs have words. Can you read them?','你看!叢林的牌子上有字。你會讀嗎?'),['g','mail'],
+ P('nar','The signs say the baby went into the grass maze!','牌子上說,寶寶走進草叢迷宮了!'),P('pip','Help me find the way, Milo!','洛明,幫我找路!'),['g','maze'],
+ P('neckmom','Shh… I hear a tiny cry. My baby is close!','噓……我聽到小小的哭聲。我的寶寶就在附近!'),
+ P('nar','The grass is too tall to see. A T-Rex has a super nose for sniffing. Let’s build one!','草太高了看不到。暴龍的鼻子很會聞。我們來蓋一隻暴龍!'),['b'],['f']];
+CH[1].flow=[P('nar','Book 2: The Broken Bridge.','第二本書:壞掉的橋。'),
+ P('nar','On a sunny beach lived Mama Pia, a Ptero who loved to fly over the waves.','陽光海灘上住著翼龍皮亞媽媽,牠最喜歡在海浪上飛。'),
+ P('nar','Her baby was still learning to fly. It played on the other side of the river.','牠的寶寶還在學飛,在河的另一邊玩。'),
+ P('nar','But crash! A big wave broke the old wooden bridge.','可是嘩啦!一個大浪把舊木橋打壞了。'),
+ P('pip','Are you my mommy?','你是我的媽媽嗎?'),P('ptmom','No, Pip. But I need help! My baby can’t fly across yet.','不是喔,皮皮。可是我需要幫忙!我的寶寶還不會飛過來。'),
+ P('nar','To fix the bridge, we need planks that are just the right size. Let’s measure!','要修橋,我們需要長度剛剛好的木板。來量一量!'),['g','eggs'],
+ P('nar','Bang, bang! New planks go on the bridge.','叮叮咚咚!新木板釘上橋了。'),P('nar','Now hop across the tide pool stones to reach the bridge.','現在跳過潮池的石頭,到橋那邊去。'),['g','lava'],
+ P('pip','Look, letters in the sand! Someone wrote a message.','你看,沙子裡有字母!有人寫了訊息。'),['g','fossil'],
+ P('ptmom','It’s from my baby! It says: I am here, by the big rock!','是我的寶寶寫的!上面說:我在這裡,在大石頭旁邊!'),
+ P('nar','The bridge is fixed, but it’s wobbly. A strong Stego can walk across first. Let’s build one!','橋修好了,可是搖搖晃晃。強壯的劍龍可以先走過去。我們來蓋一隻劍龍!'),['b'],['f']];
+CH[2].flow=[P('nar','Book 3: The Snowy Echo Cave.','第三本書:雪山回音洞。'),
+ P('nar','High on Snow Mountain lived Mama Kiki, an Ankylo with a strong club tail.','高高的雪山上,住著甲龍琪琪媽媽,牠有一條強壯的尾巴。'),
+ P('nar','One night it snowed and snowed. In the morning, her baby was gone!','有一天晚上,雪一直下一直下。早上起來,寶寶不見了!'),
+ P('pip','Brr! Are you my mommy?','好冷!你是我的媽媽嗎?'),P('ankmom','No, little one. But will you help me find my baby?','不是喔,小寶貝。你可以幫我找寶寶嗎?'),
+ P('nar','Look! Footprints and puzzles in the snow. Let’s follow them!','你看!雪地上有腳印和謎題。我們跟著走!'),['g','pattern'],
+ P('nar','The footprints go into a dark cave. Hello? Hello? The cave answers back!','腳印走進一個黑黑的山洞。哈囉?哈囉?山洞也回答!'),P('nar','Listen to the echo sounds, Milo.','洛明,聽聽回音的聲音。'),['g','zhuyin'],
+ P('ankmom','Here are some baby dinos, cold and scared. But they are not mine…','這裡有幾隻恐龍寶寶,又冷又害怕。可是牠們不是我的……'),
+ P('nar','Let’s take care of them first. Kind dinos help everyone.','我們先照顧牠們。善良的恐龍會幫助大家。'),['g','care'],
+ P('nar','The babies feel better! They whisper: Your baby is behind the big snow pile!','寶寶們好多了!牠們小聲說:你的寶寶在大雪堆後面!'),
+ P('nar','The snow pile is too heavy. A strong Ankylo can push it. Let’s build one!','雪堆太重了。強壯的甲龍可以推開它。我們來蓋一隻甲龍!'),['b'],['f']];
+CH[3].flow=[P('nar','Book 4: Pip Finds Mommy.','第四本書:皮皮找媽媽。'),
+ P('nar','Pip had helped so many friends find their babies.','皮皮已經幫好多朋友找到寶寶了。'),P('pip','But where is MY mommy? I miss her so much.','可是我的媽媽在哪裡?我好想她。'),
+ P('nar','Far away, near the smoky volcano, a big roar echoed. ROAR!','遠遠的冒煙火山那邊,傳來一聲大吼。吼!'),P('pip','I know that roar… Mommy? Is that you?','我認得這個吼聲……媽媽?是你嗎?'),
+ P('nar','Hop across the lava stones. Be brave, and be careful!','跳過岩漿石頭。要勇敢,也要小心!'),['g','lava'],
+ P('nar','Now find the way through the twisty lava caves.','現在找出彎彎曲曲的岩漿山洞的路。'),['g','maze'],
+ P('pip','A stone door! It has words on it. Can you read them?','一扇石頭門!上面有字。你會讀嗎?'),['g','mail'],
+ P('nar','The door opens! But big rocks block the way.','門打開了!可是大石頭擋住了路。'),
+ P('nar','A Long Neck can see over the rocks. Let’s build one!','腕龍可以看到石頭後面。我們來蓋一隻腕龍!'),['b'],['f']];
+[['The End. When friends work together, big problems get small.','完。朋友一起合作,大問題就會變小。'],['The End. Fixing things carefully keeps everyone safe.','完。小心修好東西,大家才會安全。'],
+ ['The End. Being kind to others brings kindness back.','完。對別人好,別人也會對你好。'],['The End. No matter how far apart, families find each other.','完。不管離得多遠,家人總會找到彼此。']].forEach((l,i)=>CH[i].finale.push(['nar',l[0],l[1]]));
+CAST.neckmom.nm=['Mama Lulu','露露媽媽'];CAST.ptmom.nm=['Mama Pia','皮亞媽媽'];CAST.ankmom.nm=['Mama Kiki','琪琪媽媽'];
+OPENING.length=0;OPENING.push(['pip','Hi Milo! I’m Pip. These are our dino story books.','嗨,洛明!我是皮皮。這些是我們的恐龍故事書。'],['pip','Tap a book, and I will read it to you!','點一本書,我讀給你聽!']);
 Object.assign(CAST.pip,{nm:['Pip','皮皮']});Object.assign(CAST.neckmom,{nm:['Mommy Long Neck','腕龍媽媽']});Object.assign(CAST.ptmom,{nm:['Mommy Ptero','翼龍媽媽']});
 Object.assign(CAST.ankmom,{nm:['Mommy Ankylo','甲龍媽媽']});Object.assign(CAST.mom,{nm:['Mommy Tricera','三角龍媽媽']});
 // a story page: picture on one page, words on the other; ▶ turns the page, ◀ goes back, swipe works too
 function turnAnim(el){if(REDUCED)return;el.classList.remove('turn');void el.offsetWidth;el.classList.add('turn');}
+let pageTok=0,readTimer=null;
 function scene(area,cast,lines,done,head){musicOff();let i=-1;const prevSolve=SOLVE;show('page');$('pgHead').innerHTML=head||'';
  const draw=(spk,view)=>{const r={width:$('pgArt').clientWidth,height:$('pgArt').clientHeight};const W=Math.max(300,r.width),H=Math.max(180,r.height);let o=areaArt(area,W,H);
   if(view)o+=viewSVG(view,spk,W,H);else{const list=cast.filter(k=>CAST[k]&&CAST[k].t);const base=Math.min(H*.62,W/(list.length+.6)*.9);
@@ -563,8 +612,11 @@ function scene(area,cast,lines,done,head){musicOff();let i=-1;const prevSolve=SO
   $('pgArt').innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${o}</svg>`;};
  const go=d=>{if(i+d<0)return;i+=d;if(i>=lines.length){SOLVE=prevSolve;done&&done();return;}const [who,en,z,view]=lines[i];turnAnim($('pgSpread'));draw(who,view);
   const c=CAST[who];$('pgWho').innerHTML=c&&c.nm?`${c.em} ${bi(c.nm[0],c.nm[1])}`:'';$('pgLine').innerHTML=bi(en,z);$('pgNum').textContent=`${i+1} / ${lines.length}`;
-  $('pgPrev').style.visibility=i?'visible':'hidden';say(en,z,null,c&&c.pitch);};
- $('pgNext').onclick=()=>{SFX.page();go(1);};$('pgPrev').onclick=()=>{SFX.page();go(-1);};
+  $('pgPrev').style.visibility=i?'visible':'hidden';const tok=++pageTok;clearTimeout(readTimer);
+  say(en,z,null,c&&c.pitch,()=>{if(S.autoRead!==false&&tok===pageTok&&SCREEN==='page')readTimer=setTimeout(()=>{if(tok===pageTok&&SCREEN==='page'){SFX.page();go(1);}},1400);});};
+ $('pgAuto').textContent=S.autoRead!==false?'🔊 Read to me ✓':'🔊 Read to me';$('pgAuto').classList.toggle('on',S.autoRead!==false);
+ $('pgAuto').onclick=()=>{S.autoRead=S.autoRead===false;save();$('pgAuto').textContent=S.autoRead?'🔊 Read to me ✓':'🔊 Read to me';$('pgAuto').classList.toggle('on',S.autoRead);if(S.autoRead){pageTok++;const t=pageTok;readTimer=setTimeout(()=>{if(t===pageTok&&SCREEN==='page'){SFX.page();go(1);}},1500);}else{pageTok++;clearTimeout(readTimer);}};
+ $('pgNext').onclick=()=>{pageTok++;SFX.page();go(1);};$('pgPrev').onclick=()=>{pageTok++;SFX.page();go(-1);};
  let sx=null;$('pgSpread').onpointerdown=e=>{sx=e.clientX;};$('pgSpread').onpointerup=e=>{if(sx===null)return;const dx=e.clientX-sx;sx=null;if(Math.abs(dx)>60){SFX.page();go(dx<0?1:-1);}};
  SOLVE=()=>$('pgNext').click();go(1);}
 
@@ -664,7 +716,7 @@ function bookSVG(ci,x,yb,w,h,state){const c=CH[ci];const y=yb-h;const cw=w-24,ch
  const ps=chh*.32/100;art+=`<g transform="translate(${cw*.14},${chh*.92-80*ps}) scale(${ps})">${dinoSVG('babytrike',PIPC)}</g>`;
  const pic=`<svg x="${ax}" y="${ay}" width="${cw}" height="${chh}" viewBox="0 0 ${cw} ${chh}" preserveAspectRatio="xMidYMid slice">${art}</svg><rect x="${ax}" y="${ay}" width="${cw}" height="${chh}" rx="6" fill="none" stroke="${INK}" stroke-width="2.4"/>`;
  const fs=w*.12;const plate=crayon(subdiv([[x+12,y+chh+28],[x+w-12,y+chh+28],[x+w-12,yb-14],[x+12,yb-14]],2),'#fffdf6',2)+
-  `<text x="${x+w/2}" y="${y+chh+28+fs*1.3}" text-anchor="middle" font-size="${fs*.8}" font-weight="900" fill="${INK}">${ci+1} · ${c.en.replace(' Station','')}</text>${svgRuby(c.zh.replace('站',''),x+w/2,y+chh+28+fs*2.85,fs*.9,'middle')}`;
+  `<text x="${x+w/2}" y="${y+chh+28+fs*1.2}" text-anchor="middle" font-size="${Math.min(fs*.72,(w-34)/c.title[0].length*1.85)}" font-weight="900" fill="${INK}">${c.title[0]}</text>${svgRuby(c.title[1],x+w/2,y+chh+28+fs*2.75,Math.min(fs*.8,(w-30)/c.title[1].length/1.08),'middle')}`;
  let book=cover+pic+plate;
  if(state==='lock')book=sketchify(book)+`<g opacity=".85"><path d="M${x} ${y+h*.42}H${x+w}M${x+w*.5} ${y}V${yb}" stroke="#e8590c" stroke-width="${w*.05}" opacity=".55"/>${crayon(ellPts(x+w*.5,y+h*.42,w*.12,w*.12,14),'#ffa94d',2)}<text x="${x+w*.5}" y="${y+h*.42+w*.06}" text-anchor="middle" font-size="${w*.15}" font-weight="900" fill="#fff">?</text></g>`;
  else if(state==='new')book=sketchify(book)+`<g class="colorin">${book}</g>`;
@@ -700,7 +752,7 @@ function enter(i){if(i===0)return goZoo();openStation(i-1);}
 let CUR=null;
 function unlockArea(k){if(!S.areas.includes(k)){S.areas.push(k);save();}}
 function needChips(t){const n=needOf(t);return `<div class="need">${Object.keys(n).map(s=>{const have=S.bin[s].length;return `<span class="${have>=n[s]?'ok':''}">${shapeIcon(s,'#ced4da')}${Math.min(have,n[s])}/${n[s]}</span>`;}).join('')}</div>`;}
-const chHead=ci=>`${CH[ci].em} ${bi('Chapter '+(ci+1)+' · '+CH[ci].en,'第'+'一二三四'[ci]+'章 · '+CH[ci].zh)}`;
+const chHead=ci=>`📖 ${bi('Book '+(ci+1)+' · '+CH[ci].title[0],'第'+'一二三四'[ci]+'本書 · '+CH[ci].title[1])}`;
 function openStation(ci){runChapter(ci);}
 function runChapter(ci){CUR=ci;const c=CH[ci];unlockArea(c.key);S.step=S.step||{};if((S.step[ci]||0)>=c.flow.length)S.step[ci]=0;save();flowNext();}
 function flowNext(){const ci=CUR,c=CH[ci];const k=S.step[ci]||0;if(k>=c.flow.length)return goMap();const it=c.flow[k];
