@@ -56,6 +56,17 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
 #mixBox{background:#fff;border-radius:16px;padding:12px;margin-top:12px;box-shadow:0 3px 0 #e6d6bb}
 .mixw{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.mw{background:#f1f3f5;border:2px solid #e6d6bb;padding:0 12px;font-size:15px;min-height:44px}.mw.on{background:#d3f9d8;border-color:#2f9e44}
 .goal{display:flex;gap:6px;flex-wrap:wrap;width:100%;font-size:14px}.goal span{background:#fff;border-radius:999px;padding:4px 10px;box-shadow:0 2px 0 #e6d6bb}.goal .bad{background:#fff5f5}.goal .ok{background:#ebfbee}
+.dirtop{position:sticky;top:-10px;z-index:3;background:#fdf3e1;padding:6px 0 2px;margin-top:-6px}
+@media (max-height:600px){.dirtop{position:static}}
+.code #dPlay2{margin-left:auto}
+.code{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#fff;border-radius:14px;padding:10px;margin:10px 0;box-shadow:0 3px 0 #e6d6bb;min-height:64px}
+.blk{background:#ffe8cc;border:2px solid #e8590c;min-height:52px;padding:2px 10px;font-size:26px;display:flex;align-items:center;gap:4px;position:relative}
+.blk small{font-size:11px;font-weight:800;position:absolute;top:1px;left:5px;color:#a83f06}.blk i{font-size:13px;font-style:normal;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.blk b{font-size:11px;color:#c92a2a}
+.arr{color:#e8590c;font-weight:900}
+.pal{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px;margin-bottom:6px}
+.pb{background:#fff;box-shadow:0 3px 0 #e6d6bb;display:flex;flex-direction:column;align-items:center;gap:0;padding:4px;min-height:64px;font-size:13px;font-weight:700}.pb span{font-size:26px}
+.bq{font-weight:800;color:#e8590c;margin:8px 0 4px}
+.dirbtn{background:#ffe066}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .wtext{font-size:clamp(19px,2.4vw,24px);line-height:1.6;white-space:pre-wrap}
 .wctl{display:flex;gap:10px;align-items:center;justify-content:center;margin:10px 0}
@@ -95,7 +106,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
 #iskip{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#a08b70;font-size:14px;display:none;z-index:2}
 @keyframes pulse{50%{transform:scale(1.06)}}
 @media (max-height:500px){#iskip{bottom:auto;top:8px;right:12px;left:auto;text-align:right}}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b2118;color:#fff;padding:12px 18px;border-radius:14px;opacity:0;transition:.3s;pointer-events:none;z-index:60;max-width:90vw;text-align:center}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#2b2118;color:#fff;padding:12px 18px;border-radius:14px;opacity:0;transition:.3s;pointer-events:none;z-index:60;max-width:90vw;text-align:center}
 .toast.on{opacity:1}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -114,7 +125,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
     <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
     <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
   </div>
-  <p class="ver">Test sample · 測試版 · v0.9</p>
+  <p class="ver">Test sample · 測試版 · v1.0</p>
 </div></section>
 <!-- SHELF -->
 <section id="shelf" class="screen">
@@ -162,7 +173,7 @@ function sticker(src){if(stickers[src])return stickers[src];const o={ready:false
 let AC=null;function boing(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;
   o.type='sine';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(660,t+.12);o.frequency.exponentialRampToValueAtTime(330,t+.3);
   g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}}
-const VERSION='v0.9';
+const VERSION='v1.0';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2400)};
@@ -318,7 +329,7 @@ const val=(v,c)=>typeof v==='function'?v(c):v;
 const curScene=()=>story.scenes[story.scenes.length-1];
 const stepsOf=sc=>(sc.pre?[STEPS.extra[sc.pre]]:[]).concat(STEPS[sc.kind]);
 function newScene(kind){const prev=story.scenes.length?curScene():null;
-  const sc={kind,bg:prev?prev.bg:'meadow',fx:prev&&kind==='middle'&&['stars','snow','rain','bubbles'].includes(prev.fx)?prev.fx:'none',gray:prev?!!prev.gray:false,actors:prev?JSON.parse(JSON.stringify(prev.actors.filter(a=>a.role!=='prop'||a.keep))).map(a=>{delete a.say;delete a.mood;return a}):[],lines:[],step:0};
+  const sc={kind,bg:prev?prev.bg:'meadow',fx:prev&&kind==='middle'&&['stars','snow','rain','bubbles'].includes(prev.fx)?prev.fx:'none',gray:prev?!!prev.gray:false,actors:prev?JSON.parse(JSON.stringify(prev.actors.filter(a=>a.role!=='prop'||a.keep))).map(a=>{delete a.say;delete a.mood;delete a.prog;return a}):[],lines:[],step:0};
   story.scenes.push(sc);return sc}
 function addActor(sc,a){a.id='a'+Math.random().toString(36).slice(2,8);sc.actors.push(a);return a}
 const heroOf=sc=>sc.actors.find(a=>a.role==='hero');
@@ -408,11 +419,38 @@ function mountStage(el,getScene,opts={}){stopStage();const box=document.createEl
     if(ty==='hearts')return{x:rand(40,W-40),y:H+20,vy:-rand(50,90),life:9,e:'💖',s:rand(22,34),p:rand(0,6)};
     if(ty==='confetti')return{x:rand(0,W),y:-10,vx:rand(-40,40),vy:rand(120,200),s:rand(6,11),life:6,r:rand(0,6),vr:rand(-8,8),c};
     if(ty==='candy')return{x:rand(0,W),y:-30,vx:rand(-15,15),vy:rand(90,140),life:8,e:Math.random()<.5?'🍬':'🍭',s:rand(24,34),r:0,vr:rand(-2,2)};return null}
+  const DUR={right:1,left:1,jump:.8,flip:.9,spin:.8,dance:1.6,grow:.4,shrink:.4,hide:.5,show:.5,up:.9,down:.9,say:2.2,happy:.6,sad:.6,angry:.6,wow:.6,sleep:2,wait:1};
+  const MOODS={happy:'😄',sad:'😢',angry:'😡',wow:'😲',sleep:'💤'};
+  S.play=()=>{const sc=getScene();if(!sc)return;for(const a of sc.actors){const s=stOf(a);Object.assign(s,{x:a.x*W,y:a.y*H,pc:0,bt:0,k:1,alpha:1,rot:0,lift:0,mood2:null,sayT:0,h:0})}S.running=true};
+  S.reset=()=>{S.running=false;const sc=getScene();if(!sc)return;for(const a of sc.actors){const s=stOf(a);Object.assign(s,{x:a.x*W,y:a.y*H,pc:0,bt:0,k:1,alpha:1,rot:0,lift:0,mood2:null,sayT:0,h:0})}};
+  function runProg(a,s,dt,t){const P=a.prog;if(s.pc>=P.length){s.h=0;return}const b=P[s.pc];
+    if(b.k==='loop'){s.pc=0;s.bt=0;return}
+    if(s.bt===0){s.fx=s.x;s.fy=s.y;s.fk=s.k||1;s.fl=s.lift||0;s.D=DUR[b.k]||1;
+      if(b.k==='goto'||b.k==='to'){let tx=b.x*W,ty=b.y*H;if(b.k==='to'){const o=S.st[b.id];if(o){tx=o.x+(s.x<o.x?-110:110);ty=o.y}else{tx=s.x;ty=s.y}}s.tx=clamp(tx,40,W-40);s.ty=clamp(ty,H*.3,H-4);s.D=Math.max(.5,Math.hypot(s.tx-s.x,s.ty-s.y)/230)}
+      if(b.k==='say'){s.sayT=2.2;s.sayTxt=b.t||'…'}if(MOODS[b.k])s.mood2=MOODS[b.k];if(b.k==='jump'||b.k==='flip')boing()}
+    s.bt+=dt;const k=Math.min(1,s.bt/s.D),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    switch(b.k){
+      case'right':case'left':{const dx=b.k==='right'?170:-170;s.face=dx>0?1:-1;s.x=clamp(s.fx+dx*e,40,W-40);s.h=Math.abs(Math.sin(k*Math.PI*3))*16;break}
+      case'goto':case'to':{if(Math.abs(s.tx-s.fx)>2)s.face=s.tx>s.fx?1:-1;s.x=s.fx+(s.tx-s.fx)*e;s.y=s.fy+(s.ty-s.fy)*e;s.h=Math.abs(Math.sin(k*Math.PI*Math.max(2,s.D*3)))*16;break}
+      case'jump':s.h=Math.sin(k*Math.PI)*130;if(k>=1)s.sqv-=10;break;
+      case'flip':s.h=Math.sin(k*Math.PI)*140;s.rot=k*Math.PI*2*(s.face||1);if(k>=1)s.rot=0;break;
+      case'spin':s.rot=e*Math.PI*2;if(k>=1)s.rot=0;break;
+      case'dance':s.rot=Math.sin(k*Math.PI*8)*.3;s.h=Math.abs(Math.sin(k*Math.PI*6))*22;if(k>=1)s.rot=0;break;
+      case'grow':s.k=s.fk+(Math.min(2.2,s.fk*1.35)-s.fk)*e;break;
+      case'shrink':s.k=s.fk+(Math.max(.45,s.fk/1.35)-s.fk)*e;break;
+      case'hide':s.alpha=1-e;break;case'show':s.alpha=e;break;
+      case'up':s.lift=s.fl+(Math.min(300,s.fl+180)-s.fl)*e;s.h=0;break;
+      case'down':s.lift=s.fl*(1-e);s.h=0;break;
+      case'sleep':s.h=0;if(Math.random()<dt*2)parts.push({x:s.x+30,y:s.y-a.s*H,vx:.6,vy:-1,t:0,e:'💤'});break;
+      default:s.h=0}
+    if(k>=1){s.pc++;s.bt=0}}
   let last=performance.now();
   function loop(now){S.raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;const t=now/1000,sc=getScene();if(!sc)return;
     const ty=sc.fx||'none';
-    for(const a of sc.actors){const s=stOf(a);s.pop=Math.min(1,s.pop+dt*3);s.sqv+=(-180*s.sq-12*s.sqv)*dt;s.sq+=s.sqv*dt;if(reduced){s.h=0;continue}
+    for(const a of sc.actors){const s=stOf(a);if(s.sayT>0)s.sayT-=dt;s.pop=Math.min(1,s.pop+dt*3);s.sqv+=(-180*s.sq-12*s.sqv)*dt;s.sq+=s.sqv*dt;if(reduced){s.h=0;continue}
       if(s.jump>0){s.hopT+=dt*2.2;s.h=Math.sin(Math.min(1,s.hopT)*Math.PI)*120*s.jump;if(s.hopT>=1){s.hopT=0;s.jump=0;s.sqv-=10}continue}
+      if(S.running&&a.prog&&a.prog.length){runProg(a,s,dt,t);continue}
+      if(['hero','friend','villain'].includes(a.role)||a.img){s.h=a.m==='fly'?70+Math.sin(t*1.5+s.phase)*10:0;continue}
       const m=a.m;if(m==='wander'){if(s.target){const dx=s.target.x-s.x,dy=s.target.y-s.y,dd=Math.hypot(dx,dy);if(Math.abs(dx)>2)s.face=dx>0?1:-1;
           if(dd<3){s.target=null;s.h=0;s.wait=rand(.8,2.5)}else{const sp=Math.min(dd,90*dt);s.x+=dx/dd*sp;s.y+=dy/dd*sp;s.hopT+=dt*2.4;if(s.hopT>=1){s.hopT-=1;s.sqv-=4}s.h=Math.sin(s.hopT*Math.PI)*18}}
         else{s.wait-=dt;s.h=0;if(s.wait<=0)s.target={x:clamp(a.x*W+rand(-170,170),60,W-60),y:clamp(a.y*H+rand(-35,25),H*.5,H-6)}}}
@@ -430,13 +468,14 @@ function mountStage(el,getScene,opts={}){stopStage();const box=document.createEl
     if(ty==='stars'||ty==='storm'){g.fillStyle=ty==='stars'?'rgba(16,24,70,.5)':'rgba(30,36,60,.38)';g.fillRect(0,0,W,H)}
     if(ty==='stars'){for(const s of starsA){g.globalAlpha=.5+.5*Math.sin(t*2.5+s.p);circ(g,s.x,s.y,s.r,'#fff')}g.globalAlpha=1;if(shoot){const q=shoot.t/.9;g.strokeStyle=`rgba(255,255,255,${1-q})`;g.lineWidth=3;g.beginPath();g.moveTo(shoot.x-q*300,shoot.y+q*120);g.lineTo(shoot.x-q*300+70,shoot.y+q*120-28);g.stroke()}}
     const order=[...sc.actors].sort((p,q)=>stOf(p).y-stOf(q).y);
-    for(const a of order){const s=stOf(a),sp=spriteOf(a);if(!sp||!sp.ready)continue;const hh=a.s*H*(.3+.7*easeBack(s.pop)),ww=hh*sp.c.width/sp.c.height;
-      if(a.m!=='fly'&&a.m!=='float'){const ss=1-clamp(s.h/160,0,.6);g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(s.x,s.y,ww*.38*ss,ww*.09*ss,0,0,7);g.fill()}
-      g.save();g.translate(s.x,s.y-s.h);g.rotate(reduced?0:Math.sin(t*.8+s.phase)*(a.m==='fly'?.12:.05));const br=a.m==='stay'&&!reduced?Math.sin(t*2.2+s.phase)*.025:0;
-      g.scale((1-s.sq*.5-br*.5)*s.face*(a.e&&!a.img?-1:1),1+s.sq+br);g.drawImage(sp.c,-ww/2,-hh,ww,hh);g.restore();
-      if(a.mood&&!reduced){g.font='38px serif';g.textAlign='center';g.fillText(a.mood,s.x+ww*.42,s.y-s.h-hh*.8)}
-      if(a.say&&sc.sayId===a.id){g.font='700 24px -apple-system,system-ui,"PingFang TC",sans-serif';g.textAlign='center';const lines=wrap(g,mix(a.say),300),bw=Math.max(...lines.map(l=>g.measureText(l).width))+30,bh=lines.length*28+18;
-        let bx=clamp(s.x-bw/2,8,W-bw-8),by=Math.max(opts.caption?96:8,s.y-s.h-hh-bh-22);g.fillStyle='#fff';g.strokeStyle='#2b2118';g.lineWidth=3;g.beginPath();g.roundRect?g.roundRect(bx,by,bw,bh,16):g.rect(bx,by,bw,bh);g.fill();g.stroke();
+    for(const a of order){const s=stOf(a),sp=spriteOf(a);if(!sp||!sp.ready)continue;const hh=a.s*H*(.3+.7*easeBack(s.pop))*(s.k||1),ww=hh*sp.c.width/sp.c.height;const al=s.alpha??1;if(al<.02)continue;g.globalAlpha=al;
+      if(a.m!=='fly'&&a.m!=='float'&&!(s.lift>0)){const ss=1-clamp(s.h/160,0,.6);g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(s.x,s.y,ww*.38*ss,ww*.09*ss,0,0,7);g.fill()}
+      g.save();g.translate(s.x,s.y-s.h-(s.lift||0));g.rotate((reduced?0:Math.sin(t*.8+s.phase)*(a.m==='fly'?.12:.05))+(s.rot||0));const br=a.m==='stay'&&!reduced?Math.sin(t*2.2+s.phase)*.025:0;
+      g.scale((1-s.sq*.5-br*.5)*s.face*(a.e&&!a.img?-1:1),1+s.sq+br);g.drawImage(sp.c,-ww/2,-hh,ww,hh);g.restore();g.globalAlpha=1;
+      if(S.director&&S.sel===a.id){g.setLineDash([10,8]);g.lineWidth=4;g.strokeStyle='#e8590c';g.strokeRect(s.x-ww/2-6,s.y-s.h-(s.lift||0)-hh-6,ww+12,hh+12);g.setLineDash([])}
+      const md=s.mood2||a.mood;if(md&&!reduced&&al>.5){g.font='38px serif';g.textAlign='center';g.fillText(md,s.x+ww*.42,s.y-s.h-(s.lift||0)-hh*.8)}
+      const sayTxt=s.sayT>0?s.sayTxt:(a.say&&sc.sayId===a.id&&!S.running?a.say:'');if(sayTxt&&al>.5){g.font='700 24px -apple-system,system-ui,"PingFang TC",sans-serif';g.textAlign='center';const lines=wrap(g,mix(sayTxt),300),bw=Math.max(...lines.map(l=>g.measureText(l).width))+30,bh=lines.length*28+18;
+        let bx=clamp(s.x-bw/2,8,W-bw-8),by=Math.max(opts.caption?96:8,s.y-s.h-(s.lift||0)-hh-bh-22);g.fillStyle='#fff';g.strokeStyle='#2b2118';g.lineWidth=3;g.beginPath();g.roundRect?g.roundRect(bx,by,bw,bh,16):g.rect(bx,by,bw,bh);g.fill();g.stroke();
         g.beginPath();g.moveTo(clamp(s.x-12,bx+14,bx+bw-30),by+bh-2);g.lineTo(clamp(s.x,bx+20,bx+bw-20),by+bh+18);g.lineTo(clamp(s.x+12,bx+30,bx+bw-14),by+bh-2);g.fill();g.stroke();
         g.fillStyle='#2b2118';lines.forEach((l,k)=>g.fillText(l,bx+bw/2,by+32+k*28))}
       if(a.name&&opts.labels!==false){g.font='700 20px -apple-system,system-ui,"PingFang TC",sans-serif';g.textAlign='center';const tw=g.measureText(a.name).width+16;g.fillStyle='rgba(255,255,255,.85)';g.beginPath();g.roundRect?g.roundRect(s.x-tw/2,s.y+6,tw,26,13):g.rect(s.x-tw/2,s.y+6,tw,26);g.fill();g.fillStyle='#2b2118';g.fillText(a.name,s.x,s.y+25)}}
@@ -454,7 +493,13 @@ function mountStage(el,getScene,opts={}){stopStage();const box=document.createEl
       const cy=14;g.fillStyle='rgba(0,0,0,.55)';g.fillRect(20,cy,W-40,bh);g.fillStyle='#fff';words.forEach((w2,i)=>g.fillText(w2,W/2,cy+34+i*30))}}}
   function wrap(g2,txt,mw){const out=[];let cur='';const tokens=/[一-鿿]/.test(txt)?[...txt]:txt.split(' ');const sep=/[一-鿿]/.test(txt)?'':' ';
     for(const tk of tokens){const tt=cur?cur+sep+tk:tk;if(g2.measureText(tt).width>mw&&cur&&!/^[,。!?、:;」,.!?]$/.test(tk)){out.push(cur);cur=tk}else cur=tt}if(cur)out.push(cur);return out.slice(-3)}
+  let drag=null;
+  cv.addEventListener('pointermove',e=>{if(!drag)return;const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width,py=(e.clientY-r.top)*H/r.height;drag.s.x=clamp(px+drag.ox,40,W-40);drag.s.y=clamp(py+drag.oy,H*.3,H-4)});
+  const endDrag=()=>{if(!drag)return;drag.a.x=drag.s.x/W;drag.a.y=drag.s.y/H;drag=null;S.onChange&&S.onChange()};cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
   cv.addEventListener('pointerdown',e=>{const sc=getScene();if(!sc)return;const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width,py=(e.clientY-r.top)*H/r.height;
+    if(S.director){if(S.pick){const f=S.pick;S.pick=null;parts.push({x:px,y:py,vx:0,vy:-1,t:0,e:'📍'});f(px/W,py/H);return}
+      for(const a of[...sc.actors].sort((p,q)=>stOf(q).y-stOf(p).y)){const s=stOf(a),sp=spriteOf(a);if(!sp||!sp.ready)continue;const hh=a.s*H*(s.k||1),ww=hh*sp.c.width/sp.c.height;
+        if(px>s.x-ww/2&&px<s.x+ww/2&&py>s.y-s.h-(s.lift||0)-hh&&py<s.y-s.h-(s.lift||0)){e.preventDefault();cv.setPointerCapture(e.pointerId);S.running=false;drag={a,s,ox:s.x-px,oy:s.y-py};S.sel=a.id;S.onSel&&S.onSel(a.id);return}}return}
     for(const a of[...sc.actors].reverse()){const s=stOf(a),sp=spriteOf(a);if(!sp||!sp.ready)continue;const hh=a.s*H,ww=hh*sp.c.width/sp.c.height;
       if(px>s.x-ww/2&&px<s.x+ww/2&&py>s.y-s.h-hh&&py<s.y-s.h){s.jump=1;s.hopT=0;s.target=null;boing();for(let i=0;i<7;i++)parts.push({x:s.x,y:s.y-hh*.7,vx:rand(-3,3),vy:rand(-6,-2),t:0,e:['💖','⭐','✨'][i%3]});if(a.name)speak(a.name);break}}});
   S.raf=requestAnimationFrame(loop);return S}
@@ -488,9 +533,38 @@ async function openShelf(){await saveNow();const K=KIDS[kid];$('shelfWho').textC
   show('shelf')}
 
 /* ================= build: half picture, half decision ================= */
+const CODE=[['move','Move 移動',[['right','➡️','walk right','往右走'],['left','⬅️','walk left','往左走'],['jump','⬆️','jump','跳一下'],['goto','🎯','go to a spot','走到那裡'],['up','🎈','fly up','飛起來'],['down','⬇️','land','降落']]],
+  ['fun','Fun 好玩',[['spin','🔄','spin','轉圈'],['flip','🤸','flip','翻跟斗'],['dance','💃','dance','跳舞'],['grow','📏','bigger','變大'],['shrink','🤏','smaller','變小'],['hide','👻','disappear','消失'],['show','✨','appear','出現'],['sleep','😴','sleep','睡覺']]],
+  ['talk','Talk & feel 說話和心情',[['say','💬','say…','說話'],['happy','😄','happy','開心'],['sad','😢','sad','難過'],['angry','😡','angry','生氣'],['wow','😲','surprised','驚訝']]],
+  ['ctrl','Control 控制',[['wait','⏱️','wait','等一下'],['loop','🔁','repeat forever','一直重複']]]];
+const CODEMAP=Object.fromEntries(CODE.flatMap(g=>g[2].map(b=>[b[0],b])));
+let director=false;
+function codeIcon(b){if(b.k==='to'){const a=curScene().actors.find(x=>x.id===b.id);return'👉'+(a?(a.e||'🎨'):'')}if(b.k==='say')return'💬';return(CODEMAP[b.k]||['','❓'])[1]}
+function renderDirector(){const sc=curScene(),z=Z(),P=$('bPanel');stage.director=true;
+  const cast=sc.actors.filter(a=>a.role!=='goal');if(!cast.find(a=>a.id===stage.sel))stage.sel=(cast[0]||{}).id;const a=cast.find(x=>x.id===stage.sel);
+  stage.onSel=()=>renderDirector();stage.onChange=()=>touch();
+  const nm=x=>x.name||(x.e||'🎨');
+  P.innerHTML=`<div class="q"><span>🎬 ${z?'導演時間!讓角色動起來':'Director time! Make them move'}</span></div>
+    <p class="ver" style="margin:-4px 0 8px">${z?'選一個角色,再一格一格加動作(就像寫程式)。可以拖曳角色換起點。':'Pick a character, then add moves one by one, like coding. Drag a character to set where it starts.'}</p>
+    <div class="dirtop"><div class="mixw">${cast.map(x=>`<button class="mw${x.id===stage.sel?' on':''}" data-who="${x.id}">${x.img?'🎨':x.e} ${esc(nm(x))}</button>`).join('')}</div>
+    ${a?`<div class="code">${(a.prog||[]).length?(a.prog||[]).map((b,i)=>`<button class="blk" data-del="${i}" title="remove"><small>${i+1}</small>${codeIcon(b)}${b.k==='say'?`<i>${esc(b.t)}</i>`:''}<b>✕</b></button>`).join('<span class="arr">→</span>'):`<span class="ver">${z?`還沒有動作。點下面的積木,幫 ${esc(nm(a))} 寫程式!`:`No moves yet. Tap blocks below to program ${esc(nm(a))}!`}</span>`}<button class="btn go sm" id="dPlay2">▶</button></div></div>
+    ${CODE.map(g=>`<div class="bq">${g[1]}</div><div class="pal">${g[2].map(b=>`<button class="pb" data-k="${b[0]}"><span>${b[1]}</span>${z?b[3]:b[2]}</button>`).join('')}${g[0]==='move'?cast.filter(x=>x.id!==a.id).map(x=>`<button class="pb" data-to="${x.id}"><span>👉${x.img?'🎨':x.e}</span>${z?`走到${esc(nm(x))}旁邊`:`go to ${esc(nm(x))}`}</button>`).join(''):''}</div>`).join('')}`:''}
+    <div class="tools"><button class="btn go" id="dPlay">▶ ${z?'全部播放':'Play all'}</button><button class="btn sm" id="dUndo1">↩️ ${z?'刪掉最後一個':'Remove last'}</button><button class="btn sm" id="dClear1">🗑️ ${z?'清空':'Clear'}</button><button class="btn green" id="dDone1">✓ ${z?'完成':'Done'}</button></div>`;
+  const add=b=>{a.prog=a.prog||[];if(a.prog.length>=24){toast(z?'最多 24 個動作':'Up to 24 moves');return}a.prog.push(b);touch();renderDirector();stage.play()};
+  P.querySelectorAll('[data-who]').forEach(x=>x.onclick=()=>{stage.sel=x.dataset.who;renderDirector()});
+  P.querySelectorAll('[data-k]').forEach(x=>x.onclick=()=>{const k=x.dataset.k;
+    if(k==='say'){const t=prompt(z?'要說什麼?':'What should they say?',z?'嗨!':'Hi!');if(t&&t.trim())add({k,t:t.trim().slice(0,60)});return}
+    if(k==='goto'){toast(z?'點畫面上要去的地方':'Now tap the picture where to go');stage.pick=(gx,gy)=>add({k,x:+gx.toFixed(3),y:+gy.toFixed(3)});return}
+    add({k})});
+  P.querySelectorAll('[data-to]').forEach(x=>x.onclick=()=>add({k:'to',id:x.dataset.to}));
+  P.querySelectorAll('[data-del]').forEach(x=>x.onclick=()=>{a.prog.splice(+x.dataset.del,1);touch();renderDirector();stage.play()});
+  $('dPlay').onclick=()=>stage.play();if($('dPlay2'))$('dPlay2').onclick=()=>stage.play();
+  $('dUndo1').onclick=()=>{if(a&&a.prog&&a.prog.length){a.prog.pop();touch();renderDirector();stage.play()}};
+  $('dClear1').onclick=()=>{if(a){a.prog=[];touch();renderDirector();stage.reset()}};
+  $('dDone1').onclick=()=>{director=false;stage.director=false;stage.pick=null;renderBuild()}}
 function openBuild(){show('build');mountStage($('bStage'),()=>story&&curScene(),{caption:true});renderBuild()}
 function sceneName(i){const sc=story.scenes[i];if(sc.kind==='begin')return Z()?'開頭':'Beginning';if(sc.kind==='end')return Z()?'結局':'Ending';const n=story.scenes.slice(0,i+1).filter(s=>s.kind==='middle').length;return Z()?`第 ${n} 章`:`Chapter ${n}`}
-function renderBuild(anim){if($('mixBox'))$('mixBox').style.display='none';const sc=curScene(),steps=stepsOf(sc),z=Z(),c=ctx();
+function renderBuild(anim){if(director){renderDirector();return}if(stage)stage.director=false;if($('mixBox'))$('mixBox').style.display='none';const sc=curScene(),steps=stepsOf(sc),z=Z(),c=ctx();
   $('bTitle').textContent=story.title||(z?'新故事':'New story');
   const dots=steps.map((_,i)=>`<i class="${i<sc.step?'done':i===sc.step?'cur':''}"></i>`).join('');
   $('bProg').innerHTML=`<span class="sc">${story.scenes.map((s,i)=>`<b class="${i===story.scenes.length-1?'cur':''}">${s.kind==='begin'?'🌅':s.kind==='end'?'🏁':'📖'}</b>`).join('')}</span><span>${esc(sceneName(story.scenes.length-1))}</span><span class="dots">${dots}</span>`;
@@ -501,7 +575,7 @@ function renderBuild(anim){if($('mixBox'))$('mixBox').style.display='none';const
     P.innerHTML=`${sc.step===0&&story.scenes.length===1?`<div class="langpick"><span>${z?'故事語言':'Story language'}:</span><button class="lp${z?'':' on'}" data-lg="en">🇺🇸 English</button><button class="lp${z?' on':''}" data-lg="zh">🇹🇼 中文</button></div>`:''}<div class="q"><span>${esc(q)}</span><button class="btn sm" id="qSay">🔊</button></div>
       <div class="opts">${DRAWABLE[st.id]?`<button class="opt drawown" id="drawOwn"><span class="e">🎨</span><span class="t">${z?'畫我自己的':'Draw my own'}</span></button>`:''}${st.opts.map((o,i)=>`<button class="opt" data-o="${i}"><span class="e">${o[0]}</span><span class="t">${esc(st.id==='hero'?(z?o[4]:o[3]):(z?o[2]:o[1]))}</span></button>`).join('')}
 </div>
-      <div class="tools">${story.scenes.length>1||sc.step?`<button class="btn sm" id="undo">↩️ ${z?'上一步':'Undo'}</button>`:''}<button class="btn sm" id="own">✏️ ${z?'我自己的點子':'My own idea'}</button>${story.scenes.some(s=>s.lines.length)?`<button class="btn sm" id="mixBtn">🔤 ${z?'混合語言 English':'Mix words 中文'}</button>`:''}${sc.lines.length?`<button class="btn sm" id="words">📝 ${z?'改文字':'Edit words'}</button>`:''}
+      <div class="tools"><button class="btn sm dirbtn" id="dirBtn">🎬 ${z?'導演':'Direct'}</button>${story.scenes.length>1||sc.step?`<button class="btn sm" id="undo">↩️ ${z?'上一步':'Undo'}</button>`:''}<button class="btn sm" id="own">✏️ ${z?'我自己的點子':'My own idea'}</button>${story.scenes.some(s=>s.lines.length)?`<button class="btn sm" id="mixBtn">🔤 ${z?'混合語言 English':'Mix words 中文'}</button>`:''}${sc.lines.length?`<button class="btn sm" id="words">📝 ${z?'改文字':'Edit words'}</button>`:''}
 ${story.hero?`<button class="btn sm" id="rename">🏷️ ${z?'改名字':'Rename'}</button>`:''}</div>`;
     P.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>choose(+b.dataset.o));$('qSay').onclick=()=>speak(q);
     if($('drawOwn'))$('drawOwn').onclick=()=>drawOwn(st.id);
@@ -509,7 +583,7 @@ ${story.hero?`<button class="btn sm" id="rename">🏷️ ${z?'改名字':'Rename
   else if(sc.kind!=='end'){P.innerHTML=`<div class="q"><span>${z?'這一章完成了!接下來呢?':'Chapter done! What next?'}</span></div>
       <div class="big2"><button class="opt big go2" id="more"><span class="e">➡️</span><span class="t">${z?'在這裡繼續':'Keep going here'}</span></button><button class="opt big go2" id="moreGo"><span class="e">🗺️</span><span class="t">${z?'去新的地方':'Go somewhere new'}</span></button>
         <button class="opt big go2" id="moreMeet"><span class="e">👋</span><span class="t">${z?'有新角色出現':'Someone new shows up'}</span></button><button class="opt big end2" id="finish"><span class="e">🏁</span><span class="t">${z?'結束故事':'End the story'}</span></button></div>
-      <div class="tools"><button class="btn sm" id="undo">↩️ ${z?'上一步':'Undo'}</button><button class="btn sm" id="words">📝 ${z?'改文字':'Edit words'}</button><button class="btn sm" id="peek">▶ ${z?'看到目前為止':'Watch so far'}</button>${story.scenes.some(s=>s.lines.length)?`<button class="btn sm" id="mixBtn">🔤 ${z?'混合語言 English':'Mix words 中文'}</button>`:''}</div>`;
+      <div class="tools"><button class="btn sm dirbtn" id="dirBtn">🎬 ${z?'導演':'Direct'}</button><button class="btn sm" id="undo">↩️ ${z?'上一步':'Undo'}</button><button class="btn sm" id="words">📝 ${z?'改文字':'Edit words'}</button><button class="btn sm" id="peek">▶ ${z?'看到目前為止':'Watch so far'}</button>${story.scenes.some(s=>s.lines.length)?`<button class="btn sm" id="mixBtn">🔤 ${z?'混合語言 English':'Mix words 中文'}</button>`:''}</div>`;
     $('more').onclick=()=>{saveHist();newScene('middle');touch();renderBuild()};
     $('moreGo').onclick=()=>{saveHist();newScene('middle').pre='go';touch();renderBuild()};
     $('moreMeet').onclick=()=>{saveHist();newScene('middle').pre='meet';touch();renderBuild()};
@@ -521,6 +595,7 @@ ${story.hero?`<button class="btn sm" id="rename">🏷️ ${z?'改名字':'Rename
     $('watchAll').onclick=()=>watch(0);$('retitle').onclick=()=>{const t=prompt(z?'故事的名字:':'Story name:',story.title);if(t){story.title=t.trim();touch();renderBuild()}};
     setTimeout(()=>{if($('watchAll')&&$('build').classList.contains('on')&&kid==='milo')watch(0)},1500)}
   if($('mixBtn'))$('mixBtn').onclick=mixPanel;
+  if($('dirBtn'))$('dirBtn').onclick=()=>{if(!curScene().actors.length){toast(z?'先選一個主角':'Pick a hero first');return}director=true;renderDirector()};
   if($('undo'))$('undo').onclick=()=>{const h=hist.pop();if(!h){toast(z?'沒有上一步了':'Nothing to undo');return}const o=JSON.parse(h);Object.assign(story,{trait:null,problem:null,solved:false},o);story.done=false;touch();renderBuild()};
   if($('own'))$('own').onclick=()=>{const t=prompt(z?'寫下你的點子:':'Type your own idea:','');if(t&&t.trim()){saveHist();sc.lines.push(t.trim());sc.step++;touch();renderBuild()}};
   if($('words'))$('words').onclick=()=>{const t=prompt(z?'改這一段的文字:':'Change the words for this scene:',sc.lines.join(z?'':' '));if(t!=null){sc.lines=t.trim()?[t.trim()]:[];touch();renderBuild()}};
@@ -532,7 +607,7 @@ $('bBack').onclick=()=>{saveNow();openShelf()};
 /* ================= watch: the whole story, scene by scene ================= */
 let wi=0,wTimer=null,wAuto=true,wPeek=false;
 function watch(i,peek){wPeek=!!peek;show('watch');wi=i;$('wTitle').textContent=story.title||'';mountStage($('wStage'),()=>story.scenes[wi],{quiet:false});wShow()}
-function wShow(){clearTimeout(wTimer);const sc=story.scenes[wi],z=Z(),lastOne=wi===story.scenes.length-1;
+function wShow(){clearTimeout(wTimer);const sc=story.scenes[wi];setTimeout(()=>stage&&stage.play&&stage.play(),50);const _z0=0,z=Z(),lastOne=wi===story.scenes.length-1;
   $('wText').textContent=mix(sc.lines.join(z?'':' '));$('wCount').textContent=`${wi+1} / ${story.scenes.length}`;
   $('wEnd').style.display=lastOne?'flex':'none';$('wEnd').innerHTML=lastOne?(story.done&&!wPeek?`<div class="theend">🎬 ${z?'全劇終':'The End'} 🎉</div>`:'')+`<div class="row" style="justify-content:center"><button class="btn go" id="wAgain">↻ ${z?'再看一次':'Watch again'}</button><button class="btn" id="wEdit">✏️ ${story.done?(z?'修改故事':'Change story'):(z?'繼續寫':'Keep writing')}</button><button class="btn" id="wShelf">📚 ${z?'我的故事':'My stories'}</button></div>`:'';
   if(lastOne){$('wAgain').onclick=()=>{wi=0;wShow()};$('wEdit').onclick=()=>{hist=[];if(story.done){story.done=false;if(curScene().kind==='end')story.scenes.pop()}touch();openBuild()};$('wShelf').onclick=()=>openShelf()}
