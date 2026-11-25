@@ -120,6 +120,7 @@ main{max-width:1200px;margin:0 auto;padding:28px 18px 40px}
 }
 .slot{position:relative;display:flex;flex-direction:column}
 .slot>.cart{flex:1}
+.upd{display:block;text-align:center;font-size:.75rem;font-weight:700;color:var(--muted);margin-top:6px}
 .fav{
   position:absolute;top:8px;right:8px;z-index:2;
   width:48px;height:48px;border-radius:50%;
@@ -339,9 +340,30 @@ const GCAT = {
   "games/family-zoo/":"art","https://aronliu21-arch.github.io/drawing-game-/":"art","games/runway-sketch/":"art",
   "games/life-skills/":"life","games/critter-grove/":"life","games/game-room/":"life"
 };
+// when each game was last changed (written by tools/stamp-updated.py on every push); newest first in the Tester list
+let UPD = {}; try { UPD = JSON.parse(localStorage.getItem("ka.updated") || "{}"); } catch (e) {}
+(async () => {
+  for (const u of ["https://raw.githubusercontent.com/aronliu21-arch/kids-arcade/main/updated.json?t=" + Date.now(), "updated.json?t=" + Date.now()]) {
+    try { const r = await fetch(u, {cache: "no-store"}); if (!r.ok) continue; UPD = await r.json();
+      try { localStorage.setItem("ka.updated", JSON.stringify(UPD)); } catch (e) {}
+      if (location.hash.slice(1) === "tester") renderGrid("tester"); return; } catch (e) {}
+  }
+})();
+const updTime = g => Date.parse(UPD[g.url] || "") || 0;
+function updLabel(g){ const t = updTime(g); if (!t) return ""; const d = new Date(t), now = new Date();
+  const day = d.toDateString() === now.toDateString() ? "Today 今天" : d.toLocaleDateString([], {month:"short", day:"numeric"});
+  return `<span class="upd">🕒 ${day} ${d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})}</span>`; }
 function renderGrid(kid){
   const favs = loadFavs(kid);
   const mine = GAMES.filter(g => g.kids.includes(kid)).reverse(); // newest first
+  if (kid === "tester") {   // no shelves: favorites first, then most recently changed
+    const order = new Map(mine.map((g, i) => [g.url, i]));
+    const byNew = [...mine].sort((a, b) => (updTime(b) - updTime(a)) || (order.get(a.url) - order.get(b.url)));
+    const list = [...byNew.filter(g => favs.includes(g.url)), ...byNew.filter(g => !favs.includes(g.url))];
+    $("grid").classList.add("cats");
+    $("grid").innerHTML = `<section class="catsec"><div class="catgrid">${list.map(g => slotHTML(g, favs.includes(g.url)).replace(/<\/div>$/, updLabel(g) + "</div>")).join("")}</div></section>`;
+    fitNames(); return;
+  }
   const groups = {};
   mine.forEach(g => { const k = favs.includes(g.url) ? "fav" : (GCAT[g.url] || "lab"); (groups[k] = groups[k] || []).push(g); });
   $("grid").classList.add("cats");
@@ -376,7 +398,7 @@ show();
 </html>
 
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.8" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.8 · 2026-11-25</div>
+<div id="kaVer" data-v="1.9" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.8 · 2026-11-25</div>
 <!-- update check: the Home Screen app has no reload button, so look for a newer menu and offer it -->
 <button id="kaRefresh" type="button" aria-label="Check for updates" style="position:fixed;right:10px;bottom:8px;z-index:2147483000;width:44px;height:44px;border-radius:50%;border:2px solid #1b1f3b;background:#fff;font-size:22px;line-height:1;box-shadow:0 2px 0 #1b1f3b;cursor:pointer">↻</button>
 <div id="kaNew" hidden style="position:fixed;left:50%;transform:translateX(-50%);bottom:12px;z-index:2147483001;background:#2b8a3e;color:#fff;font:800 15px/1.3 system-ui,sans-serif;padding:12px 18px;border-radius:999px;box-shadow:0 4px 0 #1b1f3b;cursor:pointer">新版本!點這裡更新 · New version — tap to update</div>
