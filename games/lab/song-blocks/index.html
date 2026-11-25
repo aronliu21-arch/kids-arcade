@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Song Blocks 音樂積木</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:-apple-system,system-ui,"PingFang TC",sans-serif;background:#1b1f3b;color:#fff;overscroll-behavior:none}
+button{font:inherit;border:0;border-radius:14px;cursor:pointer;min-width:48px;min-height:48px}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.on{display:flex}
+#home{align-items:center;justify-content:center;gap:18px;padding:20px;text-align:center}
+h1{margin:0;font-size:clamp(28px,6vw,48px)}
+.kids{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.kid{width:140px;height:140px;font-size:22px;font-weight:700;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.kid span{font-size:44px}
+.kid.nora{background:#7048e8}.kid.lucas{background:#f76707}.kid.milo{background:#2f9e44}
+#resume{display:none;background:#2b3163;border:3px solid #ffd43b;border-radius:18px;padding:16px;max-width:360px}
+#resume .row{display:flex;gap:10px;justify-content:center;margin-top:10px}
+.big{padding:0 18px;font-size:18px;font-weight:700}
+.yes{background:#40c057;color:#fff}.no{background:#dee2e6}
+.bar{display:flex;align-items:center;gap:8px;padding:8px;background:#272c55;flex-wrap:wrap}
+.name{font-weight:800;padding:0 12px;height:48px;display:flex;align-items:center;border-radius:14px}
+.tool{background:#3b4282;color:#fff;font-size:22px;padding:0 10px}
+.tool.on{background:#ffd43b;color:#222}
+.save{background:#1c7ed6;color:#fff;font-weight:800;padding:0 16px;font-size:18px}
+.spacer{flex:1}
+.status{font-size:13px;color:#aab;min-width:90px}
+.gridwrap{flex:1;overflow:auto;padding:10px;-webkit-overflow-scrolling:touch}
+.grid{display:grid;gap:5px;margin:auto;width:max-content}
+.cell{width:var(--c);height:var(--c);border-radius:10px;background:#323870;touch-action:manipulation;transition:transform .08s}
+.cell.beat{background:#3d4488}
+.cell.on{box-shadow:0 0 12px var(--col);background:var(--col)}
+.cell.now{outline:3px solid #fff}
+.cell.hit{transform:scale(1.12)}
+.lab{width:var(--c);height:var(--c);display:flex;align-items:center;justify-content:center;font-size:calc(var(--c)*.5);border-radius:10px;background:#272c55}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#000;color:#fff;padding:12px 18px;border-radius:14px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<section id="home" class="screen on">
+  <h1>🎵 Song Blocks<br><small style="font-size:.55em">音樂積木</small></h1>
+  <p>Who is making music? 誰要做音樂?</p>
+  <div class="kids">
+    <button class="kid nora" data-kid="nora"><span>🎹</span>Nora</button>
+    <button class="kid lucas" data-kid="lucas"><span>🥁</span>Lucas</button>
+    <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
+  </div>
+  <div id="resume"><b id="resumeMsg"></b>
+    <div class="row"><button class="big yes" id="keep">Keep going 繼續</button><button class="big no" id="fresh">New 新的</button></div>
+  </div>
+  <p style="font-size:13px;color:#889">Test sample · 測試版 · tap blocks, then ▶</p>
+</section>
+
+<section id="studio" class="screen">
+  <div class="bar">
+    <button class="tool" id="homeBtn">🏠</button>
+    <div class="name" id="who"></div>
+    <button class="tool" id="play">▶</button>
+    <button class="tool" id="inst">🎹</button>
+    <button class="tool" id="tempo">🐢</button>
+    <button class="tool" id="clear">🗑️</button>
+    <div class="status" id="status"></div>
+    <div class="spacer"></div>
+    <button class="save" id="saveBtn">💾 Save 儲存</button>
+  </div>
+  <div class="gridwrap"><div class="grid" id="grid"></div></div>
+</section>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200)};
+// rows top->bottom: high notes first, drums last. Pentatonic = always sounds nice.
+const NOTES=[{f:659.25,c:'#ff6b6b',l:'🔴'},{f:587.33,c:'#ff922b',l:'🟠'},{f:523.25,c:'#fcc419',l:'🟡'},{f:440,c:'#51cf66',l:'🟢'},
+             {f:392,c:'#22b8cf',l:'🔵'},{f:329.63,c:'#5c7cfa',l:'🟣'},{f:293.66,c:'#cc5de8',l:'💜'},{f:261.63,c:'#f06595',l:'🩷'}];
+const DRUMS=[{d:'clap',c:'#e9ecef',l:'👏'},{d:'kick',c:'#adb5bd',l:'🥁'}];
+const KIDS={nora:{name:'Nora',color:'#7048e8',notes:8,steps:16},lucas:{name:'Lucas',color:'#f76707',notes:8,steps:16},
+            milo:{name:'Milo',color:'#2f9e44',notes:5,steps:8}};
+const INST=[{k:'piano',l:'🎹'},{k:'bells',l:'🔔'},{k:'robot',l:'🤖'}];
+const TEMPOS=[{b:90,l:'🐢'},{b:120,l:'🐇'},{b:150,l:'🐆'}];
+let kid=null,rows=[],steps=16,pat=[],inst=0,tempo=0,playing=false,step=0,dirty=false,ac=null,timer=null,nextT=0;
+
+/* storage: one overwrite slot per kid */
+const KEY=k=>'songblocks.'+k;
+function load(k){try{return JSON.parse(localStorage.getItem(KEY(k)))}catch(e){return null}}
+function store(k,v){try{localStorage.setItem(KEY(k),JSON.stringify(v))}catch(e){}}
+
+let pending=null;
+document.querySelectorAll('.kid').forEach(b=>b.onclick=()=>{pending=b.dataset.kid;const d=load(pending);
+  if(d&&d.pat&&d.pat.flat().some(Boolean)){$('resume').style.display='block';$('resumeMsg').textContent=(d.unsaved?'Unfinished song 還沒存的歌':'Last song 上次的歌')+' — '+new Date(d.time).toLocaleString()}
+  else open(pending,null)});
+$('keep').onclick=()=>open(pending,load(pending));$('fresh').onclick=()=>open(pending,null);
+
+function open(k,d){kid=k;const K=KIDS[k];
+  rows=NOTES.slice(NOTES.length-K.notes).concat(DRUMS);steps=K.steps;
+  if(k==='milo')rows=[NOTES[0],NOTES[2],NOTES[3],NOTES[4],NOTES[7],DRUMS[1]]; // fewer, wider-spaced notes
+  pat=rows.map(()=>Array(steps).fill(0));
+  if(d&&d.pat&&d.pat.length===rows.length&&d.pat[0].length===steps){pat=d.pat;inst=d.inst||0;tempo=d.tempo||0}
+  $('who').textContent=K.name;$('who').style.background=K.color;$('resume').style.display='none';
+  $('inst').textContent=INST[inst].l;$('tempo').textContent=TEMPOS[tempo].l;
+  $('home').classList.remove('on');$('studio').classList.add('on');build();setStatus(d?'Song loaded 已載入':'New song 新歌');dirty=false}
+$('homeBtn').onclick=()=>{stop();autosave(true);$('studio').classList.remove('on');$('home').classList.add('on');kid=null};
+
+/* grid */
+function cellSize(){const w=innerWidth-20,h=innerHeight-90;let c=Math.floor(Math.min((w-(steps+1)*5)/(steps+1),(h-(rows.length)*5)/rows.length));
+  return Math.max(kid==='milo'?56:44,Math.min(c,kid==='milo'?96:72))}
+let cells=[];
+function build(){const g=$('grid');g.innerHTML='';const c=cellSize();g.style.setProperty('--c',c+'px');
+  g.style.gridTemplateColumns=`repeat(${steps+1},${c}px)`;cells=rows.map(()=>[]);
+  rows.forEach((r,ri)=>{const lab=document.createElement('div');lab.className='lab';lab.textContent=r.l;g.appendChild(lab);
+    for(let s=0;s<steps;s++){const el=document.createElement('div');el.className='cell'+(Math.floor(s/4)%2?' beat':'')+(pat[ri][s]?' on':'');
+      el.style.setProperty('--col',r.c);el.dataset.r=ri;el.dataset.s=s;g.appendChild(el);cells[ri][s]=el}})}
+addEventListener('resize',()=>{if(kid)build()});
+// tap or drag to paint blocks on/off
+let paintVal=null;
+// touch: tap toggles (so swiping still scrolls); mouse/pen: drag paints
+$('grid').addEventListener('click',e=>{const el=e.target.closest('.cell');if(!el||lastPointer==='mouse')return;
+  const r=+el.dataset.r,s=+el.dataset.s,v=pat[r][s]?0:1;setCell(r,s,v);if(v)preview(r)});
+let lastPointer='touch';
+$('grid').addEventListener('pointerdown',e=>{lastPointer=e.pointerType==='touch'?'touch':'mouse';if(lastPointer==='touch')return;const el=e.target.closest('.cell');if(!el)return;e.preventDefault();
+  const r=+el.dataset.r,s=+el.dataset.s;paintVal=pat[r][s]?0:1;setCell(r,s,paintVal);if(paintVal)preview(r)});
+$('grid').addEventListener('pointermove',e=>{if(paintVal===null)return;const el=document.elementFromPoint(e.clientX,e.clientY);
+  if(el&&el.classList.contains('cell')){const r=+el.dataset.r,s=+el.dataset.s;if(pat[r][s]!==paintVal){setCell(r,s,paintVal);if(paintVal)preview(r)}}});
+addEventListener('pointerup',()=>paintVal=null);addEventListener('pointercancel',()=>paintVal=null);
+function setCell(r,s,v){pat[r][s]=v;cells[r][s].classList.toggle('on',!!v);markDirty()}
+
+/* audio */
+function ensureAC(){if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();return ac}
+function voice(ctx,dest,row,t){
+  if(row.d==='kick'){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(40,t+.15);
+    g.gain.setValueAtTime(.9,t);g.gain.exponentialRampToValueAtTime(.001,t+.25);o.connect(g).connect(dest);o.start(t);o.stop(t+.3);return}
+  if(row.d==='clap'){const len=ctx.sampleRate*.15,buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);
+    const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=buf;f.type='bandpass';f.frequency.value=1500;g.gain.value=.5;s.connect(f).connect(g).connect(dest);s.start(t);return}
+  const k=INST[inst].k,o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=k==='robot'?'square':k==='bells'?'sine':'triangle';o.frequency.value=row.f*(k==='bells'?2:1);
+  const dur=k==='bells'?1.2:k==='robot'?.18:.5,peak=k==='robot'?.12:.3;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g).connect(dest);o.start(t);o.stop(t+dur+.05)}
+function preview(r){const c=ensureAC();voice(c,c.destination,rows[r],c.currentTime)}
+const stepDur=()=>60/TEMPOS[tempo].b/2; // 8th notes
+function tick(){const c=ac;while(nextT<c.currentTime+.12){const s=step;
+    rows.forEach((r,ri)=>{if(pat[ri][s])voice(c,c.destination,r,nextT)});
+    const delay=Math.max(0,(nextT-c.currentTime)*1000);setTimeout(()=>showStep(s),delay);
+    nextT+=stepDur();step=(step+1)%steps}}
+function showStep(s){if(!playing)return;cells.forEach((row,ri)=>row.forEach((el,i)=>{el.classList.toggle('now',i===s);if(i===s&&pat[ri][i]){el.classList.add('hit');setTimeout(()=>el.classList.remove('hit'),90)}}))}
+function start(){ensureAC();playing=true;step=0;nextT=ac.currentTime+.05;timer=setInterval(tick,25);$('play').textContent='⏹';$('play').classList.add('on')}
+function stop(){playing=false;clearInterval(timer);$('play').textContent='▶';$('play').classList.remove('on');cells.flat().forEach(el=>el.classList.remove('now'))}
+$('play').onclick=()=>playing?stop():start();
+$('inst').onclick=()=>{inst=(inst+1)%INST.length;$('inst').textContent=INST[inst].l;markDirty();preview(2)};
+$('tempo').onclick=()=>{tempo=(tempo+1)%TEMPOS.length;$('tempo').textContent=TEMPOS[tempo].l;markDirty()};
+$('clear').onclick=()=>{if(confirm('Clear the song? 全部清掉?')){pat=rows.map(()=>Array(steps).fill(0));build();markDirty()}};
+
+/* autosave every 60s + on leave, overwriting one slot */
+function setStatus(m){$('status').textContent=m}
+function markDirty(){dirty=true;setStatus('Not saved yet 還沒存')}
+function autosave(force){if(!kid||(!dirty&&!force))return;store(kid,{pat,inst,tempo,time:Date.now(),unsaved:true});dirty=false;
+  setStatus('Auto-saved 自動存 '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}))}
+setInterval(()=>autosave(false),60000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden){autosave(false);stop()}});
+addEventListener('pagehide',()=>autosave(false));
+
+/* Save: render 2 loops to a WAV file, then share sheet / download */
+async function renderWav(){const loops=2,len=steps*stepDur()*loops+1.5,sr=44100;
+  const oc=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(1,Math.ceil(len*sr),sr);
+  for(let L=0;L<loops;L++)for(let s=0;s<steps;s++){const t=(L*steps+s)*stepDur();rows.forEach((r,ri)=>{if(pat[ri][s])voice(oc,oc.destination,r,t)})}
+  const buf=await oc.startRendering(),d=buf.getChannelData(0),n=d.length,ab=new ArrayBuffer(44+n*2),v=new DataView(ab);
+  const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++){const x=Math.max(-1,Math.min(1,d[i]));v.setInt16(44+i*2,x*32767,true)}
+  return new Blob([ab],{type:'audio/wav'})}
+$('saveBtn').onclick=async()=>{if(!pat.flat().some(Boolean)){toast('Add some blocks first 先放積木');return}
+  const blob=await renderWav(),name=`${KIDS[kid].name}-song-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.wav`;
+  const file=new File([blob],name,{type:'audio/wav'});let ok=false;
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});ok=true}}
+  catch(e){if(e.name==='AbortError'){toast('Not saved 沒有存');return}}
+  if(!ok){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+  store(kid,{pat,inst,tempo,time:Date.now(),unsaved:false});dirty=false;setStatus('Saved ✓ 已存');toast('Saved! 存好了 🎉')};
+
+window.__test={state:()=>({screen:kid?'studio':'home',kid,playing,dirty,blocks:pat.flat().filter(Boolean).length}),solve:()=>{}};
+</script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Doodle Studio 塗鴉工作室</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;font-family:-apple-system,system-ui,"PingFang TC",sans-serif;background:#fff8e7;color:#222;overscroll-behavior:none}
+button{font:inherit;border:0;border-radius:14px;cursor:pointer;min-width:48px;min-height:48px}
+.screen{display:none;height:100%;flex-direction:column}
+.screen.on{display:flex}
+#home{align-items:center;justify-content:center;gap:18px;padding:20px;text-align:center}
+h1{margin:0;font-size:clamp(28px,6vw,48px)}
+.kids{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.kid{width:140px;height:140px;font-size:22px;font-weight:700;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 6px 0 rgba(0,0,0,.2)}
+.kid span{font-size:44px}
+.kid.nora{background:#7048e8}.kid.lucas{background:#f76707}.kid.milo{background:#2f9e44}
+#resume{display:none;background:#fff;border:3px solid #ffd43b;border-radius:18px;padding:16px;max-width:360px}
+#resume img{max-width:100%;max-height:160px;border-radius:10px;border:1px solid #ddd;background:#fff}
+#resume .row{display:flex;gap:10px;justify-content:center;margin-top:10px}
+.big{padding:0 18px;font-size:18px;font-weight:700}
+.yes{background:#40c057;color:#fff}.no{background:#e9ecef}
+/* studio */
+#studio{height:100%}
+.bar{display:flex;align-items:center;gap:8px;padding:8px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08);flex-wrap:wrap}
+.bar .name{font-weight:800;padding:0 12px;height:48px;display:flex;align-items:center;border-radius:14px;color:#fff}
+.spacer{flex:1}
+.status{font-size:13px;color:#666;min-width:90px}
+.wrap{flex:1;display:flex;min-height:0}
+.tools{display:flex;flex-direction:row;gap:8px;padding:8px;background:#fff;min-height:0}
+.tools .group{display:flex;flex-direction:column;gap:8px;overflow-y:auto;padding:4px}
+.sw{width:48px;height:48px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px #ccc}
+.sw.sel{box-shadow:0 0 0 4px #222}
+.tool{background:#f1f3f5;font-size:24px}
+.tool.sel{background:#ffd43b}
+.stage{flex:1;position:relative;min-width:0;min-height:0;padding:8px}
+canvas{width:100%;height:100%;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.12);touch-action:none;display:block}
+.save{background:#1c7ed6;color:#fff;font-weight:800;padding:0 16px;font-size:18px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:14px;font-size:16px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+/* upright phone: tools along the bottom */
+@media (max-aspect-ratio:1/1){
+ .wrap{flex-direction:column-reverse}
+ .tools{flex-direction:column}
+ .tools .group{flex-direction:row;overflow-x:auto;overflow-y:hidden}
+}
+@media (max-height:420px){.bar{padding:4px}.bar .hide-s{display:none}}
+</style>
+</head>
+<body>
+
+<section id="home" class="screen on">
+  <h1>🎨 Doodle Studio<br><small style="font-size:.55em">塗鴉工作室</small></h1>
+  <p>Who is drawing? 誰要畫畫?</p>
+  <div class="kids">
+    <button class="kid nora" data-kid="nora"><span>🦄</span>Nora</button>
+    <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
+    <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
+  </div>
+  <div id="resume">
+    <b id="resumeMsg"></b><br><img id="resumeImg" alt="">
+    <div class="row">
+      <button class="big yes" id="keep">Keep going 繼續</button>
+      <button class="big no" id="fresh">New 新的</button>
+    </div>
+  </div>
+  <p style="font-size:13px;color:#888">Test sample · 測試版</p>
+</section>
+
+<section id="studio" class="screen">
+  <div class="bar">
+    <button class="tool" id="home-btn" title="Home">🏠</button>
+    <div class="name" id="who"></div>
+    <div class="status" id="status"></div>
+    <div class="spacer"></div>
+    <button class="tool" id="undo" title="Undo">↩️</button>
+    <button class="tool" id="clear" title="Clear">🗑️</button>
+    <button class="save" id="saveBtn">💾 Save 儲存</button>
+  </div>
+  <div class="wrap">
+    <div class="tools">
+      <div class="group">
+        <button class="tool sel" data-tool="pen">✏️</button>
+        <button class="tool" data-tool="rainbow">🌈</button>
+        <button class="tool" data-tool="eraser">🧽</button>
+        <button class="tool" data-tool="stamp" id="stampBtn">⭐</button>
+        <button class="tool" id="sizeBtn" title="Brush size">●</button>
+      </div>
+      <div class="group" id="colors"></div>
+    </div>
+    <div class="stage"><canvas id="cv"></canvas></div>
+  </div>
+</section>
+<div class="toast" id="toast"></div>
+
+<script>
+const KIDS={nora:{name:'Nora',color:'#7048e8',size:8,stamps:['⭐','💜','🌸','⚽','🦄','🌈']},
+            lucas:{name:'Lucas',color:'#f76707',size:8,stamps:['⚡','🔥','⚽','🐉','⭐','🚀']},
+            milo:{name:'Milo',color:'#2f9e44',size:22,stamps:['🦖','🦕','🌋','⭐','🚗','🍎']}};
+const COLORS=['#222','#e03131','#f76707','#fcc419','#2f9e44','#1c7ed6','#7048e8','#e64980','#8d5524','#fff'];
+const $=id=>document.getElementById(id);
+const cv=$('cv'),ctx=cv.getContext('2d');
+let kid=null,tool='pen',color='#222',size=8,stampIdx=0,hue=0,dirty=false,undoStack=[],W=0,H=0;
+const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200)};
+
+/* ---------- storage: IndexedDB drafts (overwrite one slot per kid) ---------- */
+let dbp=null;
+function db(){if(dbp)return dbp;dbp=new Promise((res,rej)=>{try{const r=indexedDB.open('doodle-studio',1);
+ r.onupgradeneeded=()=>r.result.createObjectStore('drafts');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});return dbp}
+async function putDraft(k,v){try{const d=await db();await new Promise((res,rej)=>{const t=d.transaction('drafts','readwrite');t.objectStore('drafts').put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}catch(e){console.warn(e)}}
+async function getDraft(k){try{const d=await db();return await new Promise(res=>{const r=d.transaction('drafts').objectStore('drafts').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)})}catch(e){return null}}
+
+/* ---------- home ---------- */
+let pendingKid=null;
+document.querySelectorAll('.kid').forEach(b=>b.onclick=async()=>{
+  pendingKid=b.dataset.kid;const d=await getDraft(pendingKid);
+  if(d&&d.png){ $('resume').style.display='block';
+    $('resumeMsg').textContent=(d.unsaved?'Unfinished drawing 還沒存的畫':'Last drawing 上次的畫')+' — '+new Date(d.time).toLocaleString();
+    $('resumeImg').src=d.png; }
+  else openStudio(pendingKid,null);
+});
+$('keep').onclick=async()=>openStudio(pendingKid,await getDraft(pendingKid));
+$('fresh').onclick=()=>openStudio(pendingKid,null);
+
+function openStudio(k,draft){
+  kid=k;const K=KIDS[k];size=K.size;stampIdx=0;
+  $('who').textContent=K.name;$('who').style.background=K.color;
+  $('stampBtn').textContent=K.stamps[0];
+  $('resume').style.display='none';
+  $('home').classList.remove('on');$('studio').classList.add('on');
+  undoStack=[];dirty=false;
+  requestAnimationFrame(()=>{fit();
+    if(draft&&draft.png){const im=new Image();im.onload=()=>{ctx.drawImage(im,0,0,W,H);setStatus('Draft loaded 已載入')};im.src=draft.png}
+    else{clearCanvas();setStatus('New drawing 新畫布')}
+  });
+}
+$('home-btn').onclick=async()=>{await autosave(true);$('studio').classList.remove('on');$('home').classList.add('on');kid=null};
+
+/* ---------- canvas ---------- */
+function fit(){const r=cv.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
+  let old=null;if(W){old=document.createElement('canvas');old.width=cv.width;old.height=cv.height;old.getContext('2d').drawImage(cv,0,0)}
+  W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);if(old)ctx.drawImage(old,0,0,W,H);
+  ctx.lineCap='round';ctx.lineJoin='round'}
+window.addEventListener('resize',()=>{if(kid)fit()});
+function clearCanvas(){ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H)}
+function snapshot(){try{undoStack.push(ctx.getImageData(0,0,cv.width,cv.height));if(undoStack.length>15)undoStack.shift()}catch(e){}}
+
+let drawing=false,last=null;
+function pos(e){const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);snapshot();const p=pos(e);
+  if(tool==='stamp'){ctx.font=(size*4+30)+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(KIDS[kid].stamps[stampIdx],p.x,p.y);markDirty();return}
+  drawing=true;last=p;dot(p)});
+cv.addEventListener('pointermove',e=>{if(!drawing)return;const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];for(const ev of evs){const p=pos(ev);line(last,p);last=p}});
+['pointerup','pointercancel','pointerleave'].forEach(t=>cv.addEventListener(t,()=>{if(drawing){drawing=false;markDirty()}}));
+function strokeStyle(){if(tool==='eraser')return'#fff';if(tool==='rainbow'){hue=(hue+4)%360;return`hsl(${hue},90%,55%)`}return color}
+function dot(p){ctx.fillStyle=strokeStyle();ctx.beginPath();ctx.arc(p.x,p.y,(tool==='eraser'?size*2:size)/2,0,7);ctx.fill()}
+function line(a,b){ctx.strokeStyle=strokeStyle();ctx.lineWidth=tool==='eraser'?size*2:size;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
+
+/* ---------- toolbar ---------- */
+const colorsEl=$('colors');
+COLORS.forEach((c,i)=>{const b=document.createElement('button');b.className='sw'+(i===0?' sel':'');b.style.background=c;b.onclick=()=>{color=c;if(tool==='eraser'||tool==='stamp')pick('pen');document.querySelectorAll('.sw').forEach(x=>x.classList.remove('sel'));b.classList.add('sel')};colorsEl.appendChild(b)});
+function pick(t){tool=t;document.querySelectorAll('[data-tool]').forEach(x=>x.classList.toggle('sel',x.dataset.tool===t))}
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{
+  if(b.dataset.tool==='stamp'&&tool==='stamp'){stampIdx=(stampIdx+1)%KIDS[kid].stamps.length;b.textContent=KIDS[kid].stamps[stampIdx]}
+  pick(b.dataset.tool)});
+const SIZES=[4,8,14,22,34];
+$('sizeBtn').onclick=()=>{let i=SIZES.indexOf(size);size=SIZES[(i+1)%SIZES.length];$('sizeBtn').style.fontSize=(12+size/1.5)+'px';toast('Brush '+size)};
+$('undo').onclick=()=>{const s=undoStack.pop();if(s){ctx.putImageData(s,0,0);markDirty()}};
+$('clear').onclick=()=>{if(confirm('Clear the whole page? 全部清掉?')){snapshot();clearCanvas();markDirty()}};
+
+/* ---------- autosave: every 60s, on leave; overwrites one draft slot ---------- */
+function markDirty(){dirty=true;setStatus('Not saved yet 還沒存')}
+function setStatus(m){$('status').textContent=m}
+async function autosave(force){if(!kid||(!dirty&&!force))return;
+  const png=cv.toDataURL('image/png');await putDraft(kid,{png,time:Date.now(),unsaved:true});
+  dirty=false;setStatus('Auto-saved 自動存 '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}))}
+setInterval(()=>autosave(false),60000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)autosave(false)});
+window.addEventListener('pagehide',()=>autosave(false));
+
+/* ---------- Save: share sheet -> Photos (or download on Mac) ---------- */
+$('saveBtn').onclick=async()=>{
+  const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+  const name=`${KIDS[kid].name}-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.png`;
+  const file=new File([blob],name,{type:'image/png'});
+  let ok=false;
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});ok=true}}
+  catch(e){if(e.name==='AbortError'){toast('Not saved 沒有存');return}}
+  if(!ok){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);ok=true}
+  await putDraft(kid,{png:cv.toDataURL('image/png'),time:Date.now(),unsaved:false});dirty=false;
+  setStatus('Saved ✓ 已存');toast('Saved! 存好了 🎉')};
+
+window.__test={state:()=>({screen:kid?'studio':'home',kid,tool,dirty}),solve:()=>{}};
+</script>
+</body>
+</html>
