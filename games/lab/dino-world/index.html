@@ -833,7 +833,7 @@ function buildStep(){const p=B.P[B.k];const c=COL[B.cols[B.k]],sh=SH[p.s];const 
  if(L<3){const other=shuffle(SHAPES.filter(s=>s!==p.s))[0],wc=shuffle(CK.filter(x=>x!==B.cols[B.k]))[0];const wc2=shuffle(CK.filter(x=>x!==B.cols[B.k]&&x!==wc))[0];
   opts=shuffle([{s:p.s,c:B.cols[B.k],ok:1},{s:p.s,c:wc},{s:other,c:B.cols[B.k]},{s:shuffle(SHAPES.filter(x=>x!==p.s&&x!==other))[0],c:wc2}]);
   if(L===1){$('bTxt').innerHTML=bi(w[0],w[1]);say(w[0],w[1]);}
-  else{$('bTxt').innerHTML=`<div class="wordcard sm">${c[1]} ${sh[0]}<small>${zh(c[2]+sh[2])}</small></div>`;readCard($('bTxt').querySelector('.wordcard'),`${c[1]} ${sh[0]}`,c[2]+'的'+sh[2]);say(`Read along: ${c[1]} ${sh[0]}! Find that brick.`,`跟著讀:${c[2]}的${sh[2]}!找到那塊積木。`);}}
+  else{$('bTxt').innerHTML=`<div class="wordcard sm">${c[1]} ${sh[0]}<small>${zh(c[2]+sh[2])}</small></div>`;readCard($('bTxt').querySelector('.wordcard'),`${c[1]} ${sh[0]}`,c[2]+'的'+sh[2]);if(B.k===0)say(`Read the card: ${c[1]} ${sh[0]}! Find that brick.`,`讀卡片:${c[2]}的${sh[2]}!找到那塊積木。`);else say(`${c[1]} ${sh[0]}!`,`${c[2]}的${sh[2]}!`);}}
  else{const a=ri(1,4),b=ri(1,4),n=a+b;B.hintSay=[`${a} plus ${b} is ${n}.`,`${a}加${b}是${n}。`];w=[`Find the ${sh[0]} with ${a} + ${b} dots!`,`找有${a}+${b}個點的${sh[2]}!`];
   const ds=new Set([n]);while(ds.size<4)ds.add(ri(2,9));opts=shuffle([...ds].map(d=>({s:p.s,c:d===n?B.cols[B.k]:pick(CK),d,ok:d===n?1:0})));$('bTxt').innerHTML=bi(w[0],w[1]);say(w[0],w[1]);}
  B.w=w;$('bOpts').innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}" aria-label="${COL[o.c][1]} ${SH[o.s][0]}">${shapeIcon(o.s,COL[o.c][0])}${o.d?`<span class="dots">${'●'.repeat(o.d)}</span>`:''}</button>`).join('');
@@ -1126,7 +1126,7 @@ const MG={
    else{const fam=pick(RHYME);const [base,...rh]=shuffle(fam);const right=pick(rh);const others=shuffle(RHYME.filter(f=>f!==fam).map(f=>pick(f))).slice(0,3);vals=shuffle([right,...others]);ans=vals.indexOf(right);card=`Which word rhymes with “${base}”?`;say1=[card,''];why=[`${base} and ${right} rhyme!`,`${base}和${right}押韻!`];big=false;}
    api.el.innerHTML=`<div class="wordcard${L>=3?' sm':''}">${card}</div>${optsHTML(L===5?vals.map(v=>`<span class="wd">${v}</span>`):vals.map(v=>`<span class="pic">${v}</span>`))}`;
    readCard(api.el.querySelector('.wordcard'),L===5?card:say1[0],L===4?say1[1]:'');
-   sayParts(parts('Listen and read along!','聽一聽,跟著讀!').concat([[soundOut(L===5?card:say1[0]),'en-US']],L===4&&S.voice!=='en'?[[say1[1],'zh-TW']]:[]));$('gTxt').innerHTML=bi('Listen and read along! Tap the card to hear it again.','聽一聽,跟著讀!點卡片可以再聽一次。');
+   sayParts((i===0?parts('Listen and read along!','聽一聽,跟著讀!'):[]).concat([[soundOut(L===5?card:say1[0]),'en-US']],L===4&&S.voice!=='en'?[[say1[1],'zh-TW']]:[]));$('gTxt').innerHTML=bi('Listen and read along! Tap the card to hear it again.','聽一聽,跟著讀!點卡片可以再聽一次。');
    bindOpts({pics:L<=2||L===4,ans,vals,label:`read L${L}`,expected:vals[ans],why,hint:()=>{say(say1[0],say1[1]);},retry:['Listen and try again!','聽一聽,再試一次!']},()=>{i++;go();});};go();}},
  /* spelling: dig up letters, then spell from the picture + sound. L1 cat · L2 frog · L3 ship · L4 truck */
  fossil:{icon:'🦴',en:'Letter Dig',zh:'挖字母',total:9,topic:'spell',tip:['Sound out words: f-r-o-g, frog!','把字拼出來:f-r-o-g,frog!'],
