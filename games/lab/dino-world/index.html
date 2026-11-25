@@ -52,6 +52,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 .rays{position:absolute;inset:-50%;background:repeating-conic-gradient(rgba(255,255,255,.35) 0 10deg,transparent 10deg 20deg);animation:spin 30s linear infinite;pointer-events:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 #intro>*:not(.rays){position:relative}
+.voicenote{margin-top:8px;max-width:520px;font-size:.78rem;font-weight:700;color:var(--muted);padding:0 12px;line-height:1.35}.voicenote.ok{color:#2b8a3e}
 .reset{margin-top:14px;font-size:.8rem;font-weight:700;color:var(--muted);background:#fff8;border:1px solid currentColor;border-radius:999px;padding:6px 14px;min-height:36px}
 /* map */
 .mapbox,.field{flex:1;min-height:260px;border:4px solid var(--ink);border-radius:20px;overflow:hidden;position:relative;background:#8ce99a}
@@ -236,6 +237,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
       <h1><span class="en">Milo's Dino World</span><span class="zh" id="introZh"></span></h1>
       <button class="btn green" id="start" style="margin-top:12px;font-size:1.4rem;min-height:64px">▶ Tap to start · <span id="startZh"></span></button>
       <button class="reset" id="resetBtn">Reset records</button>
+      <div class="voicenote" id="voiceNote"></div>
     </section>
     <section class="scr" id="map">
       <div class="mapbox" id="mapBox"><svg id="mapSvg" preserveAspectRatio="xMidYMid meet"></svg></div>
@@ -357,7 +359,14 @@ function sched(){if(!AC)return;while(nextT<AC.currentTime+.35){const w=nextT-AC.
 function musicOn(){musicWanted=true;const a=ac();if(!a)return;musicG.gain.cancelScheduledValues(a.currentTime);musicG.gain.setTargetAtTime(.55,a.currentTime,.3);if(!musicTimer){nextT=a.currentTime+.05;musicTimer=setInterval(sched,100);}}
 function musicOff(){musicWanted=false;if(!AC)return;musicG.gain.cancelScheduledValues(AC.currentTime);musicG.gain.setTargetAtTime(0,AC.currentTime,.35);setTimeout(()=>{if(!musicWanted&&musicTimer){clearInterval(musicTimer);musicTimer=null;}},2500);}
 let lastParts=[];const vcache={};
-function voiceFor(l){if(vcache[l]!==undefined)return vcache[l];try{const vs=speechSynthesis.getVoices();const v=vs.find(v=>v.lang===l)||vs.find(v=>v.lang&&v.lang.replace('_','-').startsWith(l.slice(0,2)));if(vs.length)vcache[l]=v||null;return v||null;}catch(e){return null;}}
+// pick the best installed voice: Premium > Enhanced > other; for Chinese prefer Taiwan, then Hong Kong, then mainland
+function voiceScore(v,l){const lang=(v.lang||'').replace('_','-');const id=((v.name||'')+' '+(v.voiceURI||'')).toLowerCase();let sc=0;
+ if(lang===l)sc+=100;else if(l==='zh-TW'&&/^zh-(hk|hant)/i.test(lang))sc+=60;else if(lang.slice(0,2)===l.slice(0,2))sc+=40;else return -1;
+ if(/premium/.test(id))sc+=30;else if(/enhanced|neural|natural|online/.test(id))sc+=20;if(/compact|eloquence|novelty/.test(id))sc-=15;
+ if(l==='zh-TW'&&/mei-?jia/.test(id))sc+=5;if(l==='en-US'&&/samantha|ava|zoe|allison|google us/.test(id))sc+=5;if(v.localService)sc+=1;return sc;}
+function voiceFor(l){if(vcache[l]!==undefined)return vcache[l];try{const vs=speechSynthesis.getVoices();let best=null,bs=-1;for(const v of vs){const sc=voiceScore(v,l);if(sc>bs){bs=sc;best=v;}}if(vs.length)vcache[l]=best;return best;}catch(e){return null;}}
+function voiceNote(){const el=$('voiceNote');if(!el)return;const v=voiceFor('zh-TW');if(!v){el.textContent='';return;}const id=(v.name+' '+v.voiceURI).toLowerCase();const good=/premium|enhanced|neural|natural/.test(id);
+ el.innerHTML=good?`🗣 Chinese voice: ${v.name} ✓`:`🗣 Chinese voice: ${v.name} (basic). For a clearer voice: Settings → Accessibility → Spoken Content → Voices → Chinese (Taiwan) → download Mei-Jia (Enhanced or Premium), then reopen this game.`;el.classList.toggle('ok',good);}
 function sayParts(parts,pitch,onEnd){lastParts=parts;let fired=false;const fin=()=>{if(!fired){fired=true;onEnd&&onEnd();}};const est=parts.reduce((a,[t,l])=>a+t.length*(l==='zh-TW'?330:85),0)+1200;
  if(onEnd)setTimeout(fin,S.snd?est+2500:est);if(!S.snd||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();parts.forEach(([t,l],k)=>{const u=new SpeechSynthesisUtterance(t);u.lang=l;const v=voiceFor(l);if(v)u.voice=v;u.rate=l==='en-US'?.88:.8;u.pitch=pitch||1.15;if(k===parts.length-1&&onEnd)u.onend=()=>setTimeout(fin,50);speechSynthesis.speak(u);});}catch(e){}}
 function parts(en,z){const p=[];if(S.voice!=='zh'&&en)p.push([en,'en-US']);if(S.voice!=='en'&&z)p.push([typeof z==='string'?z:z.map(x=>x[0]).join(''),'zh-TW']);return p;}
@@ -1125,7 +1134,7 @@ const MG={
 lvInit();migrate();S.step=S.step||{};$('zGames').innerHTML=zh('練習');
 $('mapGames').onclick=()=>{ac();const m=document.createElement('div');m.className='modal';m.innerHTML=`<div><h2>${bi('Practice any puzzle','練習任何謎題')}</h2><div class="stCards" style="overflow:visible">${Object.keys(MG).map(k=>`<button class="mcard" data-g="${k}"><span class="em">${MG[k].icon}</span><span class="zh">${zh(MG[k].zh)}</span><span class="en">${MG[k].en} · L${LV(MG[k].topic)}</span></button>`).join('')}</div><button class="btn ghost" style="margin-top:12px" id="gClose">Close ✕</button></div>`;$('modalRoot').appendChild(m);m.querySelector('#gClose').onclick=()=>m.remove();m.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{m.remove();startGame(b.dataset.g);});say('Pick a puzzle to practice!','選一個謎題來練習!');};
 showWallet();
-if('speechSynthesis' in window)try{speechSynthesis.onvoiceschanged=()=>{for(const k in vcache)delete vcache[k];};}catch(e){}
+if('speechSynthesis' in window)try{speechSynthesis.onvoiceschanged=()=>{for(const k in vcache)delete vcache[k];voiceNote();};setTimeout(voiceNote,600);}catch(e){}
 try{window.KA&&KA.setKid&&KA.setKid(KID);}catch(e){}
 trainAt=Math.min(S.ch+1,4);
 // Expose for automated playtests. Harmless for players.
