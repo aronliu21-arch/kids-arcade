@@ -934,6 +934,16 @@ $('zFeed').onclick=()=>{ac();Z.feed=!Z.feed;$('zFeed').classList.toggle('on',Z.f
  if(!S.snacks){Z.feed=false;$('zFeed').classList.remove('on');say('No snacks left! Play a job to earn snacks.','沒有點心了!玩任務賺點心吧!');return;}
  const here=babies.filter(d=>(d.area||'home')===Z.area);if(!here.length){Z.area=babies[0].area||'home';zooStart();Z.feed=true;$('zFeed').classList.add('on');}
  say('Tap a baby with a bottle to feed it!','按有奶瓶的寶寶來餵牠!');};
+/* dance party music: bouncy 120 bpm loop with drums, bass and a happy tune */
+let danceT=null,dStep=0,dNext=0;
+const DMEL=[659,0,784,659,880,0,784,0,659,0,587,523,587,0,659,0, 523,0,587,659,784,0,880,784,659,0,587,0,523,0,0,0];
+const DBASS=[131,131,196,196,175,175,196,196];
+function danceSched(){const a=AC;if(!a)return;while(dNext<a.currentTime+.3){const w=dNext-a.currentTime,st=dStep%32;
+  if(st%4===0)tone(150,.16,'sine',.5,w,master,45);if(st%8===4)tone(240,.1,'triangle',.2,w,master,140);if(st%2===1)tone(7000,.025,'square',.025,w,master);
+  if(st%2===0)tone(DBASS[(st>>2)%8],.22,'triangle',.22,w,master);const n=DMEL[st];if(n)tone(n,.2,'square',.07,w,master);if(n&&st%4===0)tone(n*2,.12,'sine',.05,w+.01,master);
+  dStep++;dNext+=.125;}}
+function danceOn(){const a=ac();if(!a)return;musicOff();if(!danceT){dStep=0;dNext=a.currentTime+.05;danceT=setInterval(danceSched,60);Z.beat0=performance.now();}}
+function danceOff(){if(danceT){clearInterval(danceT);danceT=null;}}
 /* ---------- zoo toys: ball, bath, dance party, bedtime stars, hide & seek ---------- */
 const TOYSAY={ball:['Tap the ball to kick it! Let’s count the kicks!','點球來踢!一起數踢幾下!'],bath:['Bath time! Tap a dino to scrub it.','洗澡時間!點恐龍刷一刷。'],
  dance:['Dance party! Tap a dino to sing!','跳舞派對!點恐龍唱歌!'],night:['Good night, dinos! Tap the stars and count them.','恐龍晚安!點星星,數一數。'],hide:['Close your eyes… one, two, three! Find the dinos!','閉上眼睛……一、二、三!找恐龍!']};
@@ -943,8 +953,8 @@ function fxPop(x,y,ch,opt){opt=opt||{};const e=svgEl('text',{x:0,y:0,'text-ancho
  Z.fx.push({e,x,y,vx:opt.vx??(Math.random()-.5)*30,vy:opt.vy??-(40+Math.random()*40),life:opt.life||1.4,t:0});}
 function toyButtons(){$('zToys').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.m===Z.mode);
  b.onclick=()=>{ac();SFX.click();const m=b.dataset.m;Z.mode=Z.mode===m?null:m;if(Z.mode){Z.feed=false;$('zFeed').classList.remove('on');}zooStart();
-  if(Z.mode){const needDinos=Z.mode!=='night'&&Z.mode!=='ball';if(needDinos&&!Z.ds.length){say('No dinos here yet!','這裡還沒有恐龍!');Z.mode=null;zooStart();return;}say(...TOYSAY[Z.mode]);if(Z.mode==='dance')musicOn();}};});}
-function toyInit(){Z.fx=[];Z.ball=null;Z.kicks=0;Z.kcool=0;Z.stars=0;Z.found=0;Z.beat=-1;Z.note=0;toyButtons();const svg=$('fieldSvg'),W=Z.W,H=Z.H,M=Z.mode;if(!M)return;
+  if(Z.mode){const needDinos=Z.mode!=='night'&&Z.mode!=='ball';if(needDinos&&!Z.ds.length){say('No dinos here yet!','這裡還沒有恐龍!');Z.mode=null;zooStart();return;}say(...TOYSAY[Z.mode]);}};});}
+function toyInit(){if(Z.mode==='dance')danceOn();else if(danceT){danceOff();musicOn();}Z.fx=[];Z.ball=null;Z.kicks=0;Z.kcool=0;Z.stars=0;Z.found=0;Z.beat=-1;Z.note=0;toyButtons();const svg=$('fieldSvg'),W=Z.W,H=Z.H,M=Z.mode;if(!M)return;
  const base=Math.min(H*.26,W*.22,150)/100;
  if(M==='ball'){const g=svgEl('g',{class:'zball',style:'cursor:pointer'});g.appendChild(svgEl('text',{x:0,y:0,'text-anchor':'middle','dominant-baseline':'central','font-size':Math.max(34,46*base)},'⚽'));svg.querySelector('#fxLayer').appendChild(g);
   Z.ball={g,x:W/2,y:H*.8,h:0,vx:0,vh:0,rot:0};g.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();ac();kickBall((Math.random()<.5?-1:1)*(300+Math.random()*120),260);});
@@ -960,7 +970,8 @@ function toyInit(){Z.fx=[];Z.ball=null;Z.kicks=0;Z.kcool=0;Z.stars=0;Z.found=0;Z
   Z.ds.forEach(o=>{o.zz=0;});}
  if(M==='dance'){Z.ds.forEach(o=>{o.pause=0;});}
  if(M==='hide'){const n=Math.min(10,Math.max(6,Z.ds.length+4)),L=svg.querySelector('#coverLayer');const cols=Math.ceil(n/2);
-  const fs=Math.max(66,Math.min(150*base,W/cols*1.05));const em=shuffle(['🌳','🪨','🌲','🌵','🛖','🪵','🌴','🍄','🌳','🪨','🌲','🌻']);
+  const fs=Math.max(66,Math.min(150*base,W/cols*1.05));const HIDE={home:['🏠','🛖','⛺','🚗','🚌','🛻','📦','🎁','🧺','🪣','🛝','⛲','🗿','🌻','🌷'],jungle:['🌴','🌳','🍄','🪵','🎋','🌿','🗿','🛖'],beach:['⛱️','🏖️','🛶','⛵','🐚','🏰','🧺','🪣','🌴'],snow:['⛄','🏔️','🧊','🌲','🛷','🏠','🎄'],volcano:['🌋','🪨','🗿','🏕️','🪵','⛰️']};
+  const pool=shuffle(HIDE[Z.area]||HIDE.home).concat(shuffle(['🌳','🪨','🌲','🌵','🍄','🪵','🌻','🏠','🚂','🎪','🏰','🚜'])),em=[...new Set(pool)];
   const spots=Array.from({length:n},(_,i)=>{const row=i%2,c=Math.floor(i/2);return {x:W*(c+.5+(row?.28:0))/cols,y:H*(row?.95:.7),d:null,row};}).sort((a,b)=>a.row-b.row);
   const pick2=shuffle(spots.map((_,i)=>i)).slice(0,Z.ds.length);
   Z.ds.forEach((o,k)=>{const sp=spots[pick2[k]];sp.d=o;o.hide=sp;const side=Math.random()<.5?-1:1;
@@ -990,14 +1001,38 @@ function toyTick(t,dt){const W=Z.W,H=Z.H;
   b.g.setAttribute('transform',`translate(${b.x.toFixed(1)},${(b.y-b.h).toFixed(1)}) rotate(${b.rot.toFixed(0)})`);
   Z.kcool-=dt;if(Z.kcool<=0&&b.h<20)for(const o of Z.ds){if(o.fly)continue;const cx=o.x+50*o.s;if(Math.abs(cx-b.x)<30+30*o.s){const dir=b.x>=cx?1:-1;kickBall(dir*(260+Math.random()*160),230);o.vj=220;Z.kicks++;Z.kcool=.9;
    if(Z.kicks<=20)say(`${Z.kicks}!`,`${Z.kicks}!`);if(Z.kicks===10){confetti(30);setTimeout(()=>say('Ten kicks! Goal!','踢了十下!進球!'),600);}break;}}}
- if(Z.mode==='dance'){const bt=Math.floor(t/440);if(bt!==Z.beat){Z.beat=bt;Z.ds.forEach((o,k)=>{if((bt+k)%2===0&&o.jump===0)o.vj=210;if(bt%4===0)o.vx=-o.vx;});}}
+ if(Z.mode==='dance'){const bt=Math.floor((t-(Z.beat0||0))/500);if(bt!==Z.beat){Z.beat=bt;Z.ds.forEach((o,k)=>{if((bt+k)%2===0&&o.jump===0)o.vj=210;if(bt%4===0)o.vx=-o.vx;});}}
  if(Z.mode==='night'&&Math.random()<dt*1.2&&Z.ds.length){const o=pick(Z.ds);fxPop(o.x+70*o.s,o.y,'💤',{size:20,life:2.2,vy:-25,vx:12});}}
-function zooStop(){cancelAnimationFrame(Z.raf);Z.raf=0;}
+/* ---------- dinos play with each other: say hi, high-five, cuddle a baby, chase, roar ---------- */
+function socialTick(dt){Z.socT=(Z.socT??3)-dt;const ds=Z.ds.filter(o=>!o.fly&&!o.drag);ds.forEach(o=>{o.cd=(o.cd??(1+Math.random()*3))-dt;});if(Z.socT>0)return;
+ if(Z.socT<-3&&ds.length>1){const free=ds.filter(o=>!o.act);if(free.length>1){const a=pick(free),b=pick(free.filter(o=>o!==a));a.act={type:'follow',p:b,t:0,dur:7,speed:70,meet:true};Z.socT=4;return;}}
+ for(let i=0;i<ds.length;i++)for(let j=i+1;j<ds.length;j++){const a=ds[i],b=ds[j];if(a.act||b.act||a.cd>0||b.cd>0)continue;
+  const ax=a.x+50*a.s,bx=b.x+50*b.s;if(Math.abs(ax-bx)>(50*a.s+50*b.s)*1.15||Math.abs((a.y+80*a.s)-(b.y+80*b.s))>70)continue;startAct(a,b);Z.socT=2+Math.random()*3;return;}}
+function startAct(a,b){const baby=a.stg<2?a:b.stg<2?b:null,big=baby?(baby===a?b:a):null;
+ const kinds=baby&&big.stg>=2?['cuddle','cuddle','hello']:['hello','highfive','chase','roar'];const k=pick(kinds);
+ const mid=()=>[(a.x+50*a.s+b.x+50*b.s)/2,Math.min(a.y,b.y)];const face=(o,p)=>({type:'face',p,t:0,dur:2});
+ if(k==='hello'){a.act=face(a,b);b.act=face(b,a);const [x,y]=mid();fxPop(x,y-10,'👋',{size:28,vx:0,vy:-20,life:1.6});tone(880,.1,'sine',.12);tone(1175,.12,'sine',.1,.12);}
+ else if(k==='highfive'){a.act=face(a,b);b.act=face(b,a);a.act.dur=b.act.dur=1.4;a.vj=b.vj=320;const [x,y]=mid();setTimeout(()=>{for(let n=0;n<6;n++)fxPop(x,y,'✨',{size:20,vx:(Math.random()-.5)*140,vy:-(40+Math.random()*80),life:1});SFX.pop();},280);}
+ else if(k==='cuddle'){baby.act={type:'follow',p:big,t:0,dur:4,speed:55};big.act=face(big,baby);big.act.dur=2.2;const go=n=>{if(n>0&&baby.act){fxPop(baby.x+50*baby.s,baby.y,'💕',{size:24,vx:0,vy:-30,life:1.5});setTimeout(()=>go(n-1),600);}};go(4);baby.vj=200;tone(660,.15,'sine',.1);tone(990,.2,'sine',.08,.15);}
+ else if(k==='chase'){const [it,run]=Math.random()<.5?[a,b]:[b,a];const away=Math.sign((run.x-it.x)||1);run.act={type:'run',t:0,dur:2.6,vx:away*120};it.act={type:'follow',p:run,t:0,dur:2.6,speed:105};
+  fxPop(it.x+50*it.s,it.y-6,'❗',{size:26,vx:0,vy:-25,life:1});fxPop(run.x+50*run.s,run.y-6,'😆',{size:26,vx:0,vy:-25,life:1.2});tone(700,.08,'square',.06);tone(900,.08,'square',.06,.1);}
+ else{const roarer=a.d.t==='rex'?a:b.d.t==='rex'?b:a,other=roarer===a?b:a;roarer.act=face(roarer,other);roarer.act.dur=1.6;roarer.vj=150;
+  const bub=svgEl('text',{x:0,y:0,'text-anchor':'middle','font-size':20,'font-weight':900,fill:'#c92a2a',stroke:'#fff','stroke-width':4,'paint-order':'stroke'},'ROAR!');$('fieldSvg').querySelector('#fxLayer')?.appendChild(bub);Z.fx.push({e:bub,x:roarer.x+50*roarer.s,y:roarer.y-8,vx:0,vy:-18,life:1.4,t:0});
+  tone(140,.45,'sawtooth',.07,0,null,70);setTimeout(()=>{other.vj=300;other.act={type:'run',t:0,dur:1.6,vx:Math.sign((other.x-roarer.x)||1)*130};fxPop(other.x+50*other.s,other.y-6,'😮',{size:24,vx:0,vy:-25,life:1});},350);}}
+function actStep(o,dt){const a=o.act;a.t+=dt;
+ if(a.type==='run'){if((o.x<0&&a.vx<0)||(o.x>Z.W-100*o.s&&a.vx>0))a.vx=-a.vx;o.vx=a.vx;o.x+=a.vx*dt;o.ph+=dt*13;}
+ else if(a.type==='follow'){const p=a.p,dx=(p.x+50*p.s)-(o.x+50*o.s),dy=(p.y+80*p.s)-(o.y+80*o.s);o.vx=Math.sign(dx||1)*a.speed;const near=Math.abs(dx)<=(40*p.s+40*o.s);
+  if(!near){o.x+=o.vx*dt;o.ph+=dt*12;}if(a.meet&&Math.abs(dy)>10)o.y+=Math.sign(dy)*Math.min(Math.abs(dy),40*dt);
+  if(a.meet&&near&&Math.abs(dy)<40&&!p.act){o.act=null;startAct(o,p);return;}}
+ else{const dx=(a.p.x+50*a.p.s)-(o.x+50*o.s);o.vx=Math.sign(dx||1)*Math.max(18,Math.abs(o.vx));}
+ if(a.t>=a.dur){o.act=null;o.cd=4+Math.random()*5;o.pause=0;}}
+function zooStop(){if(danceT){danceOff();}cancelAnimationFrame(Z.raf);Z.raf=0;}
 function zooTick(t){const dt=Math.min(.05,(t-Z.last)/1000);Z.last=t;const W=Z.W;
- toyTick(t,dt);const M=Z.mode;
+ toyTick(t,dt);const M=Z.mode;if(!M)socialTick(dt);
  for(const o of Z.ds){const w=100*o.s;
   if(o.drag){o.g.setAttribute('transform',`translate(${o.x.toFixed(1)},${o.y.toFixed(1)})`);continue;}
-  if(M==='night'||M==='hide'||M==='dance'){if(M==='dance')o.ph+=dt*8;}
+  if(o.act&&!M)actStep(o,dt);
+  else if(M==='night'||M==='hide'||M==='dance'){if(M==='dance')o.ph+=dt*8;}
   else if(M==='ball'&&Z.ball&&!o.fly&&o.pause<=0){const cx=o.x+w/2;const dir=Math.sign(Z.ball.x-cx)||1;o.vx=dir*(70+30*o.s);if(Math.abs(Z.ball.x-cx)>8)o.x+=o.vx*dt;o.ph+=dt*10;}
   else if(o.pause>0)o.pause-=dt;else{o.x+=o.vx*dt;o.ph+=dt*8;if(Math.random()<.004)o.pause=1+Math.random()*2;if(Math.random()<.003)o.vx=-o.vx;}
   if(o.x<0&&o.vx<0&&o.x>-w*.2)o.vx=Math.abs(o.vx);if(o.x>W-w&&o.vx>0)o.vx=-Math.abs(o.vx);
