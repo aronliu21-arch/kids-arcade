@@ -124,7 +124,7 @@ canvas.living{width:min(100%,calc(62vh*4/3));margin:0 auto;aspect-ratio:4/3;disp
     <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
     <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
   </div>
-  <p class="ver">Test sample · 測試版 · v0.4 · 5 endings 5 個結局</p>
+  <p class="ver">Test sample · 測試版 · v0.5 · 5 endings 5 個結局</p>
 </div></section>
 
 <!-- SHELF -->
@@ -174,7 +174,7 @@ canvas.living{width:min(100%,calc(62vh*4/3));margin:0 auto;aspect-ratio:4/3;disp
 
 <script>
 {
-const VERSION='v0.4';
+const VERSION='v0.5';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2400)};
@@ -316,26 +316,26 @@ function renderStep(){const k=ORDER[step];
     f.innerHTML=`<label class="l">Story language 故事語言</label><div class="moods"><button class="mood${z?'':' sel'}" data-lang="en">🇺🇸 English</button><button class="mood${z?' sel':''}" data-lang="zh">🇹🇼 中文</button></div>
     <div class="chars" style="margin-top:12px">${story.chars.map((c,i)=>`<div class="card"><label class="l" style="margin-top:0">${i?'Friend or villain 朋友或壞蛋 (optional 可不填)':'Hero 主角'}</label>
       <div class="moods">${(i?FTYPES:HTYPES).map((t,ti)=>`<button class="mood${story.ctype[i]===ti?' sel':''}" data-ty="${i}.${ti}">${t[0]} ${z?t[2]:t[1]}</button>`).join('')}</div>
-      <input type="text" data-ct="${i}" maxlength="30" placeholder="${i?'Or type your own 或自己寫:a magic teapot 魔法茶壺':'Or type your own 或自己寫:a flying pizza 會飛的披薩'}" style="margin-top:6px;font-size:16px">
-      <label class="l">Name 名字</label><input type="text" data-c="${i}" maxlength="30" placeholder="${i?'Sir Pickles 醃黃瓜爵士':'Name 名字'}">
+      <input type="text" autocomplete="off" autocorrect="off" spellcheck="false" data-ct="${i}" maxlength="30" placeholder="${i?'Or type your own 或自己寫:a magic teapot 魔法茶壺':'Or type your own 或自己寫:a flying pizza 會飛的披薩'}" style="margin-top:6px;font-size:16px">
+      <label class="l">Name 名字</label><input type="text" autocomplete="off" autocorrect="off" spellcheck="false" data-c="${i}" maxlength="30" placeholder="${i?'e.g. Sir Pickles 例如:醃黃瓜爵士':'e.g. Pip 例如:皮皮'}">
       <div class="moods" style="margin-top:6px">${(z?NAMES_ZH:NAMES_EN).slice(i*3,i*3+5).map(nm=>`<button class="mood" data-nm="${i}" data-v="${nm}">${nm}</button>`).join('')}</div>
       <div class="pic"><div class="thumb chk" data-draw="char${i}" style="${c.img?`background-image:url('${c.img}')`:''}">${c.img?'':'🎨'}</div><button class="btn blue" data-draw="char${i}">🎨 ${c.img?'Edit 修改':'Draw 畫'}</button></div></div>`).join('')}</div>
-    <label class="l">Story name 故事名字</label><input type="text" id="fTitle" maxlength="50" placeholder="${esc(titles[0])}">
+    <label class="l">Story name 故事名字</label><input type="text" autocomplete="off" autocorrect="off" spellcheck="false" id="fTitle" maxlength="50" placeholder="${esc(titles[0])}">
     <div class="moods" style="margin-top:6px">${titles.map(t=>`<button class="mood" data-ti="${esc(t)}">${esc(t)}</button>`).join('')}</div>`;
     f.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{story.lang=b.dataset.lang;touch();renderStep()});
     f.querySelectorAll('[data-ty]').forEach(b=>b.onclick=()=>{const[i,ti]=b.dataset.ty.split('.').map(Number);story.ctype[i]=story.ctype[i]===ti?null:ti;if(story.ctext)story.ctext[i]='';touch();renderStep()});
     f.querySelectorAll('[data-nm]').forEach(b=>b.onclick=()=>{story.chars[+b.dataset.nm].name=b.dataset.v;touch();renderStep()});
-    story.ctext=story.ctext||['',''];f.querySelectorAll('[data-ct]').forEach(inp=>{inp.value=story.ctext[+inp.dataset.ct];inp.oninput=e=>{story.ctext[+inp.dataset.ct]=e.target.value;if(e.target.value.trim())story.ctype[+inp.dataset.ct]=null;touch()}});
+    story.ctext=story.ctext||['',''];f.querySelectorAll('[data-ct]').forEach(inp=>{inp.value=story.ctext[+inp.dataset.ct];inp.oninput=e=>{const i=+inp.dataset.ct;story.ctext[i]=e.target.value;if(e.target.value.trim()){story.ctype[i]=null;f.querySelectorAll(`[data-ty^="${i}."]`).forEach(x=>x.classList.remove('sel'))}touch()}});
     f.querySelectorAll('[data-ti]').forEach(b=>b.onclick=()=>{story.title=b.dataset.ti;touch();renderStep()});
     $('fTitle').value=story.title;$('fTitle').oninput=e=>{story.title=e.target.value;touch()};
     f.querySelectorAll('[data-c]').forEach(inp=>{inp.value=story.chars[+inp.dataset.c].name;inp.oninput=e=>{story.chars[+inp.dataset.c].name=e.target.value;touch()}});
   }else{const p=story.pages[k];
-    f.innerHTML=`${blocksHTML(k)}<label class="l">Your words 你的故事 — type anything, your way! 想寫什麼都可以! <small style="font-weight:400;color:#8a7a66">(tap 🎤 on the keyboard to talk 按鍵盤上的🎤用說的)</small></label><textarea id="fText" maxlength="1200"></textarea>
+    f.innerHTML=`${blocksHTML(k)}<label class="l">Your words 你的故事 — type anything, your way! 想寫什麼都可以! <small style="font-weight:400;color:#8a7a66">(tap 🎤 on the keyboard to talk 按鍵盤上的🎤用說的)</small></label><textarea id="fText" autocomplete="off" maxlength="1200"></textarea>
       <div class="pic"><div class="thumb" data-draw="page" style="${p.img?`background-image:url('${p.img}')`:''}">${p.img?'':'🎨'}</div><button class="btn blue" data-draw="page">🎨 ${p.img?'Edit background 修改背景':'Draw the background 畫背景'}</button></div>
       <label class="l">🎬 Living picture 會動的圖</label><p class="hint">Drag characters to place them · tap one to pick how it moves<br>拖曳角色放位置 · 點一下選它怎麼動</p>
       <div class="moods" id="castbar"></div><div class="stagebox" id="stageBox"></div><div class="moods" id="castCtl"></div>
       <label class="l">✨ Special effect 特效</label><div class="moods" id="fxbar"></div>
-      ${TREE[k]?`<label class="l">What can ${esc(hero())} do now? 現在可以怎麼做?</label>${p.choices.map((c,i)=>`<div class="choice"><span class="n">${i+1}</span><input type="text" data-ch="${i}" maxlength="60" placeholder="${i?'Run away 逃跑':'Open the door 打開門'}"></div>`).join('')}<p class="hint" style="margin-top:6px">Tap an idea to fill the next empty choice 點一個點子填進空格</p>${choiceChips(k)}`:''}
+      ${TREE[k]?`<label class="l">What can ${esc(hero())} do now? 現在可以怎麼做?</label>${p.choices.map((c,i)=>`<div class="choice"><span class="n">${i+1}</span><input type="text" autocomplete="off" autocorrect="off" spellcheck="false" data-ch="${i}" maxlength="60" placeholder="${i?'Run away 逃跑':'Open the door 打開門'}"></div>`).join('')}<p class="hint" style="margin-top:6px">Tap an idea to fill the next empty choice 點一個點子填進空格</p>${choiceChips(k)}`:''}
       ${ENDS.includes(k)?`<label class="l">What kind of ending? 哪一種結局?</label><div class="moods">${MOODS.map(([m,l])=>`<button class="mood${p.mood===m?' sel':''}" data-m="${m}">${l}</button>`).join('')}</div>`:''}`;
     $('fText').value=p.text;$('fText').oninput=e=>{p.text=e.target.value;touch()};
     f.querySelectorAll('[data-ch]').forEach(inp=>{inp.value=p.choices[+inp.dataset.ch];inp.oninput=e=>{p.choices[+inp.dataset.ch]=e.target.value;touch()}});
