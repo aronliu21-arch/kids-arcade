@@ -54,18 +54,19 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 #intro>*:not(.rays){position:relative}
 .voicenote{margin-top:8px;max-width:520px;font-size:.78rem;font-weight:700;color:var(--muted);padding:0 12px;line-height:1.35}.voicenote.ok{color:#2b8a3e}
 .reset{margin-top:14px;font-size:.8rem;font-weight:700;color:var(--muted);background:#fff8;border:1px solid currentColor;border-radius:999px;padding:6px 14px;min-height:36px}
-/* map */
-.mapbox,.ztoys{position:absolute;top:8px;left:8px;display:flex;gap:6px;z-index:3;flex-wrap:wrap}
+/* zoo toys */
+.ztoys{position:absolute;top:8px;left:8px;display:flex;gap:6px;z-index:3;flex-wrap:wrap}
 .ztoys button{width:54px;height:54px;border-radius:50%;border:3px solid var(--ink);background:#fff;font-size:1.6rem;box-shadow:0 3px 0 var(--ink);display:grid;place-items:center;padding:0}
 .ztoys button.on{background:var(--gold);outline:4px solid #fff;transform:translateY(-2px)}
 .zcov{cursor:pointer}.zcov.wig{animation:zwig .4s}@keyframes zwig{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
-.field{flex:1;min-height:260px;border:4px solid var(--ink);border-radius:20px;overflow:hidden;position:relative;background:#8ce99a}
+/* map */
+.mapbox,.field{flex:1;min-height:260px;border:4px solid var(--ink);border-radius:20px;overflow:hidden;position:relative;background:#8ce99a}
 .mapbox{background:#fff4e6}
 .bk{cursor:pointer}.openbook{animation:openbook .65s ease-in forwards;transform-box:fill-box;transform-origin:center}@keyframes openbook{60%{transform:scale(1.15) rotate(-3deg)}to{transform:scale(1.6);opacity:0}}
 .bk.shake{transform-box:fill-box}
 .critter{cursor:pointer}.boing{animation:boing .5s;transform-box:fill-box;transform-origin:center bottom}@keyframes boing{40%{transform:scale(1.25,.85)}70%{transform:scale(.9,1.15)}}
 .fogaway{animation:fogout 2.2s .6s forwards}@keyframes fogout{to{opacity:0;transform:translate(60px,-30px) scale(1.4)}}
-.mapbox svg,.field svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
+.mapbox svg,.field svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .stn{cursor:pointer}
 .bar{display:flex;gap:8px;flex:0 0 auto}
 .bar>*{flex:1}
@@ -77,7 +78,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 @media (max-width:520px){.big{flex-direction:column;text-align:center;gap:2px;min-height:76px;font-size:.88rem}.big .em{font-size:1.6rem}}
 .tabs{display:flex;gap:6px;flex:0 0 auto;overflow-x:auto}
 .tab{border:3px solid var(--ink);border-radius:14px;background:#fff;min-height:48px;min-width:56px;padding:2px 10px;font-weight:800;font-size:1.3rem;display:flex;align-items:center;gap:4px;flex:0 0 auto}
-.tab small{font-size:.8rem}.tab.on{background:var(--gold)}.tab[disabled]{opacity:.35}
+.tab small{font-size:.8rem}.tab.on{background:var(--gold)}#zTabs.drop .tab:not([disabled]){outline:3px dashed var(--ink);outline-offset:2px;animation:zwig .8s infinite}#zTabs .tab.hov{background:#b2f2bb;transform:scale(1.12);animation:none}.tab[disabled]{opacity:.35}
 .dino{cursor:pointer}
 /* station */
 .stScene{flex:0 0 auto;height:clamp(170px,34vh,300px);border:4px solid var(--ink);border-radius:20px;overflow:hidden;position:relative}
@@ -898,11 +899,24 @@ function zooStart(){if(!S.areas.includes(Z.area))Z.area='home';zooTabs();$('zFee
   g.innerHTML=`<g class="body"><g class="sc">${dinoSVG(d.t,d.c)}</g></g>${stg<2?`<text class="bottle" x="${50*size}" y="-6" text-anchor="middle" font-size="18">🍼</text>`:''}<g><rect x="${50*size-28}" y="${80*size+4}" width="56" height="22" rx="8" fill="#fff" ${ST} stroke-width="2"/><text x="${50*size}" y="${80*size+20}" text-anchor="middle" font-size="15" font-weight="900" fill="#4a3426" letter-spacing="1">${d.name}</text></g>${hearts}`;
   layer.appendChild(g);const o={d,idx,g,body:g.querySelector('.body'),legs:[...g.querySelectorAll('[data-leg]')],wings:[...g.querySelectorAll('[data-wing]')],s:size,fly,stg,
    x:Math.random()*(W-100*size),y:fly?H*(.08+Math.random()*.12):H*(.42+Math.random()*.3),vx:(20+Math.random()*25)*(stg<2?.7:1)*(Math.random()<.5?-1:1),ph:Math.random()*6,jump:0,vj:0,pause:0};
-  g.addEventListener('pointerdown',ev=>{ev.preventDefault();ac();tapDino(o);});return o;});
+  g.addEventListener('pointerdown',ev=>{ev.preventDefault();ac();dinoDown(o,ev);});g.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});return o;});
  if(Z.newest!==undefined){const n=Z.ds.find(x=>x.idx===Z.newest);if(n){n.x=-100*n.s;n.vx=Math.abs(n.vx)+20;}Z.newest=undefined;}
  toyInit();
  cancelAnimationFrame(Z.raf);Z.last=performance.now();Z.raf=requestAnimationFrame(zooTick);
  SOLVE=()=>{const b=Z.ds.find(x=>x.stg<2);if(b&&S.snacks){Z.feed=true;tapDino(b);}};}
+/* drag a dino: drop on an area tab to move it there, or anywhere in the field to set it down */
+function dinoDown(o,ev){const svg=$('fieldSvg'),sx=ev.clientX,sy=ev.clientY;let drag=false,over=null;
+ const toField=(cx,cy)=>{const r=svg.getBoundingClientRect();return [(cx-r.left)*Z.W/r.width,(cy-r.top)*Z.H/r.height];};
+ const tabAt=(x,y)=>{const e=document.elementFromPoint(x,y);return e&&e.closest?e.closest('#zTabs .tab'):null;};
+ const mv=e=>{if(!drag&&Math.hypot(e.clientX-sx,e.clientY-sy)>14&&!Z.feed&&Z.mode!=='hide'){drag=true;o.drag=true;o.g.style.opacity=.85;$('zTabs').classList.add('drop');SFX.pop();say(`Where should ${o.d.name} live?`,`${o.d.name}要住在哪裡?`);}
+  if(!drag)return;e.preventDefault();const [x,y]=toField(e.clientX,e.clientY);o.x=x-50*o.s;o.y=y-50*o.s;const t=tabAt(e.clientX,e.clientY);if(t!==over){over&&over.classList.remove('hov');over=t;t&&t.classList.add('hov');}};
+ const up=e=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);$('zTabs').classList.remove('drop');over&&over.classList.remove('hov');
+  if(!drag){tapDino(o);return;}o.drag=false;o.g.style.opacity='';const t=tabAt(e.clientX,e.clientY);
+  if(t){const k=t.dataset.a,A2=AREAS[k];if(t.disabled){SFX.boing();say('That place is still locked. Read more books to open it!','那裡還沒打開。多讀故事書就能打開!');}
+   else if(k===(o.d.area||'home')){SFX.boing();say(`${o.d.name} already lives here!`,`${o.d.name}已經住在這裡了!`);}
+   else{o.d.area=k;save();SFX.ding();confetti(20);say(`${o.d.name} moved to the ${A2[1]}!`,`${o.d.name}搬到${A2[2]}了!`);Z.area=k;Z.newest=o.idx;setTimeout(zooStart,250);return;}}
+  const [,y]=toField(e.clientX,e.clientY);if(!o.fly)o.y=Math.max(Z.H*.3,Math.min(Z.H*.8,y-40*o.s));o.vj=200;SFX.hop();};
+ addEventListener('pointermove',mv,{passive:false});addEventListener('pointerup',up);addEventListener('pointercancel',up);}
 function tapDino(o){const d=o.d;if(Z.mode&&!Z.feed&&toyTap(o))return;if(o.jump===0){o.vj=260;SFX.hop();}
  if(Z.feed&&o.stg<2){if(!S.snacks){Z.feed=false;$('zFeed').classList.remove('on');say('No snacks left! Play a job to earn snacks.','沒有點心了!玩任務賺點心吧!');return;}
   S.snacks--;d.hearts=(d.hearts||0)+1;SFX.chew();showWallet();
@@ -974,6 +988,7 @@ function zooStop(){cancelAnimationFrame(Z.raf);Z.raf=0;}
 function zooTick(t){const dt=Math.min(.05,(t-Z.last)/1000);Z.last=t;const W=Z.W;
  toyTick(t,dt);const M=Z.mode;
  for(const o of Z.ds){const w=100*o.s;
+  if(o.drag){o.g.setAttribute('transform',`translate(${o.x.toFixed(1)},${o.y.toFixed(1)})`);continue;}
   if(M==='night'||M==='hide'||M==='dance'){if(M==='dance')o.ph+=dt*8;}
   else if(M==='ball'&&Z.ball&&!o.fly&&o.pause<=0){const cx=o.x+w/2;const dir=Math.sign(Z.ball.x-cx)||1;o.vx=dir*(70+30*o.s);if(Math.abs(Z.ball.x-cx)>8)o.x+=o.vx*dt;o.ph+=dt*10;}
   else if(o.pause>0)o.pause-=dt;else{o.x+=o.vx*dt;o.ph+=dt*8;if(Math.random()<.004)o.pause=1+Math.random()*2;if(Math.random()<.003)o.vx=-o.vx;}
