@@ -60,6 +60,13 @@ h1{
 .hzh{display:flex;justify-content:center;gap:2px;margin-top:8px;color:#fff;font-family:"PingFang TC","Noto Sans TC",sans-serif;font-weight:900;font-size:1.6rem;text-shadow:2px 2px 0 var(--ink)}
 .sub{margin:10px 0 0;color:#fff;font-weight:800;font-size:1.15rem}
 main{max-width:1200px;margin:0 auto;padding:28px 18px 40px}
+.grid.cats{display:block}
+.catsec{margin:0 0 30px}
+.cathead{display:flex;align-items:center;gap:12px;margin:0 4px 14px;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;color:var(--ink)}
+.cathead .ci{font-size:2rem;line-height:1}
+.cathead .cz{font-size:1.5rem}
+.cathead .ce{font-size:1.15rem;opacity:.75;font-family:system-ui,sans-serif;font-weight:800}
+.catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:22px}
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));
@@ -310,11 +317,33 @@ function show(){
   renderGrid(kid);
   window.scrollTo(0, 0);
 }
+const CATS = [
+  {k:"fav", ic:"⭐", en:"Favorites", zh:[["最","ㄗㄨㄟˋ"],["愛","ㄞˋ"]]},
+  {k:"story", ic:"📖", en:"Stories & Adventures", zh:[["故","ㄍㄨˋ"],["事","ㄕˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]]},
+  {k:"math", ic:"🔢", en:"Math", zh:[["數","ㄕㄨˋ"],["學","ㄒㄩㄝˊ"]]},
+  {k:"read", ic:"✏️", en:"Reading & Writing", zh:[["讀","ㄉㄨˊ"],["寫","ㄒㄧㄝˇ"]]},
+  {k:"sport", ic:"⚽", en:"Sports", zh:[["運","ㄩㄣˋ"],["動","ㄉㄨㄥˋ"]]},
+  {k:"art", ic:"🎨", en:"Draw & Create", zh:[["畫","ㄏㄨㄚˋ"],["畫","ㄏㄨㄚˋ"],["創","ㄔㄨㄤˋ"],["作","ㄗㄨㄛˋ"]]},
+  {k:"life", ic:"🌱", en:"Life & Thinking", zh:[["生","ㄕㄥ"],["活","ㄏㄨㄛˊ"],["思","ㄙ"],["考","ㄎㄠˇ"]]},
+  {k:"lab", ic:"🧪", en:"Testing Lab", zh:[["試","ㄕˋ"],["驗","ㄧㄢˋ"],["室","ㄕˋ"]]}
+];
+// which shelf each game sits on (anything not listed goes to Testing Lab)
+const GCAT = {
+  "games/lab/dino-world/":"story","games/dino-journey/":"story","games/dragon-heart/":"story","games/dragon-heart-en/":"story","games/lumi-quest/":"story","games/magic-academy/":"story","games/question-beasts/":"story",
+  "https://aronliu21-arch.github.io/math-quest/":"math","games/kanga-hop/":"math","games/times-tables/":"math","games/times-challenge/":"math","games/calendar-quest/":"math","games/card-quest/":"math",
+  "games/spelling-bees/":"read","games/zhuyin/":"read","games/cursive-quest/":"read",
+  "games/pitch-smarts/":"sport","games/sports-stars/":"sport",
+  "games/family-zoo/":"art","https://aronliu21-arch.github.io/drawing-game-/":"art","games/runway-sketch/":"art",
+  "games/life-skills/":"life","games/critter-grove/":"life","games/game-room/":"life"
+};
 function renderGrid(kid){
   const favs = loadFavs(kid);
   const mine = GAMES.filter(g => g.kids.includes(kid)).reverse(); // newest first
-  const on = mine.filter(g => favs.includes(g.url)), off = mine.filter(g => !favs.includes(g.url));
-  $("grid").innerHTML = on.map(g => slotHTML(g, true)).concat(off.map(g => slotHTML(g, false))).join("");
+  const groups = {};
+  mine.forEach(g => { const k = favs.includes(g.url) ? "fav" : (GCAT[g.url] || "lab"); (groups[k] = groups[k] || []).push(g); });
+  $("grid").classList.add("cats");
+  $("grid").innerHTML = CATS.filter(c => groups[c.k]).map(c => `<section class="catsec"><h3 class="cathead"><span class="ci" aria-hidden="true">${c.ic}</span><span class="cz" lang="zh-Hant">${titleHTML(c.zh)}</span><span class="ce" lang="en">${c.en}</span></h3>
+    <div class="catgrid">${groups[c.k].map(g => slotHTML(g, c.k === "fav")).join("")}</div></section>`).join("");
   fitNames();
 }
 $("grid").addEventListener("click", e => {
@@ -344,5 +373,5 @@ show();
 </html>
 
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.5" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.5 · 2026-11-25</div>
+<div id="kaVer" data-v="1.6" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.6 · 2026-11-25</div>
 </body></html>
