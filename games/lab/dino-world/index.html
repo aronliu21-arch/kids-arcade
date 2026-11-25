@@ -333,6 +333,7 @@ const ZY={'亞':'ㄧㄚˋ','光':'ㄍㄨㄤ','剛':'ㄍㄤ','力':'ㄌㄧˋ','�
 '帶':'ㄉㄞˋ','回':'ㄏㄨㄟˊ','去':'ㄑㄩˋ','謝':'ㄒㄧㄝˋ','睏':'ㄎㄨㄣˋ','睡':'ㄕㄨㄟˋ','覺':'ㄐㄧㄠˋ','安':'ㄢ','全':'ㄑㄩㄢˊ','哇':'ㄨㄚ','個':'˙ㄍㄜ','都':'ㄉㄡ','它':'ㄊㄚ','能':'ㄋㄥˊ','嗎':'˙ㄇㄚ'};
 const ZY2={'長大':'ㄓㄤˇ','長高':'ㄓㄤˇ'};
 function zh(s){if(Array.isArray(s))return s.map(([c,z])=>`<ruby>${c}<rt>${z}</rt></ruby>`).join('');let o='';const a=[...s];a.forEach((c,i)=>{const z=ZY2[c+(a[i+1]||'')]||ZY[c];o+=z?`<ruby>${c}<rt>${z}</rt></ruby>`:c;});return o;}
+function biPlain(en,z){return `<span class="en" lang="en">${en}</span><span class="zh" lang="zh-Hant">${Array.isArray(z)?z.map(x=>x[0]).join(''):z}</span>`;}
 function bi(en,z){return `<span class="en" lang="en">${en}</span><span class="zh" lang="zh-Hant">${zh(z)}</span>`;}
 
 /* ---------- sound ---------- */
@@ -613,14 +614,14 @@ Object.assign(CAST.ankmom,{nm:['Mommy Ankylo','甲龍媽媽']});Object.assign(CA
 // a story page: picture on one page, words on the other; ▶ turns the page, ◀ goes back, swipe works too
 function turnAnim(el){if(REDUCED)return;el.classList.remove('turn');void el.offsetWidth;el.classList.add('turn');}
 let pageTok=0,readTimer=null;
-function scene(area,cast,lines,done,head){musicOff();let i=-1;const prevSolve=SOLVE;show('page');$('pgHead').innerHTML=head||'';
+function scene(area,cast,lines,done,head){musicOff();let i=-1;const prevSolve=SOLVE;show('page');$('pgHead').innerHTML=(head||'').replace(/<rt>[^<]*<\/rt>/g,'');
  const draw=(spk,view)=>{const r={width:$('pgArt').clientWidth,height:$('pgArt').clientHeight};const W=Math.max(300,r.width),H=Math.max(180,r.height);let o=areaArt(area,W,H);
   if(view)o+=viewSVG(view,spk,W,H);else{const list=cast.filter(k=>CAST[k]&&CAST[k].t);const base=Math.min(H*.62,W/(list.length+.6)*.9);
    list.forEach((k,j)=>{const c=CAST[k];const sz=base*c.sz/100;const x=W*(j+1)/(list.length+1)-50*sz,y=H*.9-80*sz;const flip=x>W/2&&k!=='pip';
     o+=`<g transform="translate(${flip?x+100*sz:x},${y}) scale(${flip?-sz:sz},${sz})"><g class="${k===spk?'talk':''}">${dinoSVG(c.t,c.c)}</g></g>`;});}
   $('pgArt').innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${o}</svg>`;};
  const go=d=>{if(i+d<0)return;i+=d;if(i>=lines.length){SOLVE=prevSolve;done&&done();return;}const [who,en,z,view]=lines[i];turnAnim($('pgSpread'));draw(who,view);
-  const c=CAST[who];$('pgWho').innerHTML=c&&c.nm?`${c.em} ${bi(c.nm[0],c.nm[1])}`:'';$('pgLine').innerHTML=bi(en,z);$('pgNum').textContent=`${i+1} / ${lines.length}`;
+  const c=CAST[who];$('pgWho').innerHTML=c&&c.nm?`${c.em} ${biPlain(c.nm[0],c.nm[1])}`:'';$('pgLine').innerHTML=biPlain(en,z);$('pgNum').textContent=`${i+1} / ${lines.length}`;
   $('pgPrev').style.visibility=i?'visible':'hidden';const tok=++pageTok;clearTimeout(readTimer);
   say(en,z,null,c&&c.pitch,()=>{if(S.autoRead!==false&&tok===pageTok&&SCREEN==='page')readTimer=setTimeout(()=>{if(tok===pageTok&&SCREEN==='page'){SFX.page();go(1);}},1400);});};
  $('pgAuto').textContent=S.autoRead!==false?'🔊 Read to me ✓':'🔊 Read to me';$('pgAuto').classList.toggle('on',S.autoRead!==false);
