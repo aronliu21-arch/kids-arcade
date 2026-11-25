@@ -59,7 +59,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 .dghost{position:fixed;z-index:50;pointer-events:none;transform:translate(-50%,-60%) rotate(-6deg);filter:drop-shadow(0 6px 6px #0004)}.dghost svg{width:100%;display:block}
 .ztoys{position:absolute;top:8px;left:8px;display:flex;gap:6px;z-index:3;flex-wrap:wrap}
 .ztoys button{width:54px;height:54px;border-radius:50%;border:3px solid var(--ink);background:#fff;font-size:1.6rem;box-shadow:0 3px 0 var(--ink);display:grid;place-items:center;padding:0}
-.ztoys button.on{background:var(--gold);outline:4px solid #fff;transform:translateY(-2px)}
+.ztoys button.wiggle{animation:zwig .45s 3}.ztoys button.on{background:var(--gold);outline:4px solid #fff;transform:translateY(-2px)}
 .zcov{cursor:pointer}.zcov.wig{animation:zwig .4s}@keyframes zwig{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
 /* map */
 .mapbox,.field{flex:1;min-height:260px;border:4px solid var(--ink);border-radius:20px;overflow:hidden;position:relative;background:#8ce99a}
@@ -896,7 +896,7 @@ const STAGE_SZ=[.55,.78,1];
 function goZoo(){musicOn();BACK=null;show('zoo');say('Your dino zoo!','你的恐龍動物園!');}
 function zooTabs(){$('zTabs').innerHTML=Object.keys(AREAS).map(k=>{const a=AREAS[k];const open=S.areas.includes(k);return `<button class="tab${Z.area===k?' on':''}" data-a="${k}" ${open?'':'disabled'}>${open?a[0]:'🔒'}<small>${a[1]}</small></button>`;}).join('');
  $('zTabs').querySelectorAll('.tab').forEach(b=>b.onclick=()=>{if(b.disabled)return;Z.area=b.dataset.a;SFX.click();zooStart();const a=AREAS[Z.area];say(a[1],a[2]);});}
-function zooStart(){if(!S.areas.includes(Z.area))Z.area='home';zooTabs();$('zFeed').classList.toggle('on',Z.feed);
+function zooStart(){needTick();if(!S.areas.includes(Z.area))Z.area='home';zooTabs();$('zFeed').classList.toggle('on',Z.feed);
  const r={width:$('field').clientWidth,height:$('field').clientHeight};Z.W=Math.max(200,r.width);Z.H=Math.max(200,r.height);const W=Z.W,H=Z.H,svg=$('fieldSvg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
  let o=areaArt(Z.area,W,H);o+=`<path d="M0 ${H-14} H${W}" stroke="#8b5a2b" stroke-width="5"/>`;for(let x=10;x<W;x+=40)o+=`<rect x="${x}" y="${H-30}" width="8" height="30" rx="2" fill="#c08552" ${ST}/>`;
  o+=`<g id="nightLayer"></g><g id="dinoLayer"></g><g id="coverLayer"></g><g id="fxLayer"></g>`;const here=S.dinos.map((d,i)=>[d,i]).filter(([d])=>(d.area||'home')===Z.area);
@@ -909,7 +909,7 @@ function zooStart(){if(!S.areas.includes(Z.area))Z.area='home';zooTabs();$('zFee
    x:Math.random()*(W-100*size),y:fly?H*(.08+Math.random()*.12):H*(.42+Math.random()*.3),vx:(20+Math.random()*25)*(stg<2?.7:1)*(Math.random()<.5?-1:1),ph:Math.random()*6,jump:0,vj:0,pause:0};
   g.addEventListener('pointerdown',ev=>{ev.preventDefault();ac();dinoDown(o,ev);});g.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});return o;});
  if(Z.newest!==undefined){const n=Z.ds.find(x=>x.idx===Z.newest);if(n){n.x=-100*n.s;n.vx=Math.abs(n.vx)+20;}Z.newest=undefined;}
- toyInit();
+ Z.ds.forEach(decorate);toyInit();
  cancelAnimationFrame(Z.raf);Z.last=performance.now();Z.raf=requestAnimationFrame(zooTick);
  SOLVE=()=>{const b=Z.ds.find(x=>x.stg<2);if(b&&S.snacks){Z.feed=true;tapDino(b);}};}
 /* drag a dino: drop on an area tab to move it there, or anywhere in the field to set it down */
@@ -926,6 +926,7 @@ function dinoDown(o,ev){const svg=$('fieldSvg'),sx=ev.clientX,sy=ev.clientY;let 
   const [,y]=toField(e.clientX,e.clientY);if(!o.fly)o.y=Math.max(Z.H*.3,Math.min(Z.H*.8,y-40*o.s));o.vj=200;SFX.hop();};
  addEventListener('pointermove',mv,{passive:false});addEventListener('pointerup',up);addEventListener('pointercancel',up);}
 function tapDino(o){const d=o.d;if(Z.mode&&!Z.feed&&toyTap(o))return;if(o.jump===0){o.vj=260;SFX.hop();}
+ if(!Z.feed&&!Z.mode&&needSay(o))return;
  if(Z.feed&&o.stg<2){if(!S.snacks){Z.feed=false;$('zFeed').classList.remove('on');say('No snacks left! Play a job to earn snacks.','沒有點心了!玩任務賺點心吧!');return;}
   S.snacks--;d.hearts=(d.hearts||0)+1;SFX.chew();showWallet();
   if(d.hearts>=3){d.hearts=0;d.stage=(d.stage||0)+1;save();SFX.grow();confetti(30);const big=d.stage>=2;
@@ -971,6 +972,21 @@ function hideObj(k,c,b,s){const R=(x0,y0,x1,y1,n)=>subdiv([[x0,y0],[x1,y0],[x1,y
  else if(k==='bones'){o+=cr(semiPts(c-s*.5,b-s*.5,s,s*.5),'#a9714b')+cr(R(c-s*.3,b-s*.62,c+s*.3,b-s*.54,2),'#f8f9fa',1.8)+cr(E(c-s*.3,b-s*.58,s*.06,s*.06,10),'#f8f9fa',1.6)+cr(E(c+s*.3,b-s*.58,s*.06,s*.06,10),'#f8f9fa',1.6);}
  return o;}
 const HIDEK={home:['bush','tree','house','tent','box','hay'],jungle:['bush','tree','hut','rock','bush','tree'],beach:['castle','boat','rock','hut','bush'],snow:['igloo','snowman','pine','rock','house'],volcano:['rock','rock2','bones','bush','hut']};
+/* ---------- dino moods: dirty → bath, sleepy → bedtime, wants to play → ball, wants to dance → dance party ---------- */
+const MOODS={dirty:['🛁','is all muddy! Give a bath.','髒兮兮的!幫牠洗澡吧!','bath','is squeaky clean and happy!','洗乾淨了,好開心!'],
+ sleepy:['😴','is sleepy. Time for bed!','想睡覺了,該睡覺囉!','night','had a good sleep!','睡飽了!'],
+ play:['⚽','wants to play ball!','想踢球!','ball','had fun playing ball!','踢球好好玩!'],
+ dance:['🎵','wants to dance!','想跳舞!','dance','loves dancing!','跳舞好開心!']};
+function needTick(){const now=Date.now();let ch=false;S.dinos.forEach(d=>{if(d.need||(d.stage??2)<2&&false)return;if(d.needT===undefined){d.needT=now-60000*Math.random()*3;if(Math.random()<.5){d.need=pick(Object.keys(MOODS));ch=true;}return;}
+  if(now-d.needT>120000&&Math.random()<.6){d.need=pick(Object.keys(MOODS));d.needT=now;ch=true;}});if(ch)save();}
+function decorate(o){o.g.querySelectorAll('.need,.mud').forEach(e=>e.remove());const n=o.d.need;if(!n)return;const sz=o.s,bx=88*sz,by=-14;
+ const b=svgEl('g',{class:'need'});b.innerHTML=`<circle cx="${bx-12}" cy="${by+14}" r="4" fill="#fff" stroke="${INK}" stroke-width="1.6"/><circle cx="${bx}" cy="${by}" r="17" fill="#fff" stroke="${INK}" stroke-width="2.2"/><text x="${bx}" y="${by+1}" text-anchor="middle" dominant-baseline="central" font-size="18">${MOODS[n][0]}</text>`;o.g.appendChild(b);
+ if(n==='dirty'){const m=svgEl('g',{class:'mud'});m.innerHTML=[[30,44,9,6],[52,52,11,7],[66,38,7,5],[40,62,6,4],[78,58,5,4]].map(([x,y,rx,ry])=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="#8b5a2b" opacity=".85"/>`).join('')+`<path d="M44 14 q4 -6 0 -12 M54 12 q4 -6 0 -12" stroke="#8b5a2b" stroke-width="2" fill="none" opacity=".7"/>`;o.g.querySelector('.sc').appendChild(m);}
+ if(n==='sleepy')o.g.querySelector('.need text').textContent='😴';}
+function needSay(o){const n=o.d.need;if(!n)return false;const N=MOODS[n];say(`${o.d.name} ${N[1]}`,`${o.d.name}${N[2]}`);const b=$('zToys').querySelector(`[data-m="${N[3]}"]`);if(b){b.classList.remove('wiggle');void b.offsetWidth;b.classList.add('wiggle');setTimeout(()=>b.classList.remove('wiggle'),1800);}return true;}
+function fixNeed(o,n,quiet){if(o.d.need!==n)return false;o.d.need=null;o.d.needT=Date.now();save();decorate(o);SFX.grow();
+ for(let j=0;j<5;j++)fxPop(o.x+50*o.s,o.y+10,'❤️',{size:20,vx:(Math.random()-.5)*90,vy:-(40+Math.random()*60),life:1.4});if(!quiet)say(`${o.d.name} ${MOODS[n][4]}`,`${o.d.name}${MOODS[n][5]}`);return true;}
+function getNeed(o,n,en,zh){if(o.d.need)return;o.d.need=n;o.d.needT=Date.now();save();decorate(o);say(en,zh);}
 /* ---------- zoo toys: ball, bath, dance party, bedtime stars, hide & seek ---------- */
 const TOYSAY={ball:['Tap the ball to kick it! Let’s count the kicks!','點球來踢!一起數踢幾下!'],bath:['Bath time! Tap a dino to scrub it.','洗澡時間!點恐龍刷一刷。'],
  dance:['Dance party! Tap a dino to sing!','跳舞派對!點恐龍唱歌!'],night:['Good night, dinos! Tap the stars and count them.','恐龍晚安!點星星,數一數。'],hide:['Close your eyes… one, two, three! Find the dinos!','閉上眼睛……一、二、三!找恐龍!']};
@@ -993,7 +1009,7 @@ function toyInit(){if(Z.mode==='dance')danceOn();else if(danceT){danceOff();musi
    const st=svgEl('text',{x,y,'text-anchor':'middle','dominant-baseline':'central','font-size':40,opacity:.6,style:'cursor:pointer'},'⭐');
    st.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();ac();if(st.dataset.on)return;st.dataset.on=1;st.setAttribute('opacity',1);st.setAttribute('font-size',54);Z.stars++;SFX.ding();
     for(let j=0;j<4;j++)fxPop(x,y,'✨',{size:18,life:.9});
-    if(Z.stars>=n){confetti(30);say(`${n}! You counted ${n} stars! Good night, dinos!`,`${n}!你數了${n}顆星星!恐龍晚安!`);}else say(`${Z.stars}!`,`${Z.stars}!`);});top.appendChild(st);}
+    if(Z.stars>=n){confetti(30);Z.ds.forEach(o=>fixNeed(o,'sleepy',true));say(`${n}! You counted ${n} stars! Good night, dinos!`,`${n}!你數了${n}顆星星!恐龍晚安!`);}else say(`${Z.stars}!`,`${Z.stars}!`);});top.appendChild(st);}
   Z.ds.forEach(o=>{o.zz=0;});}
  if(M==='dance'){Z.ds.forEach(o=>{o.pause=0;});}
  if(M==='hide'){const n=Math.min(5,Math.max(3,Z.ds.length+1)),L=svg.querySelector('#coverLayer');const two=n>3&&W<H*1.1,cols=two?Math.ceil(n/2):n;
@@ -1015,10 +1031,10 @@ function seek(sp){const c=sp.c;c.classList.remove('wig');void c.getBBox();c.clas
 function kickBall(vx,vh){const b=Z.ball;if(!b)return;b.vx=vx;b.vh=vh;SFX.pop();}
 function toyTap(o){const d=o.d,M=Z.mode;
  if(M==='bath'){o.pause=2.5;o.scrub=(o.scrub||0)+1;SFX.brush();const cx=o.x+50*o.s,cy=o.y+40*o.s;for(let j=0;j<5;j++)fxPop(cx+(Math.random()-.5)*70*o.s,cy,'🫧',{size:24+Math.random()*14,life:1.8,vy:-(30+Math.random()*40)});
-  if(o.scrub>=3){o.scrub=0;o.vj=280;SFX.grow();for(let j=0;j<8;j++)fxPop(cx,cy-20,'✨',{size:22,vx:(Math.random()-.5)*160,vy:-(40+Math.random()*80)});say(`Three! ${d.name} is squeaky clean!`,`三!${d.name}洗得好乾淨!`);}
+  if(o.scrub>=3){o.scrub=0;o.vj=280;SFX.grow();for(let j=0;j<8;j++)fxPop(cx,cy-20,'✨',{size:22,vx:(Math.random()-.5)*160,vy:-(40+Math.random()*80)});if(!fixNeed(o,'dirty'))say(`Three! ${d.name} is squeaky clean!`,`三!${d.name}洗得好乾淨!`);}
   else say(`${o.scrub}! Scrub, scrub!`,`${o.scrub}!刷刷刷!`);return true;}
- if(M==='dance'){const f=SING[Z.note%SING.length];Z.note++;tone(f,.35,'triangle',.22);tone(f*1.5,.3,'sine',.08,.05);o.vj=380;fxPop(o.x+50*o.s,o.y,'🎵',{size:26});return true;}
- if(M==='night'){tone(160,.5,'sine',.08,0,null,120);fxPop(o.x+70*o.s,o.y,'💤',{size:24,life:2});say(`Shh… ${d.name} is sleeping.`,`噓……${d.name}在睡覺。`);return true;}
+ if(M==='dance'){const f=SING[Z.note%SING.length];Z.note++;tone(f,.35,'triangle',.22);tone(f*1.5,.3,'sine',.08,.05);o.vj=380;fxPop(o.x+50*o.s,o.y,'🎵',{size:26});o.dn=(o.dn||0)+1;if(!fixNeed(o,'dance')&&o.dn===6&&!d.need)getNeed(o,'sleepy',`${d.name} danced so much. Now ${d.name} is sleepy!`,`${d.name}跳得好累,想睡覺了!`);return true;}
+ if(M==='night'){if(fixNeed(o,'sleepy',true)){say(`Good night, ${d.name}! Sweet dreams.`,`${d.name}晚安!做個好夢。`);return true;}tone(160,.5,'sine',.08,0,null,120);fxPop(o.x+70*o.s,o.y,'💤',{size:24,life:2});say(`Shh… ${d.name} is sleeping.`,`噓……${d.name}在睡覺。`);return true;}
  if(M==='hide'){if(o.hide)seek(o.hide);return true;}
  return false;}
 function toyTick(t,dt){const W=Z.W,H=Z.H;
@@ -1026,7 +1042,7 @@ function toyTick(t,dt){const W=Z.W,H=Z.H;
  const b=Z.ball;if(b){b.x+=b.vx*dt;b.vx*=Math.pow(.45,dt);if(Math.abs(b.vx)<4)b.vx=0;b.h+=b.vh*dt;b.vh-=900*dt;if(b.h<=0){b.h=0;b.vh=b.vh<-120?-b.vh*.4:0;}
   if(b.x<30){b.x=30;b.vx=Math.abs(b.vx)*.8;}if(b.x>W-30){b.x=W-30;b.vx=-Math.abs(b.vx)*.8;}b.rot+=b.vx*dt*2.2;
   b.g.setAttribute('transform',`translate(${b.x.toFixed(1)},${(b.y-b.h).toFixed(1)}) rotate(${b.rot.toFixed(0)})`);
-  Z.kcool-=dt;if(Z.kcool<=0&&b.h<20)for(const o of Z.ds){if(o.fly)continue;const cx=o.x+50*o.s;if(Math.abs(cx-b.x)<30+30*o.s){const dir=b.x>=cx?1:-1;kickBall(dir*(260+Math.random()*160),230);o.vj=220;Z.kicks++;Z.kcool=.9;
+  Z.kcool-=dt;if(Z.kcool<=0&&b.h<20)for(const o of Z.ds){if(o.fly)continue;const cx=o.x+50*o.s;if(Math.abs(cx-b.x)<30+30*o.s){const dir=b.x>=cx?1:-1;kickBall(dir*(260+Math.random()*160),230);o.vj=220;Z.kicks++;Z.kcool=.9;o.kk=(o.kk||0)+1;if(o.kk===3&&fixNeed(o,'play')){Z.kcool=2;break;}if(o.kk===6&&!o.d.need){Z.kcool=2;getNeed(o,'dirty',`Oh no! ${o.d.name} got muddy playing ball!`,`哎呀!${o.d.name}踢球踢得髒兮兮!`);break;}
    if(Z.kicks<=20)say(`${Z.kicks}!`,`${Z.kicks}!`);if(Z.kicks===10){confetti(30);setTimeout(()=>say('Ten kicks! Goal!','踢了十下!進球!'),600);}break;}}}
  if(Z.mode==='dance'){const bt=Math.floor((t-(Z.beat0||0))/500);if(bt!==Z.beat){Z.beat=bt;Z.ds.forEach((o,k)=>{if((bt+k)%2===0&&o.jump===0)o.vj=210;if(bt%4===0)o.vx=-o.vx;});}}
  if(Z.mode==='night'&&Math.random()<dt*1.2&&Z.ds.length){const o=pick(Z.ds);fxPop(o.x+70*o.s,o.y,'💤',{size:20,life:2.2,vy:-25,vx:12});}}
