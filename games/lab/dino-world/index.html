@@ -200,9 +200,9 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 .stage,.result{background:#fffdf6!important;border-radius:8px 18px 18px 8px!important;box-shadow:inset 12px 0 14px -10px rgba(0,0,0,.25)}
 /* puzzle pieces */
 .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}.vis{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
-.op{font-size:clamp(1.4rem,5vmin,2.4rem);font-weight:900;padding:0 4px}
-.tfs{display:inline-flex;gap:4px}.tf{display:inline-grid;grid-template-columns:repeat(5,1fr);gap:2px;border:3px solid var(--ink);border-radius:8px;padding:3px;background:#fff}
-.tf span{width:clamp(20px,4.6vmin,32px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(.8rem,3.2vmin,1.35rem);border:1px dashed #e0d2b8;border-radius:4px}.tf span.x{opacity:.35;text-decoration:line-through;background:#ffe3e3}
+.op{font-size:clamp(1.6rem,7vmin,3.2rem);font-weight:900;padding:0 4px}
+.tfs{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:center}.tf{display:inline-grid;grid-template-columns:repeat(5,1fr);gap:2px;border:3px solid var(--ink);border-radius:8px;padding:3px;background:#fff}
+.tf span{width:clamp(26px,min(7.6vmin,4.6vw),60px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(1.05rem,min(5.4vmin,3.3vw),2.5rem);border:1px dashed #e0d2b8;border-radius:4px}.tf span.x{opacity:.35;text-decoration:line-through;background:#ffe3e3}
 .tens{display:inline-flex;align-items:flex-end;gap:3px}.tens .b10{display:inline-block;width:12px;height:70px;background:#ffa94d;border:2px solid var(--ink);border-radius:3px;background-image:repeating-linear-gradient(#0000 0 5px,var(--ink) 5px 6px)}.tens .b1{display:inline-block;width:12px;height:12px;background:#ffd43b;border:2px solid var(--ink);border-radius:3px}
 .num{font-size:clamp(2rem,7vmin,3.2rem);font-weight:900}.zy{font-size:clamp(2rem,7vmin,3.2rem);font-weight:900}.pic{font-size:clamp(2.2rem,8vmin,3.6rem);line-height:1}.pic small{font-size:.35em;margin:0 2px}.pic.big{font-size:clamp(2.4rem,9vmin,4rem)}
 .wd{font-size:clamp(1.6rem,6vmin,2.6rem);font-weight:900}.cap{display:block;font-size:.8rem;line-height:1.1;font-weight:800;margin-top:2px}
@@ -1030,7 +1030,7 @@ const MG={
    else if(L===3){a=ri(4,12);c=ri(a+3,20);ans=c-a;q=[`I have ${a} ${F[2]}. I need ${c} for the party. How many more do I need?`,`我有${a}個${F[3]},派對需要${c}個。還需要幾個?`];vis=frames(a,F[0])+`<b class="op">→ ${c}</b>`;why=[`${a} and ${ans} more makes ${c}!`,`${a}再加${ans}就是${c}!`];}
    else if(L===4){a=ri(8,14);b=ri(2,5);c=ri(3,7);ans=a-b+c;q=[`Rex had ${a} ${F[2]}. He ate ${b}, then found ${c} more. How many now?`,`暴龍有${a}個${F[3]},吃了${b}個,又找到${c}個。現在有幾個?`];vis=`<b class="op">${F[0]} ${a} − ${b} + ${c}</b>`;why=[`${a} − ${b} = ${a-b}, and ${a-b} + ${c} = ${ans}!`,`${a}減${b}是${a-b},${a-b}加${c}是${ans}!`];}
    else{if(rnd(2)){a=ri(1,5)*10;b=ri(1,4)*10;ans=a+b;}else{a=ri(2,8)*10+ri(1,4);b=ri(1,5);ans=a+b;}q=[`A box has ${a} ${F[2]}. Another has ${b}. How many in all?`,`一箱有${a}個${F[3]},另一箱有${b}個。一共幾個?`];vis=tens(a)+'<b class="op">+</b>'+tens(b);why=[`${a} + ${b} = ${ans}`,`${a}加${b}等於${ans}`];}
-   const vals=numOpts(ans,0,100);api.el.innerHTML=`<div class="row"><div style="width:clamp(64px,14vmin,110px)">${smallDino(T)}</div><div class="vis">${vis}</div></div>${optsHTML(vals.map(v=>`<span class="num">${v}</span>`))}`;
+   const vals=numOpts(ans,0,100);api.el.innerHTML=`<div class="row"><div style="width:clamp(70px,min(26vmin,18vw),220px)">${smallDino(T)}</div><div class="vis">${vis}</div></div>${optsHTML(vals.map(v=>`<span class="num">${v}</span>`))}`;
    api.prompt(q[0],q[1]);bindOpts({ans:vals.indexOf(ans),vals,label:`math L${L}`,expected:ans,why,retry:['Count again!','再數一次!']},()=>{i++;go();});};go();}},
  /* counting: L1 1→8 · L2 back from 20 · L3 by 2s · L4 by 5s · L5 by 10s */
  lava:{icon:'🌋',en:'Stepping Stones',zh:'跳石頭',total:8,topic:'order',tip:['Count by 2s on the stairs: 2, 4, 6!','爬樓梯時兩個兩個數:2、4、6!'],
