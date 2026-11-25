@@ -55,6 +55,9 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 .reset{margin-top:14px;font-size:.8rem;font-weight:700;color:var(--muted);background:#fff8;border:1px solid currentColor;border-radius:999px;padding:6px 14px;min-height:36px}
 /* map */
 .mapbox,.field{flex:1;min-height:260px;border:4px solid var(--ink);border-radius:20px;overflow:hidden;position:relative;background:#8ce99a}
+.mapbox{background:#a5d8ff}
+.critter{cursor:pointer}.boing{animation:boing .5s;transform-box:fill-box;transform-origin:center bottom}@keyframes boing{40%{transform:scale(1.25,.85)}70%{transform:scale(.9,1.15)}}
+.fogaway{animation:fogout 2.2s .6s forwards}@keyframes fogout{to{opacity:0;transform:translate(60px,-30px) scale(1.4)}}
 .mapbox svg,.field svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
 .stn{cursor:pointer}
 .bar{display:flex;gap:8px;flex:0 0 auto}
@@ -195,7 +198,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
       <button class="reset" id="resetBtn">Reset records</button>
     </section>
     <section class="scr" id="map">
-      <div class="mapbox" id="mapBox"><svg id="mapSvg" preserveAspectRatio="xMidYMid slice"></svg></div>
+      <div class="mapbox" id="mapBox"><svg id="mapSvg" preserveAspectRatio="xMidYMid meet"></svg></div>
       <div class="bar"><button class="big b4" id="mapZoo"><span class="em">🏞</span><span><span class="en">My Zoo</span><small class="zh" id="zZoo"></small></span></button>
         <button class="big b1" id="mapBuild"><span class="em">🧱</span><span><span class="en">Build</span><small class="zh" id="zBuild"></small></span></button></div>
     </section>
@@ -263,7 +266,7 @@ function rec(o){try{if(window.KA&&KA.answer)KA.answer(o);}catch(e){}}
 const binCount=()=>SHAPES.reduce((a,s)=>a+S.bin[s].length,0);
 
 /* ---------- zhuyin beside Chinese ---------- */
-const ZY={'伸':'ㄕㄣ','呀':'˙ㄧㄚ','聞':'ㄨㄣˊ','脖':'ㄅㄛˊ','誰':'ㄕㄟˊ','躲':'ㄉㄨㄛˇ','葡':'ㄆㄨˊ','萄':'ㄊㄠˊ','飛':'ㄈㄟ','機':'ㄐㄧ','象':'ㄒㄧㄤˋ','兔':'ㄊㄨˋ','牛':'ㄋㄧㄡˊ','奶':'ㄋㄞˇ','老':'ㄌㄠˇ','虎':'ㄏㄨˇ','哥':'ㄍㄜ','花':'ㄏㄨㄚ','雞':'ㄐㄧ','球':'ㄑㄧㄡˊ','瓜':'ㄍㄨㄚ','五':'ㄨˇ','亮':'ㄌㄧㄤˋ','仔':'ㄗˇ','倒':'ㄉㄠˋ','傷':'ㄕㄤ','像':'ㄒㄧㄤˋ','六':'ㄌㄧㄡˋ','共':'ㄍㄨㄥˋ','剩':'ㄕㄥˋ','又':'ㄧㄡˋ','受':'ㄕㄡˋ','向':'ㄒㄧㄤˋ','問':'ㄨㄣˋ','或':'ㄏㄨㄛˋ','手':'ㄕㄡˇ','拍':'ㄆㄞ','於':'ㄩˊ','樣':'ㄧㄤˋ','橢':'ㄊㄨㄛˇ','幾':'ㄐㄧˇ','序':'ㄒㄩˋ','怕':'ㄆㄚˋ','射':'ㄕㄜˋ','減':'ㄐㄧㄢˇ','無':'ㄨˊ','熱':'ㄖㄜˋ','現':'ㄒㄧㄢˋ','發':'ㄈㄚ','等':'ㄉㄥˇ','筒':'ㄊㄨㄥˇ','箭':'ㄐㄧㄢˋ','細':'ㄒㄧˋ','繃':'ㄅㄥ','膝':'ㄒㄧ','買':'ㄇㄞˇ','貼':'ㄊㄧㄝ','跌':'ㄉㄧㄝ','跺':'ㄉㄨㄛˋ','轉':'ㄓㄨㄢˇ','那':'ㄋㄚˋ','電':'ㄉㄧㄢˋ','順':'ㄕㄨㄣˋ','黑':'ㄏㄟ','聊':'ㄌㄧㄠˊ','不':'ㄅㄨˋ','丟':'ㄉㄧㄡ','也':'ㄧㄝˇ','以':'ㄧˇ','任':'ㄖㄣˋ','保':'ㄅㄠˇ','信':'ㄒㄧㄣˋ','修':'ㄒㄧㄡ','做':'ㄗㄨㄛˋ','備':'ㄅㄟˋ','傳':'ㄔㄨㄢˊ','前':'ㄑㄧㄢˊ','務':'ㄨˋ','取':'ㄑㄩˇ','叢':'ㄘㄨㄥˊ','另':'ㄌㄧㄥˋ','可':'ㄎㄜˇ','員':'ㄩㄢˊ','喀':'ㄎㄚ','喔':'ㄛ','嗨':'ㄏㄞ','坐':'ㄗㄨㄛˋ','堆':'ㄉㄨㄟ','壞':'ㄏㄨㄞˋ','壯':'ㄓㄨㄤˋ','夠':'ㄍㄡˋ','守':'ㄕㄡˇ','岩':'ㄧㄢˊ','島':'ㄉㄠˇ','巡':'ㄒㄩㄣˊ','已':'ㄧˇ','庭':'ㄊㄧㄥˊ','強':'ㄑㄧㄤˊ','後':'ㄏㄡˋ','愛':'ㄞˋ','慶':'ㄑㄧㄥˋ','打':'ㄉㄚˇ','推':'ㄊㄨㄟ','搖':'ㄧㄠˊ','搬':'ㄅㄢ','晃':'ㄏㄨㄤˋ','更':'ㄍㄥˋ','會':'ㄏㄨㄟˋ','林':'ㄌㄧㄣˊ','橋':'ㄑㄧㄠˊ','每':'ㄇㄟˇ','沒':'ㄇㄟˊ','海':'ㄏㄞˇ','準':'ㄓㄨㄣˇ','滾':'ㄍㄨㄣˇ','漿':'ㄐㄧㄤ','灘':'ㄊㄢ','瓶':'ㄆㄧㄥˊ','皮':'ㄆㄧˊ','祝':'ㄓㄨˋ','空':'ㄎㄨㄥ','站':'ㄓㄢˋ','箱':'ㄒㄧㄤ','索':'ㄙㄨㄛˇ','經':'ㄐㄧㄥ','線':'ㄒㄧㄢˋ','繼':'ㄐㄧˋ','續':'ㄒㄩˋ','耶':'ㄧㄝ','聲':'ㄕㄥ','處':'ㄔㄨˋ','行':'ㄒㄧㄥˊ','護':'ㄏㄨˋ','讓':'ㄖㄤˋ','貝':'ㄅㄟˋ','走':'ㄗㄡˇ','跟':'ㄍㄣ','車':'ㄔㄜ','轟':'ㄏㄨㄥ','送':'ㄙㄨㄥˋ','邊':'ㄅㄧㄢ','鈕':'ㄋㄧㄡˇ','門':'ㄇㄣˊ','隆':'ㄌㄨㄥˊ','雪':'ㄒㄩㄝˇ','靜':'ㄐㄧㄥˋ','面':'ㄇㄧㄢˋ','頭':'ㄊㄡˊ','顆':'ㄎㄜ','食':'ㄕˊ','飽':'ㄅㄠˇ','餵':'ㄨㄟˋ','高':'ㄍㄠ','乾':'ㄍㄢ','二':'ㄦˋ','他':'ㄊㄚ','住':'ㄓㄨˋ','來':'ㄌㄞˊ','們':'˙ㄇㄣ','吃':'ㄔ','咕':'ㄍㄨ','喝':'ㄏㄜ','嚕':'ㄌㄨ','困':'ㄎㄨㄣˋ','圍':'ㄨㄟˊ','多':'ㄉㄨㄛ','巾':'ㄐㄧㄣ','晚':'ㄨㄢˇ','暖':'ㄋㄨㄢˇ','服':'˙ㄈㄨ','東':'ㄉㄨㄥ','案':'ㄢˋ','洗':'ㄒㄧˇ','淨':'ㄐㄧㄥˋ','溫':'ㄨㄣ','澡':'ㄗㄠˇ','狀':'ㄓㄨㄤˋ','第':'ㄉㄧˋ','糕':'ㄍㄠ','糟':'ㄗㄠ','舒':'ㄕㄨ','被':'ㄅㄟˋ','西':'˙ㄒㄧ','金':'ㄐㄧㄣ','顏':'ㄧㄢˊ','洛':'ㄌㄨㄛˋ','明':'ㄇㄧㄥˊ','的':'˙ㄉㄜ','恐':'ㄎㄨㄥˇ','龍':'ㄌㄨㄥˊ','世':'ㄕˋ','界':'ㄐㄧㄝˋ','點':'ㄉㄧㄢˇ','我':'ㄨㄛˇ','開':'ㄎㄞ','始':'ㄕˇ',
+const ZY={'鯨':'ㄐㄧㄥ','魚':'ㄩˊ','螃':'ㄆㄤˊ','蟹':'ㄒㄧㄝˋ','龜':'ㄍㄨㄟ','椰':'ㄧㄝˊ','樹':'ㄕㄨˋ','浪':'ㄌㄤˋ','嘟':'ㄉㄨ','霧':'ㄨˋ','散':'ㄙㄢˋ','探':'ㄊㄢˋ','方':'ㄈㄤ','伸':'ㄕㄣ','呀':'˙ㄧㄚ','聞':'ㄨㄣˊ','脖':'ㄅㄛˊ','誰':'ㄕㄟˊ','躲':'ㄉㄨㄛˇ','葡':'ㄆㄨˊ','萄':'ㄊㄠˊ','飛':'ㄈㄟ','機':'ㄐㄧ','象':'ㄒㄧㄤˋ','兔':'ㄊㄨˋ','牛':'ㄋㄧㄡˊ','奶':'ㄋㄞˇ','老':'ㄌㄠˇ','虎':'ㄏㄨˇ','哥':'ㄍㄜ','花':'ㄏㄨㄚ','雞':'ㄐㄧ','球':'ㄑㄧㄡˊ','瓜':'ㄍㄨㄚ','五':'ㄨˇ','亮':'ㄌㄧㄤˋ','仔':'ㄗˇ','倒':'ㄉㄠˋ','傷':'ㄕㄤ','像':'ㄒㄧㄤˋ','六':'ㄌㄧㄡˋ','共':'ㄍㄨㄥˋ','剩':'ㄕㄥˋ','又':'ㄧㄡˋ','受':'ㄕㄡˋ','向':'ㄒㄧㄤˋ','問':'ㄨㄣˋ','或':'ㄏㄨㄛˋ','手':'ㄕㄡˇ','拍':'ㄆㄞ','於':'ㄩˊ','樣':'ㄧㄤˋ','橢':'ㄊㄨㄛˇ','幾':'ㄐㄧˇ','序':'ㄒㄩˋ','怕':'ㄆㄚˋ','射':'ㄕㄜˋ','減':'ㄐㄧㄢˇ','無':'ㄨˊ','熱':'ㄖㄜˋ','現':'ㄒㄧㄢˋ','發':'ㄈㄚ','等':'ㄉㄥˇ','筒':'ㄊㄨㄥˇ','箭':'ㄐㄧㄢˋ','細':'ㄒㄧˋ','繃':'ㄅㄥ','膝':'ㄒㄧ','買':'ㄇㄞˇ','貼':'ㄊㄧㄝ','跌':'ㄉㄧㄝ','跺':'ㄉㄨㄛˋ','轉':'ㄓㄨㄢˇ','那':'ㄋㄚˋ','電':'ㄉㄧㄢˋ','順':'ㄕㄨㄣˋ','黑':'ㄏㄟ','聊':'ㄌㄧㄠˊ','不':'ㄅㄨˋ','丟':'ㄉㄧㄡ','也':'ㄧㄝˇ','以':'ㄧˇ','任':'ㄖㄣˋ','保':'ㄅㄠˇ','信':'ㄒㄧㄣˋ','修':'ㄒㄧㄡ','做':'ㄗㄨㄛˋ','備':'ㄅㄟˋ','傳':'ㄔㄨㄢˊ','前':'ㄑㄧㄢˊ','務':'ㄨˋ','取':'ㄑㄩˇ','叢':'ㄘㄨㄥˊ','另':'ㄌㄧㄥˋ','可':'ㄎㄜˇ','員':'ㄩㄢˊ','喀':'ㄎㄚ','喔':'ㄛ','嗨':'ㄏㄞ','坐':'ㄗㄨㄛˋ','堆':'ㄉㄨㄟ','壞':'ㄏㄨㄞˋ','壯':'ㄓㄨㄤˋ','夠':'ㄍㄡˋ','守':'ㄕㄡˇ','岩':'ㄧㄢˊ','島':'ㄉㄠˇ','巡':'ㄒㄩㄣˊ','已':'ㄧˇ','庭':'ㄊㄧㄥˊ','強':'ㄑㄧㄤˊ','後':'ㄏㄡˋ','愛':'ㄞˋ','慶':'ㄑㄧㄥˋ','打':'ㄉㄚˇ','推':'ㄊㄨㄟ','搖':'ㄧㄠˊ','搬':'ㄅㄢ','晃':'ㄏㄨㄤˋ','更':'ㄍㄥˋ','會':'ㄏㄨㄟˋ','林':'ㄌㄧㄣˊ','橋':'ㄑㄧㄠˊ','每':'ㄇㄟˇ','沒':'ㄇㄟˊ','海':'ㄏㄞˇ','準':'ㄓㄨㄣˇ','滾':'ㄍㄨㄣˇ','漿':'ㄐㄧㄤ','灘':'ㄊㄢ','瓶':'ㄆㄧㄥˊ','皮':'ㄆㄧˊ','祝':'ㄓㄨˋ','空':'ㄎㄨㄥ','站':'ㄓㄢˋ','箱':'ㄒㄧㄤ','索':'ㄙㄨㄛˇ','經':'ㄐㄧㄥ','線':'ㄒㄧㄢˋ','繼':'ㄐㄧˋ','續':'ㄒㄩˋ','耶':'ㄧㄝ','聲':'ㄕㄥ','處':'ㄔㄨˋ','行':'ㄒㄧㄥˊ','護':'ㄏㄨˋ','讓':'ㄖㄤˋ','貝':'ㄅㄟˋ','走':'ㄗㄡˇ','跟':'ㄍㄣ','車':'ㄔㄜ','轟':'ㄏㄨㄥ','送':'ㄙㄨㄥˋ','邊':'ㄅㄧㄢ','鈕':'ㄋㄧㄡˇ','門':'ㄇㄣˊ','隆':'ㄌㄨㄥˊ','雪':'ㄒㄩㄝˇ','靜':'ㄐㄧㄥˋ','面':'ㄇㄧㄢˋ','頭':'ㄊㄡˊ','顆':'ㄎㄜ','食':'ㄕˊ','飽':'ㄅㄠˇ','餵':'ㄨㄟˋ','高':'ㄍㄠ','乾':'ㄍㄢ','二':'ㄦˋ','他':'ㄊㄚ','住':'ㄓㄨˋ','來':'ㄌㄞˊ','們':'˙ㄇㄣ','吃':'ㄔ','咕':'ㄍㄨ','喝':'ㄏㄜ','嚕':'ㄌㄨ','困':'ㄎㄨㄣˋ','圍':'ㄨㄟˊ','多':'ㄉㄨㄛ','巾':'ㄐㄧㄣ','晚':'ㄨㄢˇ','暖':'ㄋㄨㄢˇ','服':'˙ㄈㄨ','東':'ㄉㄨㄥ','案':'ㄢˋ','洗':'ㄒㄧˇ','淨':'ㄐㄧㄥˋ','溫':'ㄨㄣ','澡':'ㄗㄠˇ','狀':'ㄓㄨㄤˋ','第':'ㄉㄧˋ','糕':'ㄍㄠ','糟':'ㄗㄠ','舒':'ㄕㄨ','被':'ㄅㄟˋ','西':'˙ㄒㄧ','金':'ㄐㄧㄣ','顏':'ㄧㄢˊ','洛':'ㄌㄨㄛˋ','明':'ㄇㄧㄥˊ','的':'˙ㄉㄜ','恐':'ㄎㄨㄥˇ','龍':'ㄌㄨㄥˊ','世':'ㄕˋ','界':'ㄐㄧㄝˋ','點':'ㄉㄧㄢˇ','我':'ㄨㄛˇ','開':'ㄎㄞ','始':'ㄕˇ',
 '造':'ㄗㄠˋ','工':'ㄍㄨㄥ','作':'ㄗㄨㄛˋ','冒':'ㄇㄠˋ','險':'ㄒㄧㄢˇ','找':'ㄓㄠˇ','個':'˙ㄍㄜ','紅':'ㄏㄨㄥˊ','藍':'ㄌㄢˊ','黃':'ㄏㄨㄤˊ','綠':'ㄌㄩˋ','橘':'ㄐㄩˊ','紫':'ㄗˇ','色':'ㄙㄜˋ',
 '正':'ㄓㄥˋ','方':'ㄈㄤ','形':'ㄒㄧㄥˊ','長':'ㄔㄤˊ','三':'ㄙㄢ','角':'ㄐㄧㄠˇ','圓':'ㄩㄢˊ','半':'ㄅㄢˋ','星':'ㄒㄧㄥ','心':'ㄒㄧㄣ','菱':'ㄌㄧㄥˊ',
 '暴':'ㄅㄠˋ','腕':'ㄨㄢˋ','劍':'ㄐㄧㄢˋ','翼':'ㄧˋ','甲':'ㄐㄧㄚˇ','選':'ㄒㄩㄢˇ','一':'ㄧ','隻':'ㄓ','要':'ㄧㄠˋ','蓋':'ㄍㄞˋ','你':'ㄋㄧˇ','蓋':'ㄍㄞˋ',
@@ -528,37 +531,99 @@ function resetPick(){const m=document.createElement('div');m.className='modal';
  $('modalRoot').appendChild(m);m.querySelector('#rNo').onclick=()=>m.remove();
  m.querySelector('#rGo').onclick=()=>{const ks=[...m.querySelectorAll('input:checked')].map(i=>i.value);ks.forEach(k=>{try{localStorage.removeItem(skey(k));localStorage.removeItem('dinoworld.v1.'+k);sessionStorage.removeItem('dinoworld.streak.'+k);}catch(e){}});if(ks.includes(KID)){S=fresh();setSnd();setLang();showWallet();}m.remove();toast(ks.length?'Reset done':'Nothing picked');};}
 
-/* ---------- train map ---------- */
-let trainAt=0,trainBusy=false;
-function stationPts(W,H){const land=W/H>=1;
- return land?[[.1,.72],[.3,.38],[.5,.7],[.7,.36],[.89,.62]].map(([x,y])=>[x*W,y*H]):[[.3,.88],[.7,.71],[.3,.54],[.7,.38],[.36,.22]].map(([x,y])=>[x*W,y*H]);}
-function trainSVG(s){return `<g transform="scale(${s})"><rect x="-34" y="-30" width="44" height="26" rx="5" fill="#e03131" ${ST}/><rect x="4" y="-46" width="26" height="42" rx="4" fill="#1c7ed6" ${ST}/><rect x="9" y="-40" width="16" height="12" rx="2" fill="#d0ebff" ${ST}/><rect x="-28" y="-44" width="9" height="15" fill="#495057" ${ST}/><circle cx="-24" cy="-52" r="5" fill="#fff" opacity=".85"/><circle cx="-18" cy="-62" r="6" fill="#fff" opacity=".7"/><rect x="-38" y="-8" width="72" height="6" rx="3" fill="#ffd43b" ${ST}/><circle cx="-22" cy="2" r="8" fill="#343a40" ${ST}/><circle cx="2" cy="2" r="8" fill="#343a40" ${ST}/><circle cx="22" cy="2" r="8" fill="#343a40" ${ST}/></g>`;}
-function mapDraw(){const r=$('mapBox').getBoundingClientRect();const W=Math.max(260,r.width),H=Math.max(240,r.height);const m=Math.min(W,H);const pts=stationPts(W,H);
- let o=`<rect width="${W}" height="${H}" fill="#a5d8ff"/><rect width="${W}" height="${H}" fill="url(#skyh)"/>`+crayon(ellPts(W/2,H/2,W*.46,H*.44,40),'#c3fae8',3);
- o+=`<text x="${W*.5}" y="${W/H>=1?H*.08+14:H*.97}" text-anchor="middle" font-size="${Math.max(15,m*.045)}" font-weight="900" fill="#4a3426">Dino Island · 恐龍島</text>`;
- const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(0)+' '+p[1].toFixed(0)).join(' ');
- o+=`<path d="${d}" stroke="#8b5a2b" stroke-width="${m*.035}" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path d="${d}" stroke="#fff" stroke-width="${m*.008}" stroke-dasharray="${m*.02} ${m*.02}" fill="none"/>`;
- const R=Math.max(30,m*.085);
- const info=[['🏞','My Zoo','我的動物園']].concat(CH.map(c=>[c.em,c.en,c.zh]));
- pts.forEach((p,i)=>{const open=i===0||i-1<=S.ch,done=i>0&&i-1<S.ch,cur=i>0&&i-1===S.ch;
-  o+=`<g class="stn" data-i="${i}" transform="translate(${p[0]},${p[1]})" opacity="${open?1:.55}">
-   ${cur?`<circle r="${R*1.25}" fill="#ffd43b" opacity=".6"><animate attributeName="r" values="${R*1.1};${R*1.35};${R*1.1}" dur="1.4s" repeatCount="indefinite"/></circle>`:''}
-   ${crayon(ellPts(0,0,R,R,18),open?'#fff':'#dee2e6',3)}<text y="${R*.32}" text-anchor="middle" font-size="${R*.95}">${open?info[i][0]:'🔒'}</text>
-   ${done?`<text x="${R*.7}" y="${-R*.55}" font-size="${R*.6}">✅</text>`:''}
-   <rect x="${-Math.max(R*1.6,info[i][1].length*R*.11+8)}" y="${R*1.08}" width="${Math.max(R*3.2,info[i][1].length*R*.22+16)}" height="${R*.62}" rx="${R*.25}" fill="#fff" ${ST} stroke-width="2"/>
-   <text y="${R*1.55}" text-anchor="middle" font-size="${Math.max(12,R*.36)}" font-weight="900" fill="#4a3426">${info[i][1]}</text></g>`;});
- const tp=pts[Math.min(trainAt,4)];o+=`<g id="train" transform="translate(${tp[0]},${tp[1]-R*.9})">${trainSVG(m/420)}</g>`;
- $('mapSvg').setAttribute('viewBox',`0 0 ${W} ${H}`);$('mapSvg').innerHTML=o;
+/* ---------- train map: a real island, fog, curvy track that colors in, rescued babies, Pip on the train, tap-to-learn critters ---------- */
+let trainAt=0,trainBusy=false,MAPL=null,SG=null;
+const MAPS={
+ land:{W:1000,H:640,R:46,isl:[500,330,452,288],st:[[175,505],[300,300],[560,525],[810,330],[520,165]],rv:[[860,240],null,[760,650]],title:[24,40,'start'],
+  cr:{whale:[840,58],crab:[640,588],fish:[890,618],turtle:[952,500],ptero:[150,90]}},
+ port:{W:600,H:1060,R:52,isl:[300,525,278,452],st:[[150,860],[425,705],[165,545],[430,370],[240,205]],rv:[[520,300],null,[0,470]],title:[300,1036,'middle'],
+  cr:{whale:[78,110],crab:[60,505],fish:[540,995],turtle:[548,175],ptero:[515,70]}}};
+const an=s=>REDUCED?'':s;
+function bez(p0,p1,p2,p3){return [p1,[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6],p2];}
+function bpt(b,t){const u=1-t;return [0,1].map(i=>u*u*u*b[0][i]+3*u*u*t*b[1][i]+3*u*t*t*b[2][i]+t*t*t*b[3][i]);}
+function bdir(b,t){const u=1-t;return [0,1].map(i=>3*u*u*(b[1][i]-b[0][i])+6*u*t*(b[2][i]-b[1][i])+3*t*t*(b[3][i]-b[2][i]));}
+const bstr=b=>`M${b[0].join(' ')} C${b[1].join(' ')} ${b[2].join(' ')} ${b[3].join(' ')}`;
+const restU=k=>k<4?k+.3:3.55;
+function upos(u){const i=Math.max(0,Math.min(3,Math.floor(u))),t=Math.min(1,u-i);return {p:bpt(SG[i],t),d:bdir(SG[i],t)};}
+function svgRuby(str,x,y,fs,anchor){const cs=[...str];const w=fs*1.05;let x0=anchor==='middle'?x-cs.length*w/2+w/2:anchor==='start'?x+w/2:x;let o='';
+ cs.forEach((c,i)=>{const cx=x0+i*w;o+=`<text x="${cx}" y="${y}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${INK}">${c}</text>`;if(ZY[c])o+=`<text x="${cx}" y="${y-fs*.95}" text-anchor="middle" font-size="${fs*.36}" font-weight="700" fill="#868e96">${ZY[c]}</text>`;});return o;}
+function palm(x,y,h,i){return `<g class="critter" data-k="palm"><g>${an(`<animateTransform attributeName="transform" type="rotate" values="-3 ${x} ${y};3 ${x} ${y};-3 ${x} ${y}" dur="${3+i%3*.7}s" repeatCount="indefinite"/>`)}
+ <path d="M${x} ${y} q${h*.12} ${-h*.5} 0 ${-h}" stroke="#8b5e34" stroke-width="${h*.12}" fill="none" stroke-linecap="round"/><path d="M${x+h*.05} ${y} q${h*.12} ${-h*.5} 0 ${-h}" stroke="${INK}" stroke-width="1.6" fill="none"/>
+ ${[-2.7,-2.1,-1.5,-.9,-.35].map(a=>`<path d="M${x} ${y-h} q${Math.cos(a)*h*.5} ${Math.sin(a)*h*.5-h*.12} ${Math.cos(a)*h*.85} ${Math.sin(a)*h*.3+h*.18}" stroke="#2b8a3e" stroke-width="${h*.16}" fill="none" stroke-linecap="round"/>`).join('')}</g></g>`;}
+function cloud(cx,cy,s,cls){let o=`<g class="${cls||''}" style="transform-box:fill-box;transform-origin:center">`;[[-1,0,1],[0,-.45,1.15],[1,0,1],[.5,.4,.9],[-.5,.4,.9],[1.7,.25,.75],[-1.7,.25,.75]].forEach(([dx,dy,r])=>o+=crayon(ellPts(cx+dx*s*.9,cy+dy*s*.9,s*r*.75,s*r*.62,16),'#fff',2.4));
+ return o+`<text x="${cx}" y="${cy+s*.32}" text-anchor="middle" font-size="${s*.9}" font-weight="900" fill="#adb5bd">?</text></g>`;}
+function region(k,p,L,open){const [x,y]=p,R=L.R;let o='';
+ if(k===0)o+=crayon(ellPts(x+R*1.6,y+R*.3,R*.9,R*.4),'#74c0fc',2)+`<g stroke="${INK}" stroke-width="2">${[0,1,2,3].map(i=>`<rect x="${x-R*1.9+i*R*.32}" y="${y-R*.2}" width="${R*.12}" height="${R*.7}" fill="#c08552"/>`).join('')}<rect x="${x-R*1.95}" y="${y}" width="${R*1.1}" height="${R*.12}" fill="#c08552"/></g>`;
+ if(k===1){o+=crayon(ellPts(x,y+R*.2,R*2.6,R*1.6,26),'#8ce99a',2.2);[[-1.9,-.6,1.5],[1.8,-.9,1.3],[-1.2,1.2,1.1],[2.1,.9,1.2],[-.2,-1.5,1.2]].forEach(([dx,dy,h],i)=>o+=palm(x+dx*R,y+dy*R+R*.5,h*R,i));}
+ if(k===2){const lr=L===MAPS.port?-1:0;o+=crayon(ellPts(x+lr*R*.8,y+(lr?0:R*.9),R*2.4,R*1.2,24),'#ffe8a3',2.2)+`<g stroke="${INK}" stroke-width="2"><path d="M${x+R*1.5} ${y-R*.2} v${R*1.1}" fill="none"/><path d="M${x+R*.8} ${y-R*.15} q${R*.7} -${R*.7} ${R*1.4} 0z" fill="#ff6b6b"/></g>`;}
+ if(k===3){o+=crayon(ellPts(x,y+R*.3,R*2.4,R*1.4,24),'#f1f3f5',2.2)+crayon([[x-R*2.6,y-R*.2],[x-R*1.4,y-R*2.6],[x-R*.2,y-R*.2]],'#ced4da')+crayon([[x-R*1.75,y-R*1.9],[x-R*1.4,y-R*2.6],[x-R*1.05,y-R*1.9],[x-R*1.4,y-R*2.05]],'#fff',1.6)+
+   crayon([[x+R*.2,y-R*.3],[x+R*1.5,y-R*2.9],[x+R*2.8,y-R*.3]],'#adb5bd')+crayon([[x+R*1.12,y-R*2.15],[x+R*1.5,y-R*2.9],[x+R*1.88,y-R*2.15],[x+R*1.5,y-R*2.3]],'#fff',1.6);
+  if(open)for(let i=0;i<14;i++){const sx=x-R*2.6+i*R*.38,sy=y-R*2.8+(i*37)%(R*2);o+=`<circle cx="${sx}" cy="${sy}" r="3" fill="#fff" stroke="#a5d8ff" stroke-width="1">${an(`<animate attributeName="cy" values="${sy};${sy+R*2.2}" dur="${2.5+i%4*.6}s" repeatCount="indefinite"/>`)}</circle>`;}}
+ if(k===4){o+=`<g class="critter" data-k="volcano">`+crayon([[x-R*2.6,y+R*.5],[x-R*.8,y-R*2.6],[x+R*.8,y-R*2.6],[x+R*2.6,y+R*.5]],'#8d6e63',2.6)+crayon([[x-R*.8,y-R*2.6],[x,y-R*2.1],[x+R*.8,y-R*2.6]],'#ff6b6b',2)+
+  `<path d="M${x-R*.5} ${y-R*2.3} q-${R*.3} ${R*1} ${R*.2} ${R*1.8} M${x+R*.4} ${y-R*2.3} q${R*.5} ${R*.9} 0 ${R*1.7}" stroke="#fa5252" stroke-width="${R*.14}" fill="none" stroke-linecap="round"/>`;
+  if(open){for(let i=0;i<3;i++){const bx=x+(i-1)*R*.45;o+=`<circle cx="${bx}" cy="${y-R*2.7}" r="${R*.14}" fill="#ff8787">${an(`<animate attributeName="cy" values="${y-R*2.6};${y-R*3.5}" dur="${1.4+i*.4}s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="${1.4+i*.4}s" repeatCount="indefinite"/>`)}</circle>`;}
+   o+=`<g opacity=".85">${crayon(ellPts(x+R*.3,y-R*3.3,R*.5,R*.4),'#dee2e6',1.6)}${crayon(ellPts(x+R*.9,y-R*3.9,R*.6,R*.45),'#dee2e6',1.6)}${an(`<animateTransform attributeName="transform" type="translate" values="0 0;${R*.2} -${R*.3};0 0" dur="4s" repeatCount="indefinite"/>`)}</g>`;}
+  o+='</g>';}
+ return o;}
+const CRIT={whale:['whale','鯨魚'],crab:['crab','螃蟹'],fish:['fish','魚'],turtle:['sea turtle','海龜'],ptero:['Pteranodon','翼龍'],palm:['palm tree','椰子樹'],volcano:['volcano','火山'],wave:['wave','海浪']};
+function critter(k,x,y,R){let o=`<g class="critter" data-k="${k}">`;
+ if(k==='whale')o+=crayon(ellPts(x,y,R*1.2,R*.6),'#4263eb',2.4)+crayon([[x-R*1.1,y],[x-R*1.8,y-R*.5],[x-R*1.6,y+R*.5]],'#4263eb',2)+`<circle cx="${x+R*.7}" cy="${y-R*.1}" r="${R*.1}" fill="#fff"/><path d="M${x+R*.3} ${y-R*.6} q-${R*.2} -${R*.6} ${R*.1} -${R*.8} M${x+R*.3} ${y-R*.6} q${R*.3} -${R*.6} ${R*.6} -${R*.5}" stroke="#74c0fc" stroke-width="${R*.12}" fill="none" stroke-linecap="round">${an(`<animate attributeName="opacity" values="0;1;0;0" dur="3s" repeatCount="indefinite"/>`)}</path>`;
+ if(k==='crab')o+=crayon(ellPts(x,y,R*.5,R*.32),'#ff6b6b',2)+`<path d="M${x-R*.45} ${y-R*.1} l-${R*.35} -${R*.35} M${x+R*.45} ${y-R*.1} l${R*.35} -${R*.35}" stroke="${INK}" stroke-width="3" fill="none"/>`+crayon(ellPts(x-R*.85,y-R*.5,R*.16,R*.16,10),'#ff6b6b',1.6)+crayon(ellPts(x+R*.85,y-R*.5,R*.16,R*.16,10),'#ff6b6b',1.6)+`<circle cx="${x-R*.15}" cy="${y-R*.12}" r="${R*.06}" fill="${INK}"/><circle cx="${x+R*.15}" cy="${y-R*.12}" r="${R*.06}" fill="${INK}"/>`;
+ if(k==='fish')o+=`<g>${an(`<animateTransform attributeName="transform" type="translate" values="0 0;0 -${R*.9};0 0;0 0" dur="2.6s" repeatCount="indefinite"/>`)}${crayon(ellPts(x,y,R*.55,R*.32),'#ffa94d',2)}${crayon([[x-R*.5,y],[x-R*.95,y-R*.3],[x-R*.95,y+R*.3]],'#ffa94d',1.8)}<circle cx="${x+R*.28}" cy="${y-R*.06}" r="${R*.07}" fill="${INK}"/></g>`;
+ if(k==='turtle')o+=crayon(ellPts(x+R*.65,y,R*.22,R*.18,10),'#94d82d',1.8)+crayon(ellPts(x,y,R*.6,R*.42),'#2f9e44',2.2)+`<path d="M${x-R*.3} ${y-R*.1} h${R*.6} M${x} ${y-R*.35} v${R*.7}" stroke="#94d82d" stroke-width="3"/>`;
+ if(k==='ptero')o+=`<g>${an(`<animateTransform attributeName="transform" type="translate" values="0 0;${R*1.5} ${R*.4};0 ${R*.8};-${R*1.5} ${R*.4};0 0" dur="9s" repeatCount="indefinite"/>`)}<g transform="translate(${x-R*.7},${y-R*.5}) scale(${R*.014})">${dinoSVG('ptero',solid('ptero','purple'))}</g></g>`;
+ return o+'</g>';}
+function trainSVG(s){const r=(x,y,w,h,c,sw)=>crayon(subdiv([[x,y],[x+w,y],[x+w,y+h],[x,y+h]],2),c,sw||2.2);
+ return `<g transform="scale(${s})">${r(-34,-30,44,26,'#e03131')}${r(4,-46,26,42,'#1c7ed6')}${r(9,-40,16,12,'#d0ebff',1.6)}${r(-28,-44,9,15,'#495057',1.8)}<circle cx="-24" cy="-52" r="5" fill="#fff" opacity=".85">${an('<animate attributeName="cy" values="-52;-70" dur="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values=".9;0" dur="1.6s" repeatCount="indefinite"/>')}</circle><circle cx="-18" cy="-62" r="6" fill="#fff" opacity=".7"/>${r(-38,-8,72,6,'#ffd43b',1.8)}${[-22,2,22].map(x=>crayon(ellPts(x,2,8,8,12),'#343a40',1.8)).join('')}</g>`;}
+function mapDraw(){const r=$('mapBox').getBoundingClientRect();const land=r.width/Math.max(1,r.height)>=1.05;const L=MAPL=land?MAPS.land:MAPS.port;const {W,H,R}=L;const st=L.st;
+ SG=[1,2,3,4].map(k=>bez(st[k-2]||st[k-1],st[k-1],st[k],st[k+1]||st[k]));
+ const mid3=bpt(SG[2],.5);L.rv[1]=mid3;
+ let o=`<rect width="${W}" height="${H}" fill="#a5d8ff"/><rect width="${W}" height="${H}" fill="url(#skyh)"/>`;
+ for(let i=0;i<9;i++){const wx=(i*173)%W,wy=(i*271)%H;o+=`<path class="critter" data-k="wave" d="M${wx} ${wy} q12 -10 24 0 t24 0" stroke="#e7f5ff" stroke-width="4" fill="none" stroke-linecap="round">${an(`<animateTransform attributeName="transform" type="translate" values="0 0;14 0;0 0" dur="${3+i%3}s" repeatCount="indefinite"/>`)}</path>`;}
+ const [ix,iy,irx,iry]=L.isl;const isl=Array.from({length:56},(_,i)=>{const a=i/56*6.2832;const k=1+.045*Math.sin(5*a+1)+.03*Math.cos(3*a);return [ix+irx*k*Math.cos(a),iy+iry*k*Math.sin(a)];});
+ o+=crayon(isl,'#d8f5a2',3.2);
+ st.forEach((p,i)=>{o+=region(i,p,L,i===0||i-1<=S.ch);});
+ o+=`<path d="M${L.rv[0].join(' ')} Q${(L.rv[0][0]+mid3[0])/2+40} ${(L.rv[0][1]+mid3[1])/2} ${mid3.join(' ')} T${L.rv[2].join(' ')}" stroke="#74c0fc" stroke-width="${R*.38}" fill="none" stroke-linecap="round"/><path d="M${L.rv[0].join(' ')} Q${(L.rv[0][0]+mid3[0])/2+40} ${(L.rv[0][1]+mid3[1])/2} ${mid3.join(' ')} T${L.rv[2].join(' ')}" stroke="#e7f5ff" stroke-width="2" stroke-dasharray="6 10" fill="none"/>`;
+ // track: finished = bright rails on ties, future = pencil dashes
+ SG.forEach((b,i)=>{const open=i<=S.ch;const d=bstr(b);
+  o+=open?`<path d="${d}" stroke="#8b5e34" stroke-width="${R*.42}" stroke-dasharray="5 9" fill="none"/><path d="${d}" stroke="#e8590c" stroke-width="${R*.11}" fill="none" stroke-linecap="round"/>`:`<path d="${d}" stroke="#868e96" stroke-width="${R*.07}" stroke-dasharray="8 9" fill="none" stroke-linecap="round"/>`;});
+ const ang=b=>{const d=bdir(b,.5);return Math.atan2(d[1],d[0])*180/Math.PI;};
+ o+=`<g transform="translate(${mid3[0]},${mid3[1]}) rotate(${ang(SG[2])})">${crayon(subdiv([[-R*.9,-R*.42],[R*.9,-R*.42],[R*.9,R*.42],[-R*.9,R*.42]],2),'#c08552',2)}${[-.6,-.2,.2,.6].map(t=>`<path d="M${t*R} ${-R*.42} v${R*.84}" stroke="${INK}" stroke-width="1.4"/>`).join('')}</g>`;
+ const tp=bpt(SG[3],.5);o+=`<g transform="translate(${tp[0]},${tp[1]}) rotate(${ang(SG[3])})">${crayon(semiPts(-R*1.1,-R*1.1,R*2.2,R*1.1).map(([a,b])=>[a,b]),'#adb5bd',2.4)}${crayon(semiPts(-R*.45,-R*.5,R*.9,R*.5),'#343a40',1.6)}</g>`;
+ // stations
+ const info=[['🏞','My Zoo','我的動物園']].concat(CH.map(c=>[c.em,c.en,c.zh]));const fs=land?19:23;
+ st.forEach((p,i)=>{const open=i===0||i-1<=S.ch,done=i>0&&i-1<S.ch,cur=i>0&&i-1===S.ch;const [x,y]=p;
+  o+=`<g class="stn" data-i="${i}">${cur?`<circle cx="${x}" cy="${y}" r="${R*1.3}" fill="#ffd43b" opacity=".55">${an(`<animate attributeName="r" values="${R*1.15};${R*1.42};${R*1.15}" dur="1.4s" repeatCount="indefinite"/>`)}</circle>`:''}
+   ${crayon(ellPts(x,y,R,R,18),'#fff',3)}<text x="${x}" y="${y+R*.33}" text-anchor="middle" font-size="${R*.92}">${info[i][0]}</text>
+   ${done?`<g transform="translate(${x+R*.78},${y-R*.78})">${crayon(subdiv([[0,-R*.42],[R*.12,-R*.12],[R*.42,-R*.1],[R*.18,R*.1],[R*.26,R*.4],[0,R*.22],[-R*.26,R*.4],[-R*.18,R*.1],[-R*.42,-R*.1],[-R*.12,-R*.12]],1),'#ffd43b',1.6)}</g>`:''}
+   ${crayon(subdiv([[x-R*1.55,y+R*1.12],[x+R*1.55,y+R*1.12],[x+R*1.55,y+R*2.35],[x-R*1.55,y+R*2.35]],3),'#fff',2)}
+   <text x="${x}" y="${y+R*1.58}" text-anchor="middle" font-size="${fs}" font-weight="900" fill="${INK}">${info[i][1]}</text>${svgRuby(info[i][2],x,y+R*2.22,fs*.82,'middle')}</g>`;
+  // rescued babies wait at finished stations
+  if(done&&CH[i-1].baby){const b=CH[i-1].baby,s=R*.011,bx=x-R*2.25,by=y-R*.35;o+=`<g transform="translate(${bx},${by}) scale(${s})">${dinoSVG(b.t,b.c)}</g>`;}
+  if(i===4&&S.ch>=4){o+=`<g transform="translate(${x-R*2.5},${y-R*.9}) scale(${R*.016})">${dinoSVG('trike',MOMC)}</g>`;}});
+ // fog over places not reached yet; it blows away the first time a place opens
+ st.forEach((p,i)=>{if(i===0)return;const locked=i-1>S.ch;const [x,y]=p;const cy=i===4?y-R*1.2:y-R*.4;
+  if(locked)o+=cloud(x,cy,R*1.25);
+  else if(!S.seen['fog'+i]){o+=cloud(x,cy,R*1.25,'fogaway');S.seen['fog'+i]=1;save();setTimeout(()=>{SFX.grow();say('The fog is gone! A new place to explore!','霧散了!有新的地方可以探險!');},900);}});
+ Object.entries(L.cr).forEach(([k,[x,y]])=>o+=critter(k,x,y,R));
+ // title
+ const [tx,ty,ta]=L.title;o+=crayon(subdiv(ta==='start'?[[tx-8,ty-34],[tx+260,ty-34],[tx+260,ty+14],[tx-8,ty+14]]:[[tx-170,ty-36],[tx+170,ty-36],[tx+170,ty+14],[tx-170,ty+14]],3),'#fff9db',2.4);
+ o+=`<text x="${ta==='start'?tx+6:tx-160}" y="${ty}" font-size="24" font-weight="900" fill="${INK}">Dino Island</text>${svgRuby('恐龍島',ta==='start'?tx+170:tx+80,ty,24,'start')}`;
+ // train with Pip, parked just past the station so it never covers it
+ o+=`<g id="train"><g id="trainBody">${trainSVG(R/46)}<g transform="translate(${-R*.05},${-R*1.35}) scale(${R*.0055})">${dinoSVG('babytrike',PIPC)}</g></g></g>`;
+ $('mapSvg').setAttribute('viewBox',`0 0 ${W} ${H}`);$('mapSvg').innerHTML=o;placeTrain(restU(Math.min(trainAt,4)));
  $('mapSvg').querySelectorAll('.stn').forEach(g=>g.addEventListener('click',()=>tapStation(+g.dataset.i)));
+ $('mapSvg').querySelectorAll('.critter').forEach(g=>g.addEventListener('click',e=>{e.stopPropagation();ac();const c=CRIT[g.dataset.k];if(!c)return;SFX.pop();g.classList.remove('boing');void g.getBBox();g.classList.add('boing');toast(bi(c[0],c[1]));say(c[0],c[1]);}));
  SOLVE=()=>tapStation(Math.min(S.ch+1,4));}
+function placeTrain(u){const {p,d}=upos(u);const left=d[0]<0;const R=MAPL.R;$('train').setAttribute('transform',`translate(${p[0]},${p[1]-R*.12})`);$('trainBody').setAttribute('transform',left?'scale(-1,1)':'');}
 function goMap(){musicOn();BACK=null;show('map');say('Where shall the Dino Train go?','恐龍火車要去哪裡?');}
-function tapStation(i){if(trainBusy)return;ac();if(i>0&&i-1>S.ch){SFX.boing();say('Not yet! Finish the stations before it.','還不行!先完成前面的車站。');return;}
- const r=$('mapBox').getBoundingClientRect();const W=Math.max(260,r.width),H=Math.max(240,r.height);const pts=stationPts(W,H);const R=Math.max(30,Math.min(W,H)*.085);
- const from=Math.min(trainAt,4),to=i;const path=[];const step=to>from?1:-1;for(let k=from;k!==to;k+=step)path.push(k);path.push(to);
- trainBusy=true;SFX.toot();const tr=$('train');let seg=0,t0=performance.now();const dur=REDUCED?1:600;
- const go=()=>{if(seg>=path.length-1){trainBusy=false;trainAt=to;enter(i);return;}const a=pts[path[seg]],b=pts[path[seg+1]];const k=Math.min(1,(performance.now()-t0)/dur);
-  tr.setAttribute('transform',`translate(${a[0]+(b[0]-a[0])*k},${a[1]+(b[1]-a[1])*k-R*.9})`);if(k>=1){seg++;t0=performance.now();}requestAnimationFrame(go);};
- if(path.length<2){trainBusy=false;trainAt=to;enter(i);}else requestAnimationFrame(go);}
+function tapStation(i){if(trainBusy)return;ac();if(i>0&&i-1>S.ch){SFX.boing();say('Not yet! That place is still in the fog.','還不行!那裡還在霧裡。');return;}
+ const from=Math.min(trainAt,4),to=i;const u0=restU(from),u1=i===0?0:i<4?i:4;const info=i===0?['My Zoo','我的動物園']:[CH[i-1].en,CH[i-1].zh];
+ if(from===to){trainAt=to;enter(i);return;}
+ trainBusy=true;SFX.toot();toast('🦕 '+bi(`Choo choo! Next stop: ${info[0]}!`,`嘟嘟!下一站:${info[1]}!`),1800);sayParts(parts(`Choo choo! Next stop: ${info[0]}!`,`嘟嘟!下一站:${info[1]}!`),1.6);
+ const dur=REDUCED?1:Math.max(700,Math.abs(u1-u0)*900);const t0=performance.now();
+ const go=()=>{const k=Math.min(1,(performance.now()-t0)/dur);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;placeTrain(u0+(u1-u0)*e);if(k<1)return requestAnimationFrame(go);trainBusy=false;trainAt=to;setTimeout(()=>enter(i),350);};
+ requestAnimationFrame(go);}
 function enter(i){if(i===0)return goZoo();openStation(i-1);}
 
 /* ---------- stations ---------- */
