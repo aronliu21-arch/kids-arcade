@@ -642,10 +642,10 @@ Object.assign(CAST.ankmom,{nm:['Mommy Ankylo','甲龍媽媽']});Object.assign(CA
 function turnAnim(el){if(REDUCED)return;el.classList.remove('turn');void el.offsetWidth;el.classList.add('turn');}
 let pageTok=0,readTimer=null;
 function scene(area,cast,lines,done,head){musicOff();let i=-1;const prevSolve=SOLVE;show('page');$('pgHead').innerHTML=(head||'').replace(/<rt>[^<]*<\/rt>/g,'');
- const draw=(spk,view)=>{const r={width:$('pgArt').clientWidth,height:$('pgArt').clientHeight};const W=Math.max(300,r.width),H=Math.max(180,r.height);let o=areaArt(area,W,H);
+ const draw=(spk,view)=>{const r={width:$('pgArt').clientWidth,height:$('pgArt').clientHeight};const W=Math.max(300,r.width),H=Math.max(180,r.height);TAGS=[];TAGW=W;let o=areaArt(area,W,H);
   if(view)o+=viewSVG(view,spk,W,H);else{const list=cast.filter(k=>CAST[k]&&CAST[k].t);const base=Math.min(H*.62,W/(list.length+.6)*.9);
    list.forEach((k,j)=>{const c=CAST[k];const sz=base*c.sz/100;const x=W*(j+1)/(list.length+1)-50*sz,y=H*.9-80*sz;const flip=x>W/2&&k!=='pip';
-    o+=`<g transform="translate(${flip?x+100*sz:x},${y}) scale(${flip?-sz:sz},${sz})"><g class="${k===spk?'talk':''}">${dinoSVG(c.t,c.c)}</g></g>`;});}
+    o+=`<g transform="translate(${flip?x+100*sz:x},${y}) scale(${flip?-sz:sz},${sz})"><g class="${k===spk?'talk':''}">${dinoSVG(c.t,c.c)}</g></g>`+nameTagSVG(k,x+50*sz,Math.min(H-30,H*.9-2));});}
   $('pgArt').innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${o}</svg>`;};
  const go=d=>{if(i+d<0)return;i+=d;if(i>=lines.length){SOLVE=prevSolve;done&&done();return;}const [who,en,z,view]=lines[i];turnAnim($('pgSpread'));draw(who,view);
   const c=CAST[who];$('pgWho').innerHTML=c&&c.nm?`${c.em} ${biPlain(c.nm[0],c.nm[1])}`:'';$('pgLine').innerHTML=biPlain(en,z);$('pgNum').textContent=`${i+1} / ${lines.length}`;
@@ -665,11 +665,18 @@ function propSVG(kind,x,W,H,state,u){const g=H*.9;let o='';
  if(kind==='snow'){const s2=state==='open'?.45:1;o+=`<ellipse cx="${x}" cy="${g}" rx="${u*.7*s2}" ry="${u*.6*s2}" fill="#fff" ${ST}/><ellipse cx="${x-u*.22*s2}" cy="${g-u*.25*s2}" rx="${u*.22*s2}" ry="${u*.09*s2}" fill="#e7f5ff"/>`;}
  if(kind==='rocks'){const h=u*(state==='peek'?.5:1),w=u*.9;o+=`<path d="M${x-w} ${g+4} L${x-w*.8} ${g-h*.7} L${x-w*.3} ${g-h} L${x+w*.25} ${g-h*.8} L${x+w*.75} ${g-h*.9} L${x+w} ${g+4}Z" fill="#868e96" ${ST} stroke-width="3"/><path d="M${x-w*.5} ${g-h*.5} l${w*.2} -${h*.12} M${x+w*.3} ${g-h*.4} l${w*.15} ${h*.1}" stroke="#495057" stroke-width="3" fill="none"/>`;}
  return o;}
-function viewSVG(v,spk,W,H){const base=Math.min(H*.55,W*.3);let o='';const pr=v.prop;
+// name tag under a story character (everyone, not just the dino Milo built)
+let TAGS=[],TAGW=1000;
+function nameTagSVG(k,cx,y){const c=CAST[k];if(!c)return '';const small=TAGW<560;
+ const t=k==='goal'?(c.name||''):c.nm?(S.voice==='en'||small&&S.voice!=='zh'?c.nm[0]:S.voice==='zh'?c.nm[1]:`${c.nm[0]} ${c.nm[1]}`):'';if(!t)return '';
+ const fs=small?11:13,w=[...t].reduce((a,ch)=>a+(/[一-鿿]/.test(ch)?fs+1:fs*.62),0)+14;let x=cx-w/2;
+ for(let n=0;n<4&&TAGS.some(r=>x<r[0]+r[2]+4&&x+w>r[0]-4&&Math.abs(y-r[1])<22);n++)y-=24;TAGS.push([x,y,w]);
+ return `<g><rect x="${x}" y="${y}" width="${w}" height="${fs+8}" rx="7" fill="#fff" ${ST} stroke-width="2"/><text x="${cx}" y="${y+fs+2}" text-anchor="middle" font-size="${fs}" font-weight="900" fill="#4a3426">${t}</text></g>`;}
+function viewSVG(v,spk,W,H){TAGS=[];TAGW=W;const base=Math.min(H*.55,W*.3);let o='';const pr=v.prop;
  if(pr&&pr[0]==='bridge')o+=propSVG('bridge',W*pr[1],W,H,pr[2],base);
  v.items.forEach(([k,xf,sc,left])=>{const c=CAST[k];if(!c)return;const sz=base*sc/100;const x=W*xf-50*sz;const fly=TPL[c.t].fly;const y=(fly?H*.55:H*.9)-80*sz;
   o+=`<g transform="translate(${left?x+100*sz:x},${y}) scale(${left?-sz:sz},${sz})"><g class="${k===spk?'talk':''}">${dinoSVG(c.t,c.c)}</g></g>`;
-  if(k==='goal'&&c.name)o+=`<g><rect x="${W*xf-26}" y="${H*.9+2}" width="52" height="20" rx="7" fill="#fff" ${ST} stroke-width="2"/><text x="${W*xf}" y="${H*.9+17}" text-anchor="middle" font-size="14" font-weight="900" fill="#4a3426">${c.name}</text></g>`;});
+  o+=nameTagSVG(k,W*xf,Math.min(H-30,(fly?H*.55:H*.9)-2));});
  if(pr&&pr[0]!=='bridge')o+=propSVG(pr[0],W*pr[1],W,H,pr[2],base);
  if(v.hearts)for(let k=0;k<5;k++)o+=`<text x="${W*(.3+k*.1)}" y="${H*(.18+(k%2)*.08)}" font-size="${Math.min(W,H)*.08}">❤️</text>`;
  return o;}
@@ -1368,6 +1375,6 @@ window.__test={state:()=>({step:S.step,screen:SCREEN,scene:!!document.querySelec
 </script>
 <script src="../../../tracker.js" data-game="dino-world"></script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.4" data-d="2026-11-24" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.4 · 2026-11-24</div>
+<div id="kaVer" data-v="1.5" data-d="2026-11-24" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.5 · 2026-11-24</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>
