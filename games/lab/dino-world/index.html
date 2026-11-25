@@ -1234,7 +1234,8 @@ const MG={
    const decoy={1:[9,10],2:[21,12],3:[7,11],4:[12,23],5:[15,35]}[L];const intro={1:['Jump in order: 1, 2, 3…','按照順序跳:1、2、3……'],2:['Count down from 20!','從20倒著數!'],3:['Count by 2s: 2, 4, 6…','兩個兩個數:2、4、6……'],4:['Count by 5s: 5, 10, 15…','五個五個數:5、10、15……'],5:['Count by 10s: 10, 20, 30…','十個十個數:10、20、30……']}[L];
    const narrow=el.clientWidth<560;const grid=narrow?[[16,30],[39,28],[62,30],[85,28],[16,55],[39,53],[62,55],[85,53],[28,78],[62,78],[85,78]]:[[20,28],[36,26],[52,30],[68,26],[84,30],[20,70],[36,72],[52,68],[68,72],[84,70]];
    const spots=shuffle(grid).map(([x,y])=>[x+ri(-2,2),y+ri(-3,3)]);const nums=order.concat(decoy);
-   el.innerHTML=`<div class="hero" id="hero" style="left:${narrow?10:6}%;top:${narrow?97:52}%">${smallDino('rex',solid('rex','green'))}</div><div class="baby" style="left:${narrow?88:95}%;top:${narrow?14:48}%">${smallDino('trike',solid('trike','purple'))}</div>`+nums.map((n,k)=>`<button class="stone" data-n="${n}" style="left:${spots[k][0]}%;top:${spots[k][1]}%">${n}</button>`).join('');
+   const ci=A.ci,gc=ci!=null&&CH[ci]?CH[ci]:null,goal=ci===3?['trike',MOMC]:gc&&gc.baby?[gc.baby.t,gc.baby.c]:['brachio',solid('brachio','yellow')];
+   el.innerHTML=`<div class="hero" id="hero" style="left:${narrow?10:6}%;top:${narrow?97:52}%">${smallDino('babytrike',PIPC)}</div><div class="baby" style="left:${narrow?88:95}%;top:${narrow?14:48}%">${smallDino(goal[0],goal[1])}</div>`+nums.map((n,k)=>`<button class="stone" data-n="${n}" style="left:${spots[k][0]}%;top:${spots[k][1]}%">${n}</button>`).join('');
    const stones=[...el.querySelectorAll('.stone')];let step=0,miss=0;api.prompt(intro[0],intro[1]);
    const hop=s=>{SFX.hop();$('hero').style.left=s.style.left;$('hero').style.top=s.style.top;s.classList.add('done');};
    const ask=()=>{if(step>=order.length){$('hero').style.left=narrow?'80%':'90%';$('hero').style.top=narrow?'14%':'48%';SFX.fanfare();track('order',miss<=1,true);api.prompt('You made it across!','你跳過去了!');setTimeout(()=>api.end(),1800);SOLVE=null;return;}
@@ -1367,6 +1368,6 @@ window.__test={state:()=>({step:S.step,screen:SCREEN,scene:!!document.querySelec
 </script>
 <script src="../../../tracker.js" data-game="dino-world"></script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.2" data-d="2026-11-24" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-24</div>
+<div id="kaVer" data-v="1.3" data-d="2026-11-24" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.3 · 2026-11-24</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>
