@@ -65,6 +65,8 @@ canvas{width:100%;height:100%;background:#fff;border-radius:16px;box-shadow:0 2p
       <button class="big no" id="fresh">New 新的</button>
     </div>
   </div>
+  <button class="big no" id="gpBtn">🔗 Google Photos (parents 家長)</button>
+  <div id="gpState" style="font-size:13px;color:#666"></div>
   <p style="font-size:13px;color:#888">Test sample · 測試版</p>
 </section>
 
@@ -93,6 +95,21 @@ canvas{width:100%;height:100%;background:#fff;border-radius:16px;box-shadow:0 2p
   </div>
 </section>
 <div class="toast" id="toast"></div>
+<div id="nameBox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:8;padding:12px">
+  <div style="background:#fff;border-radius:18px;padding:18px;max-width:420px;width:100%;text-align:center;max-height:100%;overflow:auto">
+    <b style="font-size:20px">What's your drawing called? 畫的名字?</b>
+    <input id="nameIn" maxlength="40" placeholder="My drawing 我的畫" style="display:block;margin:12px auto;font-size:20px;width:100%;padding:10px;border-radius:12px;border:2px solid #ccc">
+    <div id="chips" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+      <button class="big yes" id="nameOk">💾 Save 儲存</button><button class="big no" id="nameNo">Back 返回</button></div>
+  </div></div>
+<div id="gate" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:8">
+  <div style="background:#fff;border-radius:18px;padding:20px;max-width:340px;text-align:center">
+    <b>Parents only 家長專用</b><p id="gateQ" style="font-size:22px"></p>
+    <input id="gateA" inputmode="numeric" style="font-size:20px;width:140px;padding:8px;border-radius:10px;border:2px solid #ccc">
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
+      <button class="big yes" id="gateOk">Connect 連結</button><button class="big no" id="gateNo">Cancel</button></div>
+  </div></div>
 
 <script>
 const KIDS={nora:{name:'Nora',color:'#7048e8',size:8,stamps:['⭐','💜','🌸','⚽','🦄','🌈']},
@@ -106,8 +123,8 @@ const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTi
 
 /* ---------- storage: IndexedDB drafts (overwrite one slot per kid) ---------- */
 let dbp=null;
-function db(){if(dbp)return dbp;dbp=new Promise((res,rej)=>{try{const r=indexedDB.open('doodle-studio',1);
- r.onupgradeneeded=()=>r.result.createObjectStore('drafts');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});return dbp}
+function db(){if(dbp)return dbp;dbp=new Promise((res,rej)=>{try{const r=indexedDB.open('doodle-studio',2);
+ r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('drafts'))d.createObjectStore('drafts');if(!d.objectStoreNames.contains('queue'))d.createObjectStore('queue',{autoIncrement:true})};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});return dbp}
 async function putDraft(k,v){try{const d=await db();await new Promise((res,rej)=>{const t=d.transaction('drafts','readwrite');t.objectStore('drafts').put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}catch(e){console.warn(e)}}
 async function getDraft(k){try{const d=await db();return await new Promise(res=>{const r=d.transaction('drafts').objectStore('drafts').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)})}catch(e){return null}}
 
@@ -180,17 +197,85 @@ setInterval(()=>autosave(false),60000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)autosave(false)});
 window.addEventListener('pagehide',()=>autosave(false));
 
-/* ---------- Save: share sheet -> Photos (or download on Mac) ---------- */
-$('saveBtn').onclick=async()=>{
+/* ---------- Google Photos: one album per kid ----------
+   Paste the OAuth Web client ID from Google Cloud below. Empty = fall back to the share sheet. */
+const GOOGLE_CLIENT_ID='';
+const SCOPES='https://www.googleapis.com/auth/photoslibrary.appendonly https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata';
+const API='https://photoslibrary.googleapis.com/v1/';
+const ALBUM={nora:"Nora's Doodles 幼晴的塗鴉",lucas:"Lucas's Doodles 陸晨的塗鴉",milo:"Milo's Doodles 洛明的塗鴉"};
+const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+let tokenClient=null,tokenWait=null;
+const tokenValid=()=>ls.get('gp.token')&&+ls.get('gp.exp')>Date.now();
+function initGIS(){if(!GOOGLE_CLIENT_ID)return;const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';
+  sc.onload=()=>{tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:SCOPES,
+    callback:r=>{const w=tokenWait;tokenWait=null;if(r.error||!r.access_token){w&&w.rej(r.error||'no token');return}
+      ls.set('gp.token',r.access_token);ls.set('gp.exp',Date.now()+(r.expires_in-60)*1000);ls.set('gp.connected','1');gpRefresh();w&&w.res(r.access_token)},
+    error_callback:e=>{const w=tokenWait;tokenWait=null;w&&w.rej(e.type||'popup')}});gpRefresh();flushQueue()};
+  document.head.appendChild(sc)}
+// must be called synchronously inside a tap, or the browser blocks the Google popup
+function askToken(prompt){return new Promise((res,rej)=>{if(!tokenClient)return rej('not ready');tokenWait={res,rej};tokenClient.requestAccessToken({prompt})})}
+async function gfetch(path,opt={}){const r=await fetch(path.startsWith('http')?path:API+path,{...opt,headers:{...(opt.headers||{}),Authorization:'Bearer '+ls.get('gp.token')}});
+  if(r.status===401){ls.del('gp.token');throw new Error('auth')}if(!r.ok)throw new Error('http '+r.status+' '+await r.text());return r}
+async function albumId(k,fresh){let id=!fresh&&ls.get('gp.album.'+k);if(id)return id;
+  let page='';do{const j=await (await gfetch('albums?pageSize=50'+(page?'&pageToken='+page:''))).json();
+    const hit=(j.albums||[]).find(a=>a.title===ALBUM[k]);if(hit){ls.set('gp.album.'+k,hit.id);return hit.id}page=j.nextPageToken||''}while(page);
+  const a=await (await gfetch('albums',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({album:{title:ALBUM[k]}})})).json();
+  ls.set('gp.album.'+k,a.id);return a.id}
+async function uploadOne(it){const up=await gfetch('uploads',{method:'POST',headers:{'Content-type':'application/octet-stream','X-Goog-Upload-Content-Type':'image/png','X-Goog-Upload-Protocol':'raw'},body:it.blob});
+  const utok=await up.text();
+  const make=async fresh=>gfetch('mediaItems:batchCreate',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({albumId:await albumId(it.kid,fresh),newMediaItems:[{description:(it.label||it.name)+' · '+KIDS[it.kid].name,simpleMediaItem:{fileName:it.name,uploadToken:utok}}]})});
+  let r;try{r=await make(false)}catch(e){if(String(e).includes('auth'))throw e;ls.del('gp.album.'+it.kid);r=await make(true)}
+  const st=((await r.json()).newMediaItemResults||[{}])[0].status||{};if(st.code)throw new Error(st.message||'create failed')}
+async function queueAll(){const d=await db();return new Promise(res=>{const out=[];const c=d.transaction('queue').objectStore('queue').openCursor();
+  c.onsuccess=()=>{const cur=c.result;if(cur){out.push({key:cur.key,...cur.value});cur.continue()}else res(out)};c.onerror=()=>res(out)})}
+async function queueAdd(v){const d=await db();return new Promise(res=>{const t=d.transaction('queue','readwrite');t.objectStore('queue').add(v);t.oncomplete=res;t.onerror=res})}
+async function queueDel(k){const d=await db();return new Promise(res=>{const t=d.transaction('queue','readwrite');t.objectStore('queue').delete(k);t.oncomplete=res;t.onerror=res})}
+let flushing=false;
+async function flushQueue(){if(flushing||!tokenValid())return 0;flushing=true;let n=0;
+  try{for(const it of await queueAll()){try{await uploadOne(it);await queueDel(it.key);n++}catch(e){console.warn(e);break}}}finally{flushing=false;gpRefresh()}
+  return n}
+async function gpRefresh(){const q=(await queueAll().catch(()=>[])).length;
+  $('gpState').textContent=!GOOGLE_CLIENT_ID?'Not set up yet 尚未設定':(ls.get('gp.connected')?'Connected ✓ 已連結':'Not connected 未連結')+(q?` · ${q} waiting to upload 等待上傳`:'')}
+// parent gate: 3-digit × 2-digit
+let gateAns=0;
+function newGate(){const a=100+Math.floor(Math.random()*900),b=10+Math.floor(Math.random()*90);gateAns=a*b;$('gateQ').textContent=`${a} × ${b} = ?`;$('gateA').value=''}
+$('gpBtn').onclick=()=>{if(!GOOGLE_CLIENT_ID){toast('Google Photos key not added yet');return}newGate();$('gate').style.display='flex'};
+$('gateNo').onclick=()=>$('gate').style.display='none';
+$('gateOk').onclick=()=>{if(+$('gateA').value!==gateAns){toast('Try again 再試一次');newGate();return}
+  $('gate').style.display='none';askToken('consent').then(()=>flushQueue()).then(n=>toast('Connected! 已連結'+(n?` · ${n} uploaded`:''))).catch(()=>toast('Not connected 沒有連結'))};
+
+/* ---------- Save: to the kid's Google Photos album (queued if offline / signed out) ---------- */
+const CHIPS={nora:['🦄 Unicorn 獨角獸','🌸 Flowers 花','⚽ Soccer 足球','👨‍👩‍👧‍👦 Family 家人','🌈 Rainbow 彩虹','🐱 Cat 貓'],
+  lucas:['🐉 Dragon 龍','⚽ Soccer 足球','🚀 Rocket 火箭','🃏 My card 我的卡','👨‍👩‍👧‍👦 Family 家人','🤖 Robot 機器人'],
+  milo:['🦖 T-Rex 暴龍','🦕 Dino 恐龍','🚗 Car 車子','🌋 Volcano 火山','👨‍👩‍👧‍👦 Family 家人','🍎 Apple 蘋果']};
+$('saveBtn').onclick=()=>{$('nameIn').value='';const c=$('chips');c.innerHTML='';
+  CHIPS[kid].forEach(t=>{const b=document.createElement('button');b.className='big no';b.style.fontSize='16px';b.textContent=t;
+    b.onclick=()=>{$('nameIn').value=t.replace(/^\S+\s/,'')};c.appendChild(b)});
+  $('nameIn').style.fontSize=kid==='milo'?'24px':'20px';$('nameBox').style.display='flex';if(kid!=='milo')setTimeout(()=>$('nameIn').focus(),50)};
+$('nameNo').onclick=()=>$('nameBox').style.display='none';
+$('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('nameOk').click()});
+$('nameOk').onclick=async()=>{$('nameBox').style.display='none';
+  const _d=new Date(),day=`${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`;
+  const title=($('nameIn').value.trim()||'My drawing 我的畫').replace(/[\\/:*?"<>|]/g,'').slice(0,40);
+  const label=`${title} – ${day}`;
+  const name=`${KIDS[kid].name} - ${title} - ${day} ${new Date().toTimeString().slice(0,5).replace(':','')}.png`;
+  // ask for a fresh token right away, while we're still inside the tap
+  const tokP=GOOGLE_CLIENT_ID&&ls.get('gp.connected')&&!tokenValid()&&tokenClient?askToken(''):null;
   const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
-  const name=`${KIDS[kid].name}-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.png`;
-  const file=new File([blob],name,{type:'image/png'});
-  let ok=false;
-  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});ok=true}}
-  catch(e){if(e.name==='AbortError'){toast('Not saved 沒有存');return}}
-  if(!ok){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);ok=true}
   await putDraft(kid,{png:cv.toDataURL('image/png'),time:Date.now(),unsaved:false});dirty=false;
-  setStatus('Saved ✓ 已存');toast('Saved! 存好了 🎉')};
+  if(!GOOGLE_CLIENT_ID){ // fallback: share sheet / download
+    const file=new File([blob],name,{type:'image/png'});
+    try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});setStatus('Saved ✓ 已存');return}}catch(e){if(e.name==='AbortError')return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setStatus('Saved ✓ 已存');return}
+  await queueAdd({kid,blob,name,label,time:Date.now()});
+  setStatus('Uploading… 上傳中');$('saveBtn').disabled=true;
+  try{if(tokP)await tokP.catch(()=>{});const before=(await queueAll()).length;await flushQueue();const left=(await queueAll()).length;
+    if(left<before&&left===0){setStatus('In Google Photos ✓ 已存到相簿');toast(`“${title}” saved to ${KIDS[kid].name}'s album 🎉`)}
+    else{setStatus('Saved here, will upload later 稍後上傳');toast('Saved on this device — it will upload when Google is connected')}}
+  finally{$('saveBtn').disabled=false}};
+addEventListener('online',()=>flushQueue());
+initGIS();gpRefresh();
 
 window.__test={state:()=>({screen:kid?'studio':'home',kid,tool,dirty}),solve:()=>{}};
 </script>
