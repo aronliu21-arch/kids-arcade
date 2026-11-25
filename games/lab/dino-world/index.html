@@ -852,7 +852,7 @@ function buildStep(){const p=B.P[B.k];const c=COL[B.cols[B.k]],sh=SH[p.s];const 
   opts=shuffle([{s:p.s,c:B.cols[B.k],ok:1},{s:p.s,c:wc},{s:other,c:B.cols[B.k]},{s:shuffle(SHAPES.filter(x=>x!==p.s&&x!==other))[0],c:wc2}]);
   if(L===1){$('bTxt').innerHTML=bi(w[0],w[1]);say(w[0],w[1]);}
   else{$('bTxt').innerHTML=`<div class="wordcard sm">${c[1]} ${sh[0]}<small>${zh(c[2]+sh[2])}</small></div>`;readCard($('bTxt').querySelector('.wordcard'),`${c[1]} ${sh[0]}`,c[2]+'的'+sh[2]);if(B.k===0)say(`Read the card: ${c[1]} ${sh[0]}! Find that brick.`,`讀卡片:${c[2]}的${sh[2]}!找到那塊積木。`);else say(`${c[1]} ${sh[0]}!`,`${c[2]}的${sh[2]}!`);}}
- else{const a=ri(1,4),b=ri(1,4),n=a+b;B.hintSay=[`${a} plus ${b} is ${n}.`,`${a}加${b}是${n}。`];w=[`Find the ${sh[0]} with ${a} + ${b} dots!`,`找有${a}+${b}個點的${sh[2]}!`];
+ else{const n=ri(2,8);const cnt=Array.from({length:n},(_,i)=>i+1).join(', ');B.hintSay=[`Count the dots: ${cnt}.`,`數一數點點:${cnt.replace(/, /g,'、')}。`];w=[`Find the ${sh[0]} with ${n} dots!`,`找有${n}個點的${sh[2]}!`];
   const ds=new Set([n]);while(ds.size<4)ds.add(ri(2,9));opts=shuffle([...ds].map(d=>({s:p.s,c:d===n?B.cols[B.k]:pick(CK),d,ok:d===n?1:0})));$('bTxt').innerHTML=bi(w[0],w[1]);say(w[0],w[1]);}
  B.w=w;$('bOpts').innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}" aria-label="${COL[o.c][1]} ${SH[o.s][0]}">${shapeIcon(o.s,COL[o.c][0])}${o.d?`<span class="dots">${'●'.repeat(o.d)}</span>`:''}</button>`).join('');
  const btns=[...$('bOpts').children];const okB=btns[opts.findIndex(o=>o.ok)];
@@ -1368,6 +1368,6 @@ window.__test={state:()=>({step:S.step,screen:SCREEN,scene:!!document.querySelec
 </script>
 <script src="../../../tracker.js" data-game="dino-world"></script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.3" data-d="2026-11-24" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.3 · 2026-11-24</div>
+<div id="kaVer" data-v="1.4" data-d="2026-11-24" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.4 · 2026-11-24</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>
