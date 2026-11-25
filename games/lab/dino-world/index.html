@@ -220,6 +220,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 .opt .dots{position:absolute;inset:auto 0 6px 0;font-size:clamp(.7rem,2.6vmin,1rem);letter-spacing:1px;color:#4a3426;text-align:center}
 .row .boxes{gap:6px}.row .boxes .box{width:clamp(40px,12vw,90px)}
 @media (max-width:600px){.mazewrap{gap:6px}.mazewrap svg{width:min(70vw,38vh)}.pad{grid-template-columns:repeat(3,52px);gap:4px}.pad button{width:52px;height:52px;font-size:1.4rem}}
+.wordcard{cursor:pointer;position:relative}.wc-say{position:absolute;top:-16px;right:-16px;width:44px;height:44px;border-radius:50%;background:var(--gold);border:3px solid var(--ink);display:grid;place-items:center;font-size:1.3rem;letter-spacing:0;box-shadow:0 3px 0 var(--ink)}
 .colorin{animation:colorin 2.6s .4s both}@keyframes colorin{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body data-pref="port">
@@ -368,7 +369,7 @@ function voiceScore(v,l){const lang=(v.lang||'').replace('_','-');const id=((v.n
 function voiceFor(l){if(vcache[l]!==undefined)return vcache[l];try{const vs=speechSynthesis.getVoices();let best=null,bs=-1;for(const v of vs){const sc=voiceScore(v,l);if(sc>bs){bs=sc;best=v;}}if(vs.length)vcache[l]=best;return best;}catch(e){return null;}}
 function voiceNote(){const el=$('voiceNote');if(!el)return;const v=voiceFor('zh-TW');if(!v){el.textContent='';return;}const id=(v.name+' '+v.voiceURI).toLowerCase();const good=/premium|enhanced|neural|natural/.test(id);
  el.innerHTML=good?`🗣 Chinese voice: ${v.name} ✓`:`🗣 Chinese voice: ${v.name} (basic). For a clearer voice: Settings → Accessibility → Spoken Content → Voices → Chinese (Taiwan) → download Mei-Jia (Enhanced or Premium), then reopen this game.`;el.classList.toggle('ok',good);}
-function sayParts(parts,pitch,onEnd){lastParts=parts;let fired=false;const fin=()=>{if(!fired){fired=true;onEnd&&onEnd();}};const est=parts.reduce((a,[t,l])=>a+t.length*(l==='zh-TW'?330:85),0)+1200;
+function sayParts(parts,pitch,onEnd){parts=parts||[];lastParts=parts;let fired=false;const fin=()=>{if(!fired){fired=true;onEnd&&onEnd();}};const est=parts.reduce((a,[t,l])=>a+t.length*(l==='zh-TW'?330:85),0)+1200;
  if(onEnd)setTimeout(fin,S.snd?est+2500:est);if(!S.snd||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();parts.forEach(([t,l],k)=>{const u=new SpeechSynthesisUtterance(t);u.lang=l;const v=voiceFor(l);if(v)u.voice=v;u.rate=l==='en-US'?.88:.8;u.pitch=pitch||1.15;if(k===parts.length-1&&onEnd)u.onend=()=>setTimeout(fin,50);speechSynthesis.speak(u);});}catch(e){}}
 function parts(en,z){const p=[];if(S.voice!=='zh'&&en)p.push([en,'en-US']);if(S.voice!=='en'&&z)p.push([typeof z==='string'?z:z.map(x=>x[0]).join(''),'zh-TW']);return p;}
 function say(en,z,extra,pitch,onEnd){sayParts(parts(en,z).concat(extra||[]),pitch,onEnd);}
@@ -819,7 +820,7 @@ function buildStep(){const p=B.P[B.k];const c=COL[B.cols[B.k]],sh=SH[p.s];const 
  if(L<3){const other=shuffle(SHAPES.filter(s=>s!==p.s))[0],wc=shuffle(CK.filter(x=>x!==B.cols[B.k]))[0];const wc2=shuffle(CK.filter(x=>x!==B.cols[B.k]&&x!==wc))[0];
   opts=shuffle([{s:p.s,c:B.cols[B.k],ok:1},{s:p.s,c:wc},{s:other,c:B.cols[B.k]},{s:shuffle(SHAPES.filter(x=>x!==p.s&&x!==other))[0],c:wc2}]);
   if(L===1){$('bTxt').innerHTML=bi(w[0],w[1]);say(w[0],w[1]);}
-  else{$('bTxt').innerHTML=`<div class="wordcard sm">${c[1]} ${sh[0]}<small>${zh(c[2]+sh[2])}</small></div>`;say('Read the card! Find that brick.','讀一讀卡片,找到那塊積木!');}}
+  else{$('bTxt').innerHTML=`<div class="wordcard sm">${c[1]} ${sh[0]}<small>${zh(c[2]+sh[2])}</small></div>`;readCard($('bTxt').querySelector('.wordcard'),`${c[1]} ${sh[0]}`,c[2]+'的'+sh[2]);say(`Read along: ${c[1]} ${sh[0]}! Find that brick.`,`跟著讀:${c[2]}的${sh[2]}!找到那塊積木。`);}}
  else{const a=ri(1,4),b=ri(1,4),n=a+b;B.hintSay=[`${a} plus ${b} is ${n}.`,`${a}加${b}是${n}。`];w=[`Find the ${sh[0]} with ${a} + ${b} dots!`,`找有${a}+${b}個點的${sh[2]}!`];
   const ds=new Set([n]);while(ds.size<4)ds.add(ri(2,9));opts=shuffle([...ds].map(d=>({s:p.s,c:d===n?B.cols[B.k]:pick(CK),d,ok:d===n?1:0})));$('bTxt').innerHTML=bi(w[0],w[1]);say(w[0],w[1]);}
  B.w=w;$('bOpts').innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}" aria-label="${COL[o.c][1]} ${SH[o.s][0]}">${shapeIcon(o.s,COL[o.c][0])}${o.d?`<span class="dots">${'●'.repeat(o.d)}</span>`:''}</button>`).join('');
@@ -949,7 +950,7 @@ function endGame(){const g=MG[A.id];SOLVE=null;const ci=A.ci,inFlow=ci!==undefin
  const icons=got.map((b,i)=>`<span style="display:inline-block;animation-delay:${i*.08}s">${shapeIcon(b.s,COL[b.c][0])}</span>`).join('');
  const ups=[...new Set(A.ups)].map(t=>`<div class="lvup">⭐ ${bi(LVNAME[t][0]+' level '+S.lv[t]+'!',LVNAME[t][1]+'第'+S.lv[t]+'級!')}</div>`).join('');
  const r=$('result');
- if(sk>=3){r.innerHTML=`<div class="coins">+${got.length} 🧱 +1 🍎</div><div class="earn">${icons}</div>${ups}<div style="font-size:3rem">📖🔖💤</div><h2 style="margin:4px">${bi('Great practice! Time for a break','練習得好棒!休息一下吧')}</h2><div class="tip">${bi('Your book is bookmarked. Next time it opens right here!','書籤夾好了。下次會從這裡開始!')}</div><button class="btn green" id="rDone">${bi('Finish for now','先結束')}</button>`;
+ if(false&&sk>=3){r.innerHTML=`<div class="coins">+${got.length} 🧱 +1 🍎</div><div class="earn">${icons}</div>${ups}<div style="font-size:3rem">📖🔖💤</div><h2 style="margin:4px">${bi('Great practice! Time for a break','練習得好棒!休息一下吧')}</h2><div class="tip">${bi('Your book is bookmarked. Next time it opens right here!','書籤夾好了。下次會從這裡開始!')}</div><button class="btn green" id="rDone">${bi('Finish for now','先結束')}</button>`;
   show('result');musicOn();say('Great practice! Your book is bookmarked. Time for a break!','練習得好棒!書籤夾好了,休息一下吧!');
   $('rDone').onclick=()=>{streak(0);show('intro');try{speechSynthesis.cancel();}catch(e){}};SOLVE=()=>$('rDone').click();return;}
  r.innerHTML=`<div class="coins">+${got.length} 🧱 &nbsp;+1 🍎</div><div class="earn">${icons}</div>${ups}
@@ -970,6 +971,10 @@ const shakeIt=b=>{b.classList.remove('shake');void b.offsetWidth;b.classList.add
 const ri=(a,b)=>a+rnd(b-a+1);
 const nm=(n,f)=>n===1?f[1]:f[2];
 function numOpts(ans,min,max){min=min??0;max=max??100;const s=new Set([ans]);for(const d of shuffle([1,-1,2,-2,10,-10,3,5])){if(s.size>=4)break;const v=ans+d;if(v>=min&&v<=max)s.add(v);}while(s.size<4)s.add(ri(min,max));return shuffle([...s]);}
+// a word card that reads itself: short words are sounded out first (b, a, t… bat)
+const soundOut=w=>/^[a-z]{2,5}$/i.test(w)?`${w.split('').join(', ')}. ${w}`:w;
+function readCard(el,en,z){if(!el)return;el.insertAdjacentHTML('beforeend','<span class="wc-say" aria-hidden="true">🔊</span>');el.setAttribute('role','button');el.setAttribute('aria-label','Read it to me');
+ el.onclick=()=>{SFX.click();el.classList.remove('wiggle');void el.offsetWidth;el.classList.add('wiggle');sayParts([[soundOut(en),'en-US']].concat(z&&S.voice!=='en'?[[z,'zh-TW']]:[]));};}
 // wire up a row of answer buttons to one judged question
 function bindOpts(o,then){const btns=[...api.el.querySelectorAll('.opt[data-i]')];
  const judge=api.q(Object.assign({hint:()=>btns[o.ans].classList.add('wiggle'),reveal:()=>btns[o.ans].classList.add('glow')},o),then);
@@ -1038,7 +1043,7 @@ const MG={
  mail:{icon:'📜',en:'Read the Signs',zh:'讀牌子',total:6,topic:'read',tip:['Read the signs when you go out!','出門時讀一讀路上的牌子!'],
   run(api){let i=0;const go=()=>{if(i>=6)return api.end();const L0=LV('read');let card,vals,ans,say1,why,big=true;
    if(L0===1){const pool=CVC.concat(BLEND);const [w,em]=pick(pool);const Lt=w[0];const others=shuffle(pool.filter(x=>x[0][0]!==Lt)).slice(0,2).map(x=>x[1]);vals=shuffle([em,...others]);ans=vals.indexOf(em);
-    api.el.innerHTML=`<div class="wordcard">${Lt.toUpperCase()} ${Lt}</div>${optsHTML(vals.map(v=>`<span class="pic">${v}</span>`))}`;api.prompt(`${Lt.toUpperCase()}! Which picture starts with ${Lt.toUpperCase()}?`,`哪一張圖是${Lt.toUpperCase()}開頭?`);
+    api.el.innerHTML=`<div class="wordcard">${Lt.toUpperCase()} ${Lt}</div>${optsHTML(vals.map(v=>`<span class="pic">${v}</span>`))}`;readCard(api.el.querySelector('.wordcard'),`${Lt.toUpperCase()}. ${Lt}, ${Lt}`,'');api.prompt(`${Lt.toUpperCase()}! Which picture starts with ${Lt.toUpperCase()}?`,`哪一張圖是${Lt.toUpperCase()}開頭?`);
     bindOpts({ans,vals,label:'read L1 first sound',expected:w,why:[`${w} starts with ${Lt.toUpperCase()}!`,`${w}是${Lt.toUpperCase()}開頭!`],hint:()=>say(`${w}. ${Lt}, ${Lt}, ${w}`,'')},()=>{i++;go();});return;}
    const L=L0-1;
    if(L<=2){const [w,em]=pick(L===1?CVC:BLEND);const others=shuffle((L===1?CVC:BLEND).filter(x=>x[0]!==w)).slice(0,3).map(x=>x[1]);vals=shuffle([em,...others]);ans=vals.indexOf(em);card=w;say1=[w,''];why=[`It says “${w}”!`,`上面寫的是 ${w}!`];}
@@ -1047,7 +1052,8 @@ const MG={
    else if(L===4){const [qe,qz,yes,no]=pick(QCAT);const y=pick(yes);vals=shuffle([y].concat(shuffle(no).slice(0,3)));ans=vals.indexOf(y);card=qe;say1=[qe,qz];why=[`${qe.replace('Which one','This one')}`,qz];}
    else{const fam=pick(RHYME);const [base,...rh]=shuffle(fam);const right=pick(rh);const others=shuffle(RHYME.filter(f=>f!==fam).map(f=>pick(f))).slice(0,3);vals=shuffle([right,...others]);ans=vals.indexOf(right);card=`Which word rhymes with “${base}”?`;say1=[card,''];why=[`${base} and ${right} rhyme!`,`${base}和${right}押韻!`];big=false;}
    api.el.innerHTML=`<div class="wordcard${L>=3?' sm':''}">${card}</div>${optsHTML(L===5?vals.map(v=>`<span class="wd">${v}</span>`):vals.map(v=>`<span class="pic">${v}</span>`))}`;
-   api.prompt('Read the card! Which one matches?','讀一讀卡片!哪一個對?',null,['Read the card!','讀一讀卡片!']);
+   readCard(api.el.querySelector('.wordcard'),L===5?card:say1[0],L===4?say1[1]:'');
+   sayParts(parts('Listen and read along!','聽一聽,跟著讀!').concat([[soundOut(L===5?card:say1[0]),'en-US']],L===4&&S.voice!=='en'?[[say1[1],'zh-TW']]:[]));$('gTxt').innerHTML=bi('Listen and read along! Tap the card to hear it again.','聽一聽,跟著讀!點卡片可以再聽一次。');
    bindOpts({ans,vals,label:`read L${L}`,expected:vals[ans],why,hint:()=>{say(say1[0],say1[1]);},retry:['Listen and try again!','聽一聽,再試一次!']},()=>{i++;go();});};go();}},
  /* spelling: dig up letters, then spell from the picture + sound. L1 cat · L2 frog · L3 ship · L4 truck */
  fossil:{icon:'🦴',en:'Letter Dig',zh:'挖字母',total:9,topic:'spell',tip:['Sound out words: f-r-o-g, frog!','把字拼出來:f-r-o-g,frog!'],
