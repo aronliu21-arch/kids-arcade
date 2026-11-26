@@ -137,7 +137,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
     <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
     <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
   </div>
-  <p class="ver">Test sample · 測試版 · v1.5</p>
+  <p class="ver">Test sample · 測試版 · v1.6</p>
 </div></section>
 <!-- SHELF -->
 <section id="shelf" class="screen">
@@ -185,7 +185,7 @@ function sticker(src){if(stickers[src])return stickers[src];const o={ready:false
 let AC=null;function boing(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;
   o.type='sine';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(660,t+.12);o.frequency.exponentialRampToValueAtTime(330,t+.3);
   g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}}
-const VERSION='v1.5';
+const VERSION='v1.6';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2400)};
@@ -560,9 +560,9 @@ function scriptOf(sc){if(!sc.script){const progs=sc.actors.filter(a=>a.prog&&a.p
   return sc.script}
 let dirJoin=false;
 function renderDirector(){const sc=curScene(),z=Z(),P=$('bPanel');stage.director=true;const scr=scriptOf(sc);
-  const cast=sc.actors.filter(a=>a.role!=='goal');if(!cast.find(a=>a.id===stage.sel))stage.sel=(cast[0]||{}).id;const a=cast.find(x=>x.id===stage.sel);
+  const cast=sc.actors;if(!cast.find(a=>a.id===stage.sel))stage.sel=(cast[0]||{}).id;const a=cast.find(x=>x.id===stage.sel);
   stage.onSel=()=>renderDirector();stage.onChange=()=>touch();
-  const nm=x=>x?(x.name||(x.e||'🎨')):'?',face=x=>x?(x.img?'🎨':x.e):'❔',byId=id=>sc.actors.find(x=>x.id===id);
+  const nm=x=>x?(x.name||(x.role==='goal'&&story.want?(z?story.want[2]:story.want[1]):'')||(x.e||'🎨')):'?',face=x=>x?(x.img?'🎨':x.e):'❔',byId=id=>sc.actors.find(x=>x.id===id);
   const act=b=>`${face(byId(b.who))}${codeIcon(b)}${b.k==='say'?`<i>${esc(b.t)}</i>`:''}`;
   P.innerHTML=`<div class="dirtop"><div class="tools dtools"><button class="btn go" id="dPlay">▶ ${z?'播放':'Play'}</button><button class="btn sm" id="dUndo1">↩️ ${z?'刪掉最後一個':'Remove last'}</button><button class="btn sm" id="dClear1">🗑️ ${z?'清空':'Clear'}</button><button class="btn green" id="dDone1">✓ ${z?'完成':'Done'}</button></div>
     <div class="q" style="margin:0 0 4px"><span>🎬 ${z?'導演時間':'Director time'}</span></div>
