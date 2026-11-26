@@ -104,7 +104,7 @@
   window.KA = {
     game: game,
     get kid() { return kid; },
-    setKid: safe(function (k) { k = String(k || "").toLowerCase(); if (KIDS[k]) { kid = k; sstore(KIDKEY, k); } }),
+    setKid: safe(function (k) { if (kid === "tester") return; /* opened from the Tester page: picking a kid inside the game must not record as that kid */ k = String(k || "").toLowerCase(); if (KIDS[k]) { kid = k; sstore(KIDKEY, k); } }),
     shown: safe(function () { lastShownAt = Date.now(); }),
     answer: safe(function (o) {
       o = o || {};
