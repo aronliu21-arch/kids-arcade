@@ -20,7 +20,7 @@
   function score(v, l) {
     const lang = (v.lang || '').replace('_', '-'), id = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase(); let sc = 0;
     if (lang === l) sc += 100; else if (l === 'zh-TW' && /^zh-(hk|hant)/i.test(lang)) sc += 60; else if (lang.slice(0, 2) === l.slice(0, 2)) sc += 40; else return -1;
-    if (/premium/.test(id)) sc += 30; else if (/enhanced|neural|natural|online/.test(id)) sc += 20; if (/compact|eloquence|novelty/.test(id)) sc -= 15;
+    if (/premium/.test(id)) sc += 30; else if (/enhanced|neural|natural|online/.test(id)) sc += 20; if (/compact/.test(id)) sc -= 15; if (/eloquence|novelty|synthesis\.voice\.|\b(albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|kathy|ralph|grandma|grandpa|rocko|shelley|sandy|reed|eddy|flo)\b/.test(id)) sc -= 90;
     if (l === 'zh-TW' && /lilian/.test(id)) sc += 200; if (l === 'zh-TW' && /mei-?jia/.test(id)) sc += 5;
     if (l === 'en-US' && /samantha|ava|zoe|allison|google us/.test(id)) sc += 5; if (v.localService) sc += 1; return sc;
   }
