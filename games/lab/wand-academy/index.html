@@ -157,6 +157,13 @@ h1,h2,h3{margin:0}
 .btn.gold{position:relative;overflow:hidden}
 .btn.gold::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,#fff8,transparent);transform:skewX(-20deg);animation:gleam 2.8s ease-in-out infinite}
 @keyframes gleam{60%,100%{left:130%}}
+#frList{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:6px 14px 20px}
+.fr{display:flex;gap:12px;align-items:center;text-align:left;background:#fffaf0;border:3px solid #e3d2ae;border-radius:18px;padding:10px;color:var(--ink);min-height:120px}
+.fr.locked{opacity:.55}
+.frArt{flex:0 0 96px;height:110px;display:flex;align-items:center;justify-content:center}
+.frArt svg{width:100%;height:100%}
+.frTxt b{font-size:19px}.frTxt small{display:block;color:var(--soft);font-weight:700;font-size:13px;margin-bottom:4px}.frTxt p{margin:0;font-size:14px;line-height:1.35}
+@media (max-height:430px){.fr{min-height:96px}.frArt{flex-basis:76px;height:86px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .fade{animation:fin .5s ease both}@keyframes fin{from{opacity:0}}
 .float{animation:flt 3s ease-in-out infinite}@keyframes flt{50%{transform:translateY(-10px)}}
@@ -171,7 +178,7 @@ h1,h2,h3{margin:0}
   <div class="sub">諾拉的魔法草寫學院 · Write cursive to cast magic</div>
   <div class="stats"><div class="stat"><span id="stStars">0</span> ✨<small>magic stars</small></div><div class="stat"><span id="stCh">0/4</span><small id="stChL">Chapter 1</small></div></div>
   <div class="row"><button class="btn gold" id="startBtn">▶ Tap to start</button></div>
-  <div class="row"><button class="btn ghost sm" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost sm" id="muteBtn1">🔊</button></div>
+  <div class="row"><button class="btn ghost sm" id="friendsBtn">📖 Friends</button><button class="btn ghost sm" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost sm" id="muteBtn1">🔊</button></div>
   <button id="resetBtn">🔒 Reset records</button>
 </section>
 
@@ -183,7 +190,7 @@ h1,h2,h3{margin:0}
 </section>
 
 <section class="screen" id="map">
-  <div class="bar paper"><button class="btn ghost sm" id="mapHome">🏠</button><button class="btn ghost sm" id="chPrev">◀</button><div class="ttl" id="mapTtl">Chapter 1</div><button class="btn ghost sm" id="chNext">▶</button><div class="pill"><span id="mapStars">0</span> ✨</div><button class="btn ghost sm" id="muteBtn2">🔊</button></div>
+  <div class="bar paper"><button class="btn ghost sm" id="mapHome">🏠</button><button class="btn ghost sm" id="chPrev">◀</button><div class="ttl" id="mapTtl">Chapter 1</div><button class="btn ghost sm" id="chNext">▶</button><div class="pill"><span id="mapStars">0</span> ✨</div><button class="btn ghost sm" id="mapFriends">📖</button><button class="btn ghost sm" id="muteBtn2">🔊</button></div>
   <div class="wrap"><div id="mapBox"><canvas id="mapCv" width="480" height="270"></canvas><div id="spots"></div><div class="mapmsg" id="mapMsg"></div></div></div>
 </section>
 
@@ -201,6 +208,11 @@ h1,h2,h3{margin:0}
 <section class="screen" id="mini">
   <div class="bar paper"><button class="btn ghost sm" id="miniBack">🗺️</button><div class="ttl" id="miniTtl">✨ Firefly Garden</div><div class="pill">Best <span id="miniBest">0</span></div></div>
   <div class="wrap"><canvas id="miniCv"></canvas><div class="hud"><span>🫙 <b id="miniN">0</b></span><span>⏱ <b id="miniT">25</b></span></div></div>
+</section>
+
+<section class="screen paper" id="friends">
+  <div class="bar"><button class="btn ghost sm" id="frBack">◀</button><div class="ttl">📖 Book of Friends</div><div class="pill" id="frCount"></div></div>
+  <div id="frList"></div>
 </section>
 
 <section class="screen paper" id="result">
@@ -624,7 +636,7 @@ const rnd = n => Math.floor(Math.random()*n);
 const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];} return a; };
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 const KEY='wandAcademy.v1';
-const fresh=()=>({stars:0,level:null,seen:[],done:{},bests:{},sound:true,trial:false,introSeen:false,ch:1,view:1,chDone:{},allDone:false});
+const fresh=()=>({stars:0,level:null,seen:[],done:{},bests:{},sound:true,trial:false,introSeen:false,ch:1,view:1,chDone:{},allDone:false,met:{}});
 let S=fresh();
 try{const o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o) S=Object.assign(fresh(),o);}catch(e){}
 // upgrade saves from v1.x (Chapter 1 only)
@@ -677,8 +689,14 @@ const CAST={
  mei:{cast:['Nicky','Susan','Samantha'],pitch:1.3,rate:.9},
  iris:{cast:['Tessa','Fiona','Samantha'],pitch:1.2,rate:1.0},
  wren:{cast:['Karen','Moira','Samantha'],pitch:1.25,rate:.86},
+ sunny:{cast:['Nicky','Samantha','Ava'],pitch:1.45,rate:1.02},
+ juni:{cast:['Zoe','Samantha'],pitch:1.2,rate:.95},
+ lola:{cast:['Moira','Kate','Samantha'],pitch:1.15,rate:.8},
+ bree:{cast:['Allison','Susan','Samantha'],pitch:.95,rate:.95},
+ ember:{cast:['Samantha','Ava'],pitch:1.9,rate:1.1},
+ thistle:{cast:['Karen','Allison','Samantha'],pitch:.7,rate:.82},
 };
-const NAMES={nora:'Nora',gran:'Grandma',prof:'Professor Quill',mei:'Mei',iris:'Iris',wren:'Wren'};
+const NAMES={nora:'Nora',gran:'Grandma',prof:'Professor Quill',mei:'Mei',iris:'Iris',wren:'Wren',sunny:'Sunny',juni:'Juni',lola:'Lola',bree:'Coach Bree',ember:'Ember',thistle:'Thistle'};
 const Voice={ say(t,who,opts){ opts=Object.assign({},CAST[who||'narr']||CAST.narr,opts||{}); if(!S.sound){ opts.onEnd&&setTimeout(opts.onEnd,1200); return; } try{ window.KAVoice ? KAVoice.say(t,opts) : (opts.onEnd&&setTimeout(opts.onEnd,1500)); }catch(e){} }, stop(){ try{window.KAVoice&&KAVoice.stop();}catch(e){} } };
 
 // ============ FX: particles, flashes, shake, projectiles (one full-screen canvas) ============
@@ -801,9 +819,9 @@ const FX=(()=>{
 })();
 
 // ============ watercolor art (SVG) ============
-const HAIR={nora:'#24232c',mei:'#6b3d1f',gran:'#c9c9d4',prof:'#8a8fa8',iris:'#e8b64a',wren:'#dee2e6'};
-const ROBE={nora:'#7048e8',mei:'#2f9e44',gran:'#364fc7',prof:'#5c3d8f',iris:'#e03131',wren:'#495057'};
-const TRIM={nora:'#ffd43b',mei:'#d3f9d8',gran:'#ced4da',prof:'#ffd43b',iris:'#ffe066',wren:'#b197fc'};
+const HAIR={nora:'#24232c',mei:'#6b3d1f',gran:'#c9c9d4',prof:'#8a8fa8',iris:'#e8b64a',wren:'#dee2e6',sunny:'#f08c00',juni:'#2b8a3e',lola:'#a5d8ff',bree:'#343a40'};
+const ROBE={nora:'#7048e8',mei:'#2f9e44',gran:'#364fc7',prof:'#5c3d8f',iris:'#e03131',wren:'#495057',sunny:'#fcc419',juni:'#66a80f',lola:'#d0ebff',bree:'#0b7285'};
+const TRIM={nora:'#ffd43b',mei:'#d3f9d8',gran:'#ced4da',prof:'#ffd43b',iris:'#ffe066',wren:'#b197fc',sunny:'#ffffff',juni:'#d8f5a2',lola:'#ffffff',bree:'#ffd43b'};
 const DEFS=`<defs>
 <filter id="soft"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter>
 <filter id="wash" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".015" numOctaves="3" seed="5"/><feDisplacementMap in="SourceGraphic" scale="26"/><feGaussianBlur stdDeviation="3"/></filter>
@@ -811,7 +829,7 @@ const DEFS=`<defs>
 <radialGradient id="warm"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".9"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient>
 </defs>`;
 function girl(who,x,y,s,o={}){
- const hair=HAIR[who],robe=ROBE[who],trim=TRIM[who],skin=(who==='gran'||who==='prof')?'#f3d3bd':'#f9dcc6';const g=[];
+ const hair=HAIR[who],robe=ROBE[who],trim=TRIM[who],skin=(who==='gran'||who==='prof')?'#f3d3bd':who==='lola'?'#eef6ff':'#f9dcc6';const g=[];
  const glow=o.glow?`<ellipse cx="0" cy="120" rx="110" ry="170" fill="url(#warm)" opacity=".8"/>`:'';
  g.push(glow);
  g.push(`<path d="M-66 250C-64 150 -42 106 0 102S64 150 66 250Z" fill="${robe}"/>`);
@@ -824,10 +842,15 @@ function girl(who,x,y,s,o={}){
  if(who==='iris')[-46,46].forEach(dx=>g.push(`<circle cx="${dx}" cy="-50" r="24" fill="${hair}"/>`));
  if(who==='gran'||who==='prof')g.push(`<circle cx="0" cy="-58" r="26" fill="${hair}"/>`);
  if(who==='mei')g.push(`<path d="M-64 40C-74 -40 -30 -60 0 -58S74 -40 64 40L60 80L-60 80Z" fill="${hair}"/>`);
+ if(who==='sunny')[-70,70].forEach(dx=>g.push(`<circle cx="${dx}" cy="30" r="20" fill="${hair}"/><circle cx="${dx*.8}" cy="12" r="7" fill="#ff6fa8"/>`));
+ if(who==='lola')g.push(`<path d="M-64 40C-74 -40 -30 -60 0 -58S74 -40 64 40L70 130L-70 130Z" fill="${hair}" opacity=".8"/>`);
  g.push(`<circle cx="0" cy="30" r="60" fill="${skin}"/>`);
  if(who==='gran'||who==='prof') g.push(`<path d="M-60 20C-64 -30 -20 -46 0 -44S64 -30 60 20C40 -4 20 -14 0 -14S-40 -4 -60 20Z" fill="${hair}"/>`);
  else g.push(`<path d="M-62 34C-70 -34 -22 -56 8 -54S70 -28 62 30C54 -2 32 -16 6 -18C-10 -2 -34 4 -54 2C-60 16 -60 26 -62 34Z" fill="${hair}"/>`);
  if(who==='nora') g.push(`<path d="M-58 22q-8 44 4 70M58 22q8 44 -4 70" stroke="${hair}" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M32 -30l5 11 12 1-9 8 3 12-11-7-10 7 3-12-9-8 12-1Z" fill="#ffd43b"/>`);
+ if(who==='juni') g.push(`<path d="M-20 -50q20-40 50-30q-20 10-50 30Z" fill="#8ce99a"/><circle cx="-40" cy="-30" r="8" fill="#ff8787"/>`);
+ if(who==='bree') g.push(`<rect x="-60" y="-26" width="120" height="12" rx="6" fill="#5c4033"/><circle cx="-22" cy="-22" r="15" fill="#a5d8ff" stroke="#5c4033" stroke-width="5"/><circle cx="22" cy="-22" r="15" fill="#a5d8ff" stroke="#5c4033" stroke-width="5"/>`);
+ if(who==='sunny') g.push(`<circle cx="30" cy="62" r="5" fill="#ffd43b"/>`);
  if(who==='prof') g.push(`<path d="M-80 -30L0 -150L80 -30Z" fill="${robe}"/><path d="M-90 -28h180" stroke="${robe}" stroke-width="14" stroke-linecap="round"/><path d="M20 -100l4 9 9 3-9 3-4 9-4-9-9-3 9-3Z" fill="#ffd43b"/>`);
  const ex=o.expr||'happy';
  if(ex==='closed') g.push(`<path d="M-32 40q12 10 22 0M12 40q12 10 22 0" stroke="#2b2b33" stroke-width="4" fill="none" stroke-linecap="round"/>`);
@@ -841,7 +864,7 @@ function girl(who,x,y,s,o={}){
  g.push(`<ellipse cx="-40" cy="56" rx="9" ry="5" fill="#f2a0a0" opacity=".6"/><ellipse cx="40" cy="56" rx="9" ry="5" fill="#f2a0a0" opacity=".6"/>`);
  if(who==='nora'&&o.badge!==false) g.push(`<g transform="translate(-42,176)"><rect width="84" height="28" rx="14" fill="#7048e8"/><text x="42" y="20" font-family="Poppins,system-ui" font-weight="700" font-size="16" fill="#fff" text-anchor="middle">Nora</text></g>`);
  const sc=who==='nora'?s*1.12:s;
- return `<g transform="translate(${x},${y}) scale(${o.flip?-sc:sc},${sc})" filter="url(#soft)">${g.join('')}</g>`;
+ return `<g transform="translate(${x},${y}) scale(${o.flip?-sc:sc},${sc})" filter="url(#soft)"${who==='lola'?' opacity=".78"':''}>${g.join('')}</g>`;
 }
 const svg=(inner,vb='0 0 1024 640')=>`<svg viewBox="${vb}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">${DEFS}${inner}</svg>`;
 const BGS={
@@ -855,6 +878,54 @@ const BGS={
 };
 function sceneSVG(bg,chars,extra=''){ return svg(BGS[bg]()+chars.map(c=>girl(...c)).join('')+extra); }
 
+// ============ dragons (original designs) ============
+const DRAGONS={ember:{c:'#ffa94d',belly:'#fff3bf',wing:'#ffd8a8',horn:'#e8590c'},thistle:{c:'#e599f7',belly:'#fff0f6',wing:'#f3d9fa',horn:'#9c36b5'},dawn:{c:'#ffd43b',belly:'#fff9db',wing:'#ffec99',horn:'#f08c00'}};
+function dragon(x,y,s,o={}){ const d=DRAGONS[o.who||'ember'], st=o.stage||'baby', k=s*(st==='big'?1.6:st==='young'?1:.72);
+ if(st==='egg'){ const crack=o.crack?`<path d="M-40 -10l18 14 14-20 16 18 16-16 16 12" stroke="#7a4520" stroke-width="5" fill="none"/>`:'';
+  return `<g transform="translate(${x},${y}) scale(${s})" filter="url(#soft)"><ellipse cx="0" cy="40" rx="110" ry="120" fill="url(#warm)"/><ellipse cx="0" cy="0" rx="62" ry="80" fill="#ffd8a8"/><circle cx="-20" cy="-30" r="10" fill="#ffa94d"/><circle cx="22" cy="5" r="13" fill="#ffa94d"/><circle cx="-14" cy="35" r="8" fill="#ffa94d"/><ellipse cx="-22" cy="-46" rx="12" ry="18" fill="#fff" opacity=".5"/>${crack}</g>`; }
+ const ex=o.expr||'happy', wingUp=o.fly?-1:1;
+ const eye=ex==='closed'?`<path d="M44 12q10 8 20 0" stroke="#2b2b33" stroke-width="5" fill="none" stroke-linecap="round"/>`:`<ellipse cx="54" cy="10" rx="13" ry="${ex==='sad'?12:16}" fill="#2b2b33"/><circle cx="58" cy="4" r="5" fill="#fff"/><circle cx="50" cy="16" r="2.5" fill="#fff"/>`;
+ const mouth=ex==='sad'?'M92 52q-10-6-20 0':ex==='wow'?'M80 50a7 7 0 1 0 14 0a7 7 0 1 0-14 0':'M74 48q12 12 26 0';
+ return `<g transform="translate(${x},${y}) scale(${o.flip?-k:k},${k})" filter="url(#soft)">
+  <path d="M-70 130C-150 150 -190 90 -160 60C-150 90 -110 110 -70 100Z" fill="${d.c}"/><path d="M-165 58l-20-14 26 2Z" fill="${d.horn}"/>
+  <g transform="translate(-10,70) scale(1,${wingUp})"><path d="M0 0C-40 -60 -100 -110 -150 -120C-140 -90 -150 -70 -130 -50C-120 -60 -100 -60 -95 -40C-80 -50 -60 -45 -55 -25C-40 -30 -20 -20 -10 0Z" fill="${d.wing}" stroke="${d.c}" stroke-width="8" stroke-linejoin="round"/></g>
+  <ellipse cx="0" cy="110" rx="82" ry="66" fill="${d.c}"/><ellipse cx="14" cy="124" rx="50" ry="44" fill="${d.belly}"/>
+  ${[-50,-20,10].map(sx=>`<path d="M${sx} 50l12 -26 12 26Z" fill="${d.horn}"/>`).join('')}
+  <ellipse cx="-40" cy="170" rx="20" ry="14" fill="${d.c}"/><ellipse cx="40" cy="172" rx="20" ry="14" fill="${d.c}"/>
+  <path d="M20 70C30 40 40 20 50 10" stroke="${d.c}" stroke-width="44" stroke-linecap="round"/>
+  <circle cx="50" cy="10" r="54" fill="${d.c}"/><ellipse cx="94" cy="38" rx="36" ry="26" fill="${d.c}"/><ellipse cx="102" cy="44" rx="22" ry="12" fill="${d.belly}" opacity=".6"/>
+  <circle cx="112" cy="30" r="3.5" fill="#2b2b33"/><path d="M20 -36l-12 -40 30 26Z M56 -42l4 -44 22 36Z" fill="${d.horn}"/>
+  ${eye}<path d="${mouth}" stroke="#2b2b33" stroke-width="4" fill="${ex==='wow'?'#c2255c':'none'}" stroke-linecap="round"/><ellipse cx="30" cy="36" rx="10" ry="6" fill="#ff8787" opacity=".5"/>
+  ${o.breath?`<g filter="url(#glow)"><ellipse cx="170" cy="40" rx="40" ry="18" fill="#ffd43b"/><ellipse cx="220" cy="40" rx="30" ry="14" fill="#ff922b" opacity=".8"/></g>`:''}
+ </g>`; }
+const D=(x,y,s,o)=>dragon(x,y,s,o);
+
+// ============ the cast: everyone has a story ============
+const CHARS=[
+ {id:'nora',name:'Nora',role:'New student',art:()=>girl('nora',0,0,1,{arm:'wand',badge:false}),bio:'Loves math puzzles and big adventures. She came to Inkwell Academy with a glowing letter and a brave heart. Her secret power: she never gives up for long.'},
+ {id:'mei',name:'Mei',role:'Roommate',art:()=>girl('mei',0,0,1,{expr:'shy'}),bio:'Shy and clever. Her family makes the best dumplings in town, and she misses them every night. Her dream is to invent a spell that makes anyone feel at home. Her worry: being laughed at.'},
+ {id:'iris',name:'Iris',role:'Top of the class',art:()=>girl('iris',0,0,1,{expr:'smirk'}),bio:'The best duelist in her year. Her mom captains a sky-ship far away and left her a silver quill. She acts tough because she feels lonely. Underneath, she is fiercely loyal.'},
+ {id:'sunny',name:'Sunny',role:'Youngest first-year',art:()=>girl('sunny',0,0,1,{}),bio:'Seven years old, covered in stickers, and always a little lost. She thinks Nora is the coolest big kid ever. Her dream is to cast a rainbow spell.'},
+ {id:'juni',name:'Juni',role:'Garden student',art:()=>girl('juni',0,0,1,{}),bio:'Talks to plants, and the plants talk back! She found a dragon egg after the storm. She is scared of heights because she once fell out of a tree, but she is learning to fly anyway.'},
+ {id:'ember',name:'Ember',role:'Baby dragon',dragon:true,art:()=>dragon(0,40,1,{who:'ember'}),bio:'A Dawnfeather hatchling who loves berries, shiny letters and sneezing sparks. Her egg was blown far from home by a storm. She is searching for her family.'},
+ {id:'bree',name:'Coach Bree',role:'Flying teacher',art:()=>girl('bree',0,0,1,{}),bio:'The fastest flyer at the academy. Long ago she rode a dragon named Thistle, until a storm pulled them apart. She has carried that sad secret for twenty years.'},
+ {id:'lola',name:'Lola',role:'Library ghost',art:()=>girl('lola',0,0,1,{}),bio:'A friendly ghost who has lived in the library for two hundred years. She has read every single book. What she misses most is someone to read with.'},
+ {id:'prof',name:'Professor Quill',role:'Headmistress',art:()=>girl('prof',0,0,1,{}),bio:'Wise, warm and a little strict. She failed her first hundred spells and keeps every failed page in a drawer to show students that mistakes are how wizards grow.'},
+ {id:'gran',name:'Grandma Rose',role:'Nora\'s grandma',art:()=>girl('gran',0,0,1,{}),bio:'Nora\'s grandma, and a former student of Inkwell Academy. She once made a promise to her best friend that she did not keep, and she has never forgotten it.'},
+ {id:'wren',name:'Wren',role:'The girl in the tower',art:()=>girl('wren',0,0,1,{expr:'sad'}),bio:'Rose\'s best friend from long ago. She loved writing letters more than anything. When no one wrote back, her loneliness grew into the Fading.'},
+ {id:'thistle',name:'Thistle',role:'Dragon elder',dragon:true,art:()=>dragon(0,40,.6,{who:'thistle',stage:'big'}),bio:'A great Dawnfeather dragon and Ember\'s aunt. She was Coach Bree\'s flying partner, and she has searched every sky for her lost family.'},
+];
+function meet(id){ if(id&&CHARS.some(c=>c.id===id)&&!S.met[id]){ S.met[id]=true; save(); } }
+function openFriends(back){ const box=$('#frList'); box.innerHTML='';
+ CHARS.forEach(c=>{ const met=!!S.met[c.id]; const d=document.createElement('button'); d.className='fr'+(met?'':' locked');
+  const vb=c.dragon?'-200 -140 420 360':'-110 -90 220 230';
+  d.innerHTML=`<div class="frArt">${met?svg(c.art(),vb):'<span style="font-size:44px">❔</span>'}</div><div class="frTxt"><b>${met?c.name:'???'}</b><small>${met?c.role:'Not met yet'}</small><p>${met?c.bio:'Keep playing to meet this friend.'}</p></div>`;
+  if(met) d.onclick=()=>{ Snd.sfx('tap'); Voice.say(c.name+'. '+c.bio); FX.hearts(...FX.center(d)); };
+  box.appendChild(d); });
+ $('#frCount').textContent=`${CHARS.filter(c=>S.met[c.id]).length} / ${CHARS.length} friends met`;
+ $('#frBack').onclick=()=>{ Voice.stop(); back(); };
+ show('friends'); }
+
 // ============ story player ============
 let storyDone=null, storyLines=[], storyIdx=0;
 function playStory(lines,onDone,opts={}){
@@ -864,7 +935,7 @@ function playStory(lines,onDone,opts={}){
 function stepStory(){
  const L=storyLines[storyIdx]; if(!L){ Voice.stop(); const f=storyDone; storyDone=null; f&&f(); return; }
  if(L.scene) $('#stStage').innerHTML=`<div class="fade" style="width:100%;height:100%">${L.scene}</div>`;
- $('#stWho').textContent=L.who?(NAMES[L.who]||L.who)+':':''; $('#stTxt').textContent=L.text;
+ $('#stWho').textContent=L.who?(NAMES[L.who]||L.who)+':':''; if(L.who) meet(L.who); (L.meet||[]).forEach(meet); $('#stTxt').textContent=L.text;
  const ch=$('#stChoices'); ch.innerHTML='';
  $('#stNext').style.display=L.choices?'none':'';
  if(L.choices) L.choices.forEach(c=>{ const b=document.createElement('button'); b.textContent=c.t; b.onclick=()=>{ Snd.sfx('tap'); if(!c.ok){ FX.smoke([FX.center(b)]); } if(c.ok){ FX.hearts(...FX.center(b)); Snd.sfx('light'); storyIdx++; if(c.reply){ storyLines.splice(storyIdx,0,...c.reply);} stepStory(); } else { $('#stTxt').textContent=c.why; Voice.say(c.why); b.disabled=true; b.style.opacity=.5; } }; ch.appendChild(b); });
@@ -953,6 +1024,9 @@ const WORDS2=['lit','sun','owl','map','cat','hat','fly','wand','glow','star','mo
 const WORDS3=['spell','magic','brave','quill','castle','friend','honest','kind','sparkle','lantern','wizard','potion','broom','dragon','secret','garden','candle','school','window','hidden','puzzle','gentle','helper','window','rainbow','journey','promise','courage','treasure','whisper'];
 const FAMILY=['love','home','hug','smile','thank','miss','dear','hello','family','sister','cousin','write','soon','proud','cozy','laugh','share','care','visit','heart'];
 const COURAGE=['be brave','try again','I can','keep going','be kind','we can','hold on','dream big','stand tall','never quit','I will','go on','be true','help out'];
+const DRAGON_W=['egg','wing','claw','tail','scale','nest','roar','horn','hatch','snout','talon','spike','warm','safe','tiny','glowy','dragon','feather'];
+const FLIGHT_W=['soar','glide','swoop','loop','lift','high','float','zoom','dive','flap','sky','up and away','spin','rise','breezy'];
+const SONG_W=['sing','song','echo','hum','tune','call','peak','far','near','listen','music','hello there','find me','sky song'];
 const FINAL=['you are','not alone']; // only ever used in the final battle
 // No repeats, ever: anything Nora has written (letters, words, spells) goes into S.seen and is never served again.
 // When an easier list runs out, the next harder list is used instead.
@@ -964,6 +1038,9 @@ const POOLS={
  family:()=>pickUnseen([FAMILY,WORDS3],3),
  restore:()=>{ const lv=S.level||1; return lv===1?pickUnseen([WORDS2,WORDS1,WORDS3],3):pickUnseen([WORDS3,WORDS2],3); },
  courage:()=>pickUnseen([COURAGE,WORDS3],3),
+ dragon:()=>pickUnseen([DRAGON_W,WORDS2],3),
+ flight:()=>pickUnseen([FLIGHT_W,DRAGON_W,WORDS2],3),
+ song:()=>pickUnseen([SONG_W,FAMILY,WORDS3],3),
 };
 
 // ---- battle spells: write the word to cast that element (each word used once, ever)
@@ -997,7 +1074,10 @@ const CHAPTERS=[
  {n:1,title:'The Lamps Go Dark',theme:'night',missions:[
   {id:'rune',icon:'🕯️',name:'Rune Hall',x:22,y:40,kind:'write',pool:'rune',title:'Rune Casting',goal:'Light the candles',done:'The candles are glowing!',
    intro:'The castle lamps are going dark! Trace each rune to light a candle.',tip:'Try it today: write your name in cursive on something you made.'},
+  {id:'sunny',icon:'🕯️',name:'Big Stairs',x:36,y:56,kind:'story',story:'sunny',title:'Lost on Day One'},
   {id:'mei',icon:'📚',name:'Library',x:50,y:28,kind:'story',story:'mei',title:'A Friend in the Library'},
+  {id:'roost',icon:'🥚',name:'Greenhouse',x:62,y:44,kind:'write',pool:'dragon',pre:'eggPre',post:'eggPost',title:'The Dragon Egg',goal:'Keep the egg warm',done:'Ember has hatched!',
+   intro:'Write warm dragon words. The egg is listening!',tip:'Try it today: draw a baby dragon and write its name in cursive.'},
   {id:'chain',icon:'🌉',name:'Light Bridge',x:76,y:62,kind:'write',pool:'chain',title:'Spell Chain',goal:'Build the bridge of light',done:'The bridge of light is built!',
    intro:'Join the letters without lifting your wand. Each joined word adds a plank of light!',tip:'Try it today: write a short note to someone in your family in cursive.'},
   {id:'duel',icon:'⚔️',name:'Shadow Gate',x:88,y:34,kind:'battle',foe:'wisp',pre:'wispPre',post:'wispPost',title:'Spell Battle',
@@ -1008,7 +1088,10 @@ const CHAPTERS=[
   {id:'caps',icon:'🏛️',name:'Capital Hall',x:20,y:42,kind:'write',pool:'caps',title:'Capital Casting',goal:'Master the capitals',done:'Capital letters mastered!',
    intro:'Capitals are the strongest runes. Even the tricky Q!',tip:'Try it today: write the first letter of everyone in your family as a cursive capital.'},
   {id:'midnight',icon:'🌙',name:'Night Tower',x:46,y:24,kind:'story',story:'midnight',title:'Midnight Practice'},
-  {id:'broom',icon:'🧹',name:'Broom Field',x:30,y:74,kind:'mini',game:'broom',after:'caps'},
+  {id:'juni',icon:'🌳',name:'Orchard',x:32,y:60,kind:'story',story:'juniFear',title:'Brave and Scared'},
+  {id:'flight',icon:'🐉',name:'Dragon Field',x:56,y:66,kind:'write',pool:'flight',pre:'flightPre',post:'flightPost',title:'Ember\'s First Flight',goal:'Give Ember wind words',done:'Ember can fly!',
+   intro:'Write wind words to lift Ember\'s wings!',tip:'Try it today: make a paper airplane and write a cursive word on its wings.'},
+  {id:'broom',icon:'🧹',name:'Broom Field',x:16,y:76,kind:'mini',game:'broom',after:'juni'},
   {id:'irisDuel',icon:'⚔️',name:'Duel Ring',x:66,y:40,kind:'battle',foe:'iris',pre:'irisPre',post:'irisPost',title:'Wand Duel',
    tip:'Try it today: after a game, tell the other player "good game!" whether you win or lose.'},
   {id:'quill',icon:'🪶',name:'Courtyard',x:82,y:66,kind:'story',story:'quill',title:'The Missing Quill'},
@@ -1018,18 +1101,22 @@ const CHAPTERS=[
  {n:3,title:'The Fading Letters',theme:'violet',missions:[
   {id:'home',icon:'💌',name:'Owl Post',x:18,y:44,kind:'write',pool:'family',title:'Letters Home',goal:'Write words for Grandma',done:'Your letter flew home!',
    intro:'Grandma\'s letter is fading. Write words full of love to send home and keep the magic strong.',tip:'Try it today: write a real letter or card to a grandparent.'},
+  {id:'lola',icon:'👻',name:'Ghost Shelves',x:32,y:56,kind:'story',story:'lola',title:'The Library Ghost'},
   {id:'restore',icon:'📜',name:'Deep Library',x:44,y:26,kind:'write',pool:'restore',title:'Restore the Pages',goal:'Bring back the lost words',done:'The pages are whole again!',
    intro:'Words are vanishing from the old books. Rewrite them in cursive to bring them back.',tip:'Try it today: copy a favorite sentence from a book in cursive.'},
-  {id:'potion',icon:'🧪',name:'Potion Room',x:28,y:74,kind:'mini',game:'potion',after:'home'},
+  {id:'song',icon:'🎵',name:'Dragon Window',x:58,y:36,kind:'write',pool:'song',pre:'songPre',post:'songPost',title:'Ember\'s Sky-Song',goal:'Write Ember a song',done:'Ember\'s song reached the mountains!',
+   intro:'Write song words for Ember to sing to her family.',tip:'Try it today: make up a short song about your family and write the title in cursive.'},
+  {id:'potion',icon:'🧪',name:'Potion Room',x:16,y:76,kind:'mini',game:'potion',after:'home'},
   {id:'truth',icon:'🫖',name:'Quill\'s Office',x:66,y:52,kind:'story',story:'truth',title:'The Broken Inkwell'},
   {id:'sprite',icon:'❄️',name:'Frozen Stairs',x:88,y:30,kind:'battle',foe:'sprite',pre:'spritePre',post:'spritePost',title:'Spell Battle',
    tip:'Try it today: when you make a mistake, say "I did it, I\'m sorry." It takes real courage.'},
  ]},
  {n:4,title:'The Heart of Ink',theme:'storm',missions:[
   {id:'grandma',icon:'👵',name:'Academy Gate',x:20,y:44,kind:'story',story:'grandma',title:'Grandma\'s Secret'},
+  {id:'bree',icon:'🌬️',name:'Windy Bridge',x:34,y:58,kind:'story',story:'bree',title:'Coach Bree\'s Secret'},
   {id:'courage',icon:'🛡️',name:'Courage Hall',x:44,y:28,kind:'write',pool:'courage',title:'Courage Words',goal:'Charge the shields',done:'Your courage shield is glowing!',
    intro:'Courage words make the strongest shields. Write each one, joined together.',tip:'Try it today: when something is hard, say "try again" out loud. It really helps.'},
-  {id:'lanterns',icon:'🏮',name:'Sky Garden',x:28,y:76,kind:'mini',game:'lanterns',after:'courage'},
+  {id:'lanterns',icon:'🏮',name:'Sky Garden',x:16,y:78,kind:'mini',game:'lanterns',after:'courage'},
   {id:'golem',icon:'🌩️',name:'Storm Bridge',x:68,y:56,kind:'battle',foe:'golem',pre:'golemPre',post:'golemPost',title:'Spell Battle',
    tip:'Try it today: count to five and breathe when you feel stormy inside.'},
   {id:'wren',icon:'🕯️',name:'Hollow Tower',x:88,y:24,kind:'battle',foe:'wren',pre:'wrenPre',post:'wrenPost',title:'Final Battle',
@@ -1053,6 +1140,8 @@ function refreshStars(){ ['#stStars','#mapStars','#playStars'].forEach(s=>$(s).t
 $('#titleArt').innerHTML=svg(BGS.gate()+girl('nora',512,260,1.05,{arm:'wand',glow:true})+`<text x="660" y="180" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="74" fill="#e9a91c" filter="url(#glow)">magic</text>`);
 $('#startBtn').onclick=()=>{ FX.burst(...FX.center($('#startBtn')),{n:60,speed:9}); Snd.init(); try{Snd.ctx.resume();}catch(e){} Snd.sfx('chime'); if(!S.introSeen){ playStory(INTRO(),()=>{ S.introSeen=true; save(); startTrial(); },{skippable:true}); } else if(!S.trial) startTrial(); else { S.view=Math.min(S.ch,CHAPTERS.length); goMap(); } };
 $('#voiceBtn').onclick=()=>{ try{KAVoice.picker();}catch(e){} };
+$('#friendsBtn').onclick=()=>{ Snd.init(); openFriends(()=>{ show('title'); refreshStars(); }); };
+$('#mapFriends').onclick=()=>{ Snd.stopMusic(); openFriends(()=>goMap()); };
 ['#muteBtn1','#muteBtn2'].forEach(s=>$(s).onclick=()=>{ Snd.init(); Snd.setOn(!S.sound); if(S.sound&&(current==='map')) Snd.startMusic(); });
 Snd.setOn(S.sound);
 
@@ -1061,6 +1150,8 @@ const mapCv=$('#mapCv'),mg=mapCv.getContext('2d'); mg.imageSmoothingEnabled=fals
 let noraPos={x:50,y:60};
 const SPR=["......KKK.......",".....KKKKK.PP...","...KKKKKKKKKPK..","..KKKKKKKKKKKK..","..KKKYKKKKKKKK..","..KKSSKKKKSSKK..","..KSSSSSSSSSSK..","..KSBWSSSSBWSK..","..KSBBSSSSBBSK..","..KSRSSSSSSRSK..","..KSSSSMMSSSSK..","...SSSSSSSSSS...","....VVVVVVVV....","...VVVLLLLVVV...","..VVVVVLLVVVVV..","..VVVVVVVVVVVV..","..VVVVVVVVVVVV..","...VVVVVVVVVV...","....SS....SS....","....NN....NN...."];
 const PAL={K:'#1d1d24',P:'#ff6fa8',Y:'#ffd43b',S:'#ffd8be',B:'#7a4520',W:'#fff',R:'#f59fb5',M:'#c2255c',V:'#7048e8',L:'#ffd43b',N:'#3b2f2f'};
+const EMBER_PX=['..HH......','.OOOO..W..','OOEOOOWWW.','OOOOOOOWW.','.OOOBBOO..','..OO..OO..'];
+const EMBER_PAL={H:'#e8590c',O:'#ffa94d',E:'#2b2b33',W:'#ffd8a8',B:'#fff3bf'};
 function sprite(g,ox,oy,p,map=SPR,pal=PAL){ map.forEach((r,j)=>[...r].forEach((c,i)=>{ if(pal[c]){ g.fillStyle=pal[c]; g.fillRect(ox+i*p,oy+j*p,p,p);} })); }
 const THEMES={
  night:{sky:['#1b1f4a','#262b63'],castle:'#3a3f86',top:'#2b2f6e',ground:'#2f6f3e',g2:'#37844a',moon:true},
@@ -1085,6 +1176,7 @@ function drawMap(t=performance.now()){
  // dark swirl over the next battle spot
  const nb=L.find(m=>m.kind==='battle'&&!isDone(n,m.id)); if(nb){ const cx=nb.x/100*W, cy=nb.y/100*H; for(let i=0;i<14;i++){ const a=t/500+i; g.fillStyle=i%2?'#5f3dc4':'#141838'; g.fillRect(Math.round(cx+Math.cos(a)*16),Math.round(cy+Math.sin(a)*16),4,4);} }
  const bob=walking?Math.round(Math.abs(Math.sin(t/60))*-6):Math.round(Math.sin(t/400)*1.5); g.fillStyle='#0005'; g.fillRect(Math.round(noraPos.x/100*W)-12,Math.round(noraPos.y/100*H),24,4); sprite(g,Math.round(noraPos.x/100*W)-16,Math.round(noraPos.y/100*H)-40+bob,2);
+ if(S.done['c1:roost']){ const ex=Math.round(noraPos.x/100*W)+18, ey=Math.round(noraPos.y/100*H)-46+Math.round(Math.sin(t/220)*3); sprite(g,ex,ey,2,EMBER_PX,EMBER_PAL); }
  if(current==='map') requestAnimationFrame(drawMap);
  renderSpots();
 }
@@ -1113,6 +1205,10 @@ function startMission(m,n=S.view){
  if(m.kind==='story') return STORIES[m.story](()=>{ markDone(n,m,2); const r=STORY_RESULT[m.story]; resultScreen(r[0],r[1],'+2 magic stars',r[2],n); });
  if(m.kind==='mini') return startMini(m,n);
  if(m.kind==='battle') return STORIES[m.pre](()=>startBattle(m,n));
+ if(m.pre) return STORIES[m.pre](()=>startWrite(m,n));
+ startWrite(m,n);
+}
+function startWrite(m,n){
  const items=POOLS[m.pool]();
  if(!items.length){ resultScreen('You have written every spell here!','🌟','New spells are waiting in other places.',null,n); return; }
  M={m,n,items,i:0,tries:0,pts:0,quality:[],penBonus:false}; sideMode(false);
@@ -1151,9 +1247,9 @@ async function cast(){
  }
 }
 function nextItem(){ M.i++; hideFb(); if(M.i<M.items.length) loadItem(); else finishMission(); }
-function finishMission(){ const m=M.m,n=M.n; markDone(n,m,M.pts);
- const st=Math.max(1,Math.round(M.quality.reduce((a,b)=>a+b,0)/M.quality.length));
- resultScreen(m.done,'⭐'.repeat(st)+'☆'.repeat(3-st),`+${M.pts} magic stars`,m.tip,n);
+function finishMission(){ const m=M.m,n=M.n,pts=M.pts; const st=Math.max(1,Math.round(M.quality.reduce((a,b)=>a+b,0)/M.quality.length));
+ const fin=()=>{ markDone(n,m,pts); resultScreen(m.done,'⭐'.repeat(st)+'☆'.repeat(3-st),`+${pts} magic stars`,m.tip,n); };
+ if(m.post) STORIES[m.post](fin); else fin();
 }
 function resultScreen(big,stars,txt,tip,n=S.view){
  show('result'); $('#resBig').textContent=big; $('#resStars').innerHTML=[...stars].map((ch,i)=>`<span style="animation-delay:${.3+i*.25}s">${ch}</span>`).join(''); FX.confetti(); Snd.sfx('fanfare'); setTimeout(()=>{ const c=FX.center($('#resStars')); FX.burst(c[0],c[1],{n:70,speed:10,size:7}); },500); $('#resTxt').textContent=txt; $('#resTip').textContent=tip?'💡 '+tip:''; $('#resTip').style.display=tip?'':'none';
@@ -1213,9 +1309,16 @@ async function battleHit(stars){ const f=M.mon; const kind=M.phase===2; const el
  if(!kind){ FX.text(t[0],t[1]-30,'-'+dmg,weak?'#ffd43b':'#fff',weak?72:56); if(crit) setTimeout(()=>FX.text(t[0],t[1]-100,'CRITICAL!','#ff922b',44),120); if(weak) setTimeout(()=>FX.text(t[0],t[1]+50,'SUPER EFFECTIVE!','#ff6fa8',34),240); }
  const msg=kind?'Your kind words reach her…':weak?`Super effective! ${el.e} ${el.n} hits for ${dmg}!`:`${el.e} Hit for ${dmg}! Try ${ELEM[f.weak].n.toLowerCase()} for more!`; showFb(msg); Voice.say(kind?'Your kind words reach her.':crit?'Critical hit!':weak?'Super effective!':'Hit!');
  await sleep(1400); art.classList.remove('hit'); art.innerHTML=foeSVG(f);
+ if(f.hp>0&&M.phase===1&&S.done['c2:flight']&&M.casts%2===0){ await emberBreath(f); }
  if(f.hp<=0){ if(f.final&&M.phase===1){ return wrenPhase2(); } if(f.final&&M.phase===2&&FINAL.some(x=>!S.seen.includes(x))){ f.hp=1; drawHP(); return dealCards(false); } return battleWin(); }
  dealCards(false);
 }
+async function emberBreath(f){ const t=FX.center($('#playArt')), sx=40, sy=innerHeight-120;
+ const d=document.createElement('div'); d.style.cssText=`position:fixed;left:${sx-70}px;top:${sy-150}px;width:240px;height:210px;z-index:34;pointer-events:none`; d.innerHTML=svg(dragon(0,0,1,{fly:true,breath:true}),'-220 -150 480 360'); document.body.appendChild(d);
+ d.animate&&d.animate([{transform:'translateY(160px) scale(.6)'},{transform:'translateY(0) scale(1)'}],{duration:350,easing:'ease-out'}); Snd.sfx('fire'); await sleep(380);
+ FX.text(sx+80,sy-90,'EMBER\'S BREATH!','#ff922b',34); await FX.projectile('fire','🔥',sx+60,sy-40,t[0],t[1],550); FX.signature('fire',t[0],t[1],false); Snd.sfx('boom');
+ f.hp=Math.max(0,f.hp-1); drawHP(); FX.text(t[0],t[1]-30,'-1','#ff922b',56); Voice.say('Rrr-eee!','ember');
+ d.animate&&d.animate([{opacity:1},{opacity:0,transform:'translateY(120px)'}],{duration:400,delay:300}); await sleep(800); d.remove(); }
 async function wrenPhase2(){ const f=M.mon; f.hp=1; f.max=1; drawHP(); M.phase=2;
  await new Promise(res=>STORIES.wrenMid(res)); show('play'); sideMode(true); $('#playArt').innerHTML=foeSVG(f); dealCards(false); }
 async function battleMiss(){ const art=$('#playArt'); { const t=FX.center(art), c=FX.center($('#padHost')); await FX.projectile('wind','💨',t[0],t[1],c[0],c[1],600); FX.burst(c[0],c[1],{n:40,colors:['#4dabf7','#a5d8ff','#ffffff'],shape:'circle',speed:7}); FX.ring(c[0],c[1],'#74c0fc',200); FX.text(c[0],c[1],'🛡️ BLOCKED!','#a5d8ff',44); Snd.sfx('boom'); FX.shake($('#padHost'),10); }
@@ -1256,6 +1359,90 @@ async function trialCast(){ if(!pad.hasInk()){ showFb('Write with your finger or
 const say=(who,text,scene,x={})=>Object.assign({who,text,scene},x);
 const STORIES={
  // ----- Chapter 1
+ // ----- side stories: the cast
+ sunny:done=>{ const s=(n,u)=>sc('hall',[['nora',330,250,1,n],['sunny',700,300,.8,u]]); playStory([
+  say(null,'On the way back from Rune Hall, Nora hears crying under the big staircase.',s({expr:'wow'},{expr:'sad'})),
+  say('sunny','I\'m Sunny. I\'m seven. It\'s my first day and every hallway looks the same and I can\'t find my room…',s({expr:'sad'},{expr:'sad'})),
+  say(null,'What should Nora do?',s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:'⏩ "Sorry, I\'m busy. Ask someone else."',ok:false,why:'Sunny sniffles even harder. Nora remembers how scary her own first day was. Try again.'},
+   {t:'🧭 Walk her to her room and show her a trick',ok:true,reply:[
+    say('nora','I got lost on my first day too. See the blue candles? They always point to the first-year rooms.',s({arm:'wave'},{expr:'wow'})),
+    say('sunny','Blue candles… blue candles… THERE\'S MY DOOR! You\'re the nicest big kid ever!',s({},{expr:'happy',arm:'wave'}),{sfx:'chime'}),
+    say('sunny','Can I sit with you at lunch? Tomorrow? And the day after?',s({expr:'happy'},{expr:'shy'})),
+    say('nora','Every single day.',s({arm:'wave'},{expr:'happy',arm:'wave'})),
+   ]}]}),
+ ],done); },
+ eggPre:done=>{ const s=(e)=>sc('courtyard',[['juni',260,270,.95,{arm:'hold'}],['nora',720,250,1,{expr:e}]],D(420,330,.8,{stage:'egg'})); playStory([
+  say(null,'Behind the greenhouse, a girl with leaves in her hair waves Nora over. She\'s hugging something warm.',s('wow')),
+  say('juni','Hi! I\'m Juni. The tomatoes told me you were nice. Look what I found in the herb garden after the storm…',s('wow')),
+  say('nora','Is that… a dragon egg?!',s('wow')),
+  say('juni','It\'s getting cold. Dragon eggs hatch when they hear kind words. Will you write some for it?',s('happy')),
+ ],done); },
+ eggPost:done=>{ playStory([
+  say(null,'Crack… crack… CRACK!',sc('courtyard',[['juni',260,270,.95,{expr:'wow'}],['nora',720,250,1,{expr:'wow'}]],D(470,330,.8,{stage:'egg',crack:true})),{sfx:'spark'}),
+  say(null,'A tiny golden dragon tumbles out, blinks, and sneezes a spark right onto Nora\'s shoe.',sc('courtyard',[['juni',260,270,.95,{expr:'happy'}],['nora',720,250,1,{expr:'wow'}]],D(470,300,.8,{})),{sfx:'gold'}),
+  say('ember','Rrr-eee!',sc('courtyard',[['juni',260,270,.95,{expr:'happy'}],['nora',720,250,1,{arm:'wave'}]],D(470,300,.8,{expr:'happy'}))),
+  say('juni','She likes you! She needs a name.',sc('courtyard',[['juni',260,270,.95,{arm:'wave'}],['nora',720,250,1,{}]],D(470,300,.8,{}))),
+  say('nora','Ember. Because she\'s small, but she glows.',sc('courtyard',[['juni',260,270,.95,{expr:'happy'}],['nora',720,250,1,{arm:'hold',glow:true}]],D(470,300,.8,{expr:'closed'})),{sfx:'chime'}),
+  say('juni','Dawnfeather dragons live on the Five Peaks, far away. I wonder how her egg got all the way here…',sc('courtyard',[['juni',260,270,.95,{expr:'sad'}],['nora',720,250,1,{}]],D(470,300,.8,{expr:'sad'}))),
+ ],done); },
+ juniFear:done=>{ const s=(n,j)=>sc('courtyard',[['nora',300,250,1,n],['juni',720,270,1,j]]); playStory([
+  say(null,'It\'s broom test day. Everyone is zooming around the field, except Juni. She hasn\'t moved.',s({},{expr:'sad'})),
+  say('juni','When I was little, I fell out of an apple tree. Now my legs turn into jelly when I\'m up high.',s({expr:'sad'},{expr:'sad'})),
+  say(null,'What should Nora do?',s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:'🙄 "Just do it, it\'s easy!"',ok:false,why:'Juni looks down. Saying a fear is silly doesn\'t make it smaller. Try another way.'},
+   {t:'🧹 "Let\'s fly together, low and slow, one tree at a time."',ok:true,reply:[
+    say('nora','Let\'s fly together. Low and slow. Just one tree at a time. I\'ll be right next to you.',s({arm:'wave'},{expr:'shy'})),
+    say(null,'One tree… two trees… the whole orchard. Juni is flying!',s({arm:'wand',expr:'wow'},{expr:'wow',arm:'wave'}),{sfx:'gold'}),
+    say('juni','I did it! It\'s still scary… but I did it scared!',s({expr:'happy'},{expr:'happy',arm:'wave'})),
+    say('nora','That\'s exactly what brave means.',s({arm:'wave'},{expr:'happy'})),
+   ]}]}),
+ ],done); },
+ flightPre:done=>{ const s=(b,e)=>sc('courtyard',[['bree',260,250,1,b],['nora',700,250,1,{}]],D(470,330,.8,e)); playStory([
+  say(null,'Ember flaps and flops, flaps and flops. She can\'t get off the ground.',s({},{expr:'sad'})),
+  say('bree','I\'m Coach Bree, flying teacher. That little one needs wind words. Write a few, and she\'ll catch the breeze.',s({arm:'wave'},{})),
+  say('bree','I used to ride a dragon, you know. A big Dawnfeather named Thistle.',s({expr:'happy'},{})),
+  say('nora','Used to?',s({expr:'sad'},{})),
+  say('bree','…That\'s a story for another day. Let\'s get this one flying.',s({expr:'sad'},{expr:'sad'})),
+ ],done); },
+ flightPost:done=>playStory([
+  say(null,'Ember\'s wings catch the wind. Up… up… a loop-the-loop! She lands on Nora\'s head, very proud.',sc('courtyard',[['bree',260,250,1,{expr:'wow'}],['nora',700,260,1,{expr:'wow'}]],D(520,160,.8,{fly:true,expr:'happy'})),{sfx:'gold'}),
+  say('bree','She flies just like Thistle did.',sc('courtyard',[['bree',260,250,1,{expr:'closed'}],['nora',700,260,1,{}]],D(700,90,.5,{expr:'happy'}))),
+ ],done),
+ lola:done=>{ const s=(n,l)=>sc('library',[['nora',300,250,1,n],['lola',720,250,1,l]]); playStory([
+  say(null,'Deep in the library, a glowing girl floats between the shelves. She\'s a ghost. A friendly one.',s({expr:'wow'},{})),
+  say('lola','Oh! A visitor! I\'m Lola. I\'ve lived in this library for two hundred years.',s({expr:'wow'},{arm:'wave'})),
+  say('lola','I\'ve read every book here. But nobody has read with me in a very, very long time.',s({},{expr:'sad'})),
+  say(null,'What should Nora do?',s({},{expr:'sad'}),{choices:[
+   {t:'😱 Run away screaming',ok:false,why:'Lola fades a little. She\'s a ghost, but she has feelings too. Try again.'},
+   {t:'📖 Pick a book and read it aloud with her',ok:true,reply:[
+    say('nora','Want to read this one together? You do the dragon voices.',s({arm:'hold'},{expr:'wow'})),
+    say('lola','Oh, I\'d LOVE to! "Once upon a time, high on the Five Peaks…"',s({arm:'hold'},{expr:'happy',arm:'wave'}),{sfx:'chime'}),
+    say('lola','Thank you, Nora. And since you\'re looking for clues… the vanishing words all drift toward the Hollow Tower. Like leaves in a stream.',s({expr:'wow'},{expr:'happy'})),
+   ]}]}),
+ ],done); },
+ songPre:done=>{ const s=(e,n)=>sc('room',[['nora',300,250,1,n]],D(700,320,.85,e)); playStory([
+  say(null,'Ember sits on the windowsill, staring at the far mountains. She hums a few notes… then stops.',s({expr:'sad'},{})),
+  say('nora','Juni says dragons sing their family\'s sky-song so they can find each other. Ember can\'t remember hers. The Fading took it.',s({expr:'sad'},{expr:'sad'})),
+  say('nora','Then let\'s write her new song words, Ember. The best ones ever.',s({},{arm:'wand'})),
+ ],done); },
+ songPost:done=>playStory([
+  say(null,'Ember sings. The words float out of the window like golden birds, all the way to the mountains.',sc('room',[['nora',300,250,1,{expr:'wow'}]],D(700,300,.85,{expr:'closed'})),{sfx:'chime'}),
+  say(null,'Then, very far away… an answering roar echoes from the Five Peaks.',sc('room',[['nora',300,250,1,{expr:'wow'}]],D(700,300,.85,{expr:'wow'})),{sfx:'boom'}),
+  say('nora','Ember! Your family is out there. And they heard you!',sc('room',[['nora',300,250,1,{arm:'wave',expr:'happy'}]],D(700,300,.85,{expr:'happy',fly:true}))),
+ ],done),
+ bree:done=>{ const s=(n,b)=>sc('tower',[['nora',300,250,1,n],['bree',720,250,1,b]],D(520,380,.6,{expr:'sad'})); playStory([
+  say(null,'Before the last climb, Coach Bree finds Nora on the windy tower bridge.',s({},{expr:'sad'})),
+  say('bree','Twenty years ago, Thistle and I flew into a storm just like this one. I got scared and pulled us back.',s({expr:'sad'},{expr:'sad'})),
+  say('bree','The wind tore us apart. I told everyone she flew away. The truth is… I let go.',s({expr:'sad'},{expr:'closed'})),
+  say(null,'What should Nora say?',s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:'😮 "So it was your fault?"',ok:false,why:'Coach Bree turns away. She already feels terrible. A kinder answer might help her heal.'},
+   {t:'💛 "Being scared isn\'t wrong. Telling the truth was brave."',ok:true,reply:[
+    say('nora','Being scared isn\'t wrong. And telling the truth after all these years? That\'s really brave.',s({arm:'wave'},{expr:'wow'})),
+    say('bree','…Thank you, Nora. If Thistle is out there, I want to tell her I\'m sorry.',s({},{expr:'happy'})),
+    say('nora','Ember heard a roar from the Five Peaks. Maybe Thistle is closer than you think.',s({arm:'hold'},{expr:'wow'}),{sfx:'chime'}),
+   ]}]}),
+ ],done); },
  mei:done=>{ const s=(a,b)=>sc('library',[['mei',700,280,1,a],['nora',300,260,1,b]]); playStory([
   say(null,'The library is so quiet you can hear the candles flicker. Then… a sniffle.',s({expr:'sad'},{})),
   say('mei','Oh! Um… sorry. I didn\'t think anyone was here.',s({expr:'wow'},{})),
@@ -1394,11 +1581,19 @@ const STORIES={
   say('wren','You… came back. You really came back.',s({expr:'shy',flip:true})),
   say('gran','I\'m so sorry I stopped writing, Wren. I\'ll never stop again. I promise.',s({expr:'sad',flip:true})),
   say(null,'All across the world, the faded words come flying home. Every lamp in the academy bursts into light.',sc('hall',[['mei',150,280,.85,{arm:'wave'}],['iris',330,280,.85,{arm:'wave'}],['nora',512,250,1.05,{arm:'wand',glow:true}],['wren',700,280,.85,{arm:'wave'}],['gran',870,280,.85,{arm:'wave'}]]),{sfx:'gold'}),
+  say(null,'Then, out of the dawn sky, come giant shimmering wings. The Dawnfeather dragons have followed Ember\'s song!',sc('tower',[['nora',300,260,1,{expr:'wow'}]],D(560,200,.55,{who:'thistle',stage:'big',fly:true})+D(820,380,.75,{fly:true,expr:'wow'})),{sfx:'boom'}),
+  say('ember','RRR-EEE!',sc('tower',[['nora',300,260,1,{expr:'happy'}]],D(600,250,.5,{who:'thistle',stage:'big'})+D(800,360,.75,{expr:'happy',fly:true}))),
+  say('thistle','Little one! We have searched every sky for you since the storm.',sc('tower',[['nora',260,260,1,{expr:'wow'}]],D(620,250,.5,{who:'thistle',stage:'big',expr:'closed'})+D(860,380,.7,{expr:'closed'}))),
+  say('thistle','…And Bree? Is that you? I never stopped looking for you either.',sc('tower',[['bree',280,250,1,{expr:'wow'}]],D(640,250,.5,{who:'thistle',stage:'big',expr:'happy'}))),
+  say('bree','Thistle. I\'m so sorry I let go.',sc('tower',[['bree',280,250,1,{expr:'sad'}]],D(640,250,.5,{who:'thistle',stage:'big',expr:'sad'}))),
+  say('thistle','You held on to me in your heart for twenty years. That is enough.',sc('tower',[['bree',280,250,1,{expr:'happy',arm:'wave'}]],D(640,250,.5,{who:'thistle',stage:'big',expr:'happy'})),{sfx:'chime'}),
+  say('thistle','Ember may stay at the academy with her friend Nora, if she wishes. Every summer, she will fly home to us.',sc('tower',[['nora',260,260,1,{arm:'wave'}]],D(560,250,.5,{who:'thistle',stage:'big'})+D(840,330,.7,{expr:'happy',fly:true}))),
   say('wren','Nora… would you write to me sometimes?',s({expr:'shy',flip:true})),
   say('nora','Every week. In my very best cursive.',s({expr:'happy',arm:'wave',flip:true}),{sfx:'chime'}),
  ],done); },
 };
-const STORY_RESULT={ mei:['You made a new friend: Mei!','💜','Try it today: if a friend makes a mistake, tell them about a time you made one too.'],
+const STORY_RESULT={ sunny:['Sunny found her way!','🌟','Try it today: help someone who looks lost or new.'], juniFear:['Juni flew!','🌳','Try it today: do one small brave thing, even if you feel scared.'], lola:['You read with Lola!','👻📖','Try it today: read a book aloud to someone in your family.'], bree:['Coach Bree told the truth!','💛','Try it today: tell someone you love about a time you felt scared.'],
+ mei:['You made a new friend: Mei!','💜','Try it today: if a friend makes a mistake, tell them about a time you made one too.'],
  wispPost:['You saved the Shadow Wisp!'], midnight:['You didn\'t give up!','💪','Try it today: practice the hardest letter you know five times. It gets easier!'],
  irisPost:['You won the Wand Duel!'], quill:['You chose kindness!','🤝','Try it today: if someone seems grumpy, ask if they\'re okay.'], impsPost:['You got the silver quill back!'],
  truth:['You told the truth!','🫶','Try it today: honesty is a superpower. Use it even when it\'s hard.'], spritePost:['You melted the Frost Sprite!'],
@@ -1419,7 +1614,8 @@ const CH_TEXT={
  3:{start:()=>[ say(null,'Words are vanishing everywhere: from books, from signs, even from Grandma\'s letter.',sc('library',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],fadeLetters())) ],
     end:()=>[ say('nora','Wren and Rose… I need to ask Grandma. Right now.',sc('room',[['nora',512,250,1.05,{arm:'wand'}]])) ]},
  4:{start:()=>[ say(null,'The sky over the academy turns dark and stormy. The Fading is growing stronger.',sc('tower',[['nora',512,250,1.05,{arm:'wand',expr:'wow'}]])) ],
-    end:()=>[ say('prof','Nora, you came here to learn cursive. Instead, you taught all of us what words are really for.',sc('hall',[['prof',300,250,1,{arm:'wave'}],['nora',700,250,1.05,{glow:true}]])),
+    end:()=>[ say(null,'At the celebration, everyone Nora helped is there: Sunny with her stickers, Juni with flowers, Lola reading aloud, Mei with homemade dumplings, Iris with her silver quill.',sc('hall',[['sunny',120,300,.75,{arm:'wave'}],['juni',270,290,.8,{arm:'wave'}],['mei',420,280,.85,{expr:'happy'}],['nora',580,250,1,{glow:true}],['iris',740,280,.85,{arm:'wave'}],['lola',890,280,.8,{arm:'wave'}]])),
+     say('prof','Nora, you came here to learn cursive. Instead, you taught all of us what words are really for.',sc('hall',[['prof',300,250,1,{arm:'wave'}],['nora',700,250,1.05,{glow:true}]])),
      say('nora','For telling the truth. For saying sorry. For telling people they\'re not alone.',sc('hall',[['prof',300,250,1,{expr:'happy'}],['nora',700,250,1.05,{arm:'wand',glow:true}]]),{sfx:'gold'}),
      say(null,'The End… for now. Wren has started writing back.',sc('room',[['nora',512,250,1.1,{arm:'hold',glow:true}]],`<text x="640" y="200" font-family="'TeX Gyre Chorus',cursive" font-size="54" fill="#e9a91c" filter="url(#glow)">Dear Nora,</text>`)) ]},
 };
@@ -1488,7 +1684,7 @@ function gateCheck(){ if(+$('#gateIn').value!==gateAns){ newGateQ(); $('#gateQ')
  $('#gateOk').onclick=()=>{ if($('#gateNora').checked){ S=fresh(); save(); sessionMissions=0; refreshStars(); Snd.setOn(true); } $('#gate').classList.remove('on'); }; }
 $('#gateCancel').onclick=()=>$('#gate').classList.remove('on');
 
-refreshStars(); updateHint();
+S.met=S.met||{}; S.met.nora=true; refreshStars(); updateHint();
 // If anything ever goes wrong mid-animation, free the writing pad so the game never freezes.
 addEventListener('error',()=>{ try{ pad.demo=null; if(current==='play'&&!(M&&M.battle&&!M.word)) pad.locked=false; pad.draw(); }catch(e){} });
 
@@ -1508,7 +1704,7 @@ window.__test={
  resetSession:()=>{ sessionMissions=0; }
 };
 </script>
-<div id="kaVer" data-v="2.0" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.0 · 2026-11-26</div>
+<div id="kaVer" data-v="3.0" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v3.0 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
