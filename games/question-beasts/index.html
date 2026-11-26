@@ -340,6 +340,160 @@ canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 .eqrow{display:flex;flex-direction:column;gap:6px}
 .eqlist{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 @media (max-width:620px){.shmain{grid-template-columns:1fr}.shprev canvas{max-width:150px}}
+
+/* ---- PHONE UPRIGHT (v1.3): compact so the map and battle fit without endless scrolling ---- */
+@media (max-width:520px) and (orientation:portrait){
+  body{font-size:24px;padding-block:8px 28px}
+  .screen{gap:10px}
+  .brand{padding:6px 0 0}
+  .brand h1{font-size:30px}
+  .brand p{font-size:24px;margin-top:6px}
+  .kid{padding:8px;gap:10px}
+  .kid canvas{width:52px;height:52px}
+  .kid .nm{font-size:15px}
+  .kid .bn{font-size:22px}
+  .how{font-size:20px;padding:8px 10px}
+  .pickgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .mon{padding:6px 2px}
+  .mon canvas{width:48px;height:48px}
+  .mon b.zht{font-size:16px}
+  .mon span{font-size:16px;line-height:1.05;text-align:center}
+  .detail{padding:10px;gap:8px}
+  .evos canvas{max-width:72px}
+  .evos span{font-size:18px}
+  .detail .moves{font-size:20px}
+  .hero{padding:10px;gap:10px}
+  .hero canvas{width:64px;height:64px}
+  .hero h2{font-size:14px}
+  .hero p{font-size:19px}
+  #wNote{font-size:11px}
+  #mInfo{font-size:11px}
+  .mapbar #mFight{font-size:13px}
+  .topbar .tag{font-size:10.5px}
+  .chip{font-size:11px;padding:8px}
+  .msg{font-size:24px}
+  .msg .why{font-size:20px}
+
+  /* no-scroll squeeze (v1.3) */
+  .brand h1{font-size:24px}
+  .brand p{font-size:19px}
+  .kids{gap:8px}
+  .kid{padding:6px 8px}
+  .kid canvas{width:44px;height:44px}
+  .kid .who{gap:2px}
+  .kid .nm .zht{font-size:1.6em}
+  .kid .bn{font-size:17px;line-height:1.1}
+  .how{font-size:13px;line-height:1.1;padding:5px 8px}
+  #home{gap:8px}
+  .foot .tag{font-size:9px}
+  #pick .topbar .tag{font-size:9px}
+  .pickgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .mon{padding:4px 2px;gap:1px}
+  .mon canvas{width:36px;height:36px}
+  .mon b.zht{font-size:13px}
+  .mon span{font-size:12px}
+  .detail{gap:4px;padding:8px}
+  .evos canvas{max-width:56px}
+  .evos b{font-size:9px}.evos b .zht{font-size:13px}
+  .evos span{font-size:15px}
+  .detail .moves{font-size:16px;line-height:1.1}
+  .chip.big{font-size:13px;padding:8px}
+  .hero{padding:8px}
+  .hero canvas{width:52px;height:52px}
+  .hero>div{gap:3px}
+  #wNote{font-size:10px;line-height:1.35}
+}
+/* ---- PHONE SIDEWAYS (v1.3): short landscape screens get side-by-side layouts sized to the height ---- */
+@media (orientation:landscape) and (max-height:500px){
+  body{font-size:20px;padding-block:6px 10px}
+  .screen{gap:6px}
+  .chip{font-size:10px;padding:6px 8px}
+  .tag{font-size:10px}
+  .topbar{gap:6px}
+  /* home */
+  .brand{padding:0}
+  .brand h1{font-size:22px}
+  .brand h1 .ent{display:none}
+  .brand p{font-size:15px;margin-top:2px}
+  .kids{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .kid{padding:6px;gap:6px}
+  .kid canvas{width:40px;height:40px}
+  .kid .nm{font-size:12px}
+  .kid .bn{font-size:16px}
+  .how{font-size:13px;line-height:1.1;padding:4px 8px}
+  .kid .who{gap:2px}
+  /* beast picker: detail left, grid right */
+  #pick{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);column-gap:10px;row-gap:6px;align-items:start}
+  #pick>.topbar{grid-column:1/-1}
+  #pickDetail{grid-column:1;grid-row:2;padding:8px;gap:6px}
+  #pickGrid{grid-column:2;grid-row:2;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+  #pickDetail[hidden]+#pickGrid{grid-column:1/-1;grid-template-columns:repeat(8,minmax(0,1fr))}
+  .mon{padding:4px 2px;gap:1px}
+  .mon canvas{width:32px;height:32px}
+  .mon b.zht{font-size:12px}
+  .mon span{font-size:11px;line-height:1.05;text-align:center}
+  .evos canvas{max-width:60px}
+  .evos b{font-size:9px}.evos b .zht{font-size:12px}
+  .evos span{font-size:14px}
+  .detail .moves{font-size:15px}
+  .chip.big{font-size:12px;padding:8px}
+  /* map: beast info left, map right */
+  #world{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;row-gap:6px;align-items:start}
+  #world>.topbar{grid-column:1/-1}
+  #world .hero{grid-column:1;grid-row:2;padding:8px;gap:8px;align-items:flex-start}
+  #world .hero canvas{width:52px;height:52px}
+  #world .hero h2{font-size:12px}
+  #world .hero p{font-size:15px}
+  #world #wNote{display:none}
+  #world #setPick{grid-column:1;grid-row:3}
+  #world #mInfo{grid-column:1;grid-row:4;margin:0;text-align:left;font-size:10px}
+  #world .mapwrap{grid-column:2;grid-row:2/span 3;width:calc((100vh - 110px)*240/150);max-width:58vw;align-self:start;justify-self:end}
+  #world .mapbar{grid-column:2;grid-row:5;width:calc((100vh - 110px)*240/150);max-width:58vw;box-sizing:border-box;justify-self:end}
+  .mapbar #mFight{font-size:11px;line-height:1.3;padding:4px}
+  /* battle: arena left, cards / question right */
+  #battle{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:4px;align-items:start;max-width:none}
+  #battle>.topbar{grid-column:1/-1}
+  #battle .bmain{grid-column:1;gap:4px}
+  #battle .stage{width:min(46vw,calc((100vh - 90px)*16/9));margin:0}
+  #battle .status{font-size:9px;gap:4px;margin:0;width:min(46vw,calc((100vh - 90px)*16/9))}
+  #battle .bside{grid-column:2;gap:6px}
+  .hp{font-size:9px;padding:2px 4px}
+  .cards{gap:6px}
+  .card{padding:20px 4px 6px;gap:2px}
+  .card b{font-size:10px}
+  .card .st{font-size:14px;letter-spacing:0}
+  .card em{font-size:15px}
+  .qbox{padding:6px;gap:6px}
+  .qtext{font-size:20px}
+  .qpic{font-size:22px}
+  .qpic .shp{width:44px;height:44px}
+  .opts{gap:6px}
+  .opt{font-size:24px;padding:18px 4px 4px}
+  .opts.big .opt{font-size:28px;padding:18px 4px 4px}
+  .opts.word .opt{font-size:26px}
+  .opts.long{grid-template-columns:1fr 1fr}
+  .opts.long .opt{font-size:15px;padding:6px 6px 6px 36px}
+  .sw{height:32px}
+  .opt .shp{width:36px;height:36px}
+  .msg{font-size:16px;min-height:0}
+  .msg .why{font-size:14px}
+  .clk{width:60px;height:60px}
+  #stCv{max-height:28vh;width:auto;margin:0 auto}
+  .stpage{font-size:16px}
+  .steps{font-size:16px}
+  .sbox{gap:6px;padding:8px}
+  #evoCv{width:min(55vh,300px)}
+  .rbox{padding:10px;gap:6px;max-width:520px}
+  .rbox h3{font-size:16px}
+  .rbox canvas{width:64px;height:64px}
+  .sbox{padding:10px;gap:8px}
+  .sbox h3{font-size:15px}
+  .stbox{padding:8px;gap:8px}
+  .mbox{gap:6px}
+  #qbHint{display:block}
+}
+#qbHint{display:none;position:fixed;right:8px;bottom:6px;z-index:40;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:var(--ink);background:var(--gold);opacity:.85;padding:3px 8px;border-radius:999px}
+@media (orientation:landscape) and (max-height:500px) and (pointer:fine){#qbHint{display:none!important}}
 @media (prefers-reduced-motion:reduce){.combo.full b,.card.super,.pulse{animation:none}}
 </style>
 
@@ -401,6 +555,7 @@ canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
   </section>
 </div>
 
+<div id="qbHint">直拿手機更好玩 Best with your phone upright ↻</div>
 <div class="result" id="result" hidden><div class="rbox">
   <h3 id="rTitle"></h3><canvas id="rSprite" width="110" height="110"></canvas>
   <p id="rLine1"></p><p class="tag" id="rLine2"></p>
@@ -2137,7 +2292,7 @@ window.QB={Shop,Equip,ITEMS,ANCH,starsOf,fitStage,Intro,Story,STORIES,FX_POOL,Mi
 </script>
 
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
+<div id="kaVer" data-v="1.3" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.3 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 <script src="../../house.js"></script><script>KAH.init({wrap:[["result",function(a){return /VICTORY|BOSS DEFEATED|EVOLUTION/.test(a[0])}]]})</script>
 </body></html>
