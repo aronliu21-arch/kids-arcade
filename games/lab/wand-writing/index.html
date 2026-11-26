@@ -33,7 +33,7 @@ button{font:inherit;cursor:pointer;touch-action:manipulation}
 .dlg .who{font-weight:900;font-size:18px;margin-bottom:2px}
 .dlg .txt{font-size:clamp(18px,2.4vw,23px);line-height:1.38;min-height:2.8em}
 .dlg .ctl{display:flex;gap:8px;margin-top:10px;justify-content:flex-end;align-items:center}
-#letter{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-2deg);width:min(560px,86vw);background:#fff8e1;border-radius:8px;padding:22px 26px;box-shadow:0 0 60px #ffcc6699,0 10px 30px #0008;display:none;font-family:"Snell Roundhand","Savoye LET","Apple Chancery","TeX Gyre Chorus",cursive;font-size:clamp(24px,4vw,34px);line-height:1.35;color:#4a2f80}
+#letter{position:fixed;z-index:6;left:50%;top:34%;transform:translate(-50%,-50%) rotate(-2deg);width:min(560px,86vw);background:#fff8e1;border-radius:8px;padding:22px 26px;box-shadow:0 0 60px #ffcc6699,0 10px 30px #0008;display:none;font-family:"Snell Roundhand","Savoye LET","Apple Chancery","TeX Gyre Chorus",cursive;font-size:clamp(24px,4vw,34px);line-height:1.35;color:#4a2f80}
 #letter.on{display:block;animation:glowIn 1.2s}
 @keyframes glowIn{from{opacity:0;transform:translate(-50%,-46%) rotate(-2deg)}}
 /* write */
@@ -85,6 +85,35 @@ body.hinted .screen{padding-bottom:44px!important}
 #chap{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:30;background:#000a;color:#fff;border-radius:999px;padding:6px 14px;font-weight:800;font-size:14px;display:none;white-space:nowrap}
 #chap i{font-style:normal;letter-spacing:1px;color:#ffd86b}
 @media (max-width:520px){.ti{font-size:21px}.left{font-size:12px}.tray{padding:2px 6px}}
+#story{padding:0}
+.bust{position:absolute;bottom:calc(118px + env(safe-area-inset-bottom));width:min(30vw,48vh,330px);aspect-ratio:220/260;transition:transform .4s cubic-bezier(.2,1.4,.4,1),filter .35s,opacity .35s;z-index:4;filter:drop-shadow(0 6px 14px #000a)}
+.bust svg{width:100%;height:100%;display:block}
+.bust.L{left:max(1vw,8px)}.bust.R{right:max(1vw,8px)}.bust.R svg{transform:scaleX(-1)}
+.bust.off{opacity:0;transform:translateY(60px)}
+.bust.dim{filter:brightness(.5) saturate(.6) drop-shadow(0 6px 14px #000a);transform:scale(.93) translateY(8px)}
+.bust.hop{animation:hop .45s}.bust.shake{animation:shake .45s}
+@keyframes hop{30%{transform:translateY(-18px)}60%{transform:translateY(2px)}}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.bust .mo{opacity:0}.bust.talking .mo{animation:flapO .26s steps(1) infinite}.bust.talking .mc{animation:flapC .26s steps(1) infinite}
+@keyframes flapO{0%{opacity:1}50%{opacity:0}}@keyframes flapC{0%{opacity:0}50%{opacity:1}}
+.bust .ec{opacity:0;animation:blinkC 3.8s infinite}.bust .eo{animation:blinkO 3.8s infinite}.bust.R .ec,.bust.R .eo{animation-delay:-1.7s}
+@keyframes blinkC{0%,93%{opacity:0}94%,98%{opacity:1}99%{opacity:0}}@keyframes blinkO{0%,93%{opacity:1}94%,98%{opacity:0}99%{opacity:1}}
+.bust .bang{animation:bang .5s both;transform-origin:190px 30px}@keyframes bang{0%{transform:scale(0)}70%{transform:scale(1.3)}}
+.bust .tear{animation:tear 1.6s infinite}@keyframes tear{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(26px);opacity:0}}
+.bust .sweat{animation:sweat 1.4s infinite}@keyframes sweat{50%{transform:translateY(6px)}}
+.bust .spk{animation:spk 1s infinite}@keyframes spk{50%{opacity:.3}}
+.jbox{position:absolute;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom));width:min(980px,calc(100% - 16px));z-index:5;background:linear-gradient(#1d2558f5,#111735f5);border:4px solid #e8c36a;border-radius:16px;box-shadow:inset 0 0 0 3px #1b2350,inset 0 0 0 5px #8f7a3f,0 10px 30px #000a;color:#fff;padding:24px 22px 12px;min-height:128px;cursor:pointer}
+.plate{position:absolute;top:-20px;left:20px;padding:4px 18px;border-radius:10px;border:3px solid #e8c36a;font-weight:900;font-size:18px;color:#fff;box-shadow:0 3px 0 #0006}
+.plate:empty{display:none}
+.jtxt{font-size:clamp(18px,2.5vw,24px);line-height:1.45;min-height:2.9em;padding-right:130px;text-shadow:0 2px 0 #0008}
+.jbox.narr .jtxt{font-style:italic;color:#e7e3ff}
+.jctl{position:absolute;right:12px;bottom:10px;display:flex;gap:8px}
+.jctl .btn{min-width:64px;padding:6px 14px}
+.cont{position:absolute;left:50%;bottom:2px;color:#ffd86b;font-size:16px;animation:bobc .8s infinite;display:none}
+.jbox.ready .cont{display:block}
+@keyframes bobc{50%{transform:translateY(4px)}}
+@media (max-width:620px){.jtxt{padding-right:0;padding-bottom:50px;font-size:17px}.bust{width:44vw;bottom:calc(172px + env(safe-area-inset-bottom))}.jbox{min-height:150px}}
+@media (max-height:460px){.bust{width:min(24vw,46vh);bottom:104px}.jbox{padding:20px 16px 8px;min-height:92px}.jtxt{font-size:17px;min-height:2.4em}#letter{top:30%;font-size:22px;padding:12px 16px}}
 #hint{position:fixed;left:50%;bottom:4px;transform:translateX(-50%);background:#000b;color:#fff;padding:6px 12px;border-radius:999px;font-size:13px;display:none;z-index:50;pointer-events:none}
 @media (max-height:460px){.dlg{padding:8px 12px}.por{width:60px;height:60px}.dlg .txt{font-size:17px;min-height:0}.btn{min-height:48px;font-size:17px;padding:6px 14px}.ttl{min-height:44px;padding:4px 10px}.ttl span{display:none}#prompt{font-size:15px}.card{padding:12px}.card .big{font-size:36px}.card h2{font-size:21px}.card p{font-size:16px}}
 @media (max-width:520px){.ttl span{display:none}.ttl b{font-size:15px}.pips .pip{width:11px;height:11px}.por{width:64px;height:64px}.dlg{padding:12px}.top .icon{min-width:44px}}
@@ -103,10 +132,10 @@ body.hinted .screen{padding-bottom:44px!important}
 
 <section class="screen" id="story">
  <div id="letter"></div>
- <div class="dlg"><div class="por" id="por"></div><div style="flex:1;min-width:0">
-  <div class="who" id="who"></div><div class="txt" id="txt"></div>
-  <div class="ctl"><button class="icon" id="sayBtn" aria-label="Read aloud">🔊</button><button class="btn" id="nextBtn">Next ▶<small>下一步</small></button></div>
- </div></div>
+ <div class="bust L off" id="bL"></div><div class="bust R off" id="bR"></div>
+ <div class="jbox" id="jbox"><div class="plate" id="who"></div><div class="jtxt" id="txt"></div>
+  <div class="jctl"><button class="icon" id="sayBtn" aria-label="Read aloud">🔊</button><button class="btn" id="nextBtn">▶<small>下一步</small></button></div>
+  <div class="cont" id="cont">▼</div></div>
 </section>
 
 <section class="screen" id="write">
@@ -139,7 +168,7 @@ body.hinted .screen{padding-bottom:44px!important}
 <script src="../../../house.js"></script>
 <script>
 "use strict";
-const VERSION="1.1";
+const VERSION="1.2";
 // Cursive letter centerlines. Units: x-height = 1. Baseline y=0, midline y=-1, ascender y≈-2.1, descender y≈+1.1 (y points down).
 // Every joining letter starts at (0,0) and ends at (w,0), so letters chain into one stroke.
 // extras = separate strokes (i dot, t cross). join:false = letter does not connect to the next (capital O).
@@ -207,6 +236,7 @@ function sfx(k){audio();if(!AC||muted)return;const t=AC.currentTime;
  if(k==="great")[72,76,79,84,88,91].forEach((n,i)=>tone(N(n),t+i*.08,.8,"sine",.17));
  if(k==="miss"){tone(N(52),t,.35,"triangle",.15);tone(N(49),t+.15,.4,"triangle",.12);}
  if(k==="tick")tone(N(96),t,.08,"sine",.05);
+ if(k==="blip")tone(N(arguments[1]||72),t,.05,"square",.025);
  if(k==="pop")tone(N(rnd0(84,96)),t,.15,"sine",.12);
  if(k==="whoosh"){const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.setValueAtTime(300,t);o.frequency.exponentialRampToValueAtTime(1800,t+.6);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.06,t+.1);g.gain.exponentialRampToValueAtTime(.0001,t+.7);o.connect(g);g.connect(master);o.start(t);o.stop(t+.75);[88,91,95].forEach((n,i)=>tone(N(n),t+.5+i*.07,.5,"sine",.08));}
  if(k==="gate")[40,43,47].forEach((n,i)=>tone(N(n),t+i*.2,1.4,"sawtooth",.05));}
@@ -381,18 +411,117 @@ function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.to
 function orientHint(){const h=document.getElementById("hint");const phone=Math.min(innerWidth,innerHeight)<500&&matchMedia("(pointer:coarse)").matches;
  if(phone&&innerHeight>innerWidth&&cur==="write"){h.textContent="Turn sideways ↻ 橫著拿";h.style.display="block";document.body.classList.add("hinted");}else{h.style.display="none";document.body.classList.remove("hinted");}}
 
+// ================= JRPG dialogue: animated character busts =================
+const CHAR={
+ nora:{name:"Nora",col:"#7048e8",hair:"#17171d",skin:"#ffe0c8",robe:"#7048e8",trim:"#ffd43b",eye:"#7a4520",bold:true,pitch:1.1,blip:72},
+ mei:{name:"Mei",col:"#2f9e44",hair:"#6b3d1f",skin:"#f6d5bb",robe:"#2f9e44",trim:"#d3f9d8",eye:"#4a2c17",pitch:1.3,blip:79},
+ iris:{name:"Iris",col:"#c92a2a",hair:"#e8b64a",skin:"#f8dcc4",robe:"#e03131",trim:"#ffe066",eye:"#2f6db5",pitch:1.2,blip:76},
+ gran:{name:"Grandma",col:"#364fc7",hair:"#d0d0da",skin:"#f0cdb5",robe:"#364fc7",trim:"#ced4da",eye:"#5a3a22",pitch:.95,blip:64},
+ lantern:{name:"Gate Lantern",col:"#b7791f",pitch:.8,blip:55},
+};
+// expression → eyes / brows / closed mouth / open mouth / extras
+const EMO={
+ normal:{eye:"n",brow:"M-38 -24q12-6 24-3M14 -27q12-3 24 3",mc:"smile",mo:"o",x:[]},
+ happy:{eye:"^",brow:"M-38 -27q12-8 24-4M14 -31q12-4 24 4",mc:"grin",mo:"D",x:["blush","spark"]},
+ surprised:{eye:"O",brow:"M-38 -34q12-8 24-4M14 -38q12-4 24 4",mc:"o",mo:"O",x:["bang"]},
+ nervous:{eye:"n",brow:"M-38 -22q12-8 24-10M14 -32q12 2 24 10",mc:"wobble",mo:"o",x:["sweat","blush"]},
+ determined:{eye:"n",brow:"M-40 -32q14 2 26 8M14 -24q12-6 26-8",mc:"flat",mo:"D",x:["fire"]},
+ sad:{eye:"sad",brow:"M-38 -22q12-8 24-12M14 -34q12 4 24 12",mc:"frown",mo:"o",x:["tear"]},
+ shy:{eye:"down",brow:"M-38 -24q12-6 24-6M14 -30q12 0 24 6",mc:"small",mo:"o",x:["blush"]},
+ smug:{eye:"lid",brow:"M-38 -26q12-4 24 0M14 -36q12-6 24 4",mc:"smirk",mo:"smirkO",x:[]},
+ annoyed:{eye:"lid",brow:"M-40 -32q14 2 26 8M14 -24q12-6 26-8",mc:"flat",mo:"o",x:["vein","blush"]},
+ warm:{eye:"^",brow:"M-38 -24q12-6 24-3M14 -27q12-3 24 3",mc:"smile",mo:"o",x:[]},
+ stern:{eye:"n",brow:"M-40 -32q14 2 26 8M14 -24q12-6 26-8",mc:"flat",mo:"O",x:["bang"]},
+};
+function eyesSVG(c,e,o){const ec=c.eye;
+ const one=dx=>{
+  if(e==="^")return `<path d="M${dx-12} 4q12-14 24 0" stroke="#222" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+  if(e==="O")return `<ellipse cx="${dx}" cy="0" rx="13" ry="16" fill="#fff" ${o}/><circle cx="${dx}" cy="1" r="6" fill="${ec}"/><circle cx="${dx+2}" cy="-2" r="2" fill="#fff"/>`;
+  const ry=e==="down"?11:16,cy=e==="down"?4:0;
+  let s=`<ellipse cx="${dx}" cy="${cy}" rx="12" ry="${ry}" fill="${ec}" ${o}/><circle cx="${dx+4}" cy="${cy-6}" r="4.5" fill="#fff"/><circle cx="${dx-4}" cy="${cy+6}" r="2.2" fill="#fff"/>`;
+  if(e==="lid"||e==="sad")s+=`<path d="M${dx-15} ${e==="sad"?-8:-4}L${dx+15} ${e==="sad"?-14:-4}L${dx+15} -22L${dx-15} -22Z" fill="${c.skin}"/><path d="M${dx-14} ${e==="sad"?-8:-4}L${dx+14} ${e==="sad"?-13:-4}" stroke="#222" stroke-width="3.5" stroke-linecap="round"/>`;
+  else if(c.bold)s+=`<path d="M${dx-14} -12q14-10 28 0" stroke="#000" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  return s;};
+ const closed=dx=>`<path d="M${dx-12} 2q12 7 24 0" stroke="#222" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+ const blinkable=e!=="^";
+ return `<g class="eo">${one(-24)}${one(24)}</g>`+(blinkable?`<g class="ec">${closed(-24)}${closed(24)}</g>`:"");}
+function mouthSVG(kind,open){const lip="#7a2b2b";
+ const M={smile:`<path d="M-10 34q10 9 20 0" stroke="${lip}" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+  grin:`<path d="M-14 31q14 16 28 0Z" fill="#c2255c" stroke="${lip}" stroke-width="3"/>`,
+  o:`<ellipse cx="0" cy="36" rx="5" ry="6" fill="#8a2b3b"/>`,
+  wobble:`<path d="M-12 36q4-4 8 0t8 0t8 0" stroke="${lip}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`,
+  flat:`<path d="M-9 36h18" stroke="${lip}" stroke-width="4" stroke-linecap="round"/>`,
+  frown:`<path d="M-10 40q10-9 20 0" stroke="${lip}" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+  small:`<path d="M-5 36q5 3 10 0" stroke="${lip}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`,
+  smirk:`<path d="M-8 37q12 3 18-7" stroke="${lip}" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+  D:`<path d="M-13 30q13 20 26 0Z" fill="#8a1c3b" stroke="${lip}" stroke-width="3"/><path d="M-8 41q8 4 16 0" stroke="#ff8fa3" stroke-width="4" stroke-linecap="round"/>`,
+  O:`<ellipse cx="0" cy="37" rx="9" ry="11" fill="#8a1c3b" stroke="${lip}" stroke-width="3"/>`,
+  smirkO:`<path d="M-8 33q10 12 18 -4Z" fill="#8a1c3b" stroke="${lip}" stroke-width="3"/>`};
+ return M[kind]||M.smile;}
+function extrasSVG(x){let s="";
+ if(x.includes("blush"))s+=`<ellipse cx="-40" cy="22" rx="11" ry="6" fill="#ff8fa3" opacity=".55"/><ellipse cx="40" cy="22" rx="11" ry="6" fill="#ff8fa3" opacity=".55"/>`;
+ if(x.includes("tear"))s+=`<path class="tear" d="M30 14q-5 10 0 14q5-4 0-14Z" fill="#8fd3ff"/>`;
+ if(x.includes("sweat"))s+=`<path class="sweat" d="M58 -40q-9 14 0 19q9-5 0-19Z" fill="#a5d8ff" stroke="#4dabf7" stroke-width="2"/>`;
+ if(x.includes("vein"))s+=`<path d="M44 -58l8 8M52 -58l-8 8M48 -62v16M40 -54h16" stroke="#e03131" stroke-width="3.5" stroke-linecap="round"/>`;
+ return s;}
+function bust(who,emo){const c=CHAR[who];if(!c)return "";const E=EMO[emo]||EMO.normal;const o=c.bold?'stroke="#000" stroke-width="3.5"':'';
+ if(who==="lantern"){const eyes=E.eye==="^"?`<path d="M80 108q10-10 20 0M118 108q10-10 20 0" stroke="#4a3426" stroke-width="5" fill="none" stroke-linecap="round"/>`:`<g class="eo"><circle cx="90" cy="108" r="7" fill="#4a3426"/><circle cx="128" cy="108" r="7" fill="#4a3426"/></g><g class="ec"><path d="M82 108h16M120 108h16" stroke="#4a3426" stroke-width="5" stroke-linecap="round"/></g>`;
+  const br=E.brow.includes("q14 2")?`<path d="M78 92l22 8M140 92l-22 8" stroke="#4a3426" stroke-width="5" stroke-linecap="round"/>`:"";
+  return `<svg viewBox="0 0 220 260"><circle cx="110" cy="120" r="100" fill="#ffcc66" opacity=".35"/><rect x="62" y="54" width="96" height="140" rx="18" fill="#ffd36b" stroke="#4a3426" stroke-width="6"/><rect x="50" y="40" width="120" height="22" rx="8" fill="#4a3426"/><rect x="50" y="186" width="120" height="22" rx="8" fill="#4a3426"/><path d="M110 18v22" stroke="#4a3426" stroke-width="6"/>${eyes}${br}<g transform="translate(110,108) scale(1.2)"><g class="mc">${mouthSVG(E.mc)}</g><g class="mo">${mouthSVG(E.mo)}</g></g></svg>`;}
+ let back="",front="";
+ if(who==="nora"){back=`<path d="M48 -66q46-26 52 18q3 32-22 50q14-34-6-52q-12-10-24-16Z" fill="${c.hair}" ${o}/><circle cx="52" cy="-64" r="10" fill="#ff6fa8" ${o}/>`;
+  front=`<path d="M-64 6C-72 -62 -22 -80 6 -78S70 -54 64 4C58 -28 38 -42 8 -44C-6 -28 -32 -22 -56 -22C-60 -10 -62 -2 -64 6Z" fill="${c.hair}" ${o}/><path d="M-30 -62q22-12 44-6" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".55"/><path d="M-60 -6q-10 46 4 74M60 -6q10 46-4 74" stroke="${c.hair}" stroke-width="13" fill="none" stroke-linecap="round"/><path d="M34 -58l5 11 12 1-9 8 3 12-11-7-10 7 3-12-9-8 12-1Z" fill="#ffd43b" stroke="#000" stroke-width="2.5"/>`;}
+ if(who==="mei"){back=`<path d="M-70 40C-80 -50 -34 -84 0 -84S80 -50 70 40L66 70H-66Z" fill="${c.hair}"/>`;
+  front=`<path d="M-62 0C-66 -56 -26 -74 0 -74S66 -56 62 0C58 -24 40 -38 0 -38S-58 -24 -62 0Z" fill="${c.hair}"/>`;}
+ if(who==="iris"){back=`<circle cx="-50" cy="-62" r="26" fill="${c.hair}"/><circle cx="50" cy="-62" r="26" fill="${c.hair}"/>`;
+  front=`<path d="M-62 4C-68 -56 -26 -76 4 -74S68 -52 62 4C54 -22 30 -38 -2 -40C-16 -26 -40 -20 -56 -18Z" fill="${c.hair}"/><path d="M-62 0q-6 40 6 62M62 0q6 40-6 62" stroke="${c.hair}" stroke-width="12" fill="none" stroke-linecap="round"/>`;}
+ if(who==="gran"){back=`<circle cx="0" cy="-74" r="26" fill="${c.hair}"/>`;front=`<path d="M-62 -4C-64 -56 -24 -70 0 -70S64 -56 62 -4C44 -30 24 -38 0 -38S-44 -30 -62 -4Z" fill="${c.hair}"/>`;}
+ const glasses=who==="mei"?`<circle cx="-24" cy="2" r="20" fill="#ffffff22" stroke="#333" stroke-width="3"/><circle cx="24" cy="2" r="20" fill="#ffffff22" stroke="#333" stroke-width="3"/><path d="M-4 2h8" stroke="#333" stroke-width="3"/>`:who==="gran"?`<circle cx="-24" cy="2" r="18" fill="none" stroke="#8a6a3a" stroke-width="3"/><circle cx="24" cy="2" r="18" fill="none" stroke="#8a6a3a" stroke-width="3"/>`:"";
+ const fx=(E.x.includes("bang")?`<g class="bang"><path d="M182 30l10-34h16l-14 34Z" fill="#ffd43b" stroke="#000" stroke-width="3"/><circle cx="186" cy="44" r="6" fill="#ffd43b" stroke="#000" stroke-width="3"/></g>`:"")
+  +(E.x.includes("spark")?`<g class="spk"><path d="M30 40l4 10 10 4-10 4-4 10-4-10-10-4 10-4Z" fill="#ffd43b"/><path d="M190 70l3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#ffd43b"/></g>`:"")
+  +(E.x.includes("fire")?`<g class="spk"><path d="M196 120q-8-20 4-36q2 14 10 18q-2-10 4-16q10 18-2 34Z" fill="#ff922b" opacity=".85"/></g>`:"");
+ return `<svg viewBox="0 0 220 260"><g transform="translate(110,120)">
+  ${back}<path d="M-78 150C-78 96 -44 76 0 76S78 96 78 150Z" fill="${c.robe}" ${o}/><path d="M-30 80L0 120L30 80" fill="none" stroke="${c.trim}" stroke-width="7"/>
+  <rect x="-14" y="52" width="28" height="30" fill="${c.skin}"/>
+  <circle cx="0" cy="0" r="62" fill="${c.skin}" ${o}/>${front}
+  <g class="eyes">${eyesSVG(c,E.eye,o)}</g><path d="${E.brow}" stroke="${c.bold?"#000":"#5a3a22"}" stroke-width="4" fill="none" stroke-linecap="round"/>
+  ${glasses}${extrasSVG(E.x)}
+  <g class="mc">${mouthSVG(E.mc)}</g><g class="mo">${mouthSVG(E.mo)}</g>
+ </g>${fx}</svg>`;}
+
 // ---- story player ----
 let lines=[],li=0,afterStory=null;
 function story(ls,then){lines=ls;li=0;afterStory=then;show("story");music(true);step();}
-function step(){const L=lines[li];if(!L){document.getElementById("letter").classList.remove("on");afterStory&&afterStory();return;}
+let stageL=null,stageR=null,typer=0,typing=false,talkT=0;
+const bL=document.getElementById("bL"),bR=document.getElementById("bR"),jbox=document.getElementById("jbox");
+function setBust(el,who,emo,speak){const key=who+"|"+emo;if(el.dataset.k!==key){el.innerHTML=bust(who,emo);el.dataset.k=key;}
+ el.classList.remove("off");el.classList.toggle("dim",!speak);if(speak){el.classList.remove("hop","shake");void el.offsetWidth;if(["surprised","stern","annoyed"].includes(emo))el.classList.add("shake");else if(["happy","determined"].includes(emo))el.classList.add("hop");}}
+function talk(on){[bL,bR].forEach(b=>b.classList.remove("talking"));if(on&&on!=="narr"){(on==="nora"?bL:bR).classList.add("talking");}}
+function step(){clearInterval(typer);clearTimeout(talkT);const L=lines[li];
+ if(!L){document.getElementById("letter").classList.remove("on");talk(null);bL.classList.add("off");bR.classList.add("off");bL.dataset.k=bR.dataset.k="";stageL=stageR=null;afterStory&&afterStory();return;}
  if(L.view)setView(L.view,1600);if(L.lit!==undefined){SC.lit=L.lit;drawScene();}if(L.gate!==undefined){SC.gate=L.gate;drawScene();}
  const le=document.getElementById("letter");if(L.letter){le.innerHTML=L.letter;le.classList.add("on");}else if(L.letter===null)le.classList.remove("on");
- document.getElementById("por").innerHTML=face(L.who||"narr");document.getElementById("who").textContent=NAMES[L.who||"narr"];
- document.getElementById("who").style.color={nora:"#7048e8",mei:"#2f9e44",iris:"#c92a2a",gran:"#364fc7",lantern:"#a66a00"}[L.who]||"#555";
- document.getElementById("txt").textContent=L.t;voiceStop();voiceSay(L.t,{pitch:{mei:1.3,iris:1.2,gran:.95,lantern:.8}[L.who]});
+ const who=L.who||"narr",emo=L.emo||"normal";
+ // stage: Nora on the left, whoever she is talking to on the right
+ if(who==="nora"){stageL={emo};}
+ else if(who!=="narr"){if(stageR&&stageR.who!==who){bR.classList.add("off");bR.dataset.k="";}stageR={who,emo};if(!stageL)stageL={emo:"normal"};}
+ if(stageL)setBust(bL,"nora",stageL.emo,who==="nora");
+ if(stageR){const sr=stageR,late=bR.classList.contains("off");setTimeout(()=>setBust(bR,sr.who,sr.emo,who===sr.who),late?200:0);}
+ if(who==="narr"){bL.classList.add("dim");bR.classList.add("dim");}
+ const c=CHAR[who];const plate=document.getElementById("who");plate.textContent=c?c.name:"";plate.style.background=c?c.col:"";
+ jbox.classList.toggle("narr",who==="narr");jbox.classList.remove("ready");
+ if(["surprised","stern"].includes(emo))sfx("pop");
+ // typewriter + moving mouth + read-aloud voice
+ const txt=document.getElementById("txt"),full=L.t;let i=0;txt.textContent="";typing=true;talk(who);
+ const voiceOn=!muted&&("speechSynthesis" in window);let spoken=!voiceOn;
+ voiceStop();if(voiceOn){try{KAVoice.say(full,{pitch:c?c.pitch:1,onEnd(){spoken=true;if(!typing)talk(null);}});}catch(e){spoken=true;}}
+ typer=setInterval(()=>{i+=1;txt.textContent=full.slice(0,i);if(!voiceOn&&c&&i%3===0)sfx("blip",c.blip);
+  if(i>=full.length){clearInterval(typer);typing=false;jbox.classList.add("ready");if(spoken)talk(null);}},reduce?1:28);
+ talkT=setTimeout(()=>talk(null),full.length*95+800);
  if(L.fx)L.fx();}
-document.getElementById("nextBtn").onclick=()=>{sfx("tick");li++;step();};
-document.getElementById("sayBtn").onclick=()=>{const L=lines[li];if(L){voiceStop();if(muted){setMute(false);}voiceSay(L.t);}};
+function advance(){if(typing){clearInterval(typer);typing=false;document.getElementById("txt").textContent=lines[li].t;jbox.classList.add("ready");return;}sfx("tick");li++;step();}
+jbox.addEventListener("click",e=>{if(e.target.closest("#sayBtn"))return;advance();});
+document.getElementById("sayBtn").onclick=e=>{e.stopPropagation();const L=lines[li];if(!L)return;voiceStop();if(muted)setMute(false);const w=L.who||"narr";talk(w);try{KAVoice.say(L.t,{pitch:CHAR[w]?CHAR[w].pitch:1,onEnd(){talk(null);}});}catch(_){}};
 
 // ---- magic effects ----
 const fxc=document.getElementById("fx"),fx=fxc.getContext("2d");let parts=[],fxRaf=0;
@@ -497,11 +626,12 @@ document.getElementById("homeBtn2").onclick=()=>{voiceStop();menu();};
 function ch1(){S.scene=1;save();chapDone=0;chap(0);setView("far");SC.lit=5;SC.gate=false;drawScene();
  story([
   {who:"narr",t:"One snowy night, a letter slid under Nora's door. The ink was glowing gold."},
-  {who:"gran",t:"Dear Nora, if you can read this, the Academy is calling you. I went there when I was your age. Be brave. Love, Grandma.",letter:"Dear Nora,<br>If you can read this, the Academy is calling you. I went there when I was your age.<br>Be brave.<br><span style='float:right'>Love, Grandma</span><div style='clear:both'></div>"},
-  {who:"nora",t:"Grandma went to a magic school? And this cursive is glowing… I can almost read it!",letter:null},
+  {who:"gran",emo:"warm",t:"Dear Nora, if you can read this, the Academy is calling you. I went there when I was your age. Be brave. Love, Grandma.",letter:"Dear Nora,<br>If you can read this, the Academy is calling you. I went there when I was your age.<br>Be brave.<br><span style='float:right'>Love, Grandma</span><div style='clear:both'></div>"},
+  {who:"nora",emo:"surprised",t:"Grandma went to a magic school? And this cursive is glowing… I can almost read it!",letter:null},
   {who:"narr",t:"At Inkwell Academy, magic is written, not spoken. Every spell is a word in cursive — and only a neat, joined-up word can carry magic.",view:"gate"},
-  {who:"lantern",t:"Halt, young one! I am the Gate Lantern. Before you enter, show me what your wand can write. This is the Wand Trial."},
-  {who:"nora",t:"I'm a little nervous… but Grandma said be brave. I'm ready!"},
+  {who:"lantern",emo:"stern",t:"Halt, young one! I am the Gate Lantern. Before you enter, show me what your wand can write. This is the Wand Trial."},
+  {who:"nora",emo:"nervous",t:"Um… I'm a little nervous…"},
+  {who:"nora",emo:"determined",t:"But Grandma said be brave. I'm ready!"},
  ],wandTrial);}
 
 function wandTrial(){
@@ -519,15 +649,15 @@ function wandTrial(){
 function afterTrial(){const lv=S.trial.level;
  const gateWord=!S.seen.includes("Open")?"Open":pickUnseen(["Lit","Al","Ann","Ada","Lean"].filter(w=>[...w].every(c=>GLYPHS[c])),1)[0]||"Open";
  story([
-  {who:"lantern",view:"gate",t:"Well written! Now speak the password spell to open the gate. Write it with one smooth stroke where the letters join."},
-  {who:"nora",t:gateWord==="Open"?"The password is “Open”. Capital O stands alone — then p, e, n hold hands!":`Tonight's password is “${gateWord}”.`},
+  {who:"lantern",emo:"happy",view:"gate",t:"Well written! Now speak the password spell to open the gate. Write it with one smooth stroke where the letters join."},
+  {who:"nora",emo:"happy",t:gateWord==="Open"?"The password is “Open”. Capital O stands alone — then p, e, n hold hands!":`Tonight's password is “${gateWord}”.`},
  ],()=>mission({n:2,icon:"🗝️",word:"Spell",fx:"fireworks",title:"Spell Chain · 連筆咒語",sub:"Open the castle gate",items:[gateWord],countsAsMission:false,prompt:w=>`Write “${w}” to open the gate`},(r)=>{
    SC.gate=true;drawScene();sfx("gate");
    story([
     {who:"narr",t:"Click… creeeak. The great gate swings open, and warm light spills onto the path.",gate:true},
     {who:"narr",view:"path",t:"Inside the courtyard, the lanterns along the path are dark. Someone is hiding behind a pillar.",lit:2},
-    {who:"mei",t:"Oh! Sorry… I'm Mei. I'm supposed to light these lanterns, but every time I write, my spell fizzles. Everyone's going to laugh at me."},
-    {who:"nora",t:"I'm new too! Let's light them together. If I write one, you can watch how my wand moves."},
+    {who:"mei",emo:"sad",t:"Oh! Sorry… I'm Mei. I'm supposed to light these lanterns, but every time I write, my spell fizzles. Everyone's going to laugh at me."},
+    {who:"nora",emo:"happy",t:"I'm new too! Let's light them together. If I write one, you can watch how my wand moves."},
    ],lanterns);}));}
 
 function lanterns(){const items=pickUnseen(levelPool(),3);
@@ -535,21 +665,22 @@ function lanterns(){const items=pickUnseen(levelPool(),3);
   onItem:(r,i)=>{SC.lit=Math.min(5,2+i+1);drawScene();}},(r,pts)=>{SC.lit=5;drawScene();
   story([
    {who:"narr",view:"path",t:"One by one, the lanterns glow. Mei copies Nora's wand moves… and her own lantern flickers to life!",lit:5},
-   {who:"mei",t:"I did it! You didn't laugh at me even once. Nora… will you be my friend?"},
-   {who:"nora",t:"Of course! Everyone fizzles at first. We just keep trying."},
-   {who:"mei",t:"Look — there's an old scroll pinned to the lantern post. The words are in cursive, and I can't read cursive yet. Can you?"},
+   {who:"mei",emo:"happy",t:"I did it! You didn't laugh at me even once. Nora… will you be my friend?"},
+   {who:"nora",emo:"happy",t:"Of course! Everyone fizzles at first. We just keep trying."},
+   {who:"mei",emo:"surprised",t:"Look — there's an old scroll pinned to the lantern post. The words are in cursive, and I can't read cursive yet. Can you?"},
   ],()=>readMission(()=>story([
-   {who:"nora",t:"I read it! Writing cursive helps me read it too."},
-   {who:"iris",t:"Lanterns? Cute. I'm Iris — top of the class. Bet you can't write a capital L, new girl."},
-   {who:"mei",t:"(whispering) Don't worry. Just start at the green dot, like you told me."},
+   {who:"nora",emo:"happy",t:"I read it! Writing cursive helps me read it too."},
+   {who:"iris",emo:"smug",t:"Lanterns? Cute. I'm Iris — top of the class. Bet you can't write a capital L, new girl."},
+   {who:"mei",emo:"shy",t:"(whispering) Don't worry. Just start at the green dot, like you told me."},
+   {who:"nora",emo:"determined",t:"Challenge accepted, Iris!"},
   ],irisChallenge)));});}
 
 function irisChallenge(){const pool=["Lit","Lilac","Leap","Lent","Lean"].filter(w=>[...w].every(c=>GLYPHS[c]));const items=pickUnseen(pool,1);
  mission({n:5,icon:"⚡",word:"Spell",fx:"fireworks",title:"Iris's Challenge · 艾芮絲的挑戰",sub:"Capital L — show her!",items,prompt:w=>`Write “${w}” — capital L joins to the next letter`},(r,pts)=>{
   const won=r[0].pass;
   story([
-   won?{who:"iris",t:"Hmph. Not bad… for a beginner. See you in Wand-Writing class, Nora."}:{who:"iris",t:"Ha! Told you. But… you didn't give up. Most people quit after one try."},
-   {who:"nora",t:won?"Thanks, Iris! Maybe we can practice together sometime?":"I'll practice. Next time I'll get it!"},
+   won?{who:"iris",emo:"annoyed",t:"Hmph. Not bad… for a beginner. See you in Wand-Writing class, Nora."}:{who:"iris",emo:"smug",t:"Ha! Told you. But… you didn't give up. Most people quit after one try."},
+   {who:"nora",emo:won?"happy":"determined",t:won?"Thanks, Iris! Maybe we can practice together sometime?":"I'll practice. Next time I'll get it!"},
    {who:"narr",t:"That night, Nora looked at Grandma's letter again. At the very bottom, a new line had appeared — and then slowly faded away, letter by letter…"},
   ],chapterEnd);});}
 
@@ -590,7 +721,7 @@ setMute(muted);drawScene();
 // ================= test hook =================
 window.__test={
  state:()=>({screen:cur,word:B.word,mission:M&&M.title,item:M&&M.i,done:!!S.ch1,trial:S.trial,stars:S.stars,line:lines[li]&&lines[li].t,version:VERSION}),
- solve:()=>{if(cur==="story"){document.getElementById("nextBtn").click();return;}
+ solve:()=>{if(cur==="story"){advance();if(typing)advance();return;}
   if(cur==="result"){document.querySelector("#rcard button").click();return;}
   if(cur==="read"){const b=document.querySelector(`#choices button[data-w="${R.word}"]`);b&&b.click();return;}
   if(cur==="write"&&!B.locked){cancelAnimationFrame(demoRaf);B.demoT=-1;B.user=B.guide.map(g=>g.map(p=>[p[0]+.5,p[1]+.5]));cast();}},
@@ -598,6 +729,6 @@ window.__test={
  skipIntro:()=>{document.getElementById("tap").click();setTimeout(endIntro,50);}
 };
 </script>
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
 <script>document.getElementById("tap").addEventListener("click",()=>{const v=document.getElementById("kaVer");v&&(v.style.display="none");},{once:true});</script>
 </body></html>
