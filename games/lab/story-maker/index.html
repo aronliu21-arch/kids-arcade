@@ -67,6 +67,9 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
 .pb{background:#fff;box-shadow:0 3px 0 #e6d6bb;display:flex;flex-direction:column;align-items:center;gap:0;padding:4px;min-height:64px;font-size:13px;font-weight:700}.pb span{font-size:26px}
 .bq{font-weight:800;color:#e8590c;margin:8px 0 4px}
 .dirbtn{background:#ffe066}
+.readbox{background:#fff;border-radius:16px;padding:10px 12px;margin:0 0 12px;box-shadow:0 3px 0 #e6d6bb}
+.rbhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.rbtext{font-size:17px;line-height:1.6;max-height:150px;overflow-y:auto}.rbtext.whole{max-height:240px}.rbtext p{margin:0 0 8px}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .wtext{font-size:clamp(19px,2.4vw,24px);line-height:1.6;white-space:pre-wrap}
 .wctl{display:flex;gap:10px;align-items:center;justify-content:center;margin:10px 0}
@@ -86,7 +89,8 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
 #draw .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:8px;min-height:0}
 #dc{background:#fff;border-radius:12px;touch-action:none;max-width:100%;max-height:100%}
 #draw .emo{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}#draw .emo button{background:#5a4a38;font-size:28px;min-width:52px;flex:none}#draw .emo button.sel{background:#ffd43b}#draw .emo span{color:#ffd43b;font-weight:800;white-space:nowrap;padding:0 6px}
-@media (max-height:500px){#draw .bar{flex-wrap:nowrap;overflow-x:auto;padding:2px 4px;gap:4px}#draw .what{display:none}#draw .sw{width:30px;height:30px;min-width:30px;min-height:30px;border-width:2px}#draw .tool,#draw .btn{min-height:38px;font-size:15px;flex:none}#draw .emo button{font-size:20px;min-width:40px;min-height:38px}#draw .emo span{display:none}#draw .stage{padding:3px}}
+@media (max-height:500px){#draw .bar{flex-wrap:nowrap;overflow-x:auto;padding:2px 4px;gap:4px}#draw .stkbtns{display:none}#draw .stkbtns .tool{background:#e8590c}
+#draw .what{display:none}#draw .sw{width:30px;height:30px;min-width:30px;min-height:30px;border-width:2px}#draw .tool,#draw .btn{min-height:38px;font-size:15px;flex:none}#draw .emo button{font-size:20px;min-width:40px;min-height:38px}#draw .emo span{display:none}#draw .stage{padding:3px}}
 #draw .what{color:#ffd43b;font-weight:800;padding:0 8px}
 #dc.trans{background-color:#fff;background-image:linear-gradient(45deg,#eee 25%,transparent 25%,transparent 75%,#eee 75%),linear-gradient(45deg,#eee 25%,transparent 25%,transparent 75%,#eee 75%);background-size:32px 32px;background-position:0 0,16px 16px}
 #intro{position:fixed;inset:0;z-index:50;background:#fbf1dc;display:flex;align-items:center;justify-content:center}
@@ -125,7 +129,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
     <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
     <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
   </div>
-  <p class="ver">Test sample · 測試版 · v1.0</p>
+  <p class="ver">Test sample · 測試版 · v1.2</p>
 </div></section>
 <!-- SHELF -->
 <section id="shelf" class="screen">
@@ -173,7 +177,7 @@ function sticker(src){if(stickers[src])return stickers[src];const o={ready:false
 let AC=null;function boing(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;
   o.type='sine';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(660,t+.12);o.frequency.exponentialRampToValueAtTime(330,t+.3);
   g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}}
-const VERSION='v1.0';
+const VERSION='v1.2';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2400)};
@@ -183,7 +187,7 @@ let kid=null,story=null,dirty=false,hist=[];
 const Z=()=>story&&story.lang==='zh';
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));window.scrollTo(0,0);if(id!=='build'&&id!=='watch')stopStage()}
 function speak(t){try{speechSynthesis.cancel();if(!t)return;
-  const clean=t.replace(/[“”"「」『』*_~#…—–]/g,' ').replace(/\s+/g,' ').trim();if(!/[\p{L}\p{N}]/u.test(clean))return;
+  const clean=t.replace(/[”」』]/g,', ').replace(/[“"「『*_~#—–]/g,' ').replace(/…/g,', ').replace(/([,,。!?!?.:])(\s*,)+/g,'$1').replace(/(,\s*){2,}/g,', ').replace(/\s+/g,' ').trim();if(!/[\p{L}\p{N}]/u.test(clean))return;
   const u=new SpeechSynthesisUtterance(clean);u.lang=/[一-鿿]/.test(clean)?'zh-TW':'en-US';u.rate=.95;speechSynthesis.speak(u);return u}catch(e){}}
 
 /* ================= illustrated backgrounds (drawn once, cached) ================= */
@@ -235,7 +239,7 @@ const BG={
  home:x=>{x.fillStyle=grad(x,'#a5d8ff','#e7f5ff');x.fillRect(0,0,W,H);cloud(x,600,100,36);hills(x,440,'#8ce99a',12);x.fillStyle='#ffe8cc';x.fillRect(260,260,280,200);poly(x,[[240,270],[400,150],[560,270]],'#e8590c');
    x.fillStyle='#8d5524';x.fillRect(375,360,50,100);x.fillStyle='#74c0fc';x.fillRect(290,300,60,50);x.fillRect(450,300,60,50);tree(x,140,470,110);tree(x,680,470,100,'#37b24d');for(let i=0;i<14;i++)circ(x,40+i*55,500+(i%2)*15,7,i%2?'#ff8787':'#ffd43b')}};
 function bgCanvas(k){if(BGC[k])return BGC[k];const c=document.createElement('canvas');c.width=W;c.height=H;
-  if(k&&k.startsWith('img:')){const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);const im=new Image();im.onload=()=>x.drawImage(im,0,0,W,H);im.src=(story&&story.imgs[k.slice(4)])||'';BGC[k]=c;return c}try{(BG[k]||BG.meadow)(c.getContext('2d'))}catch(e){console.warn(e)}BGC[k]=c;return c}
+  if(k&&k.startsWith('img:')){const src=story&&story.imgs&&story.imgs[k.slice(4)];const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);if(!src)return c;const im=new Image();im.onload=()=>x.drawImage(im,0,0,W,H);im.src=src;BGC[k]=c;return c}try{(BG[k]||BG.meadow)(c.getContext('2d'))}catch(e){console.warn(e)}BGC[k]=c;return c}
 
 /* ================= emoji → sticker ================= */
 const EMO={};
@@ -349,7 +353,7 @@ function drawOwn(id){const D=DRAWABLE[id],z=Z();const st=stepsOf(curScene()).fin
     sayBy(sc,v,'Hee hee! Trouble time!','嘻嘻!搗蛋時間到!');line=z?`可是有一天,${nm}出現了,惹出了大麻煩!`:`But one day, ${nm} showed up and caused big trouble!`}
   else if(id==='meet'){nm=nm||(z?'新朋友':'a new friend');const a=addActor(sc,{role:'friend',img:key,name:nm,x:.62,y:.9,s:.3,m:'bounce'});sayBy(sc,a,'Hi! Can I help?','嗨!我可以幫忙嗎?');line=z?`${c.H}遇到了${nm}。${nm}說:「我可以幫忙嗎?」`:`${c.H} met ${nm}. “Can I help?” asked ${nm}.`}
   else if(id==='twist'){nm=nm||(z?'一個奇怪的東西':'something strange');addActor(sc,{role:'prop',img:key,name:'',x:.55+Math.random()*.25,y:.88,s:.2,m:'bounce'});sc.fx='sparkle';line=z?`突然,${nm}出現了!`:`Suddenly, ${nm} appeared!`}
-  if(line)sc.lines.push(line);sc.step++;touch();renderBuild()},DRAWABLE[id][2])}
+  if(line)sc.lines.push(line);sc.step++;touch();renderBuild()},DRAWABLE[id][2],id==='place'||id==='go')}
 function choose(oi){const sc=curScene(),st=stepsOf(sc)[sc.step],o=st.opts[oi];saveHist();
   const c=ctx(),z=c.z;let line='';const hero=heroOf(sc);
   if(st.id==='hero'){story.hero={e:o[0],name:z?o[2]:o[1],type:z?o[4]:o[3]};sc.actors=sc.actors.filter(a=>a.role!=='hero');const h=addActor(sc,{role:'hero',e:o[0],name:story.hero.name,x:.32,y:.9,s:.34,m:'wander'});
@@ -528,7 +532,7 @@ async function openShelf(){await saveNow();const K=KIDS[kid];$('shelfWho').textC
   document.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{story=get(b.dataset.w);watch(0)});
   document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{story=get(b.dataset.e);hist=[];if(story.done){story.done=false;const sc=curScene();if(sc.kind==='end'){story.scenes.pop()}}touch();openBuild()});
   // tiny cover: first scene background + hero
-  document.querySelectorAll('[data-cover]').forEach(el=>{const s=get(el.dataset.cover),sc=s.scenes[0];if(!sc)return;const c=document.createElement('canvas');c.width=400;c.height=300;const x=c.getContext('2d');x.drawImage(bgCanvas(sc.bg),0,0,400,300);
+  document.querySelectorAll('[data-cover]').forEach(el=>{const s=get(el.dataset.cover),sc=s.scenes[0];if(!sc)return;const c=document.createElement('canvas');c.width=400;c.height=300;const x=c.getContext('2d');{const old0=story;story=s;x.drawImage(bgCanvas(sc.bg),0,0,400,300);story=old0}
     const old=story;story=s;const h=sc.actors.find(a=>a.role==='hero');if(h){const sp=spriteOf(h);const put=()=>{if(sp&&sp.ready){const hh=110,ww=hh*sp.c.width/sp.c.height;x.drawImage(sp.c,200-ww/2,270-hh,ww,hh)}};put();setTimeout(put,300)}story=old;el.appendChild(c)});
   show('shelf')}
 
@@ -580,7 +584,8 @@ ${story.hero?`<button class="btn sm" id="rename">🏷️ ${z?'改名字':'Rename
     P.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>choose(+b.dataset.o));$('qSay').onclick=()=>speak(q);
     if($('drawOwn'))$('drawOwn').onclick=()=>drawOwn(st.id);
     if(anim!==true&&kid==='milo')speak(q)}
-  else if(sc.kind!=='end'){P.innerHTML=`<div class="q"><span>${z?'這一章完成了!接下來呢?':'Chapter done! What next?'}</span></div>
+  else if(sc.kind!=='end'){const chap=mix(sc.lines.join(z?'':' '));P.innerHTML=`<div class="q"><span>${z?'這一章完成了!接下來呢?':'Chapter done! What next?'}</span></div>
+      <div class="readbox"><div class="rbhead"><b>📖 ${esc(sceneName(story.scenes.length-1))}</b><button class="btn sm go" id="readChap">🔊 ${z?'唸這一章':'Read this chapter'}</button></div><div class="rbtext">${esc(chap)}</div></div>
       <div class="big2"><button class="opt big go2" id="more"><span class="e">➡️</span><span class="t">${z?'在這裡繼續':'Keep going here'}</span></button><button class="opt big go2" id="moreGo"><span class="e">🗺️</span><span class="t">${z?'去新的地方':'Go somewhere new'}</span></button>
         <button class="opt big go2" id="moreMeet"><span class="e">👋</span><span class="t">${z?'有新角色出現':'Someone new shows up'}</span></button><button class="opt big end2" id="finish"><span class="e">🏁</span><span class="t">${z?'結束故事':'End the story'}</span></button></div>
       <div class="tools"><button class="btn sm dirbtn" id="dirBtn">🎬 ${z?'導演':'Direct'}</button><button class="btn sm" id="undo">↩️ ${z?'上一步':'Undo'}</button><button class="btn sm" id="words">📝 ${z?'改文字':'Edit words'}</button><button class="btn sm" id="peek">▶ ${z?'看到目前為止':'Watch so far'}</button>${story.scenes.some(s=>s.lines.length)?`<button class="btn sm" id="mixBtn">🔤 ${z?'混合語言 English':'Mix words 中文'}</button>`:''}</div>`;
@@ -588,12 +593,16 @@ ${story.hero?`<button class="btn sm" id="rename">🏷️ ${z?'改名字':'Rename
     $('moreGo').onclick=()=>{saveHist();newScene('middle').pre='go';touch();renderBuild()};
     $('moreMeet').onclick=()=>{saveHist();newScene('middle').pre='meet';touch();renderBuild()};
     $('finish').onclick=()=>{saveHist();newScene('end');touch();renderBuild()};
-    $('peek').onclick=()=>{saveNow();watch(0,true)}}
-  else{story.done=true;touch();saveNow();P.innerHTML=`<div class="q"><span>🎉 ${z?'故事完成了!已經存好了。':'Your story is finished and saved!'}</span></div>
+    $('peek').onclick=()=>{saveNow();watch(0,true)};
+    $('readChap').onclick=()=>speak(chap);if(anim===true)setTimeout(()=>speak(chap),400)}
+  else{story.done=true;touch();saveNow();const whole=(story.title?story.title+(z?'。':'. '):'')+story.scenes.map(x=>mix(x.lines.join(z?'':' '))).join(z?'':' ');
+    P.innerHTML=`<div class="q"><span>🎉 ${z?'故事完成了!已經存好了。':'Your story is finished and saved!'}</span></div>
+      <div class="readbox"><div class="rbhead"><b>📖 ${esc(story.title||'')}</b><button class="btn sm go" id="readAll">🔊 ${z?'唸整個故事':'Read the whole story'}</button></div>
+        <div class="rbtext whole">${story.scenes.map((x,i)=>`<p><b>${esc(sceneName(i))}</b><br>${esc(mix(x.lines.join(z?'':' ')))}</p>`).join('')}</div></div>
       <div class="big2"><button class="opt big go2" id="watchAll"><span class="e">🎬</span><span class="t">${z?'播放我的故事':'Watch my story'}</span></button></div>
       <div class="tools"><button class="btn sm" id="undo">↩️ ${z?'上一步':'Undo'}</button><button class="btn sm" id="retitle">🏷️ ${z?'故事名字':'Story name'}</button></div>`;
     $('watchAll').onclick=()=>watch(0);$('retitle').onclick=()=>{const t=prompt(z?'故事的名字:':'Story name:',story.title);if(t){story.title=t.trim();touch();renderBuild()}};
-    setTimeout(()=>{if($('watchAll')&&$('build').classList.contains('on')&&kid==='milo')watch(0)},1500)}
+    $('readAll').onclick=()=>speak(whole);if(anim===true)setTimeout(()=>speak(whole),500)}
   if($('mixBtn'))$('mixBtn').onclick=mixPanel;
   if($('dirBtn'))$('dirBtn').onclick=()=>{if(!curScene().actors.length){toast(z?'先選一個主角':'Pick a hero first');return}director=true;renderDirector()};
   if($('undo'))$('undo').onclick=()=>{const h=hist.pop();if(!h){toast(z?'沒有上一步了':'Nothing to undo');return}const o=JSON.parse(h);Object.assign(story,{trait:null,problem:null,solved:false},o);story.done=false;touch();renderBuild()};
@@ -617,54 +626,87 @@ $('wPrev').onclick=()=>{if(wi>0){wi--;wShow()}};$('wNext').onclick=()=>{if(wi<st
 $('wPlay').onclick=()=>{wAuto=!wAuto;$('wPlay').textContent=wAuto?'⏸':'▶';if(wAuto)wShow();else{clearTimeout(wTimer);try{speechSynthesis.cancel()}catch(e){}}};
 $('wBack').onclick=()=>{clearTimeout(wTimer);try{speechSynthesis.cancel()}catch(e){}if(wPeek)openBuild();else openShelf()};
 
-/* ---------- drawing pad (scene = white 800×600; character = transparent 640×640, trimmed) ---------- */
+/* ---------- drawing pad: layers = background (white / loaded picture) → movable emoji stickers → pen ink on top ---------- */
 const COLORS=['#2b2118','#e03131','#f76707','#fcc419','#2f9e44','#1c7ed6','#7048e8','#e64980','#8d5524','#ffc9a8','#868e96','#ffffff'];
-const dc=$('dc'),dx=dc.getContext('2d');let dColor=COLORS[0],dSize=10,dTool='pen',dUndo=[],dCb=null,dDirty=false,CW=800,CH=600,dTrans=false;
+const dc=$('dc'),vx=dc.getContext('2d'),ink=document.createElement('canvas'),dx=ink.getContext('2d');
+let dColor=COLORS[0],dSize=10,dTool='pen',dUndo=[],dCb=null,dDirty=false,CW=800,CH=600,dTrans=false,baseImg=null,stk=[],sel=-1;
+const EMOFONT='"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",serif';
 $('dbar2').innerHTML=COLORS.map((c,i)=>`<button class="sw${i?'':' sel'}" style="background:${c}" data-col="${c}"></button>`).join('')+
-  `<button class="tool sel" data-t="pen">✏️</button><button class="tool" data-t="fill">🪣</button><button class="tool" data-t="eraser">🧽</button><button class="tool" id="dSize">● ${dSize}</button>`;
-$('dbar2').querySelectorAll('[data-col]').forEach(b=>b.onclick=()=>{dColor=b.dataset.col;if(dTool==='eraser')setTool('pen');$('dbar2').querySelectorAll('.sw').forEach(x=>x.classList.toggle('sel',x===b))});
-function setTool(t){dTool=t;if(t!=='stamp')$('dbar3').querySelectorAll('[data-em]').forEach(x=>x.classList.remove('sel'));$('dbar2').querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('sel',x.dataset.t===t))}
+  `<button class="tool sel" data-t="pen">✏️</button><button class="tool" data-t="fill">🪣</button><button class="tool" data-t="eraser">🧽</button><button class="tool" id="dSize">● ${dSize}</button><button class="tool" data-t="move" title="move stickers">✋</button>
+   <span class="stkbtns" id="stkBtns"><button class="tool" id="stkSmall">➖</button><button class="tool" id="stkBig">➕</button><button class="tool" id="stkDel">🗑️</button></span>`;
+$('dbar2').querySelectorAll('[data-col]').forEach(b=>b.onclick=()=>{dColor=b.dataset.col;if(dTool!=='fill')setTool('pen');$('dbar2').querySelectorAll('.sw').forEach(x=>x.classList.toggle('sel',x===b))});
+function setTool(t){dTool=t;if(t!=='move'){sel=-1;$('dbar3').querySelectorAll('[data-em]').forEach(x=>x.classList.remove('sel'))}$('dbar2').querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('sel',x.dataset.t===t));showStkBtns();render()}
 $('dbar2').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>setTool(b.dataset.t));
-const SIZES=[4,10,20,36];$('dSize').onclick=()=>{dSize=SIZES[(SIZES.indexOf(dSize)+1)%SIZES.length];$('dSize').textContent='● '+dSize};
+const SIZES=[4,10,20,36];$('dSize').onclick=()=>{dSize=SIZES[(SIZES.indexOf(dSize)+1)%SIZES.length];$('dSize').textContent='● '+dSize;if(dTool==='move')setTool('pen')};
+function showStkBtns(){$('stkBtns').style.display=sel>=0?'contents':'none'}
+const resizeSel=f=>{if(sel<0)return;snap();stk[sel].s=clamp(stk[sel].s*f,40,CW*1.2);dDirty=true;render()};
+$('stkSmall').onclick=()=>resizeSel(1/1.25);$('stkBig').onclick=()=>resizeSel(1.25);
+$('stkDel').onclick=()=>{if(sel<0)return;snap();stk.splice(sel,1);sel=-1;dDirty=true;showStkBtns();render()};
 function fitDraw(){const st=dc.parentElement.getBoundingClientRect();const s=Math.min((st.width-16)/CW,(st.height-16)/CH);dc.style.width=CW*s+'px';dc.style.height=CH*s+'px'}
 addEventListener('resize',()=>{if($('draw').classList.contains('on'))fitDraw()});
-function blank(){if(dTrans)dx.clearRect(0,0,CW,CH);else{dx.fillStyle='#fff';dx.fillRect(0,0,CW,CH)}}
+function compose(ctx2,withUI){ctx2.clearRect(0,0,CW,CH);if(!dTrans){ctx2.fillStyle='#fff';ctx2.fillRect(0,0,CW,CH)}
+  if(dScene&&!baseImg){const g2=ctx2.createLinearGradient(0,0,0,CH);g2.addColorStop(0,'#d0ebff');g2.addColorStop(.68,'#e7f5ff');g2.addColorStop(.68,'#d3f9d8');g2.addColorStop(1,'#b2f2bb');ctx2.fillStyle=g2;ctx2.fillRect(0,0,CW,CH)}
+  if(baseImg)ctx2.drawImage(baseImg.c,0,0);
+  for(const s of stk){ctx2.font=s.s+'px '+EMOFONT;ctx2.textAlign='center';ctx2.textBaseline='middle';ctx2.fillText(s.e,s.x,s.y)}
+  ctx2.drawImage(ink,0,0);
+  if(withUI&&sel>=0&&stk[sel]){const s=stk[sel],h=s.s*.62,hr=handleR();ctx2.setLineDash([12,8]);ctx2.lineWidth=4;ctx2.strokeStyle='#e8590c';ctx2.strokeRect(s.x-h,s.y-h,h*2,h*2);ctx2.setLineDash([]);
+    ctx2.fillStyle='#e8590c';ctx2.beginPath();ctx2.arc(s.x+h,s.y+h,hr,0,7);ctx2.fill();ctx2.fillStyle='#fff';ctx2.font=`${hr*1.2}px sans-serif`;ctx2.textAlign='center';ctx2.textBaseline='middle';ctx2.fillText('⤡',s.x+h,s.y+h+1)}}
+let rq=0;function render(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;compose(vx,true)})}
+const handleR=()=>Math.max(18,26*CW/(dc.clientWidth||CW));
 const EMO_MORE=['😀','😎','🥳','😴','😡','👑','🎩','🕶️','🎀','⭐','❤️','🌈','☀️','🌙','☁️','⚡','🔥','💧','🌸','🌳','🍄','🏠','🚀','⚽','🎈','🎁','🍦','🍕','🐾','✨'];
-let drawEmojis=[],dStamp='';
+let drawEmojis=[];
 function fillEmo(){const list=[...new Set([...drawEmojis,...EMO_MORE])];$('dbar3').innerHTML=`<span>😀 ${Z()?'貼圖':'Stickers'}:</span>`+list.map(e=>`<button data-em="${e}">${e}</button>`).join('');
-  $('dbar3').querySelectorAll('[data-em]').forEach(b=>b.onclick=()=>{dStamp=b.dataset.em;setTool('stamp');$('dbar3').querySelectorAll('[data-em]').forEach(x=>x.classList.toggle('sel',x===b));toast(Z()?'點畫布貼上,再畫上去!':'Tap the canvas to stamp it, then draw on it!')})}
-function openDraw(what,img,cb,trans){fillEmo();dCb=cb;dUndo=[];dDirty=false;dTrans=!!trans;CW=dTrans?640:800;CH=dTrans?640:600;dc.width=CW;dc.height=CH;
-  dc.classList.toggle('trans',dTrans);$('dWhat').textContent='🎨 '+what+(dTrans?' — draw just the character 只畫角色,不用畫背景':'');$('draw').classList.add('on');
-  blank();if(img){const im=new Image();im.onload=()=>{if(dTrans){const r=Math.min(560/im.width,560/im.height);dx.drawImage(im,(CW-im.width*r)/2,(CH-im.height*r)/2,im.width*r,im.height*r)}else dx.drawImage(im,0,0,CW,CH)};im.src=img}
-  if(kid==='milo'&&dSize<20){dSize=20;$('dSize').textContent='● 20'}requestAnimationFrame(fitDraw)}
+  $('dbar3').querySelectorAll('[data-em]').forEach(b=>b.onclick=()=>{snap();const n=stk.filter(s=>s.e===b.dataset.em).length;
+    stk.push({e:b.dataset.em,x:CW/2+n*30,y:CH/2+n*30,s:Math.round(CW*.32)});sel=stk.length-1;dDirty=true;setTool('move');sel=stk.length-1;showStkBtns();render();
+    toast(Z()?'拖曳移動,拉角落變大變小,再用筆畫上去!':'Drag to move, pull the corner to resize, then draw on it!')})}
+let dScene=false;
+function openDraw(what,img,cb,trans,scene){dScene=!!scene;fillEmo();dCb=cb;dUndo=[];dDirty=false;dTrans=!!trans;CW=dTrans?640:800;CH=dTrans?640:600;dc.width=ink.width=CW;dc.height=ink.height=CH;
+  stk=[];sel=-1;baseImg=null;dx.clearRect(0,0,CW,CH);setTool('pen');
+  dc.classList.toggle('trans',dTrans);$('dWhat').textContent='🎨 '+what+(dTrans?' — draw just the character 只畫角色,不用畫背景':dScene?' — draw the whole background 畫整個背景,它會換掉原本的背景':'');$('draw').classList.add('on');
+  if(img){const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=CW;c.height=CH;const x=c.getContext('2d');
+    if(dTrans){const r=Math.min(560/im.width,560/im.height);x.drawImage(im,(CW-im.width*r)/2,(CH-im.height*r)/2,im.width*r,im.height*r)}else x.drawImage(im,0,0,CW,CH);baseImg={c};render()};im.src=img}
+  if(kid==='milo'&&dSize<20){dSize=20;$('dSize').textContent='● 20'}requestAnimationFrame(()=>{fitDraw();render()})}
 function closeDraw(){$('draw').classList.remove('on')}
-function trimmed(){const d=dx.getImageData(0,0,CW,CH).data;let x0=CW,y0=CH,x1=-1,y1=-1;
+function flat(){const c=document.createElement('canvas');c.width=CW;c.height=CH;compose(c.getContext('2d'),false);return c}
+function trimmed(){const c=flat(),d=c.getContext('2d').getImageData(0,0,CW,CH).data;let x0=CW,y0=CH,x1=-1,y1=-1;
   for(let y=0;y<CH;y++)for(let x=0;x<CW;x++)if(d[(y*CW+x)*4+3]>20){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
-  if(x1<0)return'';const c=document.createElement('canvas');c.width=x1-x0+1;c.height=y1-y0+1;c.getContext('2d').drawImage(dc,-x0,-y0);return c.toDataURL('image/png')}
+  if(x1<0)return'';const o=document.createElement('canvas');o.width=x1-x0+1;o.height=y1-y0+1;o.getContext('2d').drawImage(c,-x0,-y0);return o.toDataURL('image/png')}
 $('dCancel').onclick=closeDraw;
-$('dDone').onclick=()=>{if(dDirty&&dCb)dCb(dTrans?trimmed():dc.toDataURL('image/jpeg',.85));closeDraw()};
-$('dUndo').onclick=()=>{const s=dUndo.pop();if(s)dx.putImageData(s,0,0)};
-$('dClear').onclick=()=>{snap();blank();dDirty=true};
-function snap(){try{dUndo.push(dx.getImageData(0,0,CW,CH));if(dUndo.length>12)dUndo.shift()}catch(e){}}
+$('dDone').onclick=()=>{sel=-1;if(dDirty&&dCb)dCb(dTrans?trimmed():flat().toDataURL('image/jpeg',.85));closeDraw()};
+$('dUndo').onclick=()=>{const u=dUndo.pop();if(!u)return;dx.putImageData(u.ink,0,0);stk=JSON.parse(u.stk);baseImg=u.base;sel=-1;showStkBtns();render()};
+$('dClear').onclick=()=>{snap();dx.clearRect(0,0,CW,CH);stk=[];baseImg=null;sel=-1;dDirty=true;showStkBtns();render()};
+function snap(){try{dUndo.push({ink:dx.getImageData(0,0,CW,CH),stk:JSON.stringify(stk),base:baseImg});if(dUndo.length>12)dUndo.shift()}catch(e){}}
 const dp=e=>{const r=dc.getBoundingClientRect();return{x:(e.clientX-r.left)*CW/r.width,y:(e.clientY-r.top)*CH/r.height}};
-let dDown=false,dLast=null;
-dc.addEventListener('pointerdown',e=>{e.preventDefault();dc.setPointerCapture(e.pointerId);snap();dDirty=true;const p=dp(e);
-  if(dTool==='fill'){flood(Math.round(p.x),Math.round(p.y),dColor);return}
-  if(dTool==='stamp'&&dStamp){const px={4:110,10:200,20:300,36:420}[dSize]||200;dx.font=px+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",serif';dx.textAlign='center';dx.textBaseline='middle';dx.fillText(dStamp,p.x,p.y);setTool('pen');return}dDown=true;dLast=p;stroke(p,p)});
-dc.addEventListener('pointermove',e=>{if(!dDown)return;for(const ev of(e.getCoalescedEvents?e.getCoalescedEvents():[e])){const p=dp(ev);stroke(dLast,p);dLast=p}});
-['pointerup','pointercancel'].forEach(t=>dc.addEventListener(t,()=>dDown=false));
-function stroke(a,b){const er=dTool==='eraser';dx.globalCompositeOperation=er&&dTrans?'destination-out':'source-over';
-  dx.strokeStyle=er?'#fff':dColor;dx.lineWidth=er?dSize*2:dSize;dx.lineCap=dx.lineJoin='round';dx.beginPath();dx.moveTo(a.x,a.y);dx.lineTo(b.x+.01,b.y);dx.stroke();dx.globalCompositeOperation='source-over'}
-function flood(x,y,hex){if(x<0||y<0||x>=CW||y>=CH)return;const im=dx.getImageData(0,0,CW,CH),d=im.data,i0=(y*CW+x)*4,R=CW*4;const t=[d[i0],d[i0+1],d[i0+2],d[i0+3]];
-  const c=[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16),255];if(t.every((v,i)=>Math.abs(v-c[i])<8))return;
-  const filled=[];const near=i=>t[3]<20?d[i+3]<20:(d[i+3]>=20&&Math.abs(d[i]-t[0])+Math.abs(d[i+1]-t[1])+Math.abs(d[i+2]-t[2])<90);const st=[[x,y]];
+let dDown=false,dLast=null,grab=null;const ptrs=new Map();
+function hitStk(p){for(let i=stk.length-1;i>=0;i--){const s=stk[i],h=s.s*.62;if(Math.abs(p.x-s.x)<h&&Math.abs(p.y-s.y)<h)return i}return-1}
+dc.addEventListener('pointerdown',e=>{e.preventDefault();dc.setPointerCapture(e.pointerId);const p=dp(e);ptrs.set(e.pointerId,p);
+  if(dTool==='move'){
+    if(ptrs.size===2&&sel>=0){const [a,b]=[...ptrs.values()];grab={pinch:true,d0:Math.hypot(a.x-b.x,a.y-b.y)||1,s0:stk[sel].s};return}
+    if(sel>=0){const s=stk[sel],h=s.s*.62;if(Math.hypot(p.x-(s.x+h),p.y-(s.y+h))<handleR()*1.6){snap();grab={resize:true,d0:Math.hypot(p.x-s.x,p.y-s.y)||1,s0:s.s};return}}
+    const i=hitStk(p);sel=i;showStkBtns();if(i>=0){snap();const s=stk.splice(i,1)[0];stk.push(s);sel=stk.length-1;grab={dx:s.x-p.x,dy:s.y-p.y}}render();return}
+  snap();dDirty=true;
+  if(dTool==='fill'){flood(Math.round(p.x),Math.round(p.y),dColor);render();return}
+  dDown=true;dLast=p;stroke(p,p);render()});
+dc.addEventListener('pointermove',e=>{if(ptrs.has(e.pointerId))ptrs.set(e.pointerId,dp(e));
+  if(dTool==='move'){if(!grab||sel<0)return;const s=stk[sel];
+    if(grab.pinch&&ptrs.size>=2){const [a,b]=[...ptrs.values()];s.s=clamp(grab.s0*Math.hypot(a.x-b.x,a.y-b.y)/grab.d0,40,CW*1.2)}
+    else if(grab.resize){const p=dp(e);s.s=clamp(grab.s0*Math.hypot(p.x-s.x,p.y-s.y)/grab.d0,40,CW*1.2)}
+    else if(!grab.pinch){const p=dp(e);s.x=clamp(p.x+grab.dx,0,CW);s.y=clamp(p.y+grab.dy,0,CH)}
+    dDirty=true;render();return}
+  if(!dDown)return;for(const ev of(e.getCoalescedEvents?e.getCoalescedEvents():[e])){const p=dp(ev);stroke(dLast,p);dLast=p}render()});
+['pointerup','pointercancel'].forEach(t=>dc.addEventListener(t,e=>{ptrs.delete(e.pointerId);dDown=false;if(ptrs.size===0)grab=null;else if(grab&&grab.pinch)grab=null}));
+function stroke(a,b){const er=dTool==='eraser';dx.globalCompositeOperation=er?'destination-out':'source-over';
+  dx.strokeStyle=er?'#000':dColor;dx.lineWidth=er?dSize*2:dSize;dx.lineCap=dx.lineJoin='round';dx.beginPath();dx.moveTo(a.x,a.y);dx.lineTo(b.x+.01,b.y);dx.stroke();dx.globalCompositeOperation='source-over'}
+// paint bucket: edges come from everything you can see (stickers + lines), paint goes on the ink layer
+function flood(x,y,hex){if(x<0||y<0||x>=CW||y>=CH)return;const cv=flat(),cd=cv.getContext('2d').getImageData(0,0,CW,CH),d=cd.data,im=dx.getImageData(0,0,CW,CH),o=im.data,i0=(y*CW+x)*4,R=CW*4;
+  const t=[d[i0],d[i0+1],d[i0+2],d[i0+3]],c=[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16),255];if(t.every((v,i)=>Math.abs(v-c[i])<8))return;
+  const seen=new Uint8Array(CW*CH),filled=[];const near=i=>!seen[i>>2]&&(t[3]<20?d[i+3]<20:(d[i+3]>=20&&Math.abs(d[i]-t[0])+Math.abs(d[i+1]-t[1])+Math.abs(d[i+2]-t[2])<90));const st=[[x,y]];
   while(st.length){let[px,py]=st.pop();let i=(py*CW+px)*4;if(!near(i))continue;while(px>=0&&near(i)){px--;i-=4}px++;i+=4;let up=false,dn=false;
-    while(px<CW&&near(i)){d[i]=c[0];d[i+1]=c[1];d[i+2]=c[2];d[i+3]=255;filled.push(i);
+    while(px<CW&&near(i)){seen[i>>2]=1;o[i]=c[0];o[i+1]=c[1];o[i+2]=c[2];o[i+3]=255;filled.push(i);
       if(py>0){const u=i-R;if(near(u)){if(!up){st.push([px,py-1]);up=true}}else up=false}
       if(py<CH-1){const w=i+R;if(near(w)){if(!dn){st.push([px,py+1]);dn=true}}else dn=false}px++;i+=4}}
-  if(t[3]<20){// slide the paint under the soft (see-through) edge of the lines, so no thin ring is left
-    for(const i of filled){const x0=(i/4)%CW,y0=(i/4/CW)|0;for(let oy=-2;oy<=2;oy++)for(let ox=-2;ox<=2;ox++){const x=x0+ox,y=y0+oy;if(x<0||y<0||x>=CW||y>=CH)continue;
-      const j=(y*CW+x)*4,al=d[j+3]/255;if(al>=.99)continue;d[j]=d[j]*al+c[0]*(1-al);d[j+1]=d[j+1]*al+c[1]*(1-al);d[j+2]=d[j+2]*al+c[2]*(1-al);d[j+3]=255}}}
+  if(t[3]<20){for(const i of filled){const x0=(i/4)%CW,y0=(i/4/CW)|0;for(let oy=-2;oy<=2;oy++)for(let ox=-2;ox<=2;ox++){const xx=x0+ox,yy=y0+oy;if(xx<0||yy<0||xx>=CW||yy>=CH)continue;
+      const j=(yy*CW+xx)*4;if(seen[j>>2])continue;const al=d[j+3]/255;if(al>=.99||al<.02)continue;if(o[j+3]>250)continue;o[j]=d[j]*al+c[0]*(1-al);o[j+1]=d[j+1]*al+c[1]*(1-al);o[j+2]=d[j+2]*al+c[2]*(1-al);o[j+3]=255}}}
   dx.putImageData(im,0,0)}
 
 /* ---------- opening animation: a crayon pen draws two characters, they pop alive, title bursts in ---------- */
