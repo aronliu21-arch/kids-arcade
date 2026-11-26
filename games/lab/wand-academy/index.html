@@ -856,7 +856,7 @@ class Pad{
  toPx(p){ return [this.ox+p[0]*this.U,this.oy-p[1]*this.U]; }
  toU(x,y){ return [(x-this.ox)/this.U,(this.oy-y)/this.U]; }
  bind(){ const cv=this.cv, pos=e=>{const r=cv.getBoundingClientRect();return this.toU(e.clientX-r.left,e.clientY-r.top);};
-  cv.addEventListener('pointerdown',e=>{ if(this.locked||this.demo) return; if(this.cur&&e.pointerId!==this.curId) return; e.preventDefault(); try{cv.setPointerCapture(e.pointerId);}catch(_){} this.curId=e.pointerId; if(e.pointerType==='pen') this.pen=true; this.cur=[pos(e)]; this.strokes.push(this.cur); hideFb(); this.draw(); });
+  cv.addEventListener('pointerdown',e=>{ if(this.demo){ this.demo=null; this.draw(); } if(this.locked) return; if(this.cur&&e.pointerId!==this.curId) return; e.preventDefault(); try{cv.setPointerCapture(e.pointerId);}catch(_){} this.curId=e.pointerId; if(e.pointerType==='pen') this.pen=true; this.cur=[pos(e)]; this.strokes.push(this.cur); hideFb(); this.draw(); });
   cv.addEventListener('pointermove',e=>{ if(!this.cur||e.pointerId!==this.curId) return; e.preventDefault(); const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e]; for(const ev of (evs.length?evs:[e])){ const p=pos(ev),q=this.cur[this.cur.length-1]; if(d2(p,q)>.012){ this.cur.push(p); if(Math.random()<.25) this.trail.push({p,t:performance.now()}); } } this.draw(); });
   const end=e=>{ if(this.cur&&e.pointerId===this.curId){ this.cur=null; this.curId=null; this.draw(); } };
   cv.addEventListener('pointerup',end); cv.addEventListener('pointercancel',end); cv.addEventListener('lostpointercapture',end);
@@ -882,7 +882,7 @@ class Pad{
    const [sx,sy]=this.toPx(s.pts[0]),r=Math.max(14,U*.17); g.fillStyle='#40c057'; g.beginPath(); g.arc(sx,sy,r,0,7); g.fill(); g.fillStyle='#fff'; g.font=`700 ${Math.round(r*1.2)}px system-ui`; g.textAlign='center'; g.textBaseline='middle'; g.fillText(String(num++),sx,sy+1); g.textAlign='start'; g.textBaseline='alphabetic'; }
   // demo
   if(this.demo&&this.demo.tip&&Math.random()<.5){ const r=this.cv.getBoundingClientRect(); FX.burst(r.left+this.demo.tip[0],r.top+this.demo.tip[1],{n:2,colors:['#b197fc','#e5dbff','#fff'],speed:2,grav:0,life:500,size:4}); }
-  if(this.demo){ g.strokeStyle='#7048e8'; g.lineWidth=Math.max(6,U*.13); g.shadowColor='#b197fc'; g.shadowBlur=14; let left=this.demo.k; for(const s of this.L.strokes){ if(left<=0) break; if(s.dot){ const [x,yy]=this.toPx(s.pts[0]); g.fillStyle='#7048e8'; g.beginPath(); g.arc(x,yy,U*.1,0,7); g.fill(); left--; continue; } const n=Math.min(s.pts.length,left); this.path(s.pts,n); g.stroke(); if(n>0) this.demo.tip=this.toPx(s.pts[n-1]); left-=s.pts.length; } g.shadowBlur=0; }
+  if(this.demo){ g.strokeStyle='#7048e8'; g.lineWidth=Math.max(6,U*.13); g.shadowColor='#b197fc'; g.shadowBlur=14; let left=this.demo.k; for(const s of this.L.strokes){ if(left<=0) break; if(s.dot){ const [x,yy]=this.toPx(s.pts[0]); g.fillStyle='#7048e8'; g.beginPath(); g.arc(x,yy,U*.1,0,7); g.fill(); left--; continue; } const n=Math.min(s.pts.length,Math.floor(left)); if(n>0){ this.path(s.pts,n); g.stroke(); this.demo.tip=this.toPx(s.pts[n-1]); } left-=s.pts.length; } g.shadowBlur=0; }
   // ink (glowing gold)
   g.lineCap='round'; g.lineJoin='round';
   for(const pass of [[Math.max(14,U*.24),'rgba(255,212,59,.35)'],[Math.max(6,U*.12),'#e9a91c'],[Math.max(2,U*.04),'#fff3bf']]){ g.strokeStyle=pass[1]; g.fillStyle=pass[1]; g.lineWidth=pass[0]; for(const s of this.strokes){ if(s.length===1){ const [x,yy]=this.toPx(s[0]); g.beginPath(); g.arc(x,yy,pass[0]*.6,0,7); g.fill(); continue; } this.path(s); g.stroke(); } }
@@ -890,7 +890,10 @@ class Pad{
   const now=performance.now(); this.trail=this.trail.filter(t=>now-t.t<600); for(const t of this.trail){ const [x,yy]=this.toPx(t.p),k=1-(now-t.t)/600; g.fillStyle=`rgba(255,240,150,${k})`; g.beginPath(); g.arc(x+(Math.random()-.5)*10,yy-(1-k)*20,3*k+1,0,7); g.fill(); }
   if(this.trail.length&&!this.raf){ this.raf=requestAnimationFrame(()=>{this.raf=null;this.draw();}); }
  }
- playDemo(){ return new Promise(res=>{ const total=this.L.strokes.reduce((a,s)=>a+(s.dot?1:s.pts.length),0); this.demo={k:0}; const step=()=>{ if(!this.demo) return res(); this.demo.k+=Math.max(1,total/90); this.draw(); if(this.demo.k<total+20) requestAnimationFrame(step); else { setTimeout(()=>{ this.demo=null; this.draw(); res(); },500); } }; step(); }); }
+ playDemo(){ return new Promise(res=>{ const total=this.L.strokes.reduce((a,s)=>a+(s.dot?1:s.pts.length),0); const me={k:0}; this.demo=me; let done=false;
+  const finish=()=>{ if(done) return; done=true; if(this.demo===me) this.demo=null; try{ this.draw(); }catch(e){} res(); };
+  const guard=setTimeout(finish,6000); // safety net: the pad can never stay frozen
+  const step=()=>{ if(this.demo!==me){ clearTimeout(guard); return finish(); } me.k+=Math.max(1,total/90); try{ this.draw(); }catch(e){ clearTimeout(guard); return finish(); } if(me.k<total+20) requestAnimationFrame(step); else { clearTimeout(guard); setTimeout(finish,500); } }; step(); }); }
  score(){ const r=scoreInk(this.text,this.strokes,'trace'); if(this.pen){ r.stars=r.score>=.86?3:r.score>=.7?2:r.score>=.5?1:0; } return r; }
 }
 const pad=new Pad($('#padHost'));
@@ -940,7 +943,7 @@ const nextMain=()=>MAIN.find(m=>!S.done[m.id]);
 // ============ screens ============
 function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id)); current=id; FX.ambient(id==='title'||id==='story'||id==='result'?'light':null); updateHint(); if(id==='map'){ drawMap(); } }
 let current='title';
-function updateHint(){ const port=innerHeight>innerWidth&&innerWidth<600; $('#rotHint').style.display=port&&current!=='title'?'block':'none'; }
+let hintShown=false; function updateHint(){ const port=innerHeight>innerWidth&&innerWidth<600; const on=port&&current!=='title'&&!hintShown; $('#rotHint').style.display=on?'block':'none'; if(on){ hintShown=true; setTimeout(()=>{ $('#rotHint').style.display='none'; },4000); } }
 addEventListener('resize',()=>{ updateHint(); if(current==='map') drawMap(); if(current==='mini') miniResize(); });
 function refreshStars(){ ['#stStars','#mapStars','#playStars'].forEach(s=>$(s).textContent=S.stars); const d=MAIN.filter(m=>S.done[m.id]).length; $('#stCh').textContent=d+'/'+MAIN.length; }
 
@@ -1020,7 +1023,7 @@ $('#padClear').onclick=()=>{ Snd.sfx('tap'); pad.clear(); hideFb(); };
 $('#padShow').onclick=async()=>{ if(pad.demo) return; pad.clear(); hideFb(); await pad.playDemo(); };
 $('#padCast').onclick=()=>cast();
 async function cast(){
- if(!M||pad.locked) return; if(!pad.hasInk()){ showFb('Write with your finger or Pencil first ✍️'); return; }
+ if(!M||pad.locked) return; if(pad.demo){ showFb('Watch the magic quill first, then trace! ✨'); return; } if(!pad.hasInk()){ showFb('Write with your finger or Pencil first ✍️'); return; }
  if(M.battle&&!M.word){ showFb('Pick a spell card first! 🃏'); return; }
  const r=pad.score(); M.tries++;
  if(r.stars>=1){
@@ -1200,6 +1203,8 @@ function gateCheck(){ if(+$('#gateIn').value!==gateAns){ newGateQ(); $('#gateQ')
 $('#gateCancel').onclick=()=>$('#gate').classList.remove('on');
 
 refreshStars(); updateHint();
+// If anything ever goes wrong mid-animation, free the writing pad so the game never freezes.
+addEventListener('error',()=>{ try{ pad.demo=null; if(current==='play'&&!(M&&M.battle&&!M.word)) pad.locked=false; pad.draw(); }catch(e){} });
 
 // ============ test hook ============
 window.__test={
@@ -1217,7 +1222,7 @@ window.__test={
  resetSession:()=>{ sessionMissions=0; }
 };
 </script>
-<div id="kaVer" data-v="1.1" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-26</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
