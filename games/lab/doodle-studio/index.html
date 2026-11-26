@@ -65,9 +65,8 @@ canvas{width:100%;height:100%;background:#fff;border-radius:16px;box-shadow:0 2p
       <button class="big no" id="fresh">New 新的</button>
     </div>
   </div>
-  <button class="big no" id="gpBtn">🔗 Google Photos (parents 家長)</button>
-  <div id="gpState" style="font-size:13px;color:#666"></div>
-  <p style="font-size:13px;color:#888">Test sample · 測試版 · v1.1</p>
+  <div style="font-size:13px;color:#666">Saved drawings go to the Photos app 存在「照片」裡</div>
+  <p style="font-size:13px;color:#888">Test sample · 測試版 · v1.2</p>
 </section>
 
 <section id="studio" class="screen">
@@ -101,10 +100,10 @@ canvas{width:100%;height:100%;background:#fff;border-radius:16px;box-shadow:0 2p
     <input id="nameIn" maxlength="40" placeholder="My drawing 我的畫" style="display:block;margin:12px auto;font-size:20px;width:100%;padding:10px;border-radius:12px;border:2px solid #ccc">
     <div id="chips" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"></div>
     <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
-      <button class="big yes" id="nameOk">💾 Save 儲存</button><button class="big no" id="nameNo">Back 返回</button></div>
+      <button class="big yes" id="nameOk">📲 Save 存起來</button><button class="big no" id="nameNo">Back 返回</button></div>
   </div></div>
 
-<script src="../../../gphotos.js"></script>
+<script src="../../../savepic.js"></script>
 <script>
 const KIDS={nora:{name:'Nora',color:'#7048e8',size:8,stamps:['⭐','💜','🌸','⚽','🦄','🌈']},
             lucas:{name:'Lucas',color:'#f76707',size:8,stamps:['⚡','🔥','⚽','🐉','⭐','🚀']},
@@ -191,11 +190,6 @@ setInterval(()=>autosave(false),60000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)autosave(false)});
 window.addEventListener('pagehide',()=>autosave(false));
 
-/* ---------- Google Photos: shared uploader (../../../gphotos.js), one album per kid ---------- */
-const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
-KAPhotos.onChange(st=>{$('gpState').textContent=(st.connected?'Connected ✓ 已連結':'Not connected 未連結')+(st.waiting?` · ${st.waiting} waiting to upload 等待上傳`:'')});
-$('gpBtn').onclick=()=>KAPhotos.connect();
-
 /* ---------- Save: to the kid's Google Photos album (queued if offline / signed out) ---------- */
 const CHIPS={nora:['🦄 Unicorn 獨角獸','🌸 Flowers 花','⚽ Soccer 足球','👨‍👩‍👧‍👦 Family 家人','🌈 Rainbow 彩虹','🐱 Cat 貓'],
   lucas:['🐉 Dragon 龍','⚽ Soccer 足球','🚀 Rocket 火箭','🃏 My card 我的卡','👨‍👩‍👧‍👦 Family 家人','🤖 Robot 機器人'],
@@ -211,21 +205,16 @@ $('nameOk').onclick=async()=>{$('nameBox').style.display='none';
   const title=($('nameIn').value.trim()||'My drawing 我的畫').replace(/[\\/:*?"<>|]/g,'').slice(0,40);
   const label=`${title} – ${day}`;
   const name=`${KIDS[kid].name} - ${title} - ${day} ${new Date().toTimeString().slice(0,5).replace(':','')}.png`;
-  const blobP=new Promise(r=>cv.toBlob(r,'image/png'));
-  const job=KAPhotos.upload(kid,blobP.then(blob=>[{blob,name,label}]),'Doodle Studio 塗鴉工作室');
-  await putDraft(kid,{png:cv.toDataURL('image/png'),time:Date.now(),unsaved:false});dirty=false;
-  setStatus('Uploading… 上傳中');$('saveBtn').disabled=true;
-  try{const r=await job;
-    if(r.uploaded){setStatus('In Google Photos ✓ 已存到相簿');toast(`“${title}” saved to ${KIDS[kid].name}'s album 🎉`)}
-    else{setStatus('Saved here, will upload later 稍後上傳');toast('Saved on this device — it will upload when Google is connected')}}
-  catch(e){console.warn(e);setStatus('Saved here, will upload later 稍後上傳')}
-  finally{$('saveBtn').disabled=false}};
+  const file=KASave.fromCanvas(cv,name,'image/png'),png=cv.toDataURL('image/png'),who=kid; // made instantly so the share sheet may open
+  const res=await KASave.share([file],title);
+  if(res==='shared'||res==='downloaded'){await putDraft(who,{png,time:Date.now(),unsaved:false});if(kid===who)dirty=false;setStatus('Saved ✓ 已存');toast(res==='shared'?'🖼️ Saved! Look in Photos 在「照片」裡':'🖼️ Saved to Downloads 存到下載')}
+  else toast('Not saved yet 還沒存')};
 
 
 window.__test={state:()=>({screen:kid?'studio':'home',kid,tool,dirty}),solve:()=>{}};
 </script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>

@@ -88,9 +88,9 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
     <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
     <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
   </div>
-  <div class="row"><button class="btn" id="voiceBtn">🗣 聲音 Voice</button><button class="btn" id="gpBtn">🔗 Google 相簿 (家長 parents)</button></div>
-  <p class="small" id="gpState"></p>
-  <p class="small">Test sample · 測試版 · v1.1</p>
+  <div class="row"><button class="btn" id="voiceBtn">🗣 聲音 Voice</button></div>
+  <p class="small">Saved pictures go to the Photos app 畫好的畫存在「照片」裡</p>
+  <p class="small">Test sample · 測試版 · v1.2</p>
 </section>
 
 <!-- choose -->
@@ -131,7 +131,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
     <div class="status" id="status"></div>
     <button class="tool" id="undo" title="Undo">↩️</button>
     <button class="tool" id="clear" title="Clear">🗑️</button>
-    <button class="save" id="saveBtn">📸 Save 存</button>
+    <button class="save" id="saveBtn">📲 Save 存</button>
   </div>
   <div class="wrap">
     <div class="tools">
@@ -156,13 +156,19 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   <b style="font-size:20px">What's your drawing called? 畫的名字?</b>
   <input id="nameIn" maxlength="40" placeholder="My drawing 我的畫" autocomplete="off" autocorrect="off" spellcheck="false" name="drawing-title">
   <div id="chips"></div>
-  <div class="row" style="margin-top:14px"><button class="btn blue" id="nameOk">📸 Save to album 存到相簿</button><button class="btn" id="nameNo">Back 返回</button></div>
+  <p class="small" style="margin-top:10px">Then tap <b>Save Image 儲存影像</b> 然後點「儲存影像」</p>
+  <div class="row" style="margin-top:8px"><button class="btn blue" id="nameOk">📲 Save 存起來</button><button class="btn" id="nameNo">Back 返回</button></div>
+</div></div>
+<div class="modal" id="leaveBox"><div>
+  <div style="font-size:48px">🖼️</div><b style="font-size:21px">Save your picture first? 要先把畫存起來嗎?</b>
+  <div class="row" style="margin-top:14px"><button class="btn blue" id="lvSave">📲 Save 存起來</button><button class="btn" id="lvLater">Not now 先不要</button><button class="btn go" id="lvStay">✏️ Keep drawing 繼續畫</button></div>
+  <p class="small" style="margin-top:8px">Not now: it stays here for next time 先不要:下次還可以繼續畫</p>
 </div></div>
 
 <script src="../../../voice.js"></script>
-<script src="../../../gphotos.js"></script>
+<script src="../../../savepic.js"></script>
 <script>
-const VERSION='v1.1';
+const VERSION='v1.2';
 const $=id=>document.getElementById(id);
 const KIDS={nora:{name:'Nora',color:'#7048e8',size:1,stamps:['⭐','💜','🌸','⚽','🦄','🌈','🎀','🦋']},
             lucas:{name:'Lucas',color:'#f76707',size:1,stamps:['⚡','🔥','⚽','🐉','⭐','🚀','🃏','🤖']},
@@ -268,56 +274,54 @@ async function putDraft(k,v){try{const d=await db();await new Promise(res=>{cons
 async function getDraft(k){try{const d=await db();return await new Promise(res=>{const r=d.transaction('drafts').objectStore('drafts').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)})}catch(e){return null}}
 function setStatus(m){$('status').textContent=m}
 async function autosave(){if(!kid||!$('studio').classList.contains('on'))return;
-  await putDraft(kid,{png:cv.toDataURL('image/png'),idea:drawingIdea,time:Date.now(),unsaved:dirty,stashed:false});lastAuto=Date.now();
+  await putDraft(kid,{png:cv.toDataURL('image/png'),idea:drawingIdea,time:Date.now(),unsaved:dirty});lastAuto=Date.now();
   if(dirty)setStatus('Auto-saved 已自動存 '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}))}
 setInterval(()=>{if(dirty)autosave()},30000);
 
-/* ================= saving to Google Photos ================= */
-const blobNow=()=>new Promise(r=>cv.toBlob(r,'image/jpeg',.92));
-function fileItem(title,auto){const day=today(),clean=(title||'我的畫').replace(/[\\/:*?"<>|]/g,'').slice(0,40);
-  return{name:`${KIDS[kid].name} - ${clean}${auto?' (auto)':''} - ${day} ${new Date().toTimeString().slice(0,5).replace(':','')}.jpg`,
-    label:`${clean} – ${day}${auto?' (自動存 autosaved)':''}${drawingIdea?'\n💡 '+ideaOf(drawingIdea):''}`}}
+/* ================= saving to the device's Photos (share sheet → Save Image) ================= */
+function fileName(title){const clean=(title||'我的畫').replace(/[\\/:*?"<>|]/g,'').slice(0,40);return `${KIDS[kid].name} - ${clean} - ${today()} ${new Date().toTimeString().slice(0,5).replace(':','')}.jpg`}
 function ideaOf(d){const k=idea;idea=d;const s=ideaZh()+' '+ideaEn();idea=k;return s}
-function report(r,title){if(r.uploaded)toast(`📸 “${title}” is in ${KIDS[kid].name}'s album! 存到相簿了`);
-  else toast(KAPhotos.isConnected()?'Saved here — it will upload soon 稍後上傳':'Saved on this device — it uploads after a parent connects Google 爸媽連結後會上傳')}
-// Must be called from a tap (Google may need to open its sign-in window)
-function uploadNow(title,auto){const it=fileItem(title,auto),who=kid;const job=KAPhotos.upload(who,blobNow().then(blob=>[{blob,...it}]),'小劉畫家 Idea Studio');
-  dirty=false;putDraft(who,{png:cv.toDataURL('image/png'),idea:drawingIdea,time:Date.now(),unsaved:false,stashed:false});return job}
-
+// Called straight from a tap: the picture file is made instantly so the share sheet is allowed to open.
+function saveToDevice(title,after){const file=KASave.fromCanvas(cv,fileName(title));const who=kid,png=cv.toDataURL('image/png'),theIdea=drawingIdea;
+  return KASave.share([file],title).then(res=>{
+    if(res==='shared'||res==='downloaded'){if(kid===who)dirty=false;putDraft(who,{png,idea:theIdea,time:Date.now(),unsaved:false});setStatus('Saved ✓ 已存');toast(res==='shared'?'🖼️ Saved! Look in Photos 存好了!在「照片」裡':'🖼️ Saved to Downloads 存到下載')}
+    else toast('Not saved yet 還沒存');after&&after(res);return res})}
 $('saveBtn').onclick=()=>{closeStamps();const c=$('chips');c.innerHTML='';
-  const chips=(drawingIdea?[ideaTitle.call(null,(idea=drawingIdea))]:[]).concat({nora:['🦄 獨角獸','⚽ 足球','👨‍👩‍👧‍👦 我的家人','🌈 彩虹'],lucas:['🐉 龍','⚽ 足球','🃏 我的卡片','🤖 機器人'],milo:['🦖 暴龍','🦕 恐龍','🚗 車子','🌋 火山']}[kid]);
+  const chips=(drawingIdea?[(idea=drawingIdea,ideaTitle())]:[]).concat({nora:['🦄 獨角獸','⚽ 足球','👨‍👩‍👧‍👦 我的家人','🌈 彩虹'],lucas:['🐉 龍','⚽ 足球','🃏 我的卡片','🤖 機器人'],milo:['🦖 暴龍','🦕 恐龍','🚗 車子','🌋 火山']}[kid]);
   chips.forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$('nameIn').value=t.replace(/^\S+\s/,'').trim()||t};c.appendChild(b)});
   $('nameIn').value=drawingIdea?ideaTitle():'';$('nameBox').style.display='flex';if(kid!=='milo')setTimeout(()=>$('nameIn').focus(),60)};
 $('nameNo').onclick=()=>$('nameBox').style.display='none';
 $('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('nameOk').click()});
-$('nameOk').onclick=()=>{$('nameBox').style.display='none';const title=$('nameIn').value.trim()||'我的畫 My drawing';
-  setStatus('Uploading… 上傳中');$('saveBtn').disabled=true;
-  uploadNow(title,false).then(r=>{report(r,title);setStatus(r.uploaded?'In the album ✓ 已存到相簿':'Waiting to upload 等待上傳')}).catch(()=>setStatus('Saved here 已存在這裡')).finally(()=>$('saveBtn').disabled=false)};
+$('nameOk').onclick=()=>{$('nameBox').style.display='none';saveToDevice($('nameIn').value.trim()||'我的畫')};
 
-/* leaving without saving → it goes to the album automatically */
-function autoTitle(){return drawingIdea?(idea=drawingIdea,ideaTitle()):'我的畫 My drawing'}
-$('homeBtn').onclick=()=>{closeStamps();if(dirty){const t=autoTitle();uploadNow(t,true).then(r=>report(r,t)).catch(()=>{})}show('choose');openChoose()};
-document.addEventListener('visibilitychange',async()=>{
-  if(document.hidden){if(!dirty||!kid||!$('studio').classList.contains('on'))return;const who=kid,it=fileItem(autoTitle(),true);
-    await putDraft(who,{png:cv.toDataURL('image/png'),idea:drawingIdea,time:Date.now(),unsaved:true,stashed:true});
-    const blob=await blobNow();stashKey=await KAPhotos.stash(who,{blob,...it},'小劉畫家 Idea Studio')}
-  else if(stashKey!=null){const k=stashKey;stashKey=null;await KAPhotos.unstash(k)}}); // came back: keep drawing instead
+/* leaving without saving → ask once; "Not now" keeps it here (auto-saved) for next time */
+function autoTitle(){return drawingIdea?(idea=drawingIdea,ideaTitle()):'我的畫'}
+let leaveTo=null;
+function leave(to){closeStamps();if(!dirty){to();return}leaveTo=to;autosave();$('leaveBox').style.display='flex';if(kid==='milo')say('要先把畫存起來嗎?')}
+$('lvSave').onclick=()=>{$('leaveBox').style.display='none';saveToDevice(autoTitle(),()=>{const t=leaveTo;leaveTo=null;t&&t()})};
+$('lvLater').onclick=()=>{$('leaveBox').style.display='none';autosave().then(()=>{dirty=false;const t=leaveTo;leaveTo=null;t&&t()})};
+$('lvStay').onclick=()=>{$('leaveBox').style.display='none';leaveTo=null};
+$('homeBtn').onclick=()=>leave(()=>{show('choose');openChoose()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&dirty)autosave()});
 addEventListener('pagehide',()=>{if(dirty)autosave()});
 
 /* ================= screens ================= */
 let pending=null;
 document.querySelectorAll('.kid').forEach(b=>b.onclick=()=>{kid=b.dataset.kid;try{window.KA&&KA.setKid(kid)}catch(e){}sizeI=KIDS[kid].size;sizeLabel();show('choose');openChoose()});
 function whoTag(el){el.textContent=KIDS[kid].name;el.style.background=KIDS[kid].color}
-async function openChoose(){whoTag($('chWho'));const d=await getDraft(kid);pending=d&&d.png?d:null;
+async function openChoose(){whoTag($('chWho'));resetResume();const d=await getDraft(kid);pending=d&&d.png?d:null;
   $('resume').style.display=pending?'block':'none';$('choiceBox').style.display=pending?'none':'flex';
-  if(pending){$('resumeImg').src=pending.png;$('resumeMsg').textContent=pending.unsaved&&!pending.stashed?'Your last picture! Keep drawing? 上次的畫,要繼續嗎?':'Your last picture 上次的畫 (saved ✓ 已存好)'}
+  if(pending){$('resumeImg').src=pending.png;$('resumeMsg').textContent=pending.unsaved?'Your last picture isn’t saved yet! 上次的畫還沒存喔':'Your last picture 上次的畫 (saved ✓ 已存好)'}
   if(kid==='milo')say('你想怎麼畫?')}
-$('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved&&!pending.stashed);
-$('fresh').onclick=()=>{if(pending&&pending.unsaved&&!pending.stashed){ // not in the album yet → send it now
-    const t=(pending.idea?(idea=pending.idea,ideaTitle()):'我的畫 My drawing'),day=today();
-    KAPhotos.upload(kid,fetch(pending.png).then(r=>r.blob()).then(blob=>[{blob,name:`${KIDS[kid].name} - ${t} (auto) - ${day}.png`,label:`${t} – ${day} (自動存 autosaved)`}]),'小劉畫家 Idea Studio').then(r=>report(r,t)).catch(()=>{});
-    putDraft(kid,{...pending,unsaved:false})}
-  pending=null;$('resume').style.display='none';$('choiceBox').style.display='flex'};
+$('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved);
+$('fresh').onclick=()=>{const d=pending;const go=()=>{pending=null;$('resume').style.display='none';$('choiceBox').style.display='flex'};
+  if(d&&d.unsaved){$('resumeMsg').textContent='Save it first? 要先存起來嗎?';$('keep').textContent='📲 Save 存起來';$('fresh').textContent='Skip 不用';
+    $('keep').onclick=()=>{const t=d.idea?(idea=d.idea,ideaTitle()):'我的畫';KASave.share([{dataURL:d.png,name:`${KIDS[kid].name} - ${t} - ${today()}.png`}],t).then(r=>{if(r!=='cancelled'&&r!=='failed'){putDraft(kid,{...d,unsaved:false});toast('🖼️ Saved! 存好了!')}resetResume();go()})};
+    $('fresh').onclick=()=>{putDraft(kid,{...d,unsaved:false});resetResume();go()};return}
+  go()};
+function resetResume(){$('keep').textContent='✏️ Keep drawing 繼續畫';$('fresh').textContent='✨ New 新的';
+  $('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved);$('fresh').onclick=freshClick}
+const freshClick=$('fresh').onclick;
 $('chHome').onclick=()=>show('home');
 $('free').onclick=()=>startStudio(null);
 $('idea').onclick=()=>{newIdea();whoTag($('idWho'));show('ideaScr');renderIdea(true)};
@@ -330,8 +334,6 @@ function startStudio(theIdea,png,wasDirty){drawingIdea=theIdea||null;undoSt=[];b
   if(png){const im=new Image();im.onload=()=>g.drawImage(im,0,0,CW,CH);im.src=png}
   show('studio');if(!png)autosave()}
 $('voiceBtn').onclick=()=>{try{KAVoice.picker()}catch(e){}};
-$('gpBtn').onclick=()=>KAPhotos.connect();
-KAPhotos.onChange(st=>{$('gpState').textContent='Google Photos: '+(st.connected?'connected ✓ 已連結':'not connected 未連結')+(st.waiting?` · ${st.waiting} waiting 等待上傳`:'')});
 function hint(){const h=$('hint'),phone=Math.min(innerWidth,innerHeight)<500;if(phone&&$('studio').classList.contains('on')&&innerWidth<innerHeight){h.textContent='Turn your phone sideways for a bigger page ↻ 橫著拿畫紙更大';h.style.display='block';clearTimeout(h._t);h._t=setTimeout(()=>h.style.display='none',4000)}else h.style.display='none'}
 blank();sizeLabel();
 
@@ -339,7 +341,7 @@ window.__test={state:()=>({screen:[...document.querySelectorAll('.screen.on')].m
 </script>
 <script src="../../../tracker.js" data-game="idea-studio"></script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
