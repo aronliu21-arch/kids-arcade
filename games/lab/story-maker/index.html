@@ -118,6 +118,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
 #iskip{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#a08b70;font-size:14px;display:none;z-index:2}
 @keyframes pulse{50%{transform:scale(1.06)}}
 @media (max-height:500px){#iskip{bottom:auto;top:8px;right:12px;left:auto;text-align:right}}
+.vmodal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:70;display:flex;align-items:center;justify-content:center;padding:14px}.vmodal>div{background:#fff;border-radius:18px;padding:16px;max-width:460px;width:100%}.vmodal h2{margin:0 0 4px}
 .toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#2b2118;color:#fff;padding:12px 18px;border-radius:14px;opacity:0;transition:.3s;pointer-events:none;z-index:60;max-width:90vw;text-align:center}
 .toast.on{opacity:1}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -137,7 +138,8 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
     <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
     <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
   </div>
-  <p class="ver">Test sample · 測試版 · v1.6</p>
+  <p><button class="btn" id="voiceBtn">🗣 聲音 Voice</button></p>
+  <p class="ver">Test sample · 測試版 · v1.7</p>
 </div></section>
 <!-- SHELF -->
 <section id="shelf" class="screen">
@@ -185,7 +187,7 @@ function sticker(src){if(stickers[src])return stickers[src];const o={ready:false
 let AC=null;function boing(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;
   o.type='sine';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(660,t+.12);o.frequency.exponentialRampToValueAtTime(330,t+.3);
   g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}}
-const VERSION='v1.6';
+const VERSION='v1.7';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2400)};
@@ -194,9 +196,27 @@ const DEFLANG={nora:'zh',lucas:'en',milo:'zh'};
 let kid=null,story=null,dirty=false,hist=[];
 const Z=()=>story&&story.lang==='zh';
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));window.scrollTo(0,0);if(id!=='build'&&id!=='watch')stopStage()}
-function speak(t){try{speechSynthesis.cancel();if(!t)return;
+// same voices as Dino World: best installed voice (Premium > Enhanced), Taiwan Chinese first; the Chinese voice picked in Dino World is shared
+const vcache={};
+function voiceScore(v,l){const lang=(v.lang||'').replace('_','-');const id=((v.name||'')+' '+(v.voiceURI||'')).toLowerCase();let sc=0;
+ if(lang===l)sc+=100;else if(l==='zh-TW'&&/^zh-(hk|hant)/i.test(lang))sc+=60;else if(lang.slice(0,2)===l.slice(0,2))sc+=40;else return -1;
+ if(/premium/.test(id))sc+=30;else if(/enhanced|neural|natural|online/.test(id))sc+=20;if(/compact|eloquence|novelty/.test(id))sc-=15;
+ if(l==='zh-TW'&&/lilian/.test(id))sc+=200;if(l==='zh-TW'&&/mei-?jia/.test(id))sc+=5;if(l==='en-US'&&/samantha|ava|zoe|allison|google us/.test(id))sc+=5;if(v.localService)sc+=1;return sc}
+const ZHPICK='dinoworld.zhvoice';function zhPick(){try{return localStorage.getItem(ZHPICK)||''}catch(e){return''}}
+function zhVoices(){try{return speechSynthesis.getVoices().filter(v=>/^(zh|yue)/i.test(v.lang||'')).sort((a,b)=>voiceScore(b,'zh-TW')-voiceScore(a,'zh-TW'))}catch(e){return[]}}
+function voiceFor(l){if(vcache[l]!==undefined)return vcache[l];try{const vs=speechSynthesis.getVoices();
+ if(l==='zh-TW'&&zhPick()){const v=vs.find(v=>v.voiceURI===zhPick());if(v){vcache[l]=v;return v}}let best=null,bs=-1;for(const v of vs){const sc=voiceScore(v,l);if(sc>bs){bs=sc;best=v}}if(vs.length)vcache[l]=best;return best}catch(e){return null}}
+try{speechSynthesis.onvoiceschanged=()=>{for(const k in vcache)delete vcache[k]}}catch(e){}
+function speak(t,pitch){try{speechSynthesis.cancel();if(!t)return;
   const clean=t.replace(/[”」』]/g,', ').replace(/[“"「『*_~#—–]/g,' ').replace(/…/g,', ').replace(/([,,。!?!?.:])(\s*,)+/g,'$1').replace(/(,\s*){2,}/g,', ').replace(/\s+/g,' ').trim();if(!/[\p{L}\p{N}]/u.test(clean))return;
-  const u=new SpeechSynthesisUtterance(clean);u.lang=/[一-鿿]/.test(clean)?'zh-TW':'en-US';u.rate=.95;speechSynthesis.speak(u);return u}catch(e){}}
+  const l=/[一-鿿]/.test(clean)?'zh-TW':'en-US',u=new SpeechSynthesisUtterance(clean);u.lang=l;const v=voiceFor(l);if(v){u.voice=v;if(v.lang)u.lang=v.lang}
+  u.rate=l==='en-US'?.88:.8;u.pitch=pitch||1.15;speechSynthesis.speak(u);return u}catch(e){}}
+function voicePanel(){const m=document.createElement('div');m.className='vmodal';
+  const draw=()=>{const vs=zhVoices(),cur=voiceFor('zh-TW');m.innerHTML=`<div><h2>🗣 中文聲音 Chinese voice</h2><p class="ver">Same setting as Dino World. Tap a voice to hear it. 點一下試聽。</p><div style="max-height:50vh;overflow:auto">${vs.length?vs.map((v,i)=>`<button class="btn ${cur&&v.voiceURI===cur.voiceURI?'green':''}" data-i="${i}" style="display:block;width:100%;margin:6px 0;text-align:left">${cur&&v.voiceURI===cur.voiceURI?'✓ ':''}${esc(v.name)} <small>(${esc(v.lang)})</small></button>`).join(''):'<p>No Chinese voices on this device yet.</p>'}</div>
+    <div class="row" style="justify-content:center;margin-top:10px"><button class="btn" id="voAuto">Auto (best) 自動</button><button class="btn go" id="voDone">Done 完成</button></div></div>`;
+    m.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const v=vs[+b.dataset.i];try{localStorage.setItem(ZHPICK,v.voiceURI)}catch(e){}delete vcache['zh-TW'];speak('從前從前,有一隻小龍叫做小火花。');draw()});
+    m.querySelector('#voAuto').onclick=()=>{try{localStorage.removeItem(ZHPICK)}catch(e){}delete vcache['zh-TW'];draw()};m.querySelector('#voDone').onclick=()=>m.remove()};
+  draw();document.body.appendChild(m)}
 
 /* ================= illustrated backgrounds (drawn once, cached) ================= */
 const W=800,H=600,BGC={};
@@ -532,7 +552,7 @@ setInterval(saveNow,60000);document.addEventListener('visibilitychange',()=>{if(
 
 /* ================= home & shelf ================= */
 document.querySelectorAll('.kid').forEach(b=>b.onclick=()=>{kid=b.dataset.kid;try{window.KA&&KA.setKid(kid)}catch(e){}openShelf()});
-$('shelfHome').onclick=()=>show('home');
+$('shelfHome').onclick=()=>show('home');$('voiceBtn').onclick=voicePanel;
 async function openShelf(){await saveNow();const K=KIDS[kid];$('shelfWho').textContent=K.name;$('shelfWho').style.background=K.color;
   const mine=(await dbAll()).filter(s=>s.kid===kid).sort((a,b)=>b.updated-a.updated);
   $('books').innerHTML=`<button class="book new" id="newBook"><span style="font-size:52px">➕</span><b>New story 新故事</b></button>`+mine.map(s=>`<div class="book" data-id="${esc(s.id)}"><div class="cv" data-cover="${esc(s.id)}"></div>
