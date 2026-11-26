@@ -70,6 +70,13 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 #trGrid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;padding:4px;align-content:start}
 #trGrid button{background:#fff;border:2px solid #f1d9a8;border-radius:14px;padding:4px;display:flex;flex-direction:column;align-items:center;font-size:13px;font-weight:700;min-height:110px}
 #trGrid svg{width:72px;height:72px}
+#galGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;width:100%;max-width:980px;padding:4px}
+#galGrid button{background:#fff;border-radius:16px;padding:6px;box-shadow:0 3px 10px rgba(80,50,0,.12);display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;position:relative}
+#galGrid img{width:100%;aspect-ratio:4/3;object-fit:contain;border-radius:10px;background:#fff;border:1px solid #eee}
+.badge{position:absolute;top:10px;right:10px;background:#2f9e44;color:#fff;border-radius:999px;padding:2px 8px;font-size:12px}.badge.no{background:#f59f00}
+#viewBox>div{max-width:900px}
+@media (max-height:440px){#viewImg{max-height:48vh!important}#viewBox .btn{min-height:44px}}
+#viewImg{width:100%;max-height:62vh;object-fit:contain;border-radius:14px;border:1px solid #eee;background:#fff}
 #stepBar{display:none;align-items:center;gap:6px;justify-content:center;padding:6px 0 0;flex:none}
 #stepBar .lbl{font-weight:800;font-size:17px;min-width:150px;text-align:center}
 #stepBar button{background:#fff;font-size:20px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
@@ -102,7 +109,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   </div>
   <div class="row"><button class="btn" id="voiceBtn">🗣 聲音 Voice</button></div>
   <p class="small">Saved pictures go to the Photos app 畫好的畫存在「照片」裡</p>
-  <p class="small">Test sample · 測試版 · v1.3</p>
+  <p class="small">Test sample · 測試版 · v1.4</p>
 </section>
 
 <!-- choose -->
@@ -115,9 +122,16 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
     <button class="choice c1" id="free"><span class="e">✏️</span>Draw anything!<small>自由畫,想畫什麼就畫什麼</small></button>
     <button class="choice c2" id="idea"><span class="e">💡</span>Give me an idea!<small>給我一個點子</small></button>
   </div>
+  <button class="btn" id="galBtn" style="min-height:56px;font-size:19px">🖼️ My drawings 我的畫</button>
 </section>
 
 <!-- idea -->
+<section id="galScr" class="screen center" style="justify-content:flex-start">
+  <div class="row" style="margin:0;width:100%;justify-content:space-between;max-width:980px"><button class="tool" id="galBack">⬅️</button><h2 id="galTitle"></h2><div class="who" id="galWho"></div></div>
+  <p class="small" id="galEmpty" style="display:none;font-size:18px;margin-top:30px">No drawings yet — go draw something! 還沒有畫,快去畫一張吧!</p>
+  <div id="galGrid"></div>
+</section>
+
 <section id="ideaScr" class="screen center">
   <div class="row" style="margin:0;width:100%;justify-content:space-between;max-width:720px"><button class="tool" id="idBack">⬅️</button><div class="who" id="idWho"></div></div>
   <div class="card">
@@ -182,6 +196,11 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   <p id="trMsg" class="small" style="min-height:0;margin:0"></p>
   <div id="trGrid"></div>
 </div></div>
+<div class="modal" id="viewBox"><div>
+  <img id="viewImg" alt="">
+  <p id="viewInfo" style="margin:8px 0;font-weight:700"></p>
+  <div class="row" style="margin-top:4px"><button class="btn" id="vPrev">◀</button><button class="btn go" id="vKeep">✏️ Keep drawing 繼續畫</button><button class="btn blue" id="vSave">📲 Save 存到照片</button><button class="btn" id="vDel">🗑️</button><button class="btn" id="vNext">▶</button><button class="btn" id="vClose">✖</button></div>
+</div></div>
 <div class="modal" id="leaveBox"><div>
   <div style="font-size:48px">🖼️</div><b style="font-size:21px">Save your picture first? 要先把畫存起來嗎?</b>
   <div class="row" style="margin-top:14px"><button class="btn blue" id="lvSave">📲 Save 存起來</button><button class="btn" id="lvLater">Not now 先不要</button><button class="btn go" id="lvStay">✏️ Keep drawing 繼續畫</button></div>
@@ -192,7 +211,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 <script src="../../../savepic.js"></script>
 <script src="trace-art.js"></script>
 <script>
-const VERSION='v1.3';
+const VERSION='v1.4';
 const $=id=>document.getElementById(id);
 const KIDS={nora:{name:'Nora',color:'#7048e8',size:1,stamps:['⭐','💜','🌸','⚽','🦄','🌈','🎀','🦋']},
             lucas:{name:'Lucas',color:'#f76707',size:1,stamps:['⚡','🔥','⚽','🐉','⭐','🚀','🃏','🤖']},
@@ -255,7 +274,7 @@ function fit(){const st=$('stage').getBoundingClientRect();const sb=$('stepBar')
 addEventListener('resize',()=>{if($('studio').classList.contains('on'))fit();hint()});
 function pt(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*CW/r.width,y:(e.clientY-r.top)*CH/r.height}}
 function pushUndo(){undoSt.push(g.getImageData(0,0,CW,CH));if(undoSt.length>10)undoSt.shift()}
-function changed(){dirty=true;setStatus('');}
+function changed(){dirty=true;inked=true;setStatus('');}
 let last=null,down=false;
 cv.addEventListener('pointerdown',e=>{e.preventDefault();closeStamps();const p=pt(e);
   if(tool==='fill'){pushUndo();flood(p.x|0,p.y|0,color);changed();pop();return}
@@ -336,12 +355,21 @@ const WHO_TRACE={'a dinosaur':'dinosaur','a T-Rex':'trex','a cat':'cat','a robot
 
 /* ================= drafts (IndexedDB, one slot per kid, overwritten) ================= */
 let dbp=null;
-function db(){return dbp=dbp||new Promise((res,rej)=>{const r=indexedDB.open('idea-studio',1);r.onupgradeneeded=()=>r.result.createObjectStore('drafts');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function db(){return dbp=dbp||new Promise((res,rej)=>{const r=indexedDB.open('idea-studio',2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('drafts'))d.createObjectStore('drafts');if(!d.objectStoreNames.contains('gallery'))d.createObjectStore('gallery',{keyPath:'id'}).createIndex('kid','kid')};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function putDraft(k,v){try{const d=await db();await new Promise(res=>{const t=d.transaction('drafts','readwrite');t.objectStore('drafts').put(v,k);t.oncomplete=res;t.onerror=res})}catch(e){}}
 async function getDraft(k){try{const d=await db();return await new Promise(res=>{const r=d.transaction('drafts').objectStore('drafts').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)})}catch(e){return null}}
 function setStatus(m){$('status').textContent=m}
+/* ---- gallery: every drawing is kept on this device (one entry per drawing, updated as they draw) ---- */
+async function putGal(v){try{const d=await db();await new Promise(res=>{const t=d.transaction('gallery','readwrite');t.objectStore('gallery').put(v);t.oncomplete=res;t.onerror=res})}catch(e){}}
+async function getGal(id){try{const d=await db();return await new Promise(res=>{const r=d.transaction('gallery').objectStore('gallery').get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)})}catch(e){return null}}
+async function delGal(id){try{const d=await db();await new Promise(res=>{const t=d.transaction('gallery','readwrite');t.objectStore('gallery').delete(id);t.oncomplete=res;t.onerror=res})}catch(e){}}
+async function listGal(k){try{const d=await db();return await new Promise(res=>{const r=d.transaction('gallery').objectStore('gallery').index('kid').getAll(k);r.onsuccess=()=>res((r.result||[]).sort((a,b)=>b.updated-a.updated));r.onerror=()=>res([])})}catch(e){return[]}}
+function thumbOf(src){const t=document.createElement('canvas');t.width=320;t.height=240;const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,320,240);x.drawImage(src,0,0,320,240);return t.toDataURL('image/jpeg',.8)}
+let curId=null,inked=false;
+async function saveGal(extra){if(!kid||!curId||!inked)return;const old=await getGal(curId)||{};
+  await putGal({...old,id:curId,kid,png:cv.toDataURL('image/png'),thumb:thumbOf(cv),idea:drawingIdea,guide,created:old.created||Date.now(),updated:Date.now(),saved:dirty?false:(old.saved||false),title:old.title||autoTitle(),...(extra||{})})}
 async function autosave(){if(!kid||!$('studio').classList.contains('on'))return;
-  await putDraft(kid,{png:cv.toDataURL('image/png'),idea:drawingIdea,guide,time:Date.now(),unsaved:dirty});lastAuto=Date.now();
+  await putDraft(kid,{png:cv.toDataURL('image/png'),idea:drawingIdea,guide,time:Date.now(),unsaved:dirty,id:curId});if(dirty||inked)await saveGal();lastAuto=Date.now();
   if(dirty)setStatus('Auto-saved 已自動存 '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}))}
 setInterval(()=>{if(dirty)autosave()},30000);
 
@@ -351,7 +379,7 @@ function ideaOf(d){const k=idea;idea=d;const s=ideaZh()+' '+ideaEn();idea=k;retu
 // Called straight from a tap: the picture file is made instantly so the share sheet is allowed to open.
 function saveToDevice(title,after){const file=KASave.fromCanvas(cv,fileName(title));const who=kid,png=cv.toDataURL('image/png'),theIdea=drawingIdea;
   return KASave.share([file],title).then(res=>{
-    if(res==='shared'||res==='downloaded'){if(kid===who)dirty=false;putDraft(who,{png,idea:theIdea,time:Date.now(),unsaved:false});setStatus('Saved ✓ 已存');toast(res==='shared'?'🖼️ Saved! Look in Photos 存好了!在「照片」裡':'🖼️ Saved to Downloads 存到下載')}
+    if(res==='shared'||res==='downloaded'){if(kid===who){dirty=false;saveGal({saved:true,title})}putDraft(who,{png,idea:theIdea,time:Date.now(),unsaved:false,id:curId});setStatus('Saved ✓ 已存');toast(res==='shared'?'🖼️ Saved! Look in Photos 存好了!在「照片」裡':'🖼️ Saved to Downloads 存到下載')}
     else toast('Not saved yet 還沒存');after&&after(res);return res})}
 $('saveBtn').onclick=()=>{closeStamps();const c=$('chips');c.innerHTML='';
   const chips=(drawingIdea?[(idea=drawingIdea,ideaTitle())]:[]).concat({nora:['🦄 獨角獸','⚽ 足球','👨‍👩‍👧‍👦 我的家人','🌈 彩虹'],lucas:['🐉 龍','⚽ 足球','🃏 我的卡片','🤖 機器人'],milo:['🦖 暴龍','🦕 恐龍','🚗 車子','🌋 火山']}[kid]);
@@ -377,19 +405,39 @@ let pending=null;
 document.querySelectorAll('.kid').forEach(b=>b.onclick=()=>{kid=b.dataset.kid;try{window.KA&&KA.setKid(kid)}catch(e){}sizeI=KIDS[kid].size;sizeLabel();show('choose');openChoose()});
 function whoTag(el){el.textContent=KIDS[kid].name;el.style.background=KIDS[kid].color}
 async function openChoose(){whoTag($('chWho'));resetResume();const d=await getDraft(kid);pending=d&&d.png?d:null;
+  if(pending&&!pending.id){pending.id=kid+'-'+(pending.time||Date.now());const im=new Image();im.src=pending.png;await im.decode().catch(()=>{});
+    await putGal({id:pending.id,kid,png:pending.png,thumb:thumbOf(im),idea:pending.idea||null,guide:pending.guide||null,created:pending.time||Date.now(),updated:pending.time||Date.now(),saved:!pending.unsaved,title:pending.idea?(idea=pending.idea,ideaTitle()):'我的畫'});await putDraft(kid,pending)}
+  const n=(await listGal(kid)).length;$('galBtn').textContent=`🖼️ My drawings 我的畫 (${n})`;
   $('resume').style.display=pending?'block':'none';$('choiceBox').style.display=pending?'none':'flex';
   if(pending){$('resumeImg').src=pending.png;$('resumeMsg').textContent=pending.unsaved?'Your last picture isn’t saved yet! 上次的畫還沒存喔':'Your last picture 上次的畫 (saved ✓ 已存好)'}
   if(kid==='milo')say('你想怎麼畫?')}
-$('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved,pending.guide);
+$('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved,pending.guide,pending.id);
 $('fresh').onclick=()=>{const d=pending;const go=()=>{pending=null;$('resume').style.display='none';$('choiceBox').style.display='flex'};
   if(d&&d.unsaved){$('resumeMsg').textContent='Save it first? 要先存起來嗎?';$('keep').textContent='📲 Save 存起來';$('fresh').textContent='Skip 不用';
     $('keep').onclick=()=>{const t=d.idea?(idea=d.idea,ideaTitle()):'我的畫';KASave.share([{dataURL:d.png,name:`${KIDS[kid].name} - ${t} - ${today()}.png`}],t).then(r=>{if(r!=='cancelled'&&r!=='failed'){putDraft(kid,{...d,unsaved:false});toast('🖼️ Saved! 存好了!')}resetResume();go()})};
     $('fresh').onclick=()=>{putDraft(kid,{...d,unsaved:false});resetResume();go()};return}
   go()};
 function resetResume(){$('keep').textContent='✏️ Keep drawing 繼續畫';$('fresh').textContent='✨ New 新的';
-  $('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved,pending.guide);$('fresh').onclick=freshClick}
+  $('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved,pending.guide,pending.id);$('fresh').onclick=freshClick}
 const freshClick=$('fresh').onclick;
 $('chHome').onclick=()=>show('home');
+let galItems=[],viewI=0;
+const fmtDate=t=>{const d=new Date(t);return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`};
+async function openGallery(){whoTag($('galWho'));galItems=await listGal(kid);$('galTitle').textContent=`My drawings 我的畫 (${galItems.length})`;
+  $('galEmpty').style.display=galItems.length?'none':'block';
+  $('galGrid').innerHTML=galItems.map((g,i)=>`<button data-i="${i}"><img src="${g.thumb||g.png}" alt=""><span>${esc(g.title||'我的畫')}</span><span style="font-weight:600;color:#7a6a58">${fmtDate(g.created)}</span><span class="badge ${g.saved?'':'no'}">${g.saved?'✓ 已存':'還沒存'}</span></button>`).join('');
+  $('galGrid').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>openView(+b.dataset.i));show('galScr');if(kid==='milo')say('這是你畫的畫')}
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function openView(i){viewI=(i+galItems.length)%galItems.length;const g=galItems[viewI];$('viewImg').src=g.png;
+  $('viewInfo').textContent=`${g.title||'我的畫'} · ${fmtDate(g.created)} · ${viewI+1}/${galItems.length}`+(g.saved?' · ✓ 已存到照片':'');
+  $('vPrev').style.visibility=$('vNext').style.visibility=galItems.length>1?'visible':'hidden';$('viewBox').style.display='flex'}
+$('galBtn').onclick=openGallery;$('galBack').onclick=()=>{show('choose');openChoose()};
+$('vPrev').onclick=()=>openView(viewI-1);$('vNext').onclick=()=>openView(viewI+1);$('vClose').onclick=()=>$('viewBox').style.display='none';
+$('vKeep').onclick=()=>{const g=galItems[viewI];$('viewBox').style.display='none';startStudio(g.idea,g.png,false,g.guide,g.id)};
+$('vSave').onclick=()=>{const g=galItems[viewI],t=g.title||'我的畫';KASave.share([{dataURL:g.png,name:`${KIDS[kid].name} - ${t} - ${today()}.png`}],t).then(r=>{
+  if(r==='shared'||r==='downloaded'){g.saved=true;putGal(g);toast('🖼️ Saved! 存好了!');openView(viewI);openGallery().then(()=>openView(viewI))}else toast('Not saved yet 還沒存')})};
+$('vDel').onclick=async()=>{const g=galItems[viewI];if(!confirm(`Delete “${g.title||'我的畫'}”? It can't come back. 要刪掉這張畫嗎?刪了就沒有了`))return;
+  await delGal(g.id);const d=await getDraft(kid);if(d&&d.id===g.id)await putDraft(kid,{});$('viewBox').style.display='none';toast('🗑️ Deleted 刪掉了');openGallery()};
 $('free').onclick=()=>startStudio(null);
 $('idea').onclick=()=>{newIdea();whoTag($('idWho'));show('ideaScr');renderIdea(true)};
 $('reroll').onclick=()=>{newIdea();pop();renderIdea(true)};
@@ -397,7 +445,7 @@ $('hear').onclick=()=>sayBoth(ideaZh(),ideaEn());
 $('idBack').onclick=()=>{try{KAVoice.stop()}catch(e){}show('choose')};
 $('traceIt').onclick=()=>{try{KAVoice.stop()}catch(e){}const d=JSON.parse(JSON.stringify(idea)),key=WHO_TRACE[d.who.en];startStudio(d,null,false,key?{key,mode:'steps',step:0}:null);if(key)setTimeout(sayStep,300)};
 $('drawIt').onclick=()=>{try{KAVoice.stop()}catch(e){}startStudio(JSON.parse(JSON.stringify(idea)))};
-function startStudio(theIdea,png,wasDirty,theGuide){setGuide(theGuide&&theGuide.key,theGuide&&theGuide.mode,theGuide&&theGuide.step);drawingIdea=theIdea||null;undoSt=[];blank();dirty=!!wasDirty;setStatus('');whoTag($('who'));setTool('pen');stamp=KIDS[kid].stamps[0];$('stampBtn').textContent=stamp;
+function startStudio(theIdea,png,wasDirty,theGuide,id){curId=id||(kid+'-'+Date.now());inked=!!png;setGuide(theGuide&&theGuide.key,theGuide&&theGuide.mode,theGuide&&theGuide.step);drawingIdea=theIdea||null;undoSt=[];blank();dirty=!!wasDirty;setStatus('');whoTag($('who'));setTool('pen');stamp=KIDS[kid].stamps[0];$('stampBtn').textContent=stamp;
   if(drawingIdea){idea=drawingIdea;$('bannerTxt').textContent='💡 '+ideaZh()+'  '+ideaEn();$('banner').style.visibility='visible'}else{$('bannerTxt').textContent='';$('banner').style.visibility='hidden'}
   if(png){const im=new Image();im.onload=()=>g.drawImage(im,0,0,CW,CH);im.src=png}
   show('studio');if(!png)autosave()}
@@ -409,7 +457,7 @@ window.__test={state:()=>({screen:[...document.querySelectorAll('.screen.on')].m
 </script>
 <script src="../../../tracker.js" data-game="idea-studio"></script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.3" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.3 · 2026-11-26</div>
+<div id="kaVer" data-v="1.4" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.4 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
