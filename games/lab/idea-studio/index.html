@@ -25,7 +25,9 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 .choice{flex:1 1 260px;min-height:180px;border-radius:26px;font-size:24px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 7px 0 rgba(0,0,0,.18);padding:14px}
 .choice .e{font-size:64px;line-height:1}
 .choice small{font-size:15px;font-weight:600;opacity:.85}
-.c1{background:#d3f9d8}.c2{background:#fff3bf}
+.c1{background:#d3f9d8}.c2{background:#fff3bf}.c3{background:#d0ebff}
+.choice{flex:1 1 200px}
+@media (max-width:500px),(max-height:440px){.choice{min-height:96px;flex-direction:row;gap:12px;font-size:20px;padding:8px 14px}.choice .e{font-size:44px}.choices{gap:10px}}
 #resume{display:none;background:#fff;border:3px solid #ffd43b;border-radius:20px;padding:14px;max-width:380px;width:100%}
 #resume img{max-width:100%;max-height:150px;border-radius:12px;border:1px solid #ddd;background:#fff}
 .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
@@ -109,7 +111,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   </div>
   <div class="row"><button class="btn" id="voiceBtn">🗣 聲音 Voice</button></div>
   <p class="small">Saved pictures go to the Photos app 畫好的畫存在「照片」裡</p>
-  <p class="small">Test sample · 測試版 · v1.4</p>
+  <p class="small">Test sample · 測試版 · v1.5</p>
 </section>
 
 <!-- choose -->
@@ -121,6 +123,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   <div class="choices" id="choiceBox">
     <button class="choice c1" id="free"><span class="e">✏️</span>Draw anything!<small>自由畫,想畫什麼就畫什麼</small></button>
     <button class="choice c2" id="idea"><span class="e">💡</span>Give me an idea!<small>給我一個點子</small></button>
+    <button class="choice c3" id="traceStart"><span class="e">🖍️</span>Trace a picture<small>描圖畫畫 · 100 張圖</small></button>
   </div>
   <button class="btn" id="galBtn" style="min-height:56px;font-size:19px">🖼️ My drawings 我的畫</button>
 </section>
@@ -168,7 +171,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
         <button class="tool" data-tool="fill" title="Fill">🪣</button>
         <button class="tool" data-tool="stamp" id="stampBtn" title="Stickers">⭐</button>
         <button class="tool" data-tool="eraser" title="Eraser">🧽</button>
-        <button class="tool" id="traceBtn" title="Trace">🖍️</button>
+        <button class="tool" id="traceBtn" title="Trace" style="background:#d0ebff">🖍️</button>
         <button class="tool" id="guideBtn" title="Show or hide the tracing picture" style="display:none">👁️</button>
         <button class="tool" id="sizeBtn" title="Size">●</button>
       </div>
@@ -211,7 +214,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 <script src="../../../savepic.js"></script>
 <script src="trace-art.js"></script>
 <script>
-const VERSION='v1.4';
+const VERSION='v1.5';
 const $=id=>document.getElementById(id);
 const KIDS={nora:{name:'Nora',color:'#7048e8',size:1,stamps:['⭐','💜','🌸','⚽','🦄','🌈','🎀','🦋']},
             lucas:{name:'Lucas',color:'#f76707',size:1,stamps:['⚡','🔥','⚽','🐉','⭐','🚀','🃏','🤖']},
@@ -439,6 +442,7 @@ $('vSave').onclick=()=>{const g=galItems[viewI],t=g.title||'我的畫';KASave.sh
 $('vDel').onclick=async()=>{const g=galItems[viewI];if(!confirm(`Delete “${g.title||'我的畫'}”? It can't come back. 要刪掉這張畫嗎?刪了就沒有了`))return;
   await delGal(g.id);const d=await getDraft(kid);if(d&&d.id===g.id)await putDraft(kid,{});$('viewBox').style.display='none';toast('🗑️ Deleted 刪掉了');openGallery()};
 $('free').onclick=()=>startStudio(null);
+$('traceStart').onclick=()=>{startStudio(null);openTrace()};
 $('idea').onclick=()=>{newIdea();whoTag($('idWho'));show('ideaScr');renderIdea(true)};
 $('reroll').onclick=()=>{newIdea();pop();renderIdea(true)};
 $('hear').onclick=()=>sayBoth(ideaZh(),ideaEn());
@@ -457,7 +461,7 @@ window.__test={state:()=>({screen:[...document.querySelectorAll('.screen.on')].m
 </script>
 <script src="../../../tracker.js" data-game="idea-studio"></script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.4" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.4 · 2026-11-26</div>
+<div id="kaVer" data-v="1.5" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.5 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
