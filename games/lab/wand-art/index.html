@@ -50,6 +50,21 @@ h1,h2,h3{margin:0}
 .choices button{background:#fffaf0;border:3px solid #e3d2ae;border-radius:16px;padding:12px 16px;font-size:clamp(15px,2.2vw,20px);font-weight:600;color:var(--ink);text-align:left;min-height:52px}
 .skip{position:absolute;right:12px;top:12px;z-index:5}
 /* map */
+/* upright phone map: full-height map you can swipe sideways, title on its own line, message pinned below */
+@media (orientation:portrait) and (max-width:600px){
+ body #map .bar{flex-wrap:wrap;gap:6px;padding:6px 8px}
+ #map .bar .btn{min-width:48px;min-height:48px;padding:6px 10px}
+ #map .bar .pill{margin-left:auto}
+ #mapTtl{order:10;flex:1 0 100%!important;font-size:18px!important;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ body #map .wrap{display:block;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;padding-bottom:70px}
+ #map #mapBox{display:inline-block;vertical-align:top;height:100%;width:auto;aspect-ratio:16/9;max-width:none;max-height:none}
+ #map .spot{font-size:15px;min-width:72px}
+ #map .spot .ic{font-size:40px}
+ #map .mapmsg{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);white-space:normal;text-align:center;width:max-content;max-width:92vw;z-index:6;font-size:16px}
+ body #swipeHint{display:block}
+}
+#swipeHint{display:none;position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#fffaf0;color:#3b2f5c;border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px;z-index:6;box-shadow:0 3px 0 #0003;transition:opacity .6s}
+#swipeHint.gone{opacity:0;pointer-events:none}
 #map .wrap{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#1b1f4a}
 #mapBox{position:relative;aspect-ratio:16/9;max-width:100%;max-height:100%;width:100%}
 #mapCv{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
@@ -191,7 +206,7 @@ h1,h2,h3{margin:0}
 
 <section class="screen" id="map">
   <div class="bar paper"><button class="btn ghost sm" id="mapHome">🏠</button><button class="btn ghost sm" id="chPrev">◀</button><div class="ttl" id="mapTtl">Chapter 1</div><button class="btn ghost sm" id="chNext">▶</button><div class="pill"><span id="mapStars">0</span> ✨</div><button class="btn ghost sm" id="mapFriends">📖</button><button class="btn ghost sm" id="muteBtn2">🔊</button></div>
-  <div class="wrap"><div id="mapBox"><canvas id="mapCv" width="480" height="270"></canvas><div id="spots"></div><div class="mapmsg" id="mapMsg"></div></div></div>
+  <div class="wrap"><div id="mapBox"><canvas id="mapCv" width="480" height="270"></canvas><div id="spots"></div><div class="mapmsg" id="mapMsg"></div></div></div><div id="swipeHint">👆 Swipe to see the whole castle ↔</div>
 </section>
 
 <section class="screen paper" id="play">
@@ -832,10 +847,11 @@ const NORA_DIM={happy:[315,495],wow:[189,500],brave:[267,501],cast:[320,491],sad
 const FOE_ART={blob:[261,244,300],imps:[271,231,280],crystal:[217,247,320],golem:[337,326,360]};
 const DRAGON_ART={ember:[244,304,250],thistle:[295,357,300]};
 const FRIEND_ART={mei:[105,190,300],iris:[113,190,300],sunny:[148,191,300],juni:[113,189,300],lola:[133,193,305],wren:[121,192,305],bree:[108,242,360],gran:[109,225,345],prof:[144,247,370]};
+const FRIEND_EMO={'mei-sad':[159,285],'iris-sad':[157,283],'sunny-sad':[200,286],'juni-sad':[157,276],'lola-sad':[171,277],'wren-sad':[151,284],'bree-sad':[149,315],'gran-sad':[150,310],'mei-wow':[168,287],'iris-wow':[188,286],'sunny-wow':[204,288],'juni-wow':[158,277],'lola-wow':[172,279],'wren-wow':[152,284],'bree-wow':[190,316],'gran-wow':[174,310]};
 function girl(who,x,y,s,o={}){
- if(FRIEND_ART[who]&&window.NORA_ART!==false){ const [iw,ih,h]=FRIEND_ART[who], w=h*iw/ih;
+ if(FRIEND_ART[who]&&window.NORA_ART!==false){ const ek=who+'-'+(o.expr==='sad'?'sad':o.expr==='wow'?'wow':''); const emo=FRIEND_EMO[ek]; const [iw,ih,h]=emo?[emo[0],emo[1],FRIEND_ART[who][2]]:FRIEND_ART[who], w=h*iw/ih;
   const glow=o.glow?`<ellipse cx="0" cy="120" rx="110" ry="170" fill="url(#warm)" opacity=".8"/>`:'';
-  return `<g transform="translate(${x},${y}) scale(${o.flip?-s:s},${s})">${glow}<ellipse cx="0" cy="252" rx="${w*.34}" ry="9" fill="#000" opacity=".16"/><image href="art/f-${who}.webp" x="${-w/2}" y="${252-h}" width="${w}" height="${h}"/></g>`; }
+  return `<g transform="translate(${x},${y}) scale(${o.flip?-s:s},${s})">${glow}<ellipse cx="0" cy="252" rx="${w*.34}" ry="9" fill="#000" opacity=".16"/><image href="art/f-${emo?ek:who}.webp" x="${-w/2}" y="${252-h}" width="${w}" height="${h}"/></g>`; }
  if(who==='nora'&&window.NORA_ART!==false){ const ex=o.expr||'happy', arm=o.arm||'none';
   const pose=ex==='wow'?'wow':ex==='sad'?'sad':ex==='closed'?'sleepy':arm==='wand'?(o.glow?'happy':'cast'):arm==='wave'?'wave':ex==='smirk'?'brave':'happy';
   const R=NORA_DIM[pose]; const h=340,w=h*R[0]/R[1];
@@ -957,7 +973,7 @@ function swapStage(html,fade){ const st=$('#stStage'); const d=document.createEl
  if(getComputedStyle(st).position==='static') st.style.position='relative';
  if(!fade){ d.style.animation='none'; const os=st.querySelector('svg'), ns=d.querySelector('svg'); try{ const oa=os&&os.getAnimations()[0]; st.appendChild(d); const na=ns&&ns.getAnimations()[0]; if(oa&&na) na.currentTime=oa.currentTime; }catch(e){ st.appendChild(d); } } else st.appendChild(d); requestAnimationFrame(()=>requestAnimationFrame(()=>{ [...st.children].forEach(c=>{ if(c!==d) c.remove(); }); })); }
 // Preload and decode all art once so swaps never wait on a picture.
-(function(){ const L=Object.keys(ART_BG).map(k=>`art/bg-${k}.webp`).concat(['happy','wow','brave','cast','sad','sleepy','wave'].map(k=>`art/nora-${k}.webp`),Object.keys(typeof FRIEND_ART!=='undefined'?FRIEND_ART:{}).map(k=>`art/f-${k}.webp`),Object.keys(FOE_ART).map(k=>`art/m-${k}.webp`),Object.keys(DRAGON_ART).map(k=>`art/d-${k}.webp`)); window.__artKeep=L.map(u=>{ const i=new Image(); i.src=u; i.decode&&i.decode().catch(()=>{}); return i; }); })();
+(function(){ const L=Object.keys(ART_BG).map(k=>`art/bg-${k}.webp`).concat(['happy','wow','brave','cast','sad','sleepy','wave'].map(k=>`art/nora-${k}.webp`),Object.keys(typeof FRIEND_ART!=='undefined'?FRIEND_ART:{}).map(k=>`art/f-${k}.webp`),Object.keys(FRIEND_EMO).map(k=>`art/f-${k}.webp`),Object.keys(FOE_ART).map(k=>`art/m-${k}.webp`),Object.keys(DRAGON_ART).map(k=>`art/d-${k}.webp`)); window.__artKeep=L.map(u=>{ const i=new Image(); i.src=u; i.decode&&i.decode().catch(()=>{}); return i; }); })();
 function stepStory(){
  const L=storyLines[storyIdx]; if(!L){ Voice.stop(); const f=storyDone; storyDone=null; f&&f(); return; }
  if(L.scene&&L.scene!==lastScene){ const m=L.scene.match(/art\/bg-([a-z]+)\.webp/), bg=m?m[1]:L.scene.slice(0,80); swapStage(L.scene, bg!==lastBg); lastScene=L.scene; lastBg=bg; }
@@ -975,15 +991,21 @@ $('#skipBtn').onclick=e=>{ e.stopPropagation(); Voice.stop(); storyIdx=storyLine
 const ENVELOPE=`<g class="float"><g transform="translate(700,250) rotate(-8)" filter="url(#glow)"><rect x="-70" y="-46" width="140" height="92" rx="6" fill="#fff8e1"/><path d="M-70 -46L0 10L70 -46" fill="none" stroke="#c9a96b" stroke-width="4"/><circle cx="0" cy="10" r="14" fill="#c92a2a"/><path d="M0 0l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z" fill="#ffd43b"/></g></g>`;
 const LETTERTXT=`<g transform="translate(560,300) rotate(-4)"><rect width="320" height="210" rx="8" fill="#fff8e1" filter="url(#soft)"/><text x="24" y="56" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="40" fill="#e9a91c" filter="url(#glow)">Dear Nora,</text><text x="24" y="104" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="30" fill="#7048e8">You are invited to</text><text x="24" y="146" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="34" fill="#7048e8">Inkwell Academy</text></g>`;
 const INTRO=()=>[
- {scene:sceneSVG('home',[['nora',300,250,1,{expr:'closed'}]]),text:'It was a quiet night. Nora was almost asleep… when something tapped on her window.'},
- {scene:sceneSVG('home',[['nora',300,250,1,{expr:'wow'}]],ENVELOPE),text:'A letter! It floated right inside, glowing like a tiny moon.',sfx:'spark'},
- {scene:sceneSVG('home',[['nora',300,250,1,{arm:'hold',expr:'wow'}]],LETTERTXT),who:'nora',text:'Whoa… the writing is moving! It says… Dear Nora, you are invited to Inkwell Academy!',sfx:'chime'},
- {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'wow'}],['nora',430,250,1,{arm:'hold'}]],LETTERTXT),who:'gran',text:'Inkwell Academy? Oh my. I haven\'t heard that name in a very long time.'},
+ {scene:sceneSVG('home',[['nora',300,250,1,{expr:'closed'}]]),text:'The house was quiet. Rain tapped softly on the roof, and Nora was almost asleep… when something else tapped on her window. Tap. Tap. Tap.'},
+ {scene:sceneSVG('home',[['nora',300,250,1,{expr:'wow'}]],ENVELOPE),text:'A letter! It slipped through the crack in the window and floated across the room, glowing like a tiny moon.',sfx:'spark'},
+ {scene:sceneSVG('home',[['nora',300,250,1,{arm:'hold',expr:'wow'}]],LETTERTXT),who:'nora',text:'Whoa… the ink is moving! It says… Dear Nora, you are invited to Inkwell Academy, the school of written magic!',sfx:'chime'},
+ {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'wow'}],['nora',430,250,1,{arm:'hold'}]],LETTERTXT),who:'gran',text:'Inkwell Academy? Oh my. I haven\'t heard that name in a very, very long time.'},
  {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'closed'}],['nora',430,250,1,{}]]),who:'gran',text:'I went there when I was just your age, sweetheart. Over there, every spell is written by hand… in cursive.'},
- {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'happy'}],['nora',430,250,1,{expr:'wow'}]]),who:'nora',text:'Wait. You\'re a wizard, Grandma?!'},
- {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'closed'}],['nora',430,250,1,{}]]),who:'gran',text:'Was, dear. Was. Now go on… they\'re waiting for you.'},
- {scene:sceneSVG('gate',[['prof',760,250,1,{arm:'wave'}],['nora',300,260,1,{arm:'wand'}]]),who:'prof',text:'Ah, you must be Nora! Welcome. I\'m Professor Quill.'},
- {scene:sceneSVG('gate',[['prof',760,250,1,{}],['nora',300,260,1,{arm:'wand'}]]),who:'prof',text:'Before the gate opens, let\'s see your wand-writing. Don\'t worry about being perfect. Just do your best.'},
+ {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'happy'}],['nora',430,250,1,{expr:'wow'}]]),who:'nora',text:'Wait. YOU went to a magic school? Grandma, are you a wizard?!'},
+ {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'closed'}],['nora',430,250,1,{}]]),who:'gran',text:'Was, dear. Was. That was a long time ago.'},
+ {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'sad'}],['nora',430,250,1,{expr:'sad'}]]),text:'Grandma looked out at the moon, and for a moment her face looked far away, as if she was remembering someone she had lost.'},
+ {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'happy'}],['nora',430,250,1,{arm:'hold',expr:'wow'}]],ENVELOPE),who:'gran',text:'Take this with you. It\'s a letter from me. Read it whenever you feel alone, and it will remind you that someone loves you.'},
+ {scene:sceneSVG('home',[['gran',180,270,.95,{expr:'happy'}],['nora',430,250,1,{arm:'hold'}]]),who:'nora',text:'I\'ll keep it in my pocket. Always.'},
+ {scene:sceneSVG('gate',[['nora',300,260,1,{expr:'wow'}]]),text:'The next morning, a carriage pulled by paper birds carried Nora over the hills… to the tallest, twistiest castle she had ever seen.',sfx:'chime'},
+ {scene:sceneSVG('gate',[['prof',760,250,1,{arm:'wave'}],['nora',300,260,1,{arm:'wand'}]]),who:'prof',text:'Ah, you must be Nora! Welcome to Inkwell Academy. I\'m Professor Quill, and I teach the art of written magic.'},
+ {scene:sceneSVG('gate',[['prof',760,250,1,{}],['nora',300,260,1,{arm:'wand'}]]),who:'prof',text:'Here, every spell is a word, and every word must be written with care. A sloppy spell fizzles. A careful spell… sings.'},
+ {scene:sceneSVG('gate',[['prof',760,250,1,{}],['nora',300,260,1,{expr:'sad'}]]),who:'nora',text:'What if I\'m not good enough?'},
+ {scene:sceneSVG('gate',[['prof',760,250,1,{expr:'happy'}],['nora',300,260,1,{arm:'wand'}]]),who:'prof',text:'Nobody is perfect on their first day. Before the gate opens, let\'s just see your wand-writing. Do your best. That\'s all.'},
 ];
 
 // ============ writing pad ============
@@ -1033,8 +1055,8 @@ class Pad{
  }
  playDemo(){ return new Promise(res=>{ const total=this.L.strokes.reduce((a,s)=>a+(s.dot?1:s.pts.length),0); const me={k:0}; this.demo=me; let done=false;
   const finish=()=>{ if(done) return; done=true; if(this.demo===me) this.demo=null; try{ this.draw(); }catch(e){} res(); };
-  const guard=setTimeout(finish,6000); // safety net: the pad can never stay frozen
-  const step=()=>{ if(this.demo!==me){ clearTimeout(guard); return finish(); } me.k+=Math.max(1,total/90); try{ this.draw(); }catch(e){ clearTimeout(guard); return finish(); } if(me.k<total+20) requestAnimationFrame(step); else { clearTimeout(guard); setTimeout(finish,500); } }; step(); }); }
+  const guard=setTimeout(finish,7000); // safety net: the pad can never stay frozen
+  const step=()=>{ if(this.demo!==me){ clearTimeout(guard); return finish(); } me.k+=Math.max(.85,total/106); /* 15% slower demo (v1.3) */ try{ this.draw(); }catch(e){ clearTimeout(guard); return finish(); } if(me.k<total+20) requestAnimationFrame(step); else { clearTimeout(guard); setTimeout(finish,500); } }; step(); }); }
  score(){ const r=scoreInk(this.text,this.strokes,'trace'); if(this.pen){ r.stars=r.score>=.86?3:r.score>=.7?2:r.score>=.5?1:0; } return r; }
 }
 const pad=new Pad($('#padHost'));
@@ -1214,17 +1236,20 @@ function renderSpots(){ const n=S.view, k=JSON.stringify(S.done)+n+S.ch; if(k===
  $('#chPrev').style.visibility=n>1?'visible':'hidden'; $('#chNext').style.visibility=n<Math.min(S.ch,CHAPTERS.length)?'visible':'hidden';
  $('#mapMsg').textContent= nm&&nm.needs&&!S.done[nm.needs] ? 'First hatch the dragon egg in Chapter 1 ◀' : nm ? `Go to the ${nm.name}! ${nm.icon}` : (n<CHAPTERS.length?`Chapter ${n} complete! ▶ Chapter ${n+1}`:'You saved Inkwell Academy! ✨');
 }
-$('#chPrev').onclick=()=>{ if(S.view>1){ S.view--; save(); spotsKey=''; Snd.sfx('tap'); } };
-$('#chNext').onclick=()=>{ if(S.view<Math.min(S.ch,CHAPTERS.length)){ S.view++; save(); spotsKey=''; Snd.sfx('tap'); } };
+$('#chPrev').onclick=()=>{ if(S.view>1){ S.view--; save(); spotsKey=''; Snd.sfx('tap'); setTimeout(centerMap,60); } };
+$('#chNext').onclick=()=>{ if(S.view<Math.min(S.ch,CHAPTERS.length)){ S.view++; save(); spotsKey=''; Snd.sfx('tap'); setTimeout(centerMap,60); } };
 let walking=false; async function walkTo(x,y){ walking=true; const sx=noraPos.x,sy=noraPos.y; for(let k=1;k<=18;k++){ noraPos={x:sx+(x-sx)*k/18,y:sy+(y-sy)*k/18}; await sleep(28); } walking=false; }
 async function openSpot(m){ const n=S.view; if(!isOpen(n,m)){ Snd.sfx('fizz'); $('#mapMsg').textContent='Locked! Finish the glowing place first.'; setTimeout(()=>{spotsKey='';renderSpots();},1600); return; }
  Snd.sfx('tap'); await walkTo(m.x,m.y+22); const sp=document.querySelector(`.spot[data-id="${m.id}"]`); if(sp){ FX.burst(...FX.center(sp),{n:45,speed:7}); Snd.sfx('spark'); } await sleep(350); startMission(m,n); }
-function goMap(){ if(S.trial&&!nextMain(S.view)&&!S.chDone[S.view]) return chapterEnd(S.view); show('map'); refreshStars(); Snd.startMusic(); spotsKey=''; }
+function goMap(){ if(S.trial&&!nextMain(S.view)&&!S.chDone[S.view]) return chapterEnd(S.view); show('map'); refreshStars(); Snd.startMusic(); spotsKey='';  setTimeout(centerMap,60); }
+function centerMap(){ const wr=$('#map .wrap'), box=$('#mapBox'); if(!wr||wr.scrollWidth<=wr.clientWidth+4) return; const nm=nextMain(S.view); const x=nm?nm.x:50; wr.style.scrollBehavior='auto'; wr.scrollLeft=Math.max(0,box.offsetWidth*x/100-wr.clientWidth/2); wr.style.scrollBehavior=''; const h=$('#swipeHint'); h.classList.remove('gone'); clearTimeout(centerMap.t); centerMap.t=setTimeout(()=>h.classList.add('gone'),3500); setTimeout(()=>wr.addEventListener('scroll',()=>h.classList.add('gone'),{once:true}),300); }
+addEventListener('resize',()=>{ if(current==='map') centerMap(); });
 $('#mapHome').onclick=()=>{ Snd.stopMusic(); show('title'); refreshStars(); };
 
 // ============ missions ============
 let M=null; // current mission run
-function markDone(n,m,pts){ S.stars+=pts; S.done[key(n,m.id)]=true; sessionMissions++; save(); refreshStars(); }
+let lastDoneKey=null;
+function markDone(n,m,pts){ S.stars+=pts; S.done[key(n,m.id)]=true; lastDoneKey=key(n,m.id); if(m.kind!=='mini') sessionMissions++; save(); refreshStars(); }
 function startMission(m,n=S.view){
  if(sessionMissions>=3){ show('brk'); Snd.stopMusic(); return; }
  Snd.stopMusic();
@@ -1282,11 +1307,15 @@ function resultScreen(big,stars,txt,tip,n=S.view){
  $('#resArt').innerHTML=`<div style="width:min(320px,60vw)">${svg(BG('hall')+girl('nora',512,280,1.2,{arm:'wand',glow:true}),'0 0 1024 640')}</div>`;
  Voice.say(big);
  const nm=nextMain(n), nb=$('#resNext');
- if(nm){ nb.textContent=`Next: ${nm.name} ▶`; nb.onclick=()=>{ Snd.sfx('tap'); startMission(nm,n); }; }
- else if(!S.chDone[n]){ nb.textContent=n<CHAPTERS.length?'Chapter end ▶':'The finale ▶'; nb.onclick=()=>chapterEnd(n); }
- else { nb.textContent='Map ▶'; nb.onclick=goMap; }
+ $('#resMap').style.display='';
+ if(nm){ nb.textContent=`Next: ${nm.name} ▶`; nb.onclick=()=>{ Snd.sfx('tap'); afterMission(()=>startMission(nm,n)); }; }
+ else if(!S.chDone[n]){ nb.textContent=n<CHAPTERS.length?'Chapter end ▶':'The finale ▶'; nb.onclick=()=>afterMission(()=>chapterEnd(n)); }
+ else { nb.textContent='Map ▶'; nb.onclick=()=>afterMission(goMap); }
 }
-$('#resMap').onclick=()=>goMap();
+$('#resMap').onclick=()=>afterMission(goMap);
+// Each finished mission leads into the next place with a short scene (played once).
+function afterMission(next){ const k=lastDoneKey; lastDoneKey=null; S.seenT=S.seenT||{}; if(k&&TRANS[k]&&!S.seenT[k]){ S.seenT[k]=true; save(); playStory(TRANS[k](),next); } else next(); }
+// No break screen in this game (user's choice).
 $('#playBack').onclick=()=>{ Voice.stop(); goMap(); };
 $('#brkDone').onclick=()=>{ Voice.stop(); show('title'); refreshStars(); };
 
@@ -1376,248 +1405,366 @@ async function trialCast(){ if(!pad.hasInk()){ showFb('Write with your finger or
  const lvTxt=['','Rune Reader (lowercase letters)','Capital Caster (capital letters)','Chain Weaver (joined words)'][lv];
  playStory([
   {scene:sceneSVG('gate',[['prof',760,250,1,{arm:'wave'}],['nora',300,260,1,{arm:'wand',expr:'wow'}]],`<g filter="url(#glow)"><rect x="470" y="300" width="100" height="120" fill="#ffe066" opacity=".7"/></g>`),who:'prof',text:`Wonderful! The gate likes you. You'll start as a ${lvTxt}.`,sfx:'gold'},
-  {scene:sceneSVG('runehall',[['prof',760,250,1,{expr:'sad'}],['nora',300,260,1,{}]]),who:'prof',text:'Now… I\'m afraid I need your help already. The castle lamps are going out, one by one.'},
-  {scene:sceneSVG('runehall',[['prof',760,250,1,{expr:'sad'}],['nora',300,260,1,{expr:'sad'}]]),who:'nora',text:'Going out? But why?'},
-  {scene:sceneSVG('runehall',[['prof',760,250,1,{}],['nora',300,260,1,{}]]),who:'prof',text:'Nobody knows yet. But a new student with a steady wand might be exactly what we need.'},
-  {scene:sceneSVG('runehall',[['prof',760,250,1,{}],['nora',300,260,1,{arm:'wand'}]]),who:'nora',text:'Okay. I\'ll try my very best!'},
+  {scene:sceneSVG('runehall',[['nora',300,260,1,{expr:'wow'}],['prof',760,250,1,{}]]),text:'The gate swings open. Inside, the castle is humming with magic… but something feels wrong. Half the candles in Rune Hall are dark.'},
+  {scene:sceneSVG('runehall',[['prof',760,250,1,{expr:'sad'}],['nora',300,260,1,{}]]),who:'prof',text:'Now… I\'m afraid I need your help already. The castle lamps are going out, one by one, and nobody knows why.'},
+  {scene:sceneSVG('runehall',[['prof',760,250,1,{expr:'sad'}],['nora',300,260,1,{expr:'sad'}]]),who:'nora',text:'Going out? But lamps don\'t just… stop.'},
+  {scene:sceneSVG('runehall',[['prof',760,250,1,{expr:'sad'}],['nora',300,260,1,{expr:'sad'}]]),who:'prof',text:'Ours never did. Not in three hundred years. Some say the words inside them are fading, like old ink left in the sun.'},
+  {scene:sceneSVG('runehall',[['prof',760,250,1,{}],['nora',300,260,1,{arm:'hold'}]]),text:'Fading words. Nora touches Grandma\'s letter in her pocket. It still feels warm.'},
+  {scene:sceneSVG('runehall',[['prof',760,250,1,{}],['nora',300,260,1,{}]]),who:'prof',text:'Each candle needs a rune written just right. A new student with a steady wand might be exactly what we need. Will you try?'},
+  {scene:sceneSVG('runehall',[['prof',760,250,1,{expr:'happy'}],['nora',300,260,1,{arm:'wand'}]]),who:'nora',text:'I\'ll try my very best!'},
  ],()=>goMap()); }
 
 // ============ stories ============
 const say=(who,text,scene,x={})=>Object.assign({who,text,scene},x);
+const SILVER=(w,x=640,y=200,sz=50)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="'TeX Gyre Chorus',cursive" font-size="${sz}" fill="#f8f9fa" stroke="#4c3d8f" stroke-width="4" paint-order="stroke" class="float">${w}</text>`;
 const STORIES={
- // ----- Chapter 1
- // ----- side stories: the cast
+ // ===== Chapter 1: The Lamps Go Dark =====
  sunny:done=>{ const s=(n,u)=>sc('bigstairs',[['nora',330,250,1,n],['sunny',700,300,.8,u]]); playStory([
-  say(null,'On the way back from Rune Hall, Nora hears crying under the big staircase.',s({expr:'wow'},{expr:'sad'})),
-  say('sunny','I\'m Sunny. I\'m seven. It\'s my first day and every hallway looks the same and I can\'t find my room…',s({expr:'sad'},{expr:'sad'})),
-  say(null,'What should Nora do?',s({expr:'sad'},{expr:'sad'}),{choices:[
-   {t:'⏩ "Sorry, I\'m busy. Ask someone else."',ok:false,why:'Sunny sniffles even harder. Nora remembers how scary her own first day was. Try again.'},
-   {t:'🧭 Walk her to her room and show her a trick',ok:true,reply:[
-    say('nora','I got lost on my first day too. See the blue candles? They always point to the first-year rooms.',s({arm:'wave'},{expr:'wow'})),
-    say('sunny','Blue candles… blue candles… THERE\'S MY DOOR! You\'re the nicest big kid ever!',s({},{expr:'happy',arm:'wave'}),{sfx:'chime'}),
-    say('sunny','Can I sit with you at lunch? Tomorrow? And the day after?',s({expr:'happy'},{expr:'shy'})),
-    say('nora','Every single day.',s({arm:'wave'},{expr:'happy',arm:'wave'})),
-   ]}]}),
- ],done); },
- eggPre:done=>{ const s=(e)=>sc('greenhouse',[['juni',260,270,.95,{arm:'hold'}],['nora',720,250,1,{expr:e}]],D(420,330,.8,{stage:'egg'})); playStory([
-  say(null,'Behind the greenhouse, a girl with leaves in her hair waves Nora over. She\'s hugging something warm.',s('wow')),
-  say('juni','Hi! I\'m Juni. The tomatoes told me you were nice. Look what I found in the herb garden after the storm…',s('wow')),
-  say('nora','Is that… a dragon egg?!',s('wow')),
-  say('juni','It\'s getting cold. Dragon eggs hatch when they hear kind words. Will you write some for it?',s('happy')),
- ],done); },
- eggPost:done=>{ playStory([
-  say(null,'Crack… crack… CRACK!',sc('greenhouse',[['juni',260,270,.95,{expr:'wow'}],['nora',720,250,1,{expr:'wow'}]],D(470,330,.8,{stage:'egg',crack:true})),{sfx:'spark'}),
-  say(null,'A tiny golden dragon tumbles out, blinks, and sneezes a spark right onto Nora\'s shoe.',sc('greenhouse',[['juni',260,270,.95,{expr:'happy'}],['nora',720,250,1,{expr:'wow'}]],D(470,300,.8,{})),{sfx:'gold'}),
-  say('ember','Rrr-eee!',sc('greenhouse',[['juni',260,270,.95,{expr:'happy'}],['nora',720,250,1,{arm:'wave'}]],D(470,300,.8,{expr:'happy'}))),
-  say('juni','She likes you! She needs a name.',sc('greenhouse',[['juni',260,270,.95,{arm:'wave'}],['nora',720,250,1,{}]],D(470,300,.8,{}))),
-  say('nora','Ember. Because she\'s small, but she glows.',sc('greenhouse',[['juni',260,270,.95,{expr:'happy'}],['nora',720,250,1,{arm:'hold',glow:true}]],D(470,300,.8,{expr:'closed'})),{sfx:'chime'}),
-  say('juni','Dawnfeather dragons live on the Five Peaks, far away. I wonder how her egg got all the way here…',sc('greenhouse',[['juni',260,270,.95,{expr:'sad'}],['nora',720,250,1,{}]],D(470,300,.8,{expr:'sad'}))),
- ],done); },
- juniFear:done=>{ const s=(n,j)=>sc('courtyard',[['nora',300,250,1,n],['juni',720,270,1,j]]); playStory([
-  say(null,'It\'s broom test day. Everyone is zooming around the field, except Juni. She hasn\'t moved.',s({},{expr:'sad'})),
-  say('juni','When I was little, I fell out of an apple tree. Now my legs turn into jelly when I\'m up high.',s({expr:'sad'},{expr:'sad'})),
-  say(null,'What should Nora do?',s({expr:'sad'},{expr:'sad'}),{choices:[
-   {t:'🙄 "Just do it, it\'s easy!"',ok:false,why:'Juni looks down. Saying a fear is silly doesn\'t make it smaller. Try another way.'},
-   {t:'🧹 "Let\'s fly together, low and slow, one tree at a time."',ok:true,reply:[
-    say('nora','Let\'s fly together. Low and slow. Just one tree at a time. I\'ll be right next to you.',s({arm:'wave'},{expr:'shy'})),
-    say(null,'One tree… two trees… the whole orchard. Juni is flying!',s({arm:'wand',expr:'wow'},{expr:'wow',arm:'wave'}),{sfx:'gold'}),
-    say('juni','I did it! It\'s still scary… but I did it scared!',s({expr:'happy'},{expr:'happy',arm:'wave'})),
-    say('nora','That\'s exactly what brave means.',s({arm:'wave'},{expr:'happy'})),
-   ]}]}),
- ],done); },
- flightPre:done=>{ const s=(b,e)=>sc('field',[['bree',260,250,1,b],['nora',700,250,1,{}]],D(470,330,.8,e)); playStory([
-  say(null,'Ember flaps and flops, flaps and flops. She can\'t get off the ground.',s({},{expr:'sad'})),
-  say('bree','I\'m Coach Bree, flying teacher. That little one needs wind words. Write a few, and she\'ll catch the breeze.',s({arm:'wave'},{})),
-  say('bree','I used to ride a dragon, you know. A big Dawnfeather named Thistle.',s({expr:'happy'},{})),
-  say('nora','Used to?',s({expr:'sad'},{})),
-  say('bree','…That\'s a story for another day. Let\'s get this one flying.',s({expr:'sad'},{expr:'sad'})),
- ],done); },
- flightPost:done=>playStory([
-  say(null,'Ember\'s wings catch the wind. Up… up… a loop-the-loop! She lands on Nora\'s head, very proud.',sc('field',[['bree',260,250,1,{expr:'wow'}],['nora',700,260,1,{expr:'wow'}]],D(520,160,.8,{fly:true,expr:'happy'})),{sfx:'gold'}),
-  say('bree','She flies just like Thistle did.',sc('field',[['bree',260,250,1,{expr:'closed'}],['nora',700,260,1,{}]],D(700,90,.5,{expr:'happy'}))),
- ],done),
- lola:done=>{ const s=(n,l)=>sc('library',[['nora',300,250,1,n],['lola',720,250,1,l]]); playStory([
-  say(null,'Deep in the library, a glowing girl floats between the shelves. She\'s a ghost. A friendly one.',s({expr:'wow'},{})),
-  say('lola','Oh! A visitor! I\'m Lola. I\'ve lived in this library for two hundred years.',s({expr:'wow'},{arm:'wave'})),
-  say('lola','I\'ve read every book here. But nobody has read with me in a very, very long time.',s({},{expr:'sad'})),
-  say(null,'What should Nora do?',s({},{expr:'sad'}),{choices:[
-   {t:'😱 Run away screaming',ok:false,why:'Lola fades a little. She\'s a ghost, but she has feelings too. Try again.'},
-   {t:'📖 Pick a book and read it aloud with her',ok:true,reply:[
-    say('nora','Want to read this one together? You do the dragon voices.',s({arm:'hold'},{expr:'wow'})),
-    say('lola','Oh, I\'d LOVE to! "Once upon a time, high on the Five Peaks…"',s({arm:'hold'},{expr:'happy',arm:'wave'}),{sfx:'chime'}),
-    say('lola','Thank you, Nora. And since you\'re looking for clues… the vanishing words all drift toward the Hollow Tower. Like leaves in a stream.',s({expr:'wow'},{expr:'happy'})),
-   ]}]}),
- ],done); },
- songPre:done=>{ const s=(e,n)=>sc('room',[['nora',300,250,1,n]],D(700,320,.85,e)); playStory([
-  say(null,'Ember sits on the windowsill, staring at the far mountains. She hums a few notes… then stops.',s({expr:'sad'},{})),
-  say('nora','Juni says dragons sing their family\'s sky-song so they can find each other. Ember can\'t remember hers. The Fading took it.',s({expr:'sad'},{expr:'sad'})),
-  say('nora','Then let\'s write her new song words, Ember. The best ones ever.',s({},{arm:'wand'})),
- ],done); },
- songPost:done=>playStory([
-  say(null,'Ember sings. The words float out of the window like golden birds, all the way to the mountains.',sc('room',[['nora',300,250,1,{expr:'wow'}]],D(700,300,.85,{expr:'closed'})),{sfx:'chime'}),
-  say(null,'Then, very far away… an answering roar echoes from the Five Peaks.',sc('room',[['nora',300,250,1,{expr:'wow'}]],D(700,300,.85,{expr:'wow'})),{sfx:'boom'}),
-  say('nora','Ember! Your family is out there. And they heard you!',sc('room',[['nora',300,250,1,{arm:'wave',expr:'happy'}]],D(700,300,.85,{expr:'happy',fly:true}))),
- ],done),
- bree:done=>{ const s=(n,b)=>sc('bridge',[['nora',300,250,1,n],['bree',720,250,1,b]],D(520,380,.6,{expr:'sad'})); playStory([
-  say(null,'Before the last climb, Coach Bree finds Nora on the windy tower bridge.',s({},{expr:'sad'})),
-  say('bree','Twenty years ago, Thistle and I flew into a storm just like this one. I got scared and pulled us back.',s({expr:'sad'},{expr:'sad'})),
-  say('bree','The wind tore us apart. I told everyone she flew away. The truth is… I let go.',s({expr:'sad'},{expr:'closed'})),
-  say(null,'What should Nora say?',s({expr:'sad'},{expr:'sad'}),{choices:[
-   {t:'😮 "So it was your fault?"',ok:false,why:'Coach Bree turns away. She already feels terrible. A kinder answer might help her heal.'},
-   {t:'💛 "Being scared isn\'t wrong. Telling the truth was brave."',ok:true,reply:[
-    say('nora','Being scared isn\'t wrong. And telling the truth after all these years? That\'s really brave.',s({arm:'wave'},{expr:'wow'})),
-    say('bree','…Thank you, Nora. If Thistle is out there, I want to tell her I\'m sorry.',s({},{expr:'happy'})),
-    say('nora','Ember heard a roar from the Five Peaks. Maybe Thistle is closer than you think.',s({arm:'hold'},{expr:'wow'}),{sfx:'chime'}),
+  say(null,"Nora follows the sound down the winding steps. Under the big staircase, a little girl with orange pigtails is hugging her knees.",s({expr:'wow'},{expr:'sad'})),
+  say('sunny',"Go away… I mean… sorry. I'm Sunny. I'm seven. It's my very first day.",s({expr:'sad'},{expr:'sad'})),
+  say('sunny',"Every hallway looks the same, and the stairs keep MOVING, and my map turned into a paper bird and flew away!",s({expr:'wow'},{expr:'sad'})),
+  say(null,"Nora remembers standing at the big gate this morning, feeling very small. Her tummy had done flips, too.",s({expr:'sad'},{expr:'sad'})),
+  say(null,"What should Nora do?",s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:"⏩ “Sorry, I'm busy. Ask someone else.”",ok:false,why:"Sunny sniffles even harder. Nora remembers how scary her own first day was. Try again."},
+   {t:"🧭 Walk her to her room and show her a trick",ok:true,reply:[
+    say('nora',"I'm new too! I just got here this morning. But I learned a trick. See the blue candles? They always point to the first-year rooms.",s({arm:'wave'},{expr:'wow'})),
+    say(null,"They follow the little blue flames together, past a snoring suit of armor and a painting of a duke who winks at them.",s({arm:'wave'},{expr:'happy'})),
+    say('sunny',"THERE'S MY DOOR! You're the nicest big kid in the whole entire castle!",s({},{expr:'happy',arm:'wave'}),{sfx:'chime'}),
+    say('sunny',"Can I sit with you at lunch? Tomorrow? And the day after that?",s({expr:'happy'},{expr:'shy'})),
+    say('nora',"Every single day.",s({arm:'wave'},{expr:'happy',arm:'wave'})),
+    say('sunny',"Oh! Nora? Last night I saw a girl with silver hair in the tallest tower window. She was looking down at everyone. She looked… really sad.",s({expr:'wow'},{expr:'sad'})),
+    say('nora',"A girl in the tower? Who would live all the way up there?",s({expr:'wow'},{expr:'sad'})),
    ]}]}),
  ],done); },
  mei:done=>{ const s=(a,b)=>sc('library',[['mei',700,280,1,a],['nora',300,260,1,b]]); playStory([
-  say(null,'The library is so quiet you can hear the candles flicker. Then… a sniffle.',s({expr:'sad'},{})),
-  say('mei','Oh! Um… sorry. I didn\'t think anyone was here.',s({expr:'wow'},{})),
-  say('mei','My first spell in class today went pop… and then fizzle. Everyone laughed at me.',s({expr:'sad'},{})),
-  say(null,'What should Nora do?',s({expr:'sad'},{}),{choices:[
-    {t:'😂 Laugh. It does sound kind of funny!',ok:false,why:'Mei pulls her hood over her face. Laughing would make her feel worse. Try something else.'},
-    {t:'🚶 Say nothing and walk away',ok:false,why:'Mei looks down at her book. Being left alone feels lonely. What else could Nora do?'},
-    {t:'💜 Sit next to her: "Mine fizzle too, you know."',ok:true,reply:[
-      say('nora','Hey… mine fizzle too, you know. Yesterday my spell turned into a puff of smoke!',s({expr:'shy'},{})),
-      say('mei','Really? You\'re not just saying that?',s({expr:'shy'},{})),
-      say('nora','Really! Want to practice together? We can be fizzle buddies.',s({expr:'shy'},{arm:'wave'})),
-      say('mei','Fizzle buddies… I like that! Oh, and I know a secret. The Light Bridge only listens to joined-up words.',s({expr:'happy',arm:'wave'},{arm:'wave'}),{sfx:'chime'}),
+  say(null,"The library is so tall that the top shelves disappear into the dark. It is so quiet you can hear the candles flicker. Then… a sniffle.",s({expr:'sad'},{})),
+  say('mei',"Oh! Um… sorry. I didn't think anyone was here.",s({expr:'wow'},{expr:'wow'})),
+  say(null,"A girl with round glasses quickly wipes her eyes. A tiny curl of smoke is still rising from the tip of her wand.",s({expr:'sad'},{})),
+  say('mei',"My first spell in class today went pop… and then fizzle. Everyone laughed. Even the teacher's owl laughed.",s({expr:'sad'},{expr:'sad'})),
+  say(null,"What should Nora do?",s({expr:'sad'},{}),{choices:[
+    {t:"😂 Laugh. It does sound kind of funny!",ok:false,why:"Mei pulls her hood over her face. Laughing would make her feel worse. Try something else."},
+    {t:"🚶 Say nothing and walk away",ok:false,why:"Mei looks down at her book. Being left alone feels lonely. What else could Nora do?"},
+    {t:"💜 Sit next to her: “Mine fizzle too, you know.”",ok:true,reply:[
+      say('nora',"Hey… mine fizzle too, you know. Yesterday my spell turned into a puff of purple smoke. It smelled like burnt toast!",s({expr:'shy'},{})),
+      say('mei',"Really? You're not just saying that?",s({expr:'wow'},{})),
+      say('nora',"Really! Want to practice together? We can be fizzle buddies.",s({expr:'shy'},{arm:'wave'})),
+      say('mei',"Fizzle buddies… I like that! I'm Mei, by the way.",s({expr:'happy',arm:'wave'},{expr:'happy'}),{sfx:'chime'}),
+      say('nora',"I'm Nora. Mei, have you ever heard of a girl with silver hair up in the tower?",s({expr:'happy'},{})),
+      say('mei',"The Hollow Tower? Nobody goes up there. Its door has been locked for fifty years.",s({expr:'wow'},{expr:'wow'})),
+      say('mei',"There's an old story about a student who sat in that tower waiting for something… and never came down.",s({expr:'sad'},{expr:'sad'})),
+      say('mei',"Oh, and one more secret. The Light Bridge only listens to joined-up words. If you lift your wand, it falls apart!",s({expr:'happy',arm:'wave'},{arm:'wave'})),
     ]}]}),
  ],done); },
+ eggPre:done=>{ const s=(e,j='happy')=>sc('greenhouse',[['juni',260,270,.95,{expr:j}],['nora',720,250,1,{expr:e}]],D(420,330,.8,{stage:'egg'})); playStory([
+  say(null,"Behind the greenhouse, a girl with leaves in her hair waves Nora over. She is hugging something round, wrapped in her scarf.",s('wow')),
+  say('juni',"Hi! I'm Juni. The tomatoes told me you were nice. They're very good judges of people.",s('happy')),
+  say('juni',"Look what I found in the herb garden after the storm. It fell right out of the sky. Plop!",s('wow','wow')),
+  say('nora',"Is that… a dragon egg?!",s('wow','happy')),
+  say('juni',"It's getting colder and colder. Dragon eggs only hatch when they hear kind words. But my writing is… really wobbly.",s('sad','sad')),
+  say('nora',"Then I'll write them, and you can hold it. We'll do it together.",s('happy','happy')),
+ ],done); },
+ eggPost:done=>{ const g=(j,n,d)=>sc('greenhouse',[['juni',260,270,.95,j],['nora',720,250,1,n]],D(470,300,.8,d)); playStory([
+  say(null,"Crack… crack… CRACK!",sc('greenhouse',[['juni',260,270,.95,{expr:'wow'}],['nora',720,250,1,{expr:'wow'}]],D(470,330,.8,{stage:'egg',crack:true})),{sfx:'spark'}),
+  say(null,"A tiny golden dragon tumbles out, blinks three times, and sneezes a spark right onto Nora's shoe.",g({expr:'happy'},{expr:'wow'},{}),{sfx:'gold'}),
+  say('ember',"Rrr-eee!",g({expr:'happy'},{arm:'wave'},{expr:'happy'})),
+  say('juni',"She likes you! She needs a name.",g({arm:'wave'},{},{})),
+  say('nora',"Ember. Because she's small, but she glows.",g({expr:'happy'},{arm:'hold',glow:true},{expr:'closed'}),{sfx:'chime'}),
+  say('juni',"Dawnfeather dragons live on the Five Peaks, far, far away. A storm must have carried her egg here. Her family must be so worried.",g({expr:'sad'},{},{expr:'sad'})),
+  say('nora',"Don't worry, Ember. Someday we'll find them. I promise.",g({expr:'sad'},{arm:'hold'},{expr:'sad'})),
+  say(null,"Ember curls up inside Nora's hood and falls asleep at once, warm as a little teapot.",g({expr:'happy'},{expr:'happy'},{expr:'closed'})),
+ ],done); },
  wispPre:done=>{ const f=FOES.wisp, s=(e,me)=>sc('shadowgate',[['mei',200,280,.9,{expr:me}],['nora',430,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.6)); playStory([
-  say(null,'At the Shadow Gate, the air turns cold. Something is drifting between the dark lamps.',s('happy','shy')),
-  say('mei','Nora, look out! It\'s a Shadow Wisp!',s('wow','wow')),
-  say('nora','It\'s swallowing the light!',s('sad','sad')),
-  say('mei','Shadow Wisps can\'t stand sunshine. Pick a light spell, write it, and send it flying!',s('happy','happy')),
+  say(null,"At the Shadow Gate, the air turns cold enough to see your breath. Something is drifting between the dark lamps.",s('wow','wow')),
+  say('mei',"Nora, look out! It's a Shadow Wisp!",s('wow','wow')),
+  say('nora',"It's swallowing the light, one lamp at a time!",s('sad','sad')),
+  say('mei',"Shadow Wisps can't stand sunshine. Pick a light spell, write it, and send it flying!",s('happy','happy')),
  ],done); },
  wispPost:done=>playStory([
-  say(null,'The wisp shrinks… and shrinks… until it\'s just a tiny, shivering spark.',sc('shadowgate',[['mei',230,280,.9,{expr:'wow'}],['nora',480,260,1,{arm:'wand',expr:'wow'}]],`<circle cx="790" cy="330" r="22" fill="#fff59d" filter="url(#glow)"/>`),{sfx:'chime'}),
-  say('nora','Oh… it wasn\'t mean. I think it was just scared of the dark, too.',sc('shadowgate',[['mei',230,280,.9,{expr:'shy'}],['nora',480,260,1,{arm:'hold',expr:'sad'}]],`<circle cx="620" cy="370" r="16" fill="#fff59d" filter="url(#glow)"/>`)),
-  say('mei','Let\'s give it a lamp to live in. Then it\'ll never be scared again.',sc('shadowgate',[['mei',230,280,.9,{expr:'happy',arm:'wave'}],['nora',480,260,1,{arm:'hold'}]],`<circle cx="620" cy="370" r="16" fill="#fff59d" filter="url(#glow)"/>`)),
+  say(null,"The wisp shrinks… and shrinks… until it is just a tiny, shivering spark.",sc('shadowgate',[['mei',230,280,.9,{expr:'wow'}],['nora',480,260,1,{arm:'wand',expr:'wow'}]],`<circle cx="790" cy="330" r="22" fill="#fff59d" filter="url(#glow)"/>`),{sfx:'chime'}),
+  say('nora',"Oh… it wasn't mean. I think it was just scared of the dark, too.",sc('shadowgate',[['mei',230,280,.9,{expr:'sad'}],['nora',480,260,1,{arm:'hold',expr:'sad'}]],`<circle cx="620" cy="370" r="16" fill="#fff59d" filter="url(#glow)"/>`)),
+  say('mei',"Let's give it a lamp to live in. Then it'll never be scared again.",sc('shadowgate',[['mei',230,280,.9,{expr:'happy',arm:'wave'}],['nora',480,260,1,{arm:'hold'}]],`<circle cx="620" cy="370" r="16" fill="#fff59d" filter="url(#glow)"/>`)),
+  say('mei',"But Nora… if the wisp was only scared, then what made all the lamps go dark in the first place?",sc('shadowgate',[['mei',230,280,.9,{expr:'wow'}],['nora',480,260,1,{expr:'sad'}]])),
  ],done),
- // ----- Chapter 2
- midnight:done=>{ const s=(n,m)=>sc('room',[['nora',330,250,1,n],['mei',700,270,.95,m]]); playStory([
-  say(null,'It\'s past midnight. Nora has written the capital Q forty times. Every single one fizzled.',s({expr:'sad',arm:'hold'},{expr:'closed'})),
-  say('nora','It\'s no use. Iris is right. I\'ll never get it.',s({expr:'sad'},{expr:'closed'})),
-  say('mei','Nora? You\'re still up? …Can I see?',s({expr:'sad'},{expr:'wow'})),
-  say(null,'What should Nora do?',s({expr:'sad'},{expr:'shy'}),{choices:[
-   {t:'📕 Close the book. "I quit. Magic isn\'t for me."',ok:false,why:'Nora\'s wand flickers sadly. Giving up feels safe, but it means never finding out. Try another way.'},
-   {t:'😠 "Leave me alone, Mei!"',ok:false,why:'Mei steps back, hurt. She only wanted to help. Maybe there\'s a kinder way.'},
-   {t:'💪 Show Mei: "Can you help me find what\'s wrong?"',ok:true,reply:[
-    say('mei','Look… your tail starts too early. Professor Quill says every hard letter is just two easy letters holding hands.',s({},{arm:'wave'})),
-    say('nora','Two easy letters… holding hands. Let me try again.',s({arm:'wand'},{expr:'shy'})),
-    say(null,'Swish… loop… tail. The Q glows gold for the very first time.',s({arm:'wand',expr:'wow'},{expr:'wow'}),{sfx:'gold'}),
-    say('nora','Mei, I did it! Thank you for not letting me quit.',s({arm:'wave'},{expr:'happy',arm:'wave'})),
+ // ===== Chapter 2: The Wand Duel =====
+ midnight:done=>{ const s=(n,m,x='')=>sc('room',[['nora',330,250,1,n],['mei',700,270,.95,m]],x); playStory([
+  say(null,"The dormitory is dark, except for one tiny wand-light glowing under a blanket.",s({expr:'sad',arm:'hold'},{expr:'closed'})),
+  say(null,"It's past midnight. Nora has written the capital Q forty times. Every single one fizzled.",s({expr:'sad',arm:'hold'},{expr:'closed'})),
+  say('nora',"It's no use. Iris is right. I'll never get it.",s({expr:'sad'},{expr:'closed'})),
+  say('mei',"Nora? You're still up? …Can I see?",s({expr:'sad'},{expr:'wow'})),
+  say(null,"What should Nora do?",s({expr:'sad'},{expr:'shy'}),{choices:[
+   {t:"📕 Close the book. “I quit. Magic isn't for me.”",ok:false,why:"Nora's wand flickers sadly. Giving up feels safe, but then she'll never find out what she can do. Try another way."},
+   {t:"😠 “Leave me alone, Mei!”",ok:false,why:"Mei steps back, hurt. She only wanted to help. Maybe there's a kinder way."},
+   {t:"💪 Show Mei: “Can you help me find what's wrong?”",ok:true,reply:[
+    say('mei',"Look… your tail starts too early. Professor Quill says every hard letter is just two easy letters holding hands.",s({},{arm:'wave'})),
+    say('nora',"Two easy letters… holding hands. Okay. One more try.",s({arm:'wand'},{expr:'shy'})),
+    say(null,"Swish… loop… tail. The Q glows gold for the very first time.",s({arm:'wand',expr:'wow'},{expr:'wow'}),{sfx:'gold'}),
+    say('nora',"Mei, I did it! Thank you for not letting me quit.",s({arm:'wave'},{expr:'happy',arm:'wave'})),
+    say(null,"Then something strange happens. Under Nora's golden Q, a line of silver writing appears on the page, all by itself.",s({expr:'wow'},{expr:'wow'},SILVER('Is anyone there?',640,170,44)),{sfx:'chime'}),
+    say('mei',"That's the same silver ink as the word on the candle in Rune Hall!",s({expr:'wow'},{expr:'wow'},SILVER('Is anyone there?',640,170,44))),
+    say(null,"Nora's hand is shaking a little. Underneath, she writes: Yes. I'm here. Who are you?",s({arm:'wand'},{expr:'wow'},SILVER('Is anyone there?',640,170,44))),
+    say(null,"They wait and wait, until the candle burns low. But no answer comes.",s({expr:'sad'},{expr:'sad'})),
    ]}]}),
  ],done); },
+ juniFear:done=>{ const s=(n,j)=>sc('field',[['nora',300,250,1,n],['juni',720,270,1,j]]); playStory([
+  say(null,"It's broom test day. Everyone is zooming around the field, laughing and looping. Everyone except Juni. She hasn't moved.",s({},{expr:'sad'})),
+  say('juni',"When I was little, I fell out of an apple tree. Now my legs turn into jelly whenever I'm up high.",s({expr:'sad'},{expr:'sad'})),
+  say('juni',"If I fail the broom test, I can't stay in the Greenhouse Club. And the plants need me.",s({expr:'sad'},{expr:'sad'})),
+  say(null,"What should Nora do?",s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:"🙄 “Just do it, it's easy!”",ok:false,why:"Juni looks down. Saying a fear is silly doesn't make it smaller. Try another way."},
+   {t:"🧹 “Let's fly together, low and slow, one tree at a time.”",ok:true,reply:[
+    say('nora',"Let's fly together. Low and slow. Just one tree at a time. I'll be right next to you the whole way.",s({arm:'wave'},{expr:'shy'})),
+    say(null,"One tree… two trees… five trees… the whole orchard. Juni is flying!",s({arm:'wand',expr:'wow'},{expr:'wow',arm:'wave'}),{sfx:'gold'}),
+    say('juni',"I did it! It's still scary… but I did it scared!",s({expr:'happy'},{expr:'happy',arm:'wave'})),
+    say('nora',"That's exactly what brave means.",s({arm:'wave'},{expr:'happy'})),
+    say('juni',"Nora, can I tell you something? On the night Ember's egg fell, Coach Bree was out on the field, staring at the sky. She looked like she'd seen a ghost.",s({expr:'wow'},{expr:'sad'})),
+   ]}]}),
+ ],done); },
+ flightPre:done=>{ const s=(b,e,n={})=>sc('field',[['bree',260,250,1,b],['nora',700,250,1,n]],D(470,330,.8,e)); playStory([
+  say(null,"Ember is twice as big as last week. She flaps and flops, flaps and flops. She just can't get off the ground.",s({},{expr:'sad'})),
+  say('bree',"I'm Coach Bree, flying teacher. That little one needs wind words. Write a few, and she'll catch the breeze.",s({arm:'wave'},{})),
+  say('bree',"I used to ride a dragon, you know. A big Dawnfeather named Thistle. Pink as a sunrise.",s({expr:'happy'},{expr:'wow'},{expr:'wow'})),
+  say('nora',"Used to?",s({expr:'sad'},{},{expr:'sad'})),
+  say('bree',"…That's a story for another day. Let's get this one flying.",s({expr:'sad'},{expr:'sad'})),
+ ],done); },
+ flightPost:done=>playStory([
+  say(null,"Ember's wings catch the wind. Up… up… a loop-the-loop! She lands on Nora's head, very proud of herself.",sc('field',[['bree',260,250,1,{expr:'wow'}],['nora',700,260,1,{expr:'wow'}]],D(520,160,.8,{fly:true,expr:'happy'})),{sfx:'gold'}),
+  say('bree',"She flies just like Thistle did.",sc('field',[['bree',260,250,1,{expr:'closed'}],['nora',700,260,1,{}]],D(700,90,.5,{expr:'happy'}))),
+  say(null,"Coach Bree stares at the far mountains for a long, long time. Nora wants to ask about Thistle… but Bree's eyes look shiny, so she waits.",sc('field',[['bree',260,250,1,{expr:'sad'}],['nora',700,260,1,{expr:'sad'}]],D(700,90,.5,{}))),
+ ],done),
  irisPre:done=>{ const s=(n,i)=>sc('courtyard',[['nora',300,250,1,n],['iris',730,260,1,i]]); playStory([
-  say(null,'The whole academy gathers in the courtyard for the Wand Duel. The air crackles.',s({arm:'wand'},{expr:'smirk',flip:true})),
-  say('iris','Ready to lose, new girl? My fire shield has never been broken.',s({arm:'wand'},{expr:'smirk',arm:'wand',flip:true})),
-  say('prof','Remember, this is a friendly duel. Spells hit the shield, never the student. Begin!',sc('courtyard',[['prof',512,240,1,{arm:'wave'}]])),
-  say('mei','Psst! Fire shields hate water spells!',sc('courtyard',[['mei',512,260,1,{expr:'wow',arm:'wave'}]])),
+  say(null,"The whole academy crowds into the courtyard for the Wand Duel. Sunny is waving a sign that says GO NORA in very big letters.",s({arm:'wand',expr:'wow'},{expr:'smirk',flip:true})),
+  say('iris',"Ready to lose, new girl? My fire shield has never been broken. Not once.",s({arm:'wand',expr:'sad'},{expr:'smirk',arm:'wand',flip:true})),
+  say(null,"Nora's knees are wobbling. But she thinks of the golden Q, and of Mei saying, every hard letter is just two easy letters holding hands.",s({arm:'wand'},{expr:'smirk',flip:true})),
+  say('prof',"Remember, this is a friendly duel. Spells hit the shield, never the student. Begin!",sc('courtyard',[['prof',512,240,1,{arm:'wave'}]])),
+  say('mei',"Psst! Fire shields hate water spells!",sc('courtyard',[['mei',512,260,1,{expr:'wow',arm:'wave'}]])),
  ],done); },
  irisPost:done=>{ const s=(n,i)=>sc('courtyard',[['nora',300,250,1,n],['iris',730,260,1,i]]); playStory([
-  say(null,'Iris\'s shield shatters into a hundred sparkles. The courtyard goes silent… then cheers!',s({arm:'wand',expr:'wow'},{expr:'wow',flip:true}),{sfx:'gold'}),
-  say('nora','Good duel, Iris. Your fire shield was really strong.',s({arm:'wave'},{expr:'sad',flip:true})),
-  say('iris','…Whatever. You just got lucky.',s({},{expr:'sad',flip:true})),
-  say(null,'Iris storms off. But Nora notices something: her eyes were wet.',s({expr:'sad'},{expr:'sad',flip:true})),
+  say(null,"Iris's shield shatters into a hundred sparkles. The courtyard goes silent… then everyone cheers!",s({arm:'wand',expr:'wow'},{expr:'wow',flip:true}),{sfx:'gold'}),
+  say('nora',"Good duel, Iris. Your fire shield was really strong.",s({arm:'wave'},{expr:'sad',flip:true})),
+  say('iris',"…Whatever. You just got lucky.",s({},{expr:'sad',flip:true})),
+  say(null,"Iris turns and walks away fast. But Nora notices something: her eyes were wet. And her hand kept reaching for an empty pocket.",s({expr:'sad'},{expr:'sad',flip:true})),
  ],done); },
  quill:done=>{ const s=(n,i)=>sc('courtyard',[['nora',300,250,1,n],['iris',720,270,1,i]]); playStory([
-  say(null,'Behind the fountain, Iris is searching the grass, again and again.',s({},{expr:'sad',flip:true})),
-  say('iris','It\'s gone. My mom\'s silver quill. Ink Imps took it while I was dueling.',s({expr:'wow'},{expr:'sad',flip:true})),
-  say('iris','Mom works far away. She gave it to me so I\'d have a piece of her here. It\'s the only thing I…',s({expr:'sad'},{expr:'sad',flip:true})),
-  say(null,'What should Nora do?',s({expr:'sad'},{expr:'sad',flip:true}),{choices:[
-   {t:'🙄 "Well, you were mean to me."',ok:false,why:'That\'s true… but Iris looks so small right now. Being kind doesn\'t mean what she did was okay. Try again.'},
-   {t:'🤷 "Ask a teacher, not me."',ok:false,why:'Iris turns away. Sometimes people just need someone to stand next to them. What else could Nora do?'},
-   {t:'🤝 "I miss my family too. Let\'s get it back together."',ok:true,reply:[
-    say('nora','I miss my family too, you know. Let\'s get your mom\'s quill back. Together.',s({arm:'wave'},{expr:'wow',flip:true})),
-    say('iris','You\'d help me? Even after… everything I said?',s({},{expr:'shy',flip:true})),
-    say('iris','I\'m sorry, Nora. I wasn\'t really mad at you. I was just lonely.',s({},{expr:'sad',flip:true})),
-    say('nora','Apology accepted. Now, where do Ink Imps hide?',s({arm:'wand'},{expr:'happy',flip:true}),{sfx:'chime'}),
+  say(null,"Behind the fountain, Iris is searching the grass on her hands and knees, again and again.",s({},{expr:'sad',flip:true})),
+  say('iris',"It's gone. My mom's silver quill. Ink Imps took it while I was dueling. I saw their little ink footprints.",s({expr:'wow'},{expr:'sad',flip:true})),
+  say('iris',"Mom works far away. She gave it to me so I'd have a piece of her here. It's the only thing I…",s({expr:'sad'},{expr:'sad',flip:true})),
+  say(null,"What should Nora do?",s({expr:'sad'},{expr:'sad',flip:true}),{choices:[
+   {t:"🙄 “Well, you were mean to me.”",ok:false,why:"That's true… but Iris looks so small right now. Being kind doesn't mean what she did was okay. Try again."},
+   {t:"🤷 “Ask a teacher, not me.”",ok:false,why:"Iris turns away. Sometimes people just need someone to stand next to them. What else could Nora do?"},
+   {t:"🤝 “I miss my family too. Let's get it back together.”",ok:true,reply:[
+    say('nora',"I miss my family too, you know. Let's get your mom's quill back. Together.",s({arm:'wave'},{expr:'wow',flip:true})),
+    say('iris',"You'd help me? Even after… everything I said?",s({},{expr:'shy',flip:true})),
+    say('iris',"I'm sorry, Nora. I wasn't really mad at you. I was just lonely, and being mean felt easier than saying so.",s({},{expr:'sad',flip:true})),
+    say('nora',"Apology accepted. Now… Ink Imps don't usually steal. Mei says pens and quills have been going missing all over the castle.",s({arm:'wand'},{expr:'wow',flip:true}),{sfx:'chime'}),
+    say('iris',"Then somebody sent them. Come on. The footprints lead downstairs.",s({arm:'wand'},{expr:'happy',flip:true})),
    ]}]}),
  ],done); },
  impsPre:done=>{ const f=FOES.imps, s=(e)=>sc('cellar',[['iris',180,290,.85,{arm:'wand'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.5)); playStory([
-  say(null,'Down in the Ink Cellar, three giggling Ink Imps are juggling a shiny silver quill.',s('wow')),
-  say('iris','Ink Imps hate wind. It blows their ink everywhere!',s('happy')),
-  say('nora','Then let\'s make a storm!',s('happy')),
+  say(null,"Down, down, down they go, until the stairs end in the Ink Cellar. It smells like wet paper and old secrets.",s('wow')),
+  say(null,"Three giggling Ink Imps are juggling a shiny silver quill… and behind them is a mountain of stolen pens.",s('wow')),
+  say('iris',"Ink Imps hate wind. It blows their ink everywhere!",s('happy')),
+  say('nora',"Then let's make a storm!",s('happy')),
  ],done); },
  impsPost:done=>playStory([
-  say(null,'The imps tumble away in a puff of ink. The silver quill spins in the air… and lands in Iris\'s hands.',sc('cellar',[['iris',330,270,1,{arm:'hold',expr:'wow'}],['nora',700,260,1,{expr:'happy'}]]),{sfx:'gold'}),
-  say('iris','Thank you, Nora. Will you… be my friend? A real one?',sc('cellar',[['iris',330,270,1,{arm:'hold',expr:'shy'}],['nora',700,260,1,{expr:'happy'}]])),
-  say('nora','I already am.',sc('office',[['mei',150,280,.85,{arm:'wave'}],['iris',420,270,1,{arm:'wave'}],['nora',720,260,1,{arm:'wave'}]]),{sfx:'chime'}),
+  say(null,"The imps tumble away in a puff of ink. The silver quill spins in the air… and lands in Iris's hands.",sc('cellar',[['iris',330,270,1,{arm:'hold',expr:'wow'}],['nora',700,260,1,{expr:'happy'}]]),{sfx:'gold'}),
+  say(null,"As the last imp squeezes into a crack in the wall, it squeaks: The Lonely One wanted ALL the pens! So nobody else can write!",sc('cellar',[['iris',330,270,1,{expr:'wow'}],['nora',700,260,1,{expr:'wow'}]])),
+  say('iris',"The Lonely One? Who's that?",sc('cellar',[['iris',330,270,1,{expr:'wow'}],['nora',700,260,1,{expr:'sad'}]])),
+  say('nora',"I don't know. But I think it's the same person who writes in silver ink.",sc('cellar',[['iris',330,270,1,{expr:'sad'}],['nora',700,260,1,{expr:'sad'}]])),
+  say('iris',"Thank you, Nora. Will you… be my friend? A real one?",sc('cellar',[['iris',330,270,1,{arm:'hold',expr:'shy'}],['nora',700,260,1,{expr:'happy'}]])),
+  say('nora',"I already am.",sc('cellar',[['iris',330,270,1,{expr:'happy',arm:'wave'}],['nora',700,260,1,{arm:'wave'}]]),{sfx:'chime'}),
  ],done),
- // ----- Chapter 3
+ // ===== Chapter 3: The Fading Letters =====
+ lola:done=>{ const s=(n,l)=>sc('library',[['nora',300,250,1,n],['lola',720,250,1,l]]); playStory([
+  say(null,"Deep in the library, past the shelves that whisper, a glowing girl floats between the books. She's a ghost. A friendly one.",s({expr:'wow'},{})),
+  say('lola',"Oh! A visitor! I'm Lola. I've lived in this library for two hundred years.",s({expr:'wow'},{arm:'wave',expr:'wow'})),
+  say('lola',"I've read every book in here. Twice. But nobody has read with me in a very, very long time.",s({},{expr:'sad'})),
+  say(null,"What should Nora do?",s({},{expr:'sad'}),{choices:[
+   {t:"😱 Run away screaming",ok:false,why:"Lola fades a little. She's a ghost, but she has feelings too. Try again."},
+   {t:"📖 Pick a book and read it aloud with her",ok:true,reply:[
+    say('nora',"Want to read this one together? You can do the dragon voices.",s({arm:'hold'},{expr:'wow'})),
+    say('lola',"Oh, I'd LOVE to! Once upon a time, high on the Five Peaks…",s({arm:'hold'},{expr:'happy',arm:'wave'}),{sfx:'chime'}),
+    say(null,"They read until the candles burn down to stubs. Lola laughs so hard she floats upside down.",s({expr:'happy'},{expr:'happy'})),
+    say('lola',"Thank you, Nora. Now, I know you're looking for clues. Fifty years ago, a girl with silver hair sat right here every day, writing letters.",s({expr:'wow'},{expr:'sad'})),
+    say('lola',"Her name was Wren. One day she stopped coming. And now all the vanishing words drift toward the Hollow Tower, like leaves in a stream.",s({expr:'wow'},{expr:'sad'})),
+   ]}]}),
+ ],done); },
+ songPre:done=>{ const s=(e,n)=>sc('room',[['nora',300,250,1,n]],D(700,320,.85,e)); playStory([
+  say(null,"Ember sits on the windowsill, staring at the far mountains. She hums a few notes… then stops, and hides her head under her wing.",s({expr:'sad'},{expr:'sad'})),
+  say('nora',"The old book said dragons sing their family's sky-song so they can find each other. You never got to learn yours, did you?",s({expr:'sad'},{expr:'sad'})),
+  say('nora',"Then let's write you a brand new song, Ember. The best one ever.",s({},{arm:'wand'})),
+ ],done); },
+ songPost:done=>playStory([
+  say(null,"Ember sings. The words float out of the window like golden birds, all the way to the mountains.",sc('room',[['nora',300,250,1,{expr:'wow'}]],D(700,300,.85,{expr:'closed'})),{sfx:'chime'}),
+  say(null,"Then, very far away… an answering roar echoes from the Five Peaks.",sc('room',[['nora',300,250,1,{expr:'wow'}]],D(700,300,.85,{expr:'wow'})),{sfx:'boom'}),
+  say('nora',"Ember! Your family is out there. And they heard you!",sc('room',[['nora',300,250,1,{arm:'wave',expr:'happy'}]],D(700,300,.85,{expr:'happy',fly:true}))),
+  say(null,"Down on the field, a lonely figure in a teal jacket hears the roar too. Coach Bree drops her whistle.",sc('field',[['bree',512,250,1,{expr:'wow'}]])),
+ ],done),
  truth:done=>{ const s=(n,m)=>sc('office',[['nora',330,250,1,n],['mei',720,270,.95,m]]); playStory([
-  say(null,'While looking for clues in Professor Quill\'s office, Nora bumps the desk. CRASH! The ancient inkwell breaks.',s({expr:'wow'},{expr:'wow'})),
-  say('mei','Oh no. That\'s her great-great-grandmother\'s inkwell. Quick, nobody saw. Let\'s just go.',s({expr:'sad'},{expr:'sad'})),
-  say(null,'What should Nora do?',s({expr:'sad'},{expr:'sad'}),{choices:[
-   {t:'🏃 Sneak out before anyone comes',ok:false,why:'Nora\'s tummy twists. A secret like this gets heavier every day. Try another way.'},
-   {t:'🐈 Say the castle cat did it',ok:false,why:'Then the cat gets in trouble for something it didn\'t do. That isn\'t fair. What else could Nora do?'},
-   {t:'🫶 Wait and tell Professor Quill the truth',ok:true,reply:[
-    say('nora','Professor… I broke your inkwell. It was an accident. I\'m really sorry.',sc('office',[['nora',330,250,1,{expr:'sad'}],['prof',720,250,1,{expr:'sad'}]])),
-    say('prof','Thank you for telling me, Nora. That took more courage than any duel.',sc('office',[['nora',330,250,1,{expr:'shy'}],['prof',720,250,1,{expr:'happy'}]])),
-    say('prof','Look, a hidden note was inside the inkwell all these years. It says: "Wren is waiting in the Hollow Tower."',sc('office',[['nora',330,250,1,{expr:'wow'}],['prof',720,250,1,{arm:'hold',expr:'wow'}]]),{sfx:'chime'}),
+  say(null,"Professor Quill's office is full of ticking clocks and tottering towers of books. While they wait, Mei reads the titles out loud.",s({},{expr:'happy'})),
+  say(null,"Nora turns around too fast. CRASH! The ancient inkwell on the desk smashes into pieces.",s({expr:'wow'},{expr:'wow'}),{sfx:'boom'}),
+  say('mei',"Oh no. That's her great-great-grandmother's inkwell. Quick, nobody saw. Let's just go.",s({expr:'sad'},{expr:'sad'})),
+  say(null,"What should Nora do?",s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:"🏃 Sneak out before anyone comes",ok:false,why:"Nora's tummy twists. A secret like this gets heavier every day. Try another way."},
+   {t:"🐈 Say the castle cat did it",ok:false,why:"Then the cat gets in trouble for something it didn't do. That isn't fair. What else could Nora do?"},
+   {t:"🫶 Wait and tell Professor Quill the truth",ok:true,reply:[
+    say('nora',"Professor… I broke your inkwell. It was an accident. I'm really sorry.",sc('office',[['nora',330,250,1,{expr:'sad'}],['prof',720,250,1,{expr:'sad'}]])),
+    say(null,"For a long moment, Professor Quill says nothing. Nora's heart is thumping like a drum.",sc('office',[['nora',330,250,1,{expr:'sad'}],['prof',720,250,1,{expr:'sad'}]])),
+    say('prof',"Thank you for telling me, Nora. That took more courage than any duel.",sc('office',[['nora',330,250,1,{expr:'shy'}],['prof',720,250,1,{expr:'happy'}]])),
+    say('prof',"Wait… look. A folded note was hidden inside the inkwell all these years. It says: Wren is waiting in the Hollow Tower.",sc('office',[['nora',330,250,1,{expr:'wow'}],['prof',720,250,1,{arm:'hold',expr:'wow'}]]),{sfx:'chime'}),
+    say('prof',"Wren was a student here long ago. One day she locked herself in the tower and never came out. We never knew why.",sc('office',[['nora',330,250,1,{expr:'sad'}],['prof',720,250,1,{expr:'sad'}]])),
    ]}]}),
  ],done); },
  spritePre:done=>{ const f=FOES.sprite, s=(e)=>sc('stairs',[['mei',180,290,.85,{expr:'wow'}],['iris',330,290,.85,{arm:'wand'}],['nora',540,260,1,{arm:'wand',expr:e}]],foeBody(f,'',840,290,.5)); playStory([
-  say(null,'The stairs to the Hollow Tower are covered in ice. A Frost Sprite blocks the way.',s('wow')),
-  say('iris','My mom says Frost Sprites melt from fire. I\'ll keep us warm. You cast!',s('happy')),
+  say(null,"The stairs to the Hollow Tower float up into the clouds, and every step is covered in ice. A Frost Sprite blocks the way.",s('wow')),
+  say('iris',"My mom says Frost Sprites melt from fire. I'll keep us warm. You cast!",s('happy')),
  ],done); },
  spritePost:done=>playStory([
-  say(null,'The sprite melts into a puddle… and the puddle giggles and runs away. The stairs are open.',sc('stairs',[['nora',512,260,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
-  say(null,'At the top, carved on the door, are two names: WREN and ROSE. Best friends, forever.',sc('stairs',[['nora',512,260,1,{expr:'wow'}]],`<g font-family="'TeX Gyre Chorus',cursive" font-size="46" fill="#e9a91c" filter="url(#glow)"><text x="700" y="200">Wren &amp; Rose</text></g>`)),
-  say('nora','Rose… that\'s Grandma\'s name.',sc('stairs',[['nora',512,260,1,{expr:'sad',arm:'hold'}]])),
+  say(null,"The sprite melts into a puddle… and the puddle giggles and runs away. The stairs are open.",sc('stairs',[['nora',512,260,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
+  say(null,"At the very top, carved deep into the tower door, are two names inside a heart: WREN and ROSE. Best friends, forever.",sc('stairs',[['nora',512,260,1,{expr:'wow'}]],`<g font-family="'TeX Gyre Chorus',cursive" font-size="46" fill="#e9a91c" filter="url(#glow)"><text x="700" y="200">Wren &amp; Rose</text></g>`)),
+  say('nora',"Rose… that's Grandma's name.",sc('stairs',[['nora',512,260,1,{expr:'sad',arm:'hold'}]])),
  ],done),
- // ----- Chapter 4
+ // ===== Chapter 4: The Heart of Ink =====
  grandma:done=>{ const s=(n,gx)=>sc('gate',[['gran',300,270,1,gx],['nora',700,250,1,n]]); playStory([
-  say(null,'Nora writes Grandma a letter. The very next morning, Grandma is standing at the academy gate.',s({expr:'wow'},{arm:'wave'}),{sfx:'chime'}),
-  say('gran','You found Wren\'s name. Then it\'s time I told you the truth.',s({expr:'sad'},{expr:'closed'})),
-  say('gran','Wren was my best friend. When we graduated, I promised to write to her every week.',s({expr:'sad'},{expr:'sad'})),
-  say('gran','I wrote twice… then I got busy. And I stopped. She waited and waited in that tower.',s({expr:'sad'},{expr:'sad'})),
-  say('gran','Her loneliness grew so big it started eating the words of the whole world. The Fading is my fault.',s({expr:'sad'},{expr:'closed'})),
-  say(null,'What should Nora say?',s({expr:'sad'},{expr:'sad'}),{choices:[
-   {t:'😤 "Grandma! How could you?"',ok:false,why:'Grandma\'s eyes fill with tears. She already feels terrible. Maybe there\'s a gentler way.'},
-   {t:'🤐 Pretend she didn\'t hear',ok:false,why:'Grandma looks even sadder. Hard truths are easier when someone listens. Try again.'},
-   {t:'🤗 Hug her: "Thank you for telling me. Let\'s fix it together."',ok:true,reply:[
-    say('nora','Thank you for telling me the truth, Grandma. Everyone makes mistakes. Let\'s fix it, together.',s({arm:'wave'},{expr:'wow'})),
-    say('gran','You\'re braver than I ever was, sweetheart. Together, then.',s({expr:'happy'},{expr:'happy',arm:'wave'}),{sfx:'gold'}),
+  say(null,"At sunrise, a small figure in a blue robe is waiting at the academy gate, holding an old wand like she hasn't touched it in years.",s({expr:'wow'},{arm:'wave'}),{sfx:'chime'}),
+  say('nora',"GRANDMA!",s({arm:'wave',expr:'happy'},{expr:'happy'})),
+  say('gran',"You found Wren's name. Then it's time I told you the truth, sweetheart. All of it.",s({expr:'sad'},{expr:'sad'})),
+  say('gran',"Wren was my best friend. We carved our names on that door. When we graduated, I promised to write to her every single week.",s({expr:'sad'},{expr:'sad'})),
+  say('gran',"I wrote twice. Then I got busy with my new life… and I stopped. She waited and waited in that tower.",s({expr:'sad'},{expr:'sad'})),
+  say('gran',"Her loneliness grew so big that it started eating the words of the whole world. The Fading is my fault.",s({expr:'sad'},{expr:'closed'})),
+  say(null,"What should Nora say?",s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:"😤 “Grandma! How could you?”",ok:false,why:"Grandma's eyes fill with tears. She already feels terrible. Maybe there's a gentler way."},
+   {t:"🤐 Pretend she didn't hear",ok:false,why:"Grandma looks even sadder. Hard truths are easier when someone listens. Try again."},
+   {t:"🤗 Hug her: “Thank you for telling me. Let's fix it together.”",ok:true,reply:[
+    say('nora',"Thank you for telling me the truth, Grandma. Everyone makes mistakes. Let's fix it, together.",s({arm:'wave'},{expr:'wow'})),
+    say('gran',"You're braver than I ever was, sweetheart. Together, then.",s({expr:'happy'},{expr:'happy',arm:'wave'}),{sfx:'gold'}),
+   ]}]}),
+ ],done); },
+ bree:done=>{ const s=(n,b)=>sc('bridge',[['nora',300,250,1,n],['bree',720,250,1,b]],D(520,380,.6,{expr:'sad'})); playStory([
+  say(null,"Up on the windy tower bridge, Coach Bree is holding a faded pink ribbon. The wind tugs at it, but she won't let go.",s({},{expr:'sad'})),
+  say('bree',"Twenty years ago, Thistle and I flew into a storm just like the one that's coming. I got scared and pulled us back too hard.",s({expr:'sad'},{expr:'sad'})),
+  say('bree',"The wind tore us apart. I told everyone she flew away. The truth is… I let go.",s({expr:'sad'},{expr:'closed'})),
+  say(null,"What should Nora say?",s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:"😮 “So it was your fault?”",ok:false,why:"Coach Bree turns away. She already feels terrible. A kinder answer might help her heal."},
+   {t:"💛 “Being scared isn't wrong. Telling the truth was brave.”",ok:true,reply:[
+    say('nora',"Being scared isn't wrong. And telling the truth after all these years? That's really brave.",s({arm:'wave'},{expr:'wow'})),
+    say('bree',"…Thank you, Nora. If Thistle is out there, I want to tell her I'm sorry.",s({},{expr:'happy'})),
+    say('nora',"Ember's song got an answer from the Five Peaks. Maybe Thistle is closer than you think.",s({arm:'hold'},{expr:'wow'}),{sfx:'chime'}),
+    say('bree',"Then I'm not hiding from storms anymore. When you climb that tower, I'll be right behind you.",s({arm:'wand'},{expr:'happy',arm:'wave'})),
    ]}]}),
  ],done); },
  golemPre:done=>{ const f=FOES.golem, s=(e)=>sc('tower',[['gran',170,280,.85,{arm:'wand'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.5)); playStory([
-  say(null,'A storm howls around the tower bridge. A giant Storm Golem rises out of the clouds!',s('wow')),
-  say('gran','Storms can\'t stand against solid ground. Earth spells, Nora!',s('happy')),
+  say(null,"Thunder shakes the bridge. The rain blows sideways. And out of the clouds, a giant Storm Golem rises up, made of rock and lightning.",s('wow')),
+  say('gran',"Storms can't stand against solid ground. Earth spells, Nora! I'll hold the bridge steady!",s('happy')),
  ],done); },
  golemPost:done=>playStory([
-  say(null,'The golem crumbles into little pebbles… and the storm clouds part. Moonlight floods the bridge.',sc('tower',[['gran',300,270,.95,{expr:'wow'}],['nora',650,250,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
-  say('gran','Just one door left. She\'s in there.',sc('tower',[['gran',300,270,.95,{expr:'sad'}],['nora',650,250,1,{}]])),
+  say(null,"The golem crumbles into little pebbles… and the storm clouds part. Moonlight floods the bridge.",sc('tower',[['gran',300,270,.95,{expr:'wow'}],['nora',650,250,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
+  say('gran',"Just one door left. She's in there. Fifty years, Nora. What if she hates me?",sc('tower',[['gran',300,270,.95,{expr:'sad'}],['nora',650,250,1,{expr:'sad'}]])),
+  say('nora',"Then we'll keep knocking. That's what friends do.",sc('tower',[['gran',300,270,.95,{expr:'sad'}],['nora',650,250,1,{arm:'hold'}]])),
  ],done),
- wrenPre:done=>{ const f=FOES.wren, s=(e)=>sc('tower',[['gran',170,280,.85,{expr:'sad'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',800,300,.5)); playStory([
-  say(null,'Inside the Hollow Tower, a girl floats in a whirl of dark ink. Wren.',s('wow')),
-  say('wren','Go away! Nobody ever comes. Nobody ever writes. I\'ll make ALL the words disappear!',s('sad')),
-  say('gran','Wren… it\'s me. Rose.',s('sad')),
-  say('wren','You\'re too late!',s('wow')),
-  say('nora','Her shadow shield is too strong to talk through. Light spells, first!',s('happy')),
+ wrenPre:done=>{ const f=FOES.wren, s=(e,g='sad')=>sc('tower',[['gran',170,280,.85,{expr:g}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',800,300,.5)); playStory([
+  say(null,"Inside the Hollow Tower, millions of faded words swirl through the air like dark snow. In the middle floats a girl with silver hair. Wren.",s('wow','wow')),
+  say('wren',"Go away! Nobody ever comes. Nobody ever writes. I'll make ALL the words disappear!",s('sad')),
+  say('gran',"Wren… it's me. Rose.",s('sad')),
+  say('wren',"Rose? No. You're too late. FIFTY YEARS too late!",s('wow','wow')),
+  say('nora',"Her shadow shield is too strong to talk through. Light spells first, then we can reach her!",s('happy')),
  ],done); },
  wrenMid:done=>{ const s=(e)=>sc('tower',[['gran',200,280,.9,{expr:'sad'}],['nora',480,260,1,{arm:'hold',expr:e}],['wren',800,270,.95,{expr:'sad',flip:true}]]); playStory([
-  say(null,'The shadow shield shatters. Wren drops to the floor, small and shaking.',s('wow'),{sfx:'dissolve'}),
-  say('nora','Spells won\'t fix this part. Only words will.',s('sad')),
-  say('nora','Grandma, let\'s write her the letter she\'s been waiting for. Together.',s('happy')),
+  say(null,"The shadow shield shatters. Wren drops to the floor, small and shaking, just a girl again.",s('wow'),{sfx:'dissolve'}),
+  say('nora',"Spells won't fix this part. Only words will.",s('sad')),
+  say('nora',"Grandma, let's write her the letter she's been waiting for. Together.",s('happy')),
  ],done); },
- wrenPost:done=>{ const s=(w)=>sc('tower',[['gran',230,270,.95,{expr:'happy',arm:'wave'}],['nora',500,250,1,{arm:'wave'}],['wren',790,270,.95,w]],`<circle cx="512" cy="120" r="80" fill="url(#warm)"/>`); playStory([
-  say(null,'The letter glows… and floats gently into Wren\'s hands. She reads it. Then she reads it again.',s({arm:'hold',expr:'wow',flip:true}),{sfx:'chime'}),
-  say('wren','You… came back. You really came back.',s({expr:'shy',flip:true})),
-  say('gran','I\'m so sorry I stopped writing, Wren. I\'ll never stop again. I promise.',s({expr:'sad',flip:true})),
-  say(null,'All across the world, the faded words come flying home. Every lamp in the academy bursts into light.',sc('hall',[['mei',150,280,.85,{arm:'wave'}],['iris',330,280,.85,{arm:'wave'}],['nora',512,250,1.05,{arm:'wand',glow:true}],['wren',700,280,.85,{arm:'wave'}],['gran',870,280,.85,{arm:'wave'}]]),{sfx:'gold'}),
-  say(null,'Then, out of the dawn sky, come giant shimmering wings. The Dawnfeather dragons have followed Ember\'s song!',sc('peaks',[['nora',300,260,1,{expr:'wow'}]],D(560,200,.55,{who:'thistle',stage:'big',fly:true})+D(820,380,.75,{fly:true,expr:'wow'})),{sfx:'boom'}),
-  say('ember','RRR-EEE!',sc('peaks',[['nora',300,260,1,{expr:'happy'}]],D(600,250,.5,{who:'thistle',stage:'big'})+D(800,360,.75,{expr:'happy',fly:true}))),
-  say('thistle','Little one! We have searched every sky for you since the storm.',sc('peaks',[['nora',260,260,1,{expr:'wow'}]],D(620,250,.5,{who:'thistle',stage:'big',expr:'closed'})+D(860,380,.7,{expr:'closed'}))),
-  say('thistle','…And Bree? Is that you? I never stopped looking for you either.',sc('peaks',[['bree',280,250,1,{expr:'wow'}]],D(640,250,.5,{who:'thistle',stage:'big',expr:'happy'}))),
-  say('bree','Thistle. I\'m so sorry I let go.',sc('peaks',[['bree',280,250,1,{expr:'sad'}]],D(640,250,.5,{who:'thistle',stage:'big',expr:'sad'}))),
-  say('thistle','You held on to me in your heart for twenty years. That is enough.',sc('peaks',[['bree',280,250,1,{expr:'happy',arm:'wave'}]],D(640,250,.5,{who:'thistle',stage:'big',expr:'happy'})),{sfx:'chime'}),
-  say('thistle','Ember may stay at the academy with her friend Nora, if she wishes. Every summer, she will fly home to us.',sc('tower',[['nora',260,260,1,{arm:'wave'}]],D(560,250,.5,{who:'thistle',stage:'big'})+D(840,330,.7,{expr:'happy',fly:true}))),
-  say('wren','Nora… would you write to me sometimes?',s({expr:'shy',flip:true})),
-  say('nora','Every week. In my very best cursive.',s({expr:'happy',arm:'wave',flip:true}),{sfx:'chime'}),
+ wrenPost:done=>{ const s=(w,g={expr:'happy',arm:'wave'})=>sc('tower',[['gran',230,270,.95,g],['nora',500,250,1,{arm:'wave'}],['wren',790,270,.95,w]],`<circle cx="512" cy="120" r="80" fill="url(#warm)"/>`); playStory([
+  say(null,"The letter glows… and floats gently into Wren's hands. She reads it. Then she reads it again. Then she holds it to her heart.",s({arm:'hold',expr:'wow',flip:true}),{sfx:'chime'}),
+  say('wren',"You… came back. You really came back.",s({expr:'shy',flip:true})),
+  say('gran',"I'm so sorry I stopped writing, Wren. I thought about you every day, and I was too ashamed to start again. I'll never stop again. I promise.",s({expr:'sad',flip:true},{expr:'sad'})),
+  say('wren',"I wrote 'Is anyone there?' in every book I could reach. And only one person ever wrote back.",s({expr:'sad',flip:true})),
+  say('wren',"…It was you, wasn't it, Nora?",s({expr:'wow',flip:true})),
+  say('nora',"Yes. I'm here. I've been here the whole time.",s({expr:'happy',flip:true}),{sfx:'chime'}),
+  say(null,"All across the world, the faded words come flying home. Every lamp in the academy bursts into light.",sc('hall',[['mei',150,280,.85,{arm:'wave'}],['iris',330,280,.85,{arm:'wave'}],['nora',512,250,1.05,{arm:'wand',glow:true}],['wren',700,280,.85,{arm:'wave'}],['gran',870,280,.85,{arm:'wave'}]]),{sfx:'gold'}),
+  say(null,"Then, out of the dawn sky, come giant shimmering wings. The Dawnfeather dragons have followed Ember's song!",sc('peaks',[['nora',300,260,1,{expr:'wow'}]],D(560,200,.55,{who:'thistle',stage:'big',fly:true})+D(820,380,.75,{fly:true,expr:'wow'})),{sfx:'boom'}),
+  say('ember',"RRR-EEE!",sc('peaks',[['nora',300,260,1,{expr:'happy'}]],D(600,250,.5,{who:'thistle',stage:'big'})+D(800,360,.75,{expr:'happy',fly:true}))),
+  say('thistle',"Little one! We have searched every sky for you since the storm.",sc('peaks',[['nora',260,260,1,{expr:'wow'}]],D(620,250,.5,{who:'thistle',stage:'big',expr:'closed'})+D(860,380,.7,{expr:'closed'}))),
+  say('thistle',"…And Bree? Is that you? I never stopped looking for you either.",sc('peaks',[['bree',280,250,1,{expr:'wow'}]],D(640,250,.5,{who:'thistle',stage:'big',expr:'happy'}))),
+  say('bree',"Thistle. I'm so sorry I let go.",sc('peaks',[['bree',280,250,1,{expr:'sad'}]],D(640,250,.5,{who:'thistle',stage:'big',expr:'sad'}))),
+  say('thistle',"You held on to me in your heart for twenty years. That is enough.",sc('peaks',[['bree',280,250,1,{expr:'happy',arm:'wave'}]],D(640,250,.5,{who:'thistle',stage:'big',expr:'happy'})),{sfx:'chime'}),
+  say('thistle',"Ember may stay at the academy with her friend Nora, if she wishes. Every summer, she will fly home to us.",sc('peaks',[['nora',260,260,1,{arm:'wave'}]],D(560,250,.5,{who:'thistle',stage:'big'})+D(840,330,.7,{expr:'happy',fly:true}))),
+  say('wren',"Nora… would you write to me sometimes?",s({expr:'shy',flip:true})),
+  say('nora',"Every week. In my very best cursive.",s({expr:'happy',arm:'wave',flip:true}),{sfx:'chime'}),
  ],done); },
+};
+// Short scenes that play after a mission, so each place leads into the next one.
+const TRANS={
+ 'c1:rune':()=>[
+  say(null,"One by one, the blue candles flicker to life. But at the very end of the hall, one candle stays dark, no matter how carefully Nora writes.",sc('runehall',[['nora',420,260,1,{arm:'wand',expr:'sad'}]])),
+  say(null,"As Nora leans closer, a single word appears in its wax, written in shimmering silver ink.",sc('runehall',[['nora',420,260,1,{expr:'wow'}]],SILVER('lonely',720,230))),
+  say('nora',"Lonely? Who wrote that?",sc('runehall',[['nora',420,260,1,{expr:'wow'}]],SILVER('lonely',720,230))),
+  say(null,"Before she can look closer, the word melts away. And from somewhere far below, Nora hears a small sound. Someone is crying.",sc('runehall',[['nora',420,260,1,{expr:'sad'}]]),{sfx:'dissolve'}),
+ ],
+ 'c1:sunny':()=>[
+  say(null,"A girl in the tower… and a candle that says lonely. Nora wants answers. Professor Quill said the library knows everything about the castle, so that's where she goes.",sc('library',[['nora',512,250,1.05,{arm:'hold'}]])),
+ ],
+ 'c1:mei':()=>[
+  say(null,"That night, a wild thunderstorm rolls over the castle. The windows rattle, and something bright streaks across the sky, like a falling star.",sc('courtyard',[['nora',512,250,1.05,{expr:'wow'}]]),{sfx:'boom'}),
+  say(null,"In the morning, someone is waving at Nora from behind the greenhouse.",sc('greenhouse',[['nora',512,250,1.05,{}]])),
+ ],
+ 'c1:roost':()=>[
+  say(null,"With Ember snoring in her hood, Nora heads to the Light Bridge, the glowing path between the two tallest towers. Tonight it flickers… broken in the middle.",sc('bridge',[['nora',420,260,1,{arm:'wand'}]],D(560,190,.4,{expr:'closed'}))),
+  say('nora',"Mei said it only listens to joined-up words. Okay, Ember. No lifting my wand.",sc('bridge',[['nora',420,260,1,{arm:'wand'}]])),
+ ],
+ 'c1:chain':()=>[
+  say(null,"The last plank of light clicks into place. From the middle of the bridge, Nora can see the whole castle… and the Hollow Tower, dark against the moon.",sc('bridge',[['nora',420,260,1,{expr:'wow'}]])),
+  say(null,"In its highest window, just for a second, there's a face. A girl with silver hair. Then the curtain falls.",sc('tower',[['nora',300,260,1,{expr:'wow'}]])),
+  say('nora',"Sunny was right. Someone IS up there.",sc('tower',[['nora',300,260,1,{expr:'sad'}]])),
+  say(null,"Suddenly, every lamp near the Shadow Gate goes out at once. Mei comes running down the bridge, her glasses crooked.",sc('bridge',[['nora',300,260,1,{expr:'wow'}],['mei',720,280,.95,{expr:'wow'}]])),
+  say('mei',"Nora! Something is eating the light at the Shadow Gate!",sc('bridge',[['nora',300,260,1,{arm:'wand',expr:'wow'}],['mei',720,280,.95,{expr:'wow',arm:'wave'}]])),
+ ],
+ 'c2:caps':()=>[
+  say(null,"Every capital in Capital Hall glows. Every one except the Q. It wobbles, sputters, and fizzles like a wet firework.",sc('hall',[['nora',512,250,1.05,{arm:'wand',expr:'sad'}]])),
+  say('nora',"Tonight. I'll practice until I get it. Even if it takes all night.",sc('hall',[['nora',512,250,1.05,{arm:'wand'}]])),
+ ],
+ 'c2:midnight':()=>[
+  say(null,"The next morning, Nora can't stop thinking about the silver words. But today is broom test day, and someone by the orchard needs her.",sc('field',[['nora',512,250,1.05,{}]])),
+ ],
+ 'c2:juni':()=>[
+  say(null,"Ember is getting bigger every day. She can't fly yet, and it makes her very grumpy. She sulks in Nora's hood and puffs smoke rings.",sc('field',[['nora',420,250,1.05,{}]],D(700,330,.7,{expr:'sad'}))),
+  say(null,"Coach Bree says it's time for her first flying lesson. Nora decides to watch Coach Bree very carefully.",sc('field',[['nora',420,250,1.05,{arm:'hold'}]],D(700,330,.7,{}))),
+ ],
+ 'c2:flight':()=>[
+  say(null,"And then, before Nora is ready… it's duel day.",sc('courtyard',[['nora',512,250,1.05,{arm:'wand',expr:'wow'}]]),{sfx:'boom'}),
+ ],
+ 'c2:irisDuel':()=>[
+  say(null,"After the duel, Nora goes looking for Iris. She doesn't want to win. She wants to understand.",sc('courtyard',[['nora',512,250,1.05,{}]])),
+ ],
+ 'c2:quill':()=>[
+  say(null,"Iris and Nora follow a trail of tiny inky footprints. Down the stairs… down more stairs… all the way to the Ink Cellar.",sc('cellar',[['iris',330,280,.95,{arm:'wand'}],['nora',650,260,1,{arm:'wand'}]])),
+ ],
+ 'c3:home':()=>[
+  say(null,"Nora's letter flies away with the castle owls. While she waits for Grandma's answer, she goes to the deepest part of the library to search for anything about the Hollow Tower.",sc('library',[['nora',512,250,1.05,{arm:'hold'}]])),
+  say(null,"On the dustiest shelf, something is glowing.",sc('library',[['nora',512,250,1.05,{expr:'wow'}]])),
+ ],
+ 'c3:lola':()=>[
+  say('lola',"The oldest books are almost blank now. If the lost words come back, maybe we can read what happened to Wren.",sc('library',[['nora',300,250,1,{expr:'sad'}],['lola',720,250,1,{expr:'sad'}]])),
+ ],
+ 'c3:restore':()=>[
+  say(null,"The pages fill with words again. One of them tells an old legend: Dawnfeather dragons find each other by singing their family's sky-song.",sc('library',[['nora',512,250,1.05,{arm:'hold',expr:'wow'}]])),
+  say('nora',"Ember never heard her family's song. She was just an egg. I have to help her.",sc('library',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]])),
+ ],
+ 'c3:song':()=>[
+  say(null,"The next morning, Professor Quill calls Nora to her office. I hear you've been asking about Wren, she says. Wait here. I'll find the old school records.",sc('office',[['nora',300,250,1,{expr:'wow'}],['prof',720,250,1,{}]])),
+ ],
+ 'c3:truth':()=>[
+  say(null,"That night, Nora, Mei and Iris tiptoe out of bed. Nobody says it out loud, but they all know where they're going. The Hollow Tower.",sc('stairs',[['mei',230,280,.9,{expr:'wow'}],['nora',512,250,1.05,{arm:'wand'}],['iris',790,280,.9,{arm:'wand'}]])),
+ ],
+ 'c4:grandma':()=>[
+  say(null,"Grandma hugs Coach Bree at the gate like an old friend. Bree, you were the best dragon rider I ever saw, she says. Bree just looks away.",sc('gate',[['gran',300,270,1,{expr:'happy'}],['bree',720,250,1,{expr:'sad'}]])),
+  say(null,"Later, Nora finds Coach Bree alone on the windy bridge.",sc('bridge',[['nora',512,250,1.05,{}]])),
+ ],
+ 'c4:bree':()=>[
+  say('gran',"The Hollow Tower is guarded by fear, Nora. To climb it, we need courage shields. And courage words are the hardest words of all to write.",sc('hall',[['gran',300,270,1,{expr:'sad'}],['nora',700,250,1,{arm:'wand'}]])),
+ ],
+ 'c4:courage':()=>[
+  say(null,"Shields glowing, Nora and Grandma start the long climb. The wind gets louder… and louder… until the storm itself stands up.",sc('tower',[['gran',300,280,.9,{arm:'wand'}],['nora',650,260,1,{arm:'wand',expr:'wow'}]]),{sfx:'boom'}),
+ ],
 };
 const STORY_RESULT={ sunny:['Sunny found her way!','🌟','Try it today: help someone who looks lost or new.'], juniFear:['Juni flew!','🌳','Try it today: do one small brave thing, even if you feel scared.'], lola:['You read with Lola!','👻📖','Try it today: read a book aloud to someone in your family.'], bree:['Coach Bree told the truth!','💛','Try it today: tell someone you love about a time you felt scared.'],
  mei:['You made a new friend: Mei!','💜','Try it today: if a friend makes a mistake, tell them about a time you made one too.'],
@@ -1628,23 +1775,43 @@ const STORY_RESULT={ sunny:['Sunny found her way!','🌟','Try it today: help so
 
 // ----- chapter openings and endings
 const CH_TEXT={
- 1:{end:()=>{ const hall=(n,i)=>sc('hall',[['mei',230,270,.95,{expr:'shy'}],['nora',512,250,1.1,{expr:n}],['iris',800,270,.95,{expr:i,flip:true}]]); return [
-  say('iris','So you\'re the new girl everyone keeps talking about.',hall('happy','smirk')),
-  say('iris','You lit a few candles. Cute. I bet you can\'t even write a capital Q.',hall('happy','smirk')),
-  say('nora','I… I\'ve never tried a Q. But I\'m not giving up.',hall('sad','smirk')),
-  say('iris','We\'ll see. Wand Duel. Next week.',hall('happy','happy')),
-  say(null,'That night, Nora opened Grandma\'s letter again. Some of the words… were fading away.',sc('room',[['nora',512,250,1.1,{arm:'hold',expr:'sad'}]],fadeLetters())),
+ 1:{end:()=>{ const hall=(n,i,m='shy')=>sc('hall',[['mei',230,270,.95,{expr:m}],['nora',512,250,1.1,{expr:n}],['iris',800,270,.95,{expr:i,flip:true}]]); return [
+  say(null,"Back in the great hall, everyone is talking about the new girl who saved the Shadow Gate. Well… almost everyone is smiling.",hall('happy','smirk','happy')),
+  say('iris',"So you're the new girl everyone keeps talking about.",hall('wow','smirk','wow')),
+  say('iris',"You lit a few candles. Cute. I bet you can't even write a capital Q.",hall('sad','smirk','sad')),
+  say('nora',"I… I've never tried a Q. But I'm not giving up.",hall('sad','smirk')),
+  say('iris',"We'll see. Wand Duel. One week. Don't be late.",hall('sad','happy')),
+  say('mei',"Don't listen to her. Iris is the best duelist in our year… but I've never once seen her smile.",sc('hall',[['mei',300,270,1,{expr:'sad'}],['nora',700,250,1.05,{}]])),
+  say(null,"That night, Nora opens Grandma's letter, just to feel close to home. She reads the first line… and freezes.",sc('room',[['nora',512,250,1.1,{arm:'hold',expr:'wow'}]])),
+  say(null,"Some of the words are gone. Not smudged. Not torn. Just… fading away, like footprints in the snow.",sc('room',[['nora',512,250,1.1,{arm:'hold',expr:'sad'}]],fadeLetters())),
+  say('nora',"The lamps… the bridge… and now Grandma's letter. What is happening to all the words?",sc('room',[['nora',512,250,1.1,{arm:'hold',expr:'sad'}]],fadeLetters())),
  ]; }},
- 2:{start:()=>[ say(null,'A week later, the whole academy is buzzing about one thing: the Wand Duel.',sc('courtyard',[['nora',512,250,1.05,{arm:'wand'}]])) ],
-    end:()=>[ say(null,'That night, three friends share hot cocoa by the fire. But outside, more lamps are going dark…',sc('common',[['mei',230,270,.95,{expr:'happy'}],['nora',512,250,1.05,{arm:'hold'}],['iris',800,270,.95,{expr:'happy',flip:true}]])),
-     say('nora','Grandma\'s letter… it\'s almost blank now. We have to find out why.',sc('room',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],fadeLetters())) ]},
- 3:{start:()=>[ say(null,'Words are vanishing everywhere: from books, from signs, even from Grandma\'s letter.',sc('library',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],fadeLetters())) ],
-    end:()=>[ say('nora','Wren and Rose… I need to ask Grandma. Right now.',sc('room',[['nora',512,250,1.05,{arm:'wand'}]])) ]},
- 4:{start:()=>[ say(null,'The sky over the academy turns dark and stormy. The Fading is growing stronger.',sc('tower',[['nora',512,250,1.05,{arm:'wand',expr:'wow'}]])) ],
-    end:()=>[ say(null,'At the celebration, everyone Nora helped is there: Sunny with her stickers, Juni with flowers, Lola reading aloud, Mei with homemade dumplings, Iris with her silver quill.',sc('hall',[['sunny',120,300,.75,{arm:'wave'}],['juni',270,290,.8,{arm:'wave'}],['mei',420,280,.85,{expr:'happy'}],['nora',580,250,1,{glow:true}],['iris',740,280,.85,{arm:'wave'}],['lola',890,280,.8,{arm:'wave'}]])),
-     say('prof','Nora, you came here to learn cursive. Instead, you taught all of us what words are really for.',sc('hall',[['prof',300,250,1,{arm:'wave'}],['nora',700,250,1.05,{glow:true}]])),
-     say('nora','For telling the truth. For saying sorry. For telling people they\'re not alone.',sc('hall',[['prof',300,250,1,{expr:'happy'}],['nora',700,250,1.05,{arm:'wand',glow:true}]]),{sfx:'gold'}),
-     say(null,'The End… for now. Wren has started writing back.',sc('room',[['nora',512,250,1.1,{arm:'hold',glow:true}]],`<text x="640" y="200" font-family="'TeX Gyre Chorus',cursive" font-size="54" fill="#e9a91c" filter="url(#glow)">Dear Nora,</text>`)) ]},
+ 2:{start:()=>[
+   say(null,"A week later, the whole academy is buzzing about one thing: the Wand Duel. But Nora has a problem. A big, curly problem.",sc('courtyard',[['nora',512,250,1.05,{arm:'wand',expr:'sad'}]])),
+   say('nora',"The capital Q. Iris was right. I really can't write it.",sc('courtyard',[['nora',512,250,1.05,{arm:'wand',expr:'sad'}]])),
+   say(null,"Meanwhile, every morning a few more lamps are dark. And every night, Grandma's letter has a few less words.",sc('room',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],fadeLetters())) ],
+    end:()=>[
+   say(null,"That night, three friends share hot cocoa by the fire in the common room. Iris tells them about her mom. Mei tells terrible jokes. Nora laughs until her tummy hurts.",sc('common',[['mei',230,270,.95,{expr:'happy'}],['nora',512,250,1.05,{arm:'hold'}],['iris',800,270,.95,{expr:'happy',flip:true}]])),
+   say(null,"But outside the window, one by one, more lamps are going dark.",sc('common',[['mei',230,270,.95,{expr:'sad'}],['nora',512,250,1.05,{expr:'wow'}],['iris',800,270,.95,{expr:'sad',flip:true}]])),
+   say(null,"Back in her room, Nora unfolds Grandma's letter. It's almost blank now. Then, in the empty space, silver words appear.",sc('room',[['nora',512,250,1.05,{arm:'hold',expr:'wow'}]],SILVER('Please. Somebody. Write to me.',640,170,40))),
+   say('nora',"The Lonely One. Whoever you are… I'm going to find you.",sc('room',[['nora',512,250,1.05,{arm:'wand'}]],SILVER('Please. Somebody. Write to me.',640,170,40))) ]},
+ 3:{start:()=>[
+   say(null,"Words are vanishing everywhere now: from books, from signs, from the names on the classroom doors. Even the birthday cards in the post room are blank.",sc('library',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],fadeLetters())),
+   say('nora',"If words are disappearing, then I'll write new ones. And I'll start with the most important letter of all. One to Grandma.",sc('room',[['nora',512,250,1.05,{arm:'wand'}]])) ],
+    end:()=>[
+   say('nora',"Wren and Rose… I need to ask Grandma. Right now.",sc('room',[['nora',512,250,1.05,{arm:'wand',expr:'sad'}]])),
+   say(null,"Just then, an owl taps on the window. It's Grandma's answer. Only one line is left on the whole page.",sc('room',[['nora',512,250,1.05,{arm:'hold',expr:'wow'}]],ENVELOPE),{sfx:'chime'}),
+   say(null,"It says: I'm coming.",sc('room',[['nora',512,250,1.05,{arm:'hold',expr:'wow'}]],`<text x="700" y="220" font-family="'TeX Gyre Chorus',cursive" font-size="54" fill="#e9a91c" filter="url(#glow)">I'm coming.</text>`)) ]},
+ 4:{start:()=>[
+   say(null,"The sky over the academy turns dark and stormy. The Fading is growing stronger. Now even the stars look faded.",sc('tower',[['nora',512,250,1.05,{arm:'wand',expr:'wow'}]])),
+   say(null,"But this morning, someone new is coming up the hill.",sc('gate',[['nora',512,250,1.05,{expr:'wow'}]])) ],
+    end:()=>[
+   say(null,"At the celebration, everyone Nora helped is there: Sunny with her stickers, Juni with flowers, Lola reading aloud, Mei with homemade dumplings, Iris with her silver quill.",sc('hall',[['sunny',120,300,.75,{arm:'wave'}],['juni',270,290,.8,{arm:'wave'}],['mei',420,280,.85,{expr:'happy'}],['nora',580,250,1,{glow:true}],['iris',740,280,.85,{arm:'wave'}],['lola',890,280,.8,{arm:'wave'}]])),
+   say(null,"And in the seat next to Grandma, smiling for the first time in fifty years, sits Wren.",sc('hall',[['gran',300,270,1,{expr:'happy'}],['wren',700,270,1,{expr:'happy'}]])),
+   say('prof',"Nora, you came here to learn cursive. Instead, you taught all of us what words are really for.",sc('hall',[['prof',300,250,1,{arm:'wave'}],['nora',700,250,1.05,{glow:true}]])),
+   say('nora',"For telling the truth. For saying sorry. For telling people they're not alone.",sc('hall',[['prof',300,250,1,{expr:'happy'}],['nora',700,250,1.05,{arm:'wand',glow:true}]]),{sfx:'gold'}),
+   say(null,"That night, a letter taps on Nora's window. The handwriting is silver, and a little shaky, and very, very happy.",sc('room',[['nora',512,250,1.1,{arm:'hold',glow:true}]],`<text x="640" y="200" font-family="'TeX Gyre Chorus',cursive" font-size="54" fill="#e9a91c" filter="url(#glow)">Dear Nora,</text>`)),
+   say(null,"The End… for now.",sc('room',[['nora',512,250,1.1,{arm:'hold',glow:true}]],`<text x="640" y="200" font-family="'TeX Gyre Chorus',cursive" font-size="54" fill="#e9a91c" filter="url(#glow)">Dear Nora,</text>`)) ]},
 };
 function fadeLetters(){ return `<g opacity=".7">${['o','u','d','f','y','e','r'].map((c,i)=>`<text x="${700+i*36}" y="${380-i*38}" font-family="'TeX Gyre Chorus',cursive" font-size="40" fill="#e9a91c" filter="url(#glow)">${c}</text>`).join('')}</g>`; }
 function titleCard(n){ return svg(`<rect width="1024" height="640" fill="#2b2440"/><circle cx="512" cy="320" r="300" fill="url(#warm)" opacity=".5"/><text x="512" y="250" text-anchor="middle" font-family="Poppins,system-ui" font-weight="800" font-size="44" fill="#ffd43b" letter-spacing="8">CHAPTER ${n}</text><text x="512" y="360" text-anchor="middle" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="96" fill="#fff3bf" filter="url(#glow)">${CH(n).title}</text>`); }
@@ -1731,7 +1898,7 @@ window.__test={
  resetSession:()=>{ sessionMissions=0; }
 };
 </script>
-<div id="kaVer" data-v="1.2" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-26</div>
+<div id="kaVer" data-v="1.3" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.3 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
