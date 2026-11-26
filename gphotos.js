@@ -91,9 +91,15 @@
       await flush();const left=(await qAll()).filter(x=>x.time===t).length;emit();
       return{uploaded:list.length-left,queued:left}})()}
 
+  /* stash: put a picture in the queue without uploading now (used when a kid leaves without saving).
+     unstash(key) takes it back out if it hasn't uploaded yet (e.g. the kid came back and kept drawing). */
+  async function stash(kid,it,game){const d=await db();return new Promise(res=>{const t=d.transaction('queue','readwrite');const r=t.objectStore('queue').add({kid,blob:it.blob,name:it.name,label:it.label||'',game:game||'',time:Date.now()});
+    t.oncomplete=()=>{emit();res(r.result)};t.onerror=()=>res(null)})}
+  async function unstash(key){if(key==null||flushing)return false;const all=await qAll();if(!all.some(x=>x.key===key))return false;await qDel(key);emit();return true}
+
   addEventListener('online',()=>flush());
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadGIS);else loadGIS();
-  window.KAPhotos={connect,upload,flush,state,toast,albumName:k=>ALBUM[k],
+  window.KAPhotos={connect,upload,flush,stash,unstash,state,toast,albumName:k=>ALBUM[k],
     onChange(f){listeners.push(f);state().then(s=>{try{f(s)}catch(e){}})},
     isConnected:()=>!!ls.get('gp.connected')};
 })();
