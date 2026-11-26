@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Milo's Paper Zoo · 洛明的紙片動物園</title>
+<style>
+:root{--paper:#fdf8ef;--ink:#3b2f2a;--green:#69a84f;--blue:#4a90c2;--gold:#f6b93b;--red:#e8590c;--milo:#f08c00;--topH:58px;--appH:100vh}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#cfe6f2;color:var(--ink);font-family:ui-rounded,"Arial Rounded MT Bold","Hiragino Maru Gothic ProN","PingFang TC",system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}
+ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#6b5a50;letter-spacing:0}
+.app{position:fixed;left:0;top:0;width:100vw;height:var(--appH);overflow:hidden}
+.scr{position:absolute;inset:0;display:none}
+.scr.on{display:block}
+/* paper look */
+.paper{background:var(--paper);border-radius:18px;box-shadow:0 3px 0 rgba(0,0,0,.08),0 6px 14px rgba(60,40,20,.22)}
+.pbtn{min-height:56px;min-width:56px;padding:8px 16px;border-radius:16px;background:var(--paper);box-shadow:0 4px 0 rgba(0,0,0,.12),0 6px 12px rgba(60,40,20,.25);font-weight:800;font-size:20px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s}
+.pbtn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.12),0 3px 6px rgba(60,40,20,.25)}
+.pbtn .em{font-size:28px;line-height:1}
+.pbtn.big{font-size:24px;min-height:70px;padding:10px 26px}
+.pbtn.go{background:#ffe08a}
+.pbtn.dis{opacity:.45}
+/* top bar */
+.top{position:absolute;left:0;right:0;top:0;height:calc(var(--topH) + env(safe-area-inset-top));padding:calc(6px + env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) 6px max(8px,env(safe-area-inset-left));display:flex;align-items:center;gap:8px;z-index:50;pointer-events:none}
+.top>*{pointer-events:auto}
+.top .pbtn{min-height:46px;min-width:50px;padding:4px 10px;font-size:18px}
+.top .ttl{flex:1;display:flex;justify-content:center;pointer-events:none;min-width:0}
+.top .ttl span{background:var(--paper);border-radius:999px;padding:4px 14px;font-weight:900;font-size:17px;box-shadow:0 3px 8px rgba(60,40,20,.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.top .ttl span:empty{display:none}
+#visBadge{background:#fff3bf}
+/* start */
+#start{background:url(art/zoo-bg.webp) center bottom/cover}
+#start .card{position:absolute;left:50%;top:50%;transform:translate(-50%,-56%);width:min(560px,92vw);padding:18px 18px 22px;text-align:center}
+#start h1{margin:4px 0 2px;font-size:clamp(28px,6vw,44px);line-height:1.15}
+#start h1 small{display:block;font-size:.55em;margin-top:6px}
+#start .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+#start .stick{display:flex;justify-content:center;align-items:flex-end;gap:2%;height:min(20vh,140px)}
+#start .stick img{height:100%;max-width:24%;object-fit:contain;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25));transform:scale(0);transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+#start .stick img.pop{transform:scale(1)}
+#start .stick img:nth-child(2){height:130%}
+.small{font-size:14px;opacity:.75}
+#resetBtn{position:absolute;right:10px;bottom:10px;font-size:13px;min-height:36px;padding:4px 12px;opacity:.7}
+/* map */
+#map{background:url(art/zoo-bg.webp) center 70%/cover}
+#zooLayer{position:absolute;inset:0}
+.ani{position:absolute;transform-origin:50% 100%;transition:left 3.2s ease-in-out,top 3.2s ease-in-out;cursor:pointer;touch-action:manipulation}
+.ani img{display:block;width:100%;filter:drop-shadow(0 6px 4px rgba(0,0,0,.25));transition:transform .3s}
+.ani.flip img{transform:scaleX(-1)}
+.ani .hop{animation:hop .5s}
+@keyframes hop{50%{transform:translateY(-22%)}}
+.vis{position:absolute;font-size:clamp(20px,3.4vw,30px);transition:left 6s linear;pointer-events:none;filter:drop-shadow(0 2px 1px rgba(0,0,0,.3))}
+.mapBtns{position:absolute;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:0 8px;z-index:20}
+.empty{position:absolute;left:50%;top:calc(var(--topH) + 40px);transform:translateX(-50%);padding:10px 18px;font-size:19px;font-weight:800;text-align:center;max-width:90vw}
+/* overlays / panels */
+.stage{position:absolute;left:0;right:0;top:calc(var(--topH) + env(safe-area-inset-top));bottom:0;background:#f4ead8 url(art/zoo-bg.webp) center/cover}
+.stage::before{content:"";position:absolute;inset:0;background:rgba(253,248,239,.72)}
+.prompt{position:absolute;left:50%;transform:translateX(-50%);top:8px;z-index:5;padding:8px 16px;font-size:clamp(18px,2.6vw,24px);font-weight:800;text-align:center;max-width:94%;display:flex;align-items:center;gap:10px}
+.prompt .spk{min-width:48px;min-height:48px;border-radius:50%;background:#ffe08a;font-size:22px;flex:none}
+/* puzzle */
+#pzBoard{position:absolute;border-radius:14px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 3px rgba(120,90,60,.25)}
+#pzGhost{position:absolute;inset:0;opacity:.18;border-radius:14px}
+.pc{position:absolute;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3));z-index:3}
+.pc.placed{filter:none;z-index:1;cursor:default}
+.pc{transition:transform .15s}
+.pc.drag{z-index:10;filter:drop-shadow(0 8px 6px rgba(0,0,0,.35))}
+.pc .lock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:34px;background:#ffd43b;border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 6px rgba(0,0,0,.3);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{transform:translate(-50%,-50%) scale(1.12)}}
+/* question */
+#qBox{position:absolute;inset:0;z-index:60;background:rgba(40,30,20,.45);display:none;align-items:center;justify-content:center;padding:10px}
+#qBox.on{display:flex}
+#qCard{width:min(640px,96vw);max-height:calc(var(--appH) - 20px);overflow:auto;padding:14px;text-align:center}
+#qText{font-size:clamp(19px,2.8vw,26px);font-weight:800;margin:4px 0 8px;display:flex;align-items:center;justify-content:center;gap:10px}
+#qVis{font-size:clamp(28px,5vw,44px);line-height:1.25;margin:6px 0 10px;min-height:40px}
+#qVis .gone{opacity:.25;filter:grayscale(1)}
+#qAns .pen{display:flex;flex-wrap:wrap;justify-content:center;max-width:min(240px,38vw);font-size:clamp(22px,3.6vw,32px);line-height:1.15;padding:4px;border:4px dashed #a07850;border-radius:14px}
+#qAns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+#qAns .pbtn{min-width:92px;min-height:80px;font-size:34px}
+#qAns .pbtn.hint{animation:wig .6s 3;background:#d3f9d8}
+#qAns .pbtn.no{background:#ffe3e3}
+#qAns .pbtn.yes{background:#b2f2bb}
+@keyframes wig{25%{transform:rotate(-6deg) scale(1.08)}75%{transform:rotate(6deg) scale(1.08)}}
+#qWhy{min-height:24px;font-weight:700;margin-top:8px;color:#5c4033}
+/* habitat */
+#habGrid{position:absolute;display:grid;gap:8px;padding:10px;border-radius:18px;background:#c9a47a;box-shadow:inset 0 0 0 6px #8b6a4a,0 6px 12px rgba(0,0,0,.25)}
+.slot{border-radius:12px;background:rgba(255,255,255,.35);border:3px dashed rgba(90,60,30,.4);display:flex;align-items:center;justify-content:center;font-size:clamp(26px,5vw,44px);min-width:56px;min-height:56px}
+.slot.f{border:0;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.t-grass{background:linear-gradient(160deg,#8fce6a,#5fa443)}
+.t-water{background:linear-gradient(160deg,#8ecbf0,#4a90c2)}
+.t-ice{background:linear-gradient(160deg,#f1fbff,#b9e3f5)}
+.t-rock{background:linear-gradient(160deg,#c9c3bb,#8f877e)}
+.t-tree{background:linear-gradient(160deg,#7cc45a,#3f8a2e)}
+#habPal{position:absolute;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#habPal .pbtn{min-width:84px;min-height:84px;flex-direction:column;gap:2px;font-size:15px;padding:6px}
+#habPal .pbtn .em{font-size:34px}
+#habAni{position:absolute;object-fit:contain;filter:drop-shadow(0 6px 4px rgba(0,0,0,.25))}
+#habDone{position:absolute}
+/* mix */
+#mixWrap{position:absolute;display:flex;align-items:center;justify-content:center;gap:10px}
+#mixCv{background:#fffaf0;border-radius:18px;box-shadow:0 6px 14px rgba(60,40,20,.22)}
+.mixArrows{display:flex;flex-direction:column;justify-content:space-around;height:100%;gap:8px}
+.mixArrows .pbtn{min-width:60px;min-height:60px;font-size:26px}
+#mixName{position:absolute;left:50%;transform:translateX(-50%);font-size:clamp(22px,3vw,30px);font-weight:900;text-align:center;white-space:nowrap}
+#mixBtns{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:10px}
+/* safari */
+#safari .frame{position:absolute;inset:calc(var(--topH) + env(safe-area-inset-top) + 64px) 10px 10px 10px;border:5px dashed rgba(255,255,255,.85);border-radius:20px;pointer-events:none}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:70;transition:opacity .35s}
+/* album */
+#albumGrid{position:absolute;left:10px;right:10px;top:calc(var(--topH) + env(safe-area-inset-top) + 8px);bottom:10px;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;align-content:start;padding:6px}
+.photo{background:#fff;padding:8px 8px 6px;border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,.25);text-align:center;font-weight:800;font-size:15px;transform:rotate(var(--r))}
+.photo .pic{height:96px;border-radius:4px;background:url(art/zoo-bg.webp) center/cover;display:flex;align-items:flex-end;justify-content:center}
+.photo .pic img{max-height:90%;max-width:80%}
+/* truck + celebrate */
+#truck{position:absolute;left:-40%;bottom:16%;font-size:clamp(70px,14vw,130px);z-index:40;transition:left 1.6s cubic-bezier(.2,.8,.3,1);display:none;pointer-events:none}
+#truck img{position:absolute;left:12%;bottom:62%;width:62%;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3))}
+#toast{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%) scale(0);z-index:80;padding:16px 26px;font-size:clamp(24px,4vw,36px);font-weight:900;text-align:center;transition:transform .35s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+#toast.on{transform:translate(-50%,-50%) scale(1)}
+.conf{position:absolute;z-index:79;pointer-events:none;width:12px;height:16px;border-radius:2px}
+/* break / gate */
+.modal{position:absolute;inset:0;z-index:90;background:rgba(40,30,20,.5);display:none;align-items:center;justify-content:center;padding:12px}
+.modal.on{display:flex}
+.modal .paper{padding:20px;text-align:center;width:min(460px,94vw)}
+.modal input{font:inherit;font-size:24px;width:150px;padding:8px;border-radius:10px;border:2px solid #b49a80;text-align:center}
+#rotHint{position:absolute;left:50%;bottom:calc(6px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:45;font-size:13px;padding:4px 12px;display:none;pointer-events:none;white-space:nowrap}
+@media (orientation:portrait) and (max-width:600px){#rotHint{display:block}.prompt{left:8px;right:8px;transform:none;max-width:none;font-size:17px;padding:6px 10px}.mapBtns{bottom:calc(34px + env(safe-area-inset-bottom))}}
+@media (max-height:420px){#start .card{transform:translate(-50%,-50%);padding:8px 14px 10px}#start .stick{height:64px}#start h1{font-size:26px;margin:2px 0}#start .row{margin-top:6px}#start .small{display:none}:root{--topH:50px}.pbtn{min-height:50px;font-size:17px}.pbtn .em{font-size:24px}.pbtn.big{min-height:56px;font-size:20px}.top .pbtn{min-height:42px}.prompt{padding:4px 12px;top:4px}#qAns .pbtn{min-height:62px;font-size:28px;min-width:76px}#qVis{margin:2px 0 6px}#qCard{padding:8px}#habPal .pbtn{min-width:66px;min-height:66px}#habPal .pbtn .em{font-size:26px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="top" id="top" style="display:none">
+    <button class="pbtn" id="homeBtn" aria-label="Back">🏠</button>
+    <div class="ttl" id="ttl"></div>
+    <button class="pbtn" id="visBadge" aria-label="Visitors">🧒 <span id="visN">0</span></button>
+    <button class="pbtn" id="langBtn" aria-label="Language">中</button>
+    <button class="pbtn" id="sndBtn" aria-label="Sound">🔊</button>
+  </div>
+
+  <!-- START -->
+  <section class="scr on" id="start">
+    <div class="card paper">
+      <div class="stick" id="stick">
+        <img src="art/elephant.webp" alt=""><img src="art/giraffe.webp" alt=""><img src="art/lion.webp" alt=""><img src="art/penguin.webp" alt="">
+      </div>
+      <h1>Milo's Paper Zoo<small id="zhTitle"></small></h1>
+      <div class="row">
+        <button class="pbtn big go" id="playBtn"><span class="em">▶</span> Tap to start</button>
+      </div>
+      <div class="row">
+        <button class="pbtn" id="voiceBtn">🗣 聲音 Voice</button>
+      </div>
+      <div class="small" style="margin-top:10px">Rescue · Puzzle · Build · Snap</div>
+    </div>
+    <button class="pbtn" id="resetBtn">Reset records</button>
+  </section>
+
+  <!-- MAP -->
+  <section class="scr" id="map">
+    <div id="zooLayer"></div>
+    <div class="empty paper" id="emptyMsg"></div>
+    <div class="mapBtns">
+      <button class="pbtn big go" id="rescueBtn"><span class="em">🚚</span><span class="lb"></span></button>
+      <button class="pbtn big" id="safariBtn"><span class="em">📷</span><span class="lb"></span></button>
+      <button class="pbtn big" id="mixBtn"><span class="em">✂️</span><span class="lb"></span></button>
+      <button class="pbtn big" id="albumBtn"><span class="em">📒</span><span class="lb"></span></button>
+    </div>
+    <div id="truck">🚚<img id="truckAni" alt=""></div>
+  </section>
+
+  <!-- PUZZLE -->
+  <section class="scr" id="puzzle">
+    <div class="stage" id="pzStage">
+      <div class="prompt paper" id="pzPrompt"></div>
+      <div id="pzBoard"><canvas id="pzGhost"></canvas></div>
+    </div>
+  </section>
+
+  <!-- HABITAT -->
+  <section class="scr" id="habitat">
+    <div class="stage" id="habStage">
+      <div class="prompt paper" id="habPrompt"></div>
+      <img id="habAni" alt="">
+      <div id="habGrid"></div>
+      <div id="habPal"></div>
+      <button class="pbtn big go" id="habDone">✔ <span class="lb"></span></button>
+    </div>
+  </section>
+
+  <!-- MIX -->
+  <section class="scr" id="mix">
+    <div class="stage" id="mixStage">
+      <div class="prompt paper" id="mixPrompt"></div>
+      <div id="mixWrap">
+        <div class="mixArrows" id="mixL"></div>
+        <canvas id="mixCv"></canvas>
+        <div class="mixArrows" id="mixR"></div>
+      </div>
+      <div id="mixName"></div>
+      <div id="mixBtns"></div>
+    </div>
+  </section>
+
+  <!-- SAFARI -->
+  <section class="scr" id="safari">
+    <div class="stage" style="background-position:center 70%"></div>
+    <div id="safLayer" style="position:absolute;inset:0"></div>
+    <div class="prompt paper" id="safPrompt" style="top:calc(var(--topH) + env(safe-area-inset-top) + 6px)"></div>
+    <div class="frame"></div>
+  </section>
+
+  <!-- ALBUM -->
+  <section class="scr" id="album">
+    <div class="stage"></div>
+    <div id="albumGrid"></div>
+  </section>
+
+  <div id="qBox"><div id="qCard" class="paper">
+    <div id="qText"></div><div id="qVis"></div><div id="qAns"></div><div id="qWhy"></div>
+  </div></div>
+
+  <div class="modal" id="breakM"><div class="paper">
+    <div style="font-size:60px">😴🐘</div>
+    <h2 id="breakT"></h2>
+    <button class="pbtn big go" id="breakOk"></button>
+  </div></div>
+
+  <div class="modal" id="gateM"><div class="paper">
+    <h3>Grown-ups only</h3>
+    <div id="gateQ" style="font-size:26px;font-weight:800;margin:8px 0"></div>
+    <input id="gateIn" inputmode="numeric" autocomplete="off">
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
+      <button class="pbtn" id="gateNo">Cancel</button><button class="pbtn go" id="gateOk">OK</button>
+    </div>
+    <div id="gateMsg" style="margin-top:8px;min-height:20px"></div>
+  </div></div>
+
+  <div id="toast" class="paper"></div>
+  <div id="flash"></div>
+  <div id="rotHint" class="paper" style="display:none">Turn your phone sideways ↻ 橫著拿</div>
+</div>
+
+<script src="../../../voice.js"></script>
+<script src="../../../tracker.js" data-game="paper-zoo"></script>
+<script>
+"use strict";
+/* ---------- zhuyin ---------- */
+const ZY={"洛":"ㄌㄨㄛˋ","明":"ㄇㄧㄥˊ","的":"˙ㄉㄜ","紙":"ㄓˇ","片":"ㄆㄧㄢˋ","動":"ㄉㄨㄥˋ","物":"ㄨˋ","園":"ㄩㄢˊ","大":"ㄉㄚˋ","象":"ㄒㄧㄤˋ","長":"ㄔㄤˊ","頸":"ㄐㄧㄥˇ","鹿":"ㄌㄨˋ","獅":"ㄕ","子":"˙ㄗ","企":"ㄑㄧˋ","鵝":"ㄜˊ","救":"ㄐㄧㄡˋ","援":"ㄩㄢˊ","拍":"ㄆㄞ","照":"ㄓㄠˋ","剪":"ㄐㄧㄢˇ","貼":"ㄊㄧㄝ","相":"ㄒㄧㄤˋ","簿":"ㄅㄨˋ","草":"ㄘㄠˇ","水":"ㄕㄨㄟˇ","冰":"ㄅㄧㄥ","石":"ㄕˊ","頭":"˙ㄊㄡ","樹":"ㄕㄨˋ","好":"ㄏㄠˇ","棒":"ㄅㄤˋ","完":"ㄨㄢˊ","成":"ㄔㄥˊ","小":"ㄒㄧㄠˇ","休":"ㄒㄧㄡ","息":"˙ㄒㄧ","需":"ㄒㄩ","要":"ㄧㄠˋ","我":"ㄨㄛˇ","個":"˙ㄍㄜ","格":"ㄍㄜˊ","和":"ㄏㄢˋ","把":"ㄅㄚˇ","拼":"ㄆㄧㄣ","圖":"ㄊㄨˊ","拼圖":"","有":"ㄧㄡˇ","隻":"ㄓ","幫":"ㄅㄤ","忙":"ㄇㄤˊ","找":"ㄓㄠˇ","出":"ㄔㄨ","最":"ㄗㄨㄟˋ","高":"ㄍㄠ","矮":"ㄞˇ","哪":"ㄋㄚˇ","一":"ㄧ","二":"ㄦˋ","三":"ㄙㄢ","四":"ㄙˋ","五":"ㄨˇ","六":"ㄌㄧㄡˋ","七":"ㄑㄧ","八":"ㄅㄚ","九":"ㄐㄧㄡˇ","十":"ㄕˊ","還":"ㄏㄞˊ","幾":"ㄐㄧˇ","多":"ㄉㄨㄛ","少":"ㄕㄠˇ","吃":"ㄔ","掉":"ㄉㄧㄠˋ","剩":"ㄕㄥˋ","下":"ㄒㄧㄚˋ","魚":"ㄩˊ","鴨":"ㄧㄚ","比":"ㄅㄧˇ","較":"ㄐㄧㄠˋ","邊":"ㄅㄧㄢ","字":"ㄗˋ","是":"ㄕˋ","開":"ㄎㄞ","聲":"ㄕㄥ","音":"ㄧㄣ","第":"ㄉㄧˋ","座":"ㄗㄨㄛˋ","位":"ㄨㄟˋ","車":"ㄔㄜ","滿":"ㄇㄢˇ","了":"˙ㄌㄜ","坐":"ㄗㄨㄛˋ","人":"ㄖㄣˊ","給":"ㄍㄟˇ","來":"ㄌㄞˊ","住":"ㄓㄨˋ","其":"ㄑㄧˊ","他":"ㄊㄚ","都":"ㄉㄡ","用":"ㄩㄥˋ","做":"ㄗㄨㄛˋ","變":"ㄅㄧㄢˋ","成":"ㄔㄥˊ","新":"ㄒㄧㄣ","家":"ㄐㄧㄚ","搬":"ㄅㄢ","進":"ㄐㄧㄣˋ","遊":"ㄧㄡˊ","客":"ㄎㄜˋ","奇":"ㄑㄧˊ","怪":"ㄍㄨㄞˋ","再":"ㄗㄞˋ","次":"ㄘˋ","拿":"ㄋㄚˊ","時":"ㄕˊ","間":"ㄐㄧㄢ","明":"ㄇㄧㄥˊ","天":"ㄊㄧㄢ","見":"ㄐㄧㄢˋ","灰":"ㄏㄨㄟ","色":"ㄙㄜˋ","黑":"ㄏㄟ","白":"ㄅㄞˊ","更":"ㄍㄥˋ","快":"ㄎㄨㄞˋ","樂":"ㄌㄜˋ","寶":"ㄅㄠˇ","貝":"ㄅㄟˋ","猴":"ㄏㄡˊ","熊":"ㄒㄩㄥˊ","貓":"ㄇㄠ","斑":"ㄅㄢ","馬":"ㄇㄚˇ","老":"ㄌㄠˇ","虎":"ㄏㄨˇ","兔":"ㄊㄨˋ","山":"ㄕㄢ","點":"ㄉㄧㄢˇ","按":"ㄢˋ","這":"ㄓㄜˋ","在":"ㄗㄞˋ","哇":"ㄨㄚ","對":"ㄉㄨㄟˋ","再":"ㄗㄞˋ","試":"ㄕˋ","看":"ㄎㄢˋ","答":"ㄉㄚˊ","案":"ㄢˋ","嗎":"˙ㄇㄚ","全":"ㄑㄩㄢˊ","部":"ㄅㄨˋ","救":"ㄐㄧㄡˋ","到":"ㄉㄠˋ","更":"ㄍㄥˋ","多":"ㄉㄨㄛ","會":"ㄏㄨㄟˋ","去":"ㄑㄩˋ","哦":"˙ㄛ","們":"˙ㄇㄣ","要":"ㄧㄠˋ","彩":"ㄘㄞˇ","帶":"ㄉㄞˋ","回":"ㄏㄨㄟˊ","號":"ㄏㄠˋ","能":"ㄋㄥˊ","真":"ㄓㄣ","塊":"ㄎㄨㄞˋ","金":"ㄐㄧㄣ","問":"ㄨㄣˋ","題":"ㄊㄧˊ","打":"ㄉㄚˇ","先":"ㄒㄧㄢ","鎖":"ㄙㄨㄛˇ","讓":"ㄖㄤˋ","睡":"ㄕㄨㄟˋ","覺":"ㄐㄧㄠˋ"};
+Object.assign(ZY,{"橘":"ㄐㄩˊ","黃":"ㄏㄨㄤˊ","歡":"ㄏㄨㄢ","迎":"ㄧㄥˊ","你":"ㄋㄧˇ","我":"ㄨㄛˇ","卡":"ㄎㄚˇ","空":"ㄎㄨㄥ","快":"ㄎㄨㄞˋ","安":"ㄢ","兩":"ㄌㄧㄤˇ","叭":"ㄅㄚ","做":"ㄗㄨㄛˋ","星":"ㄒㄧㄥ","可":"ㄎㄜˇ","以":"ㄧˇ","零":"ㄌㄧㄥˊ","公":"ㄍㄨㄥ","條":"ㄊㄧㄠˊ","押":"ㄧㄚ","韻":"ㄩㄣˋ","什":"ㄕㄣˊ","麼":"˙ㄇㄜ","母":"ㄇㄨˇ","「":"","」":"","太":"ㄊㄞˋ","繼":"ㄐㄧˋ","續":"ㄒㄩˋ","每":"ㄇㄟˇ","不":"ㄅㄨˋ","夠":"ㄍㄡˋ","數":"ㄕㄨˇ","像":"ㄒㄧㄤˋ","樣":"ㄧㄤˋ","共":"ㄍㄨㄥˋ","喜":"ㄒㄧˇ","練":"ㄌㄧㄢˋ","習":"ㄒㄧˊ","得":"˙ㄉㄜ","裡":"ㄌㄧˇ","身":"ㄕㄣ","體":"ㄊㄧˇ","腳":"ㄐㄧㄠˇ","隨":"ㄙㄨㄟˊ","便":"ㄅㄧㄢˋ","配":"ㄆㄟˋ","、":"","存":"ㄘㄨㄣˊ","起":"ㄑㄧˇ","功":"ㄍㄨㄥ","放":"ㄈㄤˋ","探":"ㄊㄢˋ","險":"ㄒㄧㄢˇ","名":"ㄇㄧㄥˊ","喀":"ㄎㄚ","擦":"ㄘㄚ","張":"ㄓㄤ","它":"ㄊㄚ","那":"ㄋㄚˋ"});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function zy(s){let o="";for(const ch of String(s)){const z=ZY[ch];o+=z?`<ruby>${ch}<rt>${z}</rt></ruby>`:esc(ch)}return o}
+
+/* ---------- state ---------- */
+const SKEY="paperzoo.v1";
+const S=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(SKEY)||"null");if(s&&s.v===1)return s}catch(e){}return {v:1,rescued:[],visitors:0,album:[],lang:"en",snd:true,mixes:[]}}
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(S))}catch(e){}}
+let missionsInRow=0;
+const $=id=>document.getElementById(id);
+const rnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[rnd(a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const T=(en,zh)=>S.lang==="zh"?zy(zh):esc(en);
+const Tb=(en,zh)=>`${esc(en)} · ${zy(zh)}`;
+
+/* ---------- animals ---------- */
+const AN={
+ elephant:{en:"Elephant",zh:"大象",img:"art/elephant.webp",h:1.0,color:"gray",colorZh:"灰色",tiles:["grass","water"],need:{grass:4,water:2},card:"#d8ecc7",pieces:[2,2],pre:"Ele",suf:"phant",letter:"E",zyFirst:"ㄉ"},
+ giraffe:{en:"Giraffe",zh:"長頸鹿",img:"art/giraffe.webp",h:1.45,color:"yellow",colorZh:"黃色",tiles:["grass","tree"],need:{grass:4,tree:2},card:"#fde9b8",pieces:[2,3],pre:"Gira",suf:"raffe",letter:"G",zyFirst:"ㄔ"},
+ lion:{en:"Lion",zh:"獅子",img:"art/lion.webp",h:0.85,color:"orange",colorZh:"橘色",tiles:["grass","rock"],need:{grass:3,rock:3},card:"#f9dcc0",pieces:[3,2],pre:"Li",suf:"on",letter:"L",zyFirst:"ㄕ"},
+ penguin:{en:"Penguin",zh:"企鵝",img:"art/penguin.webp",h:0.7,color:"black and white",colorZh:"黑白色",tiles:["ice","water"],need:{ice:4,water:2},card:"#dff1fb",pieces:[3,3],pre:"Pen",suf:"guin",letter:"P",zyFirst:"ㄑ"}
+};
+ZY["橘"]="ㄐㄩˊ";ZY["黃"]="ㄏㄨㄤˊ";
+const ORDER=["elephant","giraffe","lion","penguin"];
+const PL=t=>TILE[t].pl||TILE[t].en;
+const TILE={grass:{em:"🌿",en:"grass",zh:"草"},water:{em:"💧",en:"water",zh:"水"},ice:{em:"❄️",en:"ice",zh:"冰"},rock:{em:"🪨",en:"rock",pl:"rocks",zh:"石頭"},tree:{em:"🌳",en:"tree",pl:"trees",zh:"樹"}};
+const IMG={};ORDER.forEach(k=>{const i=new Image();i.src=AN[k].img;IMG[k]=i});
+
+/* ---------- audio ---------- */
+let AC=null,musicNodes=null;
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==="suspended")AC.resume();return AC}
+function tone(f,d=.15,type="triangle",v=.18,when=0){if(!S.snd)return;const a=ac();if(!a)return;const t=a.currentTime+when;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.05)}
+const sfx={
+ pop(){tone(660,.08,"sine",.2);tone(990,.1,"sine",.12,.05)},
+ snap(){tone(523,.08,"square",.08);tone(784,.12,"triangle",.15,.06)},
+ no(){tone(220,.18,"sawtooth",.07)},
+ yay(){[523,659,784,1047].forEach((f,i)=>tone(f,.22,"triangle",.16,i*.1))},
+ cam(){tone(1800,.04,"square",.08);tone(900,.06,"square",.06,.05)},
+ truck(){tone(110,.4,"sawtooth",.05);tone(98,.4,"sawtooth",.05,.35)}
+};
+function music(on){const a=ac();if(!a)return;if(on&&S.snd&&!musicNodes){const g=a.createGain();g.gain.value=0;g.connect(a.destination);g.gain.linearRampToValueAtTime(.07,a.currentTime+1);const notes=[392,440,523,440,392,330,349,392,523,587,659,587,523,440,392,392];let i=0;const iv=setInterval(()=>{const t=a.currentTime;const o=a.createOscillator(),e=a.createGain();o.type="triangle";o.frequency.value=notes[i%notes.length];e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(1,t+.02);e.gain.exponentialRampToValueAtTime(.001,t+.32);o.connect(e).connect(g);o.start(t);o.stop(t+.4);if(i%4===0){const b=a.createOscillator(),be=a.createGain();b.type="sine";b.frequency.value=notes[i%notes.length]/2;be.gain.setValueAtTime(.6,t);be.gain.exponentialRampToValueAtTime(.001,t+.6);b.connect(be).connect(g);b.start(t);b.stop(t+.7)}i++},340);musicNodes={g,iv}}
+ else if(!on&&musicNodes){const m=musicNodes;musicNodes=null;try{m.g.gain.linearRampToValueAtTime(0,a.currentTime+.6)}catch(e){}setTimeout(()=>clearInterval(m.iv),700)}}
+
+/* ---------- voice ---------- */
+let lastSay=null;
+function say(en,zh,opts){lastSay=[en,zh];if(!S.snd)return;try{if(S.lang==="zh")KAVoice.sayParts([[zh,"zh-TW"]],opts||{});else KAVoice.sayParts([[en,"en-US"]],opts||{})}catch(e){}}
+function sayAgain(){if(lastSay)say(lastSay[0],lastSay[1])}
+function stopSay(){try{KAVoice.stop()}catch(e){}}
+function rec(o){try{if(window.KA&&KA.answer)KA.answer(o)}catch(e){}}
+
+/* ---------- screens / layout ---------- */
+let cur="start";
+function show(id,title){document.querySelectorAll(".scr").forEach(s=>s.classList.toggle("on",s.id===id));cur=id;$("top").style.display=id==="start"?"none":"flex";$("ttl").innerHTML=title?`<span>${title}</span>`:"";if(id!=="map")stopWander();updTop()}
+function rotHint(){const m=matchMedia("(orientation:portrait) and (max-width:600px)").matches;$("rotHint").style.display=(m&&cur!=="start")?"block":"none"}
+function updTop(){rotHint();$("visN").textContent=S.visitors;$("langBtn").textContent=S.lang==="zh"?"EN":"中";$("sndBtn").textContent=S.snd?"🔊":"🔇"}
+function setH(){const h=window.innerHeight;document.documentElement.style.setProperty("--appH",h+"px");window.scrollTo(0,0)}
+let rzT=null;
+function onResize(){setH();clearTimeout(rzT);rzT=setTimeout(()=>{setH();relayout()},180)}
+addEventListener("resize",onResize);addEventListener("orientationchange",()=>{[100,400,900].forEach(t=>setTimeout(onResize,t))});
+addEventListener("scroll",()=>{if(scrollY)scrollTo(0,0)});
+setH();
+function relayout(){if(cur==="puzzle")pzLayout();else if(cur==="habitat")habLayout();else if(cur==="mix")mixLayout();else if(cur==="map")renderMap();else if(cur==="safari")safLayout()}
+function pBot(id,def){const e=$(id);return e?Math.max(def,e.offsetTop+e.offsetHeight+8):def}
+function stageRect(el){const r=el.getBoundingClientRect();return {w:r.width,h:r.height}}
+
+/* ---------- toast / confetti ---------- */
+function toast(html,ms=1400){const t=$("toast");t.innerHTML=html;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),ms)}
+function confetti(n=40){const cols=["#f6b93b","#e8590c","#69a84f","#4a90c2","#d6336c","#fff"];for(let i=0;i<n;i++){const c=document.createElement("div");c.className="conf";c.style.background=pick(cols);c.style.left=(40+Math.random()*20)+"vw";c.style.top="35vh";document.getElementById("app").appendChild(c);const dx=(Math.random()-.5)*90,dy=20+Math.random()*60,r=Math.random()*720;c.animate([{transform:"translate(0,0) rotate(0)",opacity:1},{transform:`translate(${dx}vw,${dy}vh) rotate(${r}deg)`,opacity:0}],{duration:1400+Math.random()*600,easing:"cubic-bezier(.2,.6,.4,1)"}).onfinish=()=>c.remove()}}
+function addVisitors(n){S.visitors+=n;save();updTop();const b=$("visBadge");b.animate([{transform:"scale(1)"},{transform:"scale(1.35)"},{transform:"scale(1)"}],{duration:500})}
+
+/* ---------- START ---------- */
+$("zhTitle").innerHTML=zy("洛明的紙片動物園");
+let introT=[],introOn=false;
+$("playBtn").onclick=()=>{ac();if(introOn){endIntro();return}introOn=true;music(true);$("playBtn").innerHTML='<span class="em">⏩</span> Tap to skip';
+ document.querySelectorAll("#stick img").forEach(i=>i.classList.remove("pop"));
+ const imgs=[...document.querySelectorAll("#stick img")];
+ imgs.forEach((im,k)=>introT.push(setTimeout(()=>{im.classList.add("pop");sfx.pop()},250+k*420)));
+ introT.push(setTimeout(()=>say("Welcome to Milo's Paper Zoo!","歡迎來到洛明的紙片動物園！"),300));
+ introT.push(setTimeout(endIntro,2600));};
+ZY["歡"]="ㄏㄨㄢ";ZY["迎"]="ㄧㄥˊ";
+document.querySelectorAll("#stick img").forEach((i,k)=>setTimeout(()=>i.classList.add("pop"),200+k*150));
+function endIntro(){introT.forEach(clearTimeout);introT=[];introOn=false;$("playBtn").innerHTML='<span class="em">▶</span> Tap to start';music(false);goMap(true)}
+$("voiceBtn").onclick=()=>{try{KAVoice.picker()}catch(e){}};
+/* parent gate reset */
+let gateAns=0;
+function newGate(){const a=100+rnd(900),b=10+rnd(90);gateAns=a*b;$("gateQ").textContent=`${a} × ${b} = ?`;$("gateIn").value=""}
+$("resetBtn").onclick=()=>{newGate();$("gateMsg").textContent="";$("gateM").classList.add("on")};
+$("gateNo").onclick=()=>$("gateM").classList.remove("on");
+$("gateOk").onclick=()=>{if(+$("gateIn").value===gateAns){try{localStorage.removeItem(SKEY)}catch(e){}Object.assign(S,load());save();$("gateMsg").textContent="Records cleared on this device.";setTimeout(()=>$("gateM").classList.remove("on"),900)}else{$("gateMsg").textContent="Not quite, try this one.";newGate()}};
+
+/* ---------- top buttons ---------- */
+$("homeBtn").onclick=()=>{stopSay();closeQ();if(cur==="map"){show("start");}else goMap()};
+$("langBtn").onclick=()=>{S.lang=S.lang==="zh"?"en":"zh";save();updTop();relabel();sayAgain()};
+$("sndBtn").onclick=()=>{S.snd=!S.snd;save();updTop();if(!S.snd){stopSay();music(false)}};
+$("visBadge").onclick=()=>say(`${S.visitors} visitors came to your zoo!`,`有${S.visitors}個遊客來你的動物園！`);
+ZY["你"]="ㄋㄧˇ";
+function relabel(){const L=(id,en,zh)=>{$(id).querySelector(".lb").innerHTML=T(en,zh)};L("rescueBtn","Rescue","救援");L("safariBtn","Safari","拍照");L("mixBtn","Mix","剪貼");L("albumBtn","Album","相簿");$("habDone").querySelector(".lb").innerHTML=T("Done","完成");
+ if(cur==="map")renderMap();if(cur==="mix")mixDraw();}
+
+/* ---------- MAP ---------- */
+let wanderIv=null;
+const nextAnimal=()=>ORDER.find(k=>!S.rescued.includes(k));
+function goMap(first){closeQ();show("map",T("My Zoo","我的動物園"));ZY["我"]="ㄨㄛˇ";relabel();renderMap();
+ const n=nextAnimal();
+ if(first&&!S.rescued.length)setTimeout(()=>say("Oh no! An animal needs help. Tap the truck!","哦！有動物需要幫忙，按卡車！"),400);
+ ZY["卡"]="ㄎㄚˇ";}
+function renderMap(){const L=$("zooLayer");L.innerHTML="";const W=L.clientWidth,H=L.clientHeight;
+ const spots=W>H?{elephant:[.14,.62],giraffe:[.36,.5],lion:[.58,.62],penguin:[.78,.74]}:{elephant:[.2,.5],giraffe:[.5,.42],lion:[.78,.52],penguin:[.5,.62]};
+ const base=Math.min(W*.17,H*.26);
+ S.rescued.forEach(k=>{const d=document.createElement("div");d.className="ani";d.dataset.k=k;const w=base*(k==="giraffe"?.62:k==="penguin"?.7:1);d.style.width=w+"px";const [x,y]=spots[k];d.style.left=(x*W-w/2)+"px";d.style.top=(y*H-w*AN[k].h)+"px";d.innerHTML=`<img src="${AN[k].img}" alt="${AN[k].en}">`;d.onclick=()=>{if(cur==="safari")return;sfx.pop();const im=d.querySelector("img");im.classList.remove("hop");void im.offsetWidth;im.classList.add("hop");say(`${AN[k].en}!`,AN[k].zh)};L.appendChild(d)});
+ const nv=Math.min(S.visitors,10);const people=["🧒","👧","👦","👩","👨","🧓","👶"];
+ for(let i=0;i<nv;i++){const v=document.createElement("div");v.className="vis";v.textContent=people[i%people.length];v.style.left=(Math.random()*90)+"%";v.style.top=(80+Math.random()*8)+"%";L.appendChild(v)}
+ const n=nextAnimal();const em=$("emptyMsg");
+ if(!S.rescued.length){em.style.display="block";em.innerHTML=T("Your zoo is empty. Tap 🚚 Rescue!","動物園空空的，按🚚救援！")}else if(!n){em.style.display="block";em.innerHTML=T("All animals rescued! More coming soon 🦒","全部救到了！更多動物快來了")}else em.style.display="none";
+ $("rescueBtn").classList.toggle("dis",!n);$("safariBtn").classList.toggle("dis",S.rescued.length<2);$("mixBtn").classList.toggle("dis",S.rescued.length<2);$("albumBtn").classList.toggle("dis",!S.album.length);
+ startWander()}
+ZY["空"]="ㄎㄨㄥ";ZY["快"]="ㄎㄨㄞˋ";
+function startWander(){stopWander();wanderIv=setInterval(()=>{const L=$("zooLayer");const W=L.clientWidth,H=L.clientHeight;L.querySelectorAll(".ani").forEach(d=>{if(Math.random()<.5)return;const w=d.offsetWidth;const ox=parseFloat(d.style.left);let nx=ox+(Math.random()-.5)*W*.16;nx=Math.max(4,Math.min(W-w-4,nx));d.classList.toggle("flip",nx<ox);d.style.left=nx+"px"});L.querySelectorAll(".vis").forEach(v=>{v.style.left=(Math.random()*90)+"%"})},3600)}
+function stopWander(){clearInterval(wanderIv);wanderIv=null}
+$("rescueBtn").onclick=()=>{const k=nextAnimal();if(!k){say("All the animals are safe! More are coming soon.","動物全部都安全了！");return}rescue(k)};
+ZY["安"]="ㄢ";
+$("safariBtn").onclick=()=>{if(S.rescued.length<2){say("Rescue two animals first!","先救兩隻動物！");return}startSafari()};
+ZY["兩"]="ㄌㄧㄤˇ";
+$("mixBtn").onclick=()=>{if(S.rescued.length<2){say("Rescue two animals first!","先救兩隻動物！");return}startMix()};
+$("albumBtn").onclick=()=>{if(!S.album.length){say("Take photos on a safari first!","先去拍照！");return}showAlbum()};
+
+/* ---------- RESCUE: truck -> puzzle -> habitat ---------- */
+let R=null;
+function rescue(k){R={k};const tr=$("truck");$("truckAni").src=AN[k].img;tr.style.display="block";tr.style.transition="none";tr.style.left="-40%";void tr.offsetWidth;tr.style.transition="";sfx.truck();
+ say(`Beep beep! ${/^[aeiou]/i.test(AN[k].en)?"An":"A"} ${AN[k].en.toLowerCase()} needs help. Fix the puzzle!`,`叭叭！${AN[k].zh}需要幫忙，把拼圖拼好！`);
+ setTimeout(()=>tr.style.left="30%",50);setTimeout(()=>{tr.style.display="none";startPuzzle(k)},2200)}
+ZY["叭"]="ㄅㄚ";
+
+/* ---------- PUZZLE ---------- */
+let PZ=null;
+function startPuzzle(k){show("puzzle",Tb(AN[k].en,AN[k].zh));const [cols,rows]=AN[k].pieces;const lockIdx=rnd(cols*rows);
+ PZ={k,cols,rows,lockIdx,pieces:[],placed:0,edges:makeEdges(cols,rows)};
+ $("pzPrompt").innerHTML=`<button class="spk" onclick="sayAgain()">🔊</button><span>${T("Put the puzzle together!","把拼圖拼好！")}</span>`;
+ for(let i=0;i<cols*rows;i++)PZ.pieces.push({i,c:i%cols,r:Math.floor(i/cols),placed:false,locked:i===lockIdx,fx:Math.random(),fy:Math.random()});
+ pzLayout()}
+function makeEdges(c,r){const h=[],v=[];for(let y=0;y<r;y++){h.push([]);for(let x=0;x<c-1;x++)h[y].push(Math.random()<.5?1:-1)}for(let y=0;y<r-1;y++){v.push([]);for(let x=0;x<c;x++)v[y].push(Math.random()<.5?1:-1)}return {h,v}}
+function pzLayout(){if(!PZ)return;const st=$("pzStage");const {w:W,h:H}=stageRect(st);const top=pBot("pzPrompt",70);const land=W>H*1.05;
+ const availH=H-top-12;let bs, bx, by, tray;
+ const aspect=PZ.cols/PZ.rows;
+ if(land){bs=Math.min(availH,(W-24)*.52);let bw=bs*Math.min(1,aspect),bh=bs*Math.min(1,1/aspect);bw=Math.min(bw,(W-24)*.52);bx=12+((W-24)*.55-bw)/2;by=top+(availH-bh)/2;tray={x:W*.57,y:top,w:W*.43-12,h:availH};PZ.bw=bw;PZ.bh=bh}
+ else{bs=Math.min(W-24,availH*.56);let bw=bs*Math.min(1,aspect),bh=bs*Math.min(1,1/aspect);bx=(W-bw)/2;by=top;tray={x:10,y:by+bh+14,w:W-20,h:H-(by+bh+14)-10};PZ.bw=bw;PZ.bh=bh}
+ PZ.bx=bx;PZ.by=by;PZ.tray=tray;
+ const b=$("pzBoard");b.style.left=bx+"px";b.style.top=by+"px";b.style.width=PZ.bw+"px";b.style.height=PZ.bh+"px";
+ const dpr=Math.min(2,window.devicePixelRatio||1);
+ const pic=document.createElement("canvas");pic.width=Math.round(PZ.bw*dpr);pic.height=Math.round(PZ.bh*dpr);drawCard(pic.getContext("2d"),pic.width,pic.height,PZ.k);PZ.pic=pic;
+ const g=$("pzGhost");g.width=pic.width;g.height=pic.height;g.style.width="100%";g.style.height="100%";g.getContext("2d").drawImage(pic,0,0);
+ st.querySelectorAll(".pc").forEach(e=>e.remove());
+ const cw=PZ.bw/PZ.cols,ch=PZ.bh/PZ.rows,tab=Math.min(cw,ch)*.22;PZ.cw=cw;PZ.ch=ch;PZ.tab=tab;
+ {const n=PZ.pieces.length,pw=cw+2*tab,ph=ch+2*tab;let best=null;for(let tc=1;tc<=n;tc++){const tr=Math.ceil(n/tc);const sc=Math.min(1,tray.w/(tc*pw),tray.h/(tr*ph));if(!best||sc>best.sc)best={tc,tr,sc}}PZ.ts=best.sc*0.96;PZ.slots=[];for(let i=0;i<n;i++){const c=i%best.tc,r=Math.floor(i/best.tc);PZ.slots.push({x:tray.x+(c+.5)*tray.w/best.tc,y:tray.y+(r+.5)*tray.h/best.tr})}
+  if(!PZ.slotOrder){PZ.slotOrder=shuffle([...Array(n).keys()]);PZ.pieces.forEach((p,i)=>p.slot=PZ.slotOrder[i])}}
+ PZ.pieces.forEach(p=>{const cv=document.createElement("canvas");const pw=cw+2*tab,ph=ch+2*tab;cv.width=Math.round(pw*dpr);cv.height=Math.round(ph*dpr);cv.style.width=pw+"px";cv.style.height=ph+"px";
+  const x=cv.getContext("2d");x.scale(dpr,dpr);x.save();piecePath(x,p,cw,ch,tab);x.clip();x.drawImage(pic,-p.c*cw+tab,-p.r*ch+tab,PZ.bw,PZ.bh);x.restore();piecePath(x,p,cw,ch,tab);x.lineWidth=2;x.strokeStyle="rgba(255,255,255,.85)";x.stroke();
+  const wrap=document.createElement("div");wrap.className="pc"+(p.placed?" placed":"");wrap.style.width=pw+"px";wrap.style.height=ph+"px";wrap.appendChild(cv);
+  if(p.locked&&!p.placed){const l=document.createElement("div");l.className="lock";l.textContent="⭐";wrap.appendChild(l)}
+  p.el=wrap;p.tx=bx+p.c*cw-tab;p.ty=by+p.r*ch-tab;
+  if(p.placed){wrap.style.left=p.tx+"px";wrap.style.top=p.ty+"px"}else{const sl=PZ.slots[p.slot];wrap.style.left=(sl.x-pw/2)+"px";wrap.style.top=(sl.y-ph/2)+"px";wrap.style.transform=`scale(${PZ.ts})`}
+  dragify(p);st.appendChild(wrap)})}
+function drawCard(x,w,h,k){x.fillStyle=AN[k].card;x.fillRect(0,0,w,h);x.fillStyle="rgba(255,255,255,.35)";for(let i=0;i<6;i++){x.beginPath();x.arc(w*(.1+i*.17),h*.12,w*.06,0,7);x.fill()}x.fillStyle="rgba(90,150,60,.35)";x.beginPath();x.ellipse(w/2,h*.98,w*.7,h*.18,0,0,7);x.fill();
+ const im=IMG[k];const s=Math.min(w*.84/im.naturalWidth,h*.84/im.naturalHeight);const iw=im.naturalWidth*s,ih=im.naturalHeight*s;x.drawImage(im,(w-iw)/2,h-ih-h*.04,iw,ih)}
+function piecePath(x,p,cw,ch,t){const {h,v}=PZ.edges;const top=p.r===0?0:-v[p.r-1][p.c],bot=p.r===PZ.rows-1?0:v[p.r][p.c],left=p.c===0?0:-h[p.r][p.c-1],right=p.c===PZ.cols-1?0:h[p.r][p.c];
+ x.beginPath();x.moveTo(t,t);edge(x,t,t,t+cw,t,top,0,-1);edge(x,t+cw,t,t+cw,t+ch,right,1,0);edge(x,t+cw,t+ch,t,t+ch,bot,0,1);edge(x,t,t+ch,t,t,left,-1,0);x.closePath()}
+function edge(x,x1,y1,x2,y2,d,nx,ny){if(!d){x.lineTo(x2,y2);return}const L=Math.hypot(x2-x1,y2-y1);const ux=(x2-x1)/L,uy=(y2-y1)/L;const s=PZ.tab*d;const P=(a,b)=>[x1+ux*L*a+nx*s*b,y1+uy*L*a+ny*s*b];
+ const a=P(.36,0),b=P(.32,.95),c=P(.68,.95),e=P(.64,0);x.lineTo(...a);x.bezierCurveTo(...P(.42,.3),...P(.22,1.1),...P(.5,1.15));x.bezierCurveTo(...P(.78,1.1),...P(.58,.3),...e);x.lineTo(x2,y2)}
+function dragify(p){const el=p.el;let sx,sy,ox,oy,id=null,moved=false;
+ el.onpointerdown=e=>{if(p.placed)return;if(p.locked){openLockQ(p);return}id=e.pointerId;el.setPointerCapture(id);sx=e.clientX;sy=e.clientY;ox=parseFloat(el.style.left);oy=parseFloat(el.style.top);el.classList.add("drag");el.style.transform="scale(1)";moved=false;sfx.pop()};
+ el.onpointermove=e=>{if(e.pointerId!==id)return;moved=true;const r=$("pzStage").getBoundingClientRect();let nx=ox+e.clientX-sx,ny=oy+e.clientY-sy;nx=Math.max(-20,Math.min(r.width-el.offsetWidth+20,nx));ny=Math.max(40,Math.min(r.height-el.offsetHeight+20,ny));el.style.left=nx+"px";el.style.top=ny+"px"};
+ const up=e=>{if(e.pointerId!==id)return;id=null;el.classList.remove("drag");const nx=parseFloat(el.style.left),ny=parseFloat(el.style.top);const snap=Math.max(28,PZ.cw*.32);
+  if(Math.hypot(nx-p.tx,ny-p.ty)<snap)placePiece(p);else if(!moved||ny+el.offsetHeight/2>PZ.tray.y-10&&nx+el.offsetWidth/2>PZ.tray.x-10){const sl=PZ.slots[p.slot];el.style.left=(sl.x-el.offsetWidth/2)+"px";el.style.top=(sl.y-el.offsetHeight/2)+"px";el.style.transform=`scale(${PZ.ts})`}};
+ el.onpointerup=up;el.onpointercancel=up}
+function placePiece(p){p.placed=true;p.el.classList.add("placed");p.el.style.transform="scale(1)";p.el.style.transition="left .15s,top .15s";p.el.style.left=p.tx+"px";p.el.style.top=p.ty+"px";sfx.snap();PZ.placed++;
+ if(PZ.placed===PZ.pieces.length){setTimeout(()=>{sfx.yay();confetti();toast(`${T("You did it!","你做到了！")}<br><img src="${AN[PZ.k].img}" style="height:90px">`,1800);say(`You fixed the ${AN[PZ.k].en.toLowerCase()} picture!`,`${AN[PZ.k].zh}拼好了！`);setTimeout(()=>startHabitat(PZ.k),2000)},250)}}
+ZY["做"]="ㄗㄨㄛˋ";
+function openLockQ(p){askQ(ok=>{p.locked=false;const l=p.el.querySelector(".lock");if(l)l.remove();say("The star piece is free! Drag it in.","星星拼圖可以拿了！");});}
+ZY["星"]="ㄒㄧㄥ";ZY["可"]="ㄎㄜˇ";ZY["以"]="ㄧˇ";
+
+/* ---------- QUESTIONS (4-year-old level) ---------- */
+const NUMZ=["零","一","二","三","四","五","六","七","八","九","十"];ZY["零"]="ㄌㄧㄥˊ";
+const RHY=[["cat","🐱","hat","🎩"],["bee","🐝","tree","🌳"],["goat","🐐","boat","⛵"],["fox","🦊","box","📦"],["snake","🐍","cake","🎂"],["bear","🐻","chair","🪑"],["mouse","🐭","house","🏠"],["moon","🌙","spoon","🥄"],["frog","🐸","log","🪵"],["star","⭐","car","🚗"]];
+const ZYW=[["大象","🐘","ㄉ"],["獅子","🦁","ㄕ"],["企鵝","🐧","ㄑ"],["長頸鹿","🦒","ㄔ"],["猴子","🐒","ㄏ"],["熊貓","🐼","ㄒ"],["斑馬","🦓","ㄅ"],["老虎","🐯","ㄌ"],["兔子","🐰","ㄊ"],["魚","🐟","ㄩ"]];
+const ZYALL=["ㄅ","ㄆ","ㄇ","ㄈ","ㄉ","ㄊ","ㄋ","ㄌ","ㄍ","ㄎ","ㄏ","ㄐ","ㄑ","ㄒ","ㄓ","ㄔ","ㄕ","ㄖ","ㄗ","ㄘ","ㄙ","ㄩ"];
+const LETW=[["Lion","🦁","L"],["Zebra","🦓","Z"],["Monkey","🐒","M"],["Tiger","🐯","T"],["Bear","🐻","B"],["Fish","🐟","F"],["Duck","🦆","D"],["Rabbit","🐰","R"],["Snake","🐍","S"],["Panda","🐼","P"],["Giraffe","🦒","G"],["Kangaroo","🦘","K"]];
+let lastType="";
+function genQ(){const types=["bond","take","more","rhyme","zy","letter","char","tall"].filter(t=>t!==lastType);const t=pick(types);lastType=t;
+ if(t==="bond"){const N=5+rnd(6),K=1+rnd(N-1),a=N-K;return {t,en:`The bus has ${N} seats. ${K} kids sit down. How many seats are still empty?`,zh:`公車有${NUMZ[N]}個座位，坐了${NUMZ[K]}個人，還有幾個空位？`,vis:"🚌<br>"+"🧒".repeat(K)+"⚪".repeat(a),ans:a,opts:nums(a,N),why:`${K} + ${a} = ${N}`}}
+ if(t==="take"){const N=4+rnd(6),K=1+rnd(Math.min(4,N-1));return {t,en:`There are ${N} fish. The penguin eats ${K}. How many are left?`,zh:`有${NUMZ[N]}條魚，企鵝吃掉${NUMZ[K]}條，還剩幾條？`,vis:"🐧 "+"🐟".repeat(N-K)+`<span class="gone">${"🐟".repeat(K)}</span>`,ans:N-K,opts:nums(N-K,N),why:`${N} − ${K} = ${N-K}`}}
+ if(t==="more"){let a=2+rnd(7),b=2+rnd(7);while(Math.abs(a-b)<2)b=2+rnd(7);const ans=a>b?"A":"B";return {t,en:"Which pen has MORE ducks?",zh:"哪一邊的鴨子比較多？",vis:"",ans,opts:[{v:"A",l:`<span class="pen">${"🦆".repeat(a)}</span>`},{v:"B",l:`<span class="pen">${"🦆".repeat(b)}</span>`}],pens:true,why:`${Math.max(a,b)} > ${Math.min(a,b)}`}}
+ if(t==="rhyme"){const r=pick(RHY);const others=shuffle(RHY.filter(x=>x!==r)).slice(0,2);return {t,en:`What rhymes with ${r[0]}?`,zh:`哪一個和 ${r[0]} 押韻？`,enOnly:true,vis:r[1],ans:r[2],opts:shuffle([{v:r[2],l:r[3]},{v:others[0][2],l:others[0][3]},{v:others[1][0],l:others[1][1]}]),why:`${r[0]} – ${r[2]}`,sayEn:`What rhymes with ${r[0]}? ${shuffle([r[2],others[0][2],others[1][0]]).join(", ")}`}}
+ if(t==="zy"){const w=pick(ZYW);const opts=shuffle([w[2],...shuffle(ZYALL.filter(z=>z!==w[2])).slice(0,2)]);return {t,en:`${w[0]} — which sound comes first?`,zh:`${w[0]}的第一個聲音是什麼？`,vis:`${w[1]} <span style="font-size:.8em">${zy(w[0])}</span>`,ans:w[2],opts:opts.map(o=>({v:o,l:o})),why:`${w[0]} → ${w[2]}`,zhSay:true}}
+ if(t==="letter"){const w=pick(LETW);const opts=shuffle([w[2],...shuffle("ABCDEFGHKLMNPRSTWZ".split("").filter(z=>z!==w[2])).slice(0,2)]);return {t,en:`${w[0]}! What letter does it start with?`,zh:`${w[0]} 是什麼字母開頭？`,vis:w[1],ans:w[2],opts:opts.map(o=>({v:o,l:o})),why:`${w[0]} starts with ${w[2]}`}}
+ if(t==="char"){const set=[["大","big","🐘"],["小","small","🐭"],["山","mountain","⛰️"],["水","water","💧"]];const w=pick(set);const opts=shuffle([w,...shuffle(set.filter(s=>s!==w)).slice(0,2)]);return {t,en:`Find the word "${w[1]}".`,zh:`找出「${w[0]}」這個字。`,vis:w[2],ans:w[0],opts:opts.map(o=>({v:o[0],l:`<span style="font-size:44px">${o[0]}</span>`})),why:`${w[0]} = ${w[1]}`}}
+ if(t==="tall"){const hs=shuffle([56,84,112]);const tall=hs.indexOf(112);return {t,en:"Tap the TALLEST giraffe.",zh:"哪一隻長頸鹿最高？",vis:"",ans:String(tall),opts:hs.map((h,i)=>({v:String(i),l:`<img src="art/giraffe.webp" style="height:${h}px">`})),why:"",tallQ:true}}}
+ZY["公"]="ㄍㄨㄥ";ZY["條"]="ㄊㄧㄠˊ";ZY["押"]="ㄧㄚ";ZY["韻"]="ㄩㄣˋ";ZY["什"]="ㄕㄣˊ";ZY["麼"]="˙ㄇㄜ";ZY["母"]="ㄇㄨˇ";ZY["「"]="";ZY["」"]="";
+function nums(a,max){const s=new Set([a]);while(s.size<3){const n=Math.max(0,Math.min(max,a+(rnd(5)-2)));s.add(n)}return shuffle([...s]).map(n=>({v:n,l:String(n)}))}
+let QA=null;
+function askQ(onDone){const q=genQ();QA={q,tries:0,onDone};$("qBox").classList.add("on");
+ $("qText").innerHTML=`<button class="spk pbtn" style="min-width:48px;min-height:48px;border-radius:50%;padding:0;font-size:20px" onclick="sayQ()">🔊</button><span>${q.enOnly||S.lang!=="zh"?esc(q.en):zy(q.zh)}</span>`;
+ $("qVis").innerHTML=q.vis;$("qWhy").textContent="";
+ $("qAns").innerHTML="";q.opts.forEach(o=>{const b=document.createElement("button");b.className="pbtn";b.innerHTML=o.l;b.dataset.v=o.v;b.onclick=()=>answer(b,o.v);$("qAns").appendChild(b)});
+ sayQ()}
+function sayQ(){if(!QA)return;const q=QA.q;if(q.zhSay&&S.lang!=="zh"){say(q.en,q.zh);try{if(S.snd)KAVoice.sayParts([[q.en.split(" — ")[0],"zh-TW"],["which sound comes first?","en-US"]])}catch(e){}return}if(q.enOnly){lastSay=[q.sayEn||q.en,q.zh];if(S.snd)try{KAVoice.sayParts([[q.sayEn||q.en,"en-US"]])}catch(e){}return}say(q.en,q.zh)}
+function answer(b,v){const q=QA.q;if(String(v)===String(q.ans)){b.classList.add("yes");sfx.yay();rec({q:q.en,given:String(v),expected:String(q.ans),correct:true,tryNo:QA.tries+1,topic:q.t});
+  say(pick(["Yes! Great job!","You got it!","Super!"]),pick(["答對了！好棒！","對了！","太棒了！"]));ZY["太"]="ㄊㄞˋ";const cb=QA.onDone;setTimeout(()=>{closeQ();cb&&cb(true)},1100);return}
+ QA.tries++;b.classList.add("no");sfx.no();rec({q:q.en,given:String(v),expected:String(q.ans),correct:false,tryNo:QA.tries,topic:q.t});
+ const right=[...$("qAns").children].find(x=>x.dataset.v===String(q.ans));
+ if(QA.tries===1){right.classList.add("hint");say("Try again! Look at the wiggly one.","再試一次！看看會動的那個。")}
+ else{right.classList.add("yes");$("qWhy").textContent=q.why;say("This one! Let's keep going.","是這個！我們繼續。");ZY["繼"]="ㄐㄧˋ";ZY["續"]="ㄒㄩˋ";const cb=QA.onDone;setTimeout(()=>{closeQ();cb&&cb(false)},2200)}}
+function closeQ(){$("qBox").classList.remove("on");QA=null}
+
+/* ---------- HABITAT ---------- */
+let HB=null;
+function startHabitat(k){const A=AN[k];const idx=S.rescued.length;const types=A.tiles;const n=6;
+ const bondMode=idx>=1;// first animal: both counts told; later: number bond
+ HB={k,slots:Array(n).fill(null),need:A.need,bondMode};
+ show("habitat",Tb(A.en+"'s home",A.zh+"的家"));
+ const [t1,t2]=types;const c1=A.need[t1],c2=A.need[t2];
+ let en,zh;
+ if(!bondMode){en=`I need ${c1} ${PL(t1)} and ${c2} ${PL(t2)}.`;zh=`我需要${NUMZ[c1]}格${TILE[t1].zh}和${NUMZ[c2]}格${TILE[t2].zh}。`}
+ else{en=`Fill all ${n} spaces. I need ${c2} ${PL(t2)}. The rest is ${PL(t1)}!`;zh=`把${NUMZ[n]}格都放滿：${NUMZ[c2]}格${TILE[t2].zh}，其他都是${TILE[t1].zh}！`}
+ HB.en=en;HB.zh=zh;
+ $("habPrompt").innerHTML=`<button class="spk" onclick="sayAgain()">🔊</button><span>${T(en,zh)}</span>`;
+ const pal=$("habPal");pal.innerHTML="";const pt=shuffle([...types,...shuffle(Object.keys(TILE).filter(x=>!types.includes(x))).slice(0,1)]);
+ pt.forEach(tk=>{const b=document.createElement("button");b.className="pbtn t-"+tk;b.innerHTML=`<span class="em">${TILE[tk].em}</span><span>${T(TILE[tk].en,TILE[tk].zh)}</span>`;b.onclick=()=>habAdd(tk);pal.appendChild(b)});
+ $("habAni").src=A.img;habLayout();say(en,zh)}
+function habLayout(){if(!HB)return;const st=$("habStage");const {w:W,h:H}=stageRect(st);const top=pBot("habPrompt",74);const land=W>H;const g=$("habGrid");
+ const cols=3,rows=2;let cell;
+ if(land){cell=Math.min((H-top-40)/rows,(W*.44)/cols-8,170);cell=Math.max(52,cell);g.style.left=(W*.04)+"px";g.style.top=top+"px";}
+ else{cell=Math.min((W-60)/cols,(H-top-260)/rows,110);g.style.left=((W-(cell*cols+16+20))/2)+"px";g.style.top=(top)+"px";const ai=$("habAni");const ah=Math.min(120,H*.16);ai.style.width=ah+"px";ai.style.height=ah+"px";ai.style.left=(W-ah-8)+"px";ai.style.top=(top+cell*rows+30)+"px"}
+ cell=Math.max(52,cell);
+ g.style.gridTemplateColumns=`repeat(${cols},${cell}px)`;g.style.gridAutoRows=cell+"px";
+ g.innerHTML="";HB.slots.forEach((s,i)=>{const d=document.createElement("button");d.className="slot"+(s?" f t-"+s:"");d.textContent=s?TILE[s].em:"";d.onclick=()=>{if(HB.slots[i]){HB.slots[i]=null;sfx.pop();habLayout()}};g.appendChild(d)});
+ const gr=g.getBoundingClientRect(),sr=st.getBoundingClientRect();const gb=gr.bottom-sr.top;const pal=$("habPal");
+ if(land){const x0=gr.right-sr.left+18,rw=W-x0-10;pal.style.left=x0+"px";pal.style.width=rw+"px";pal.style.top=top+"px";const pr=pal.getBoundingClientRect();const py=pr.bottom-sr.top+10;const ah=Math.max(60,Math.min(H-py-12,rw*.45,200));const ai=$("habAni");ai.style.width=ah+"px";ai.style.height=ah+"px";ai.style.left=x0+"px";ai.style.top=py+"px";const d=$("habDone");d.style.left=(x0+ah+14)+"px";d.style.top=Math.min(H-74,py+ah/2-30)+"px";}
+ else{pal.style.left="10px";pal.style.width=(W-20-Math.min(120,H*.16)-10)+"px";pal.style.top=(gb+14)+"px";const pr=pal.getBoundingClientRect();const d=$("habDone");d.style.left=((W-180)/2)+"px";d.style.top=Math.min(H-80,(pr.bottom-sr.top)+14)+"px"}}
+function habAdd(tk){const i=HB.slots.indexOf(null);if(i<0){say("It's full! Tap a square to take it out.","滿了！按一格拿出來。");return}HB.slots[i]=tk;sfx.pop();try{if(S.snd)KAVoice.say(S.lang==="zh"?TILE[tk].zh:TILE[tk].en)}catch(e){}habLayout()}
+$("habDone").onclick=()=>{if(!HB)return;const cnt={};HB.slots.forEach(s=>{if(s)cnt[s]=(cnt[s]||0)+1});const need=HB.need;const ok=Object.keys(need).every(k=>cnt[k]===need[k])&&HB.slots.every(s=>s&&need[s]);
+ HB.tries=(HB.tries||0)+1;rec({q:"habitat "+HB.k,given:JSON.stringify(cnt),expected:JSON.stringify(need),correct:ok,tryNo:HB.tries,topic:HB.bondMode?"number-bond":"counting"});
+ if(ok){finishRescue(HB.k);return}
+ sfx.no();const [t1,t2]=AN[HB.k].tiles;const have2=cnt[t2]||0;let en,zh;
+ if(HB.slots.includes(null)){en="Fill every space first!";zh="每一格都要放！"}else if(Object.keys(cnt).some(k=>!need[k])){en="Oops, I don't need that one. Tap it to take it out.";zh="這個我不需要，按一下拿出來。"}else if(have2<need[t2]){en=`I need more ${TILE[t2].en}. Count them!`;zh=`${TILE[t2].zh}還不夠，數一數！`}else{en=`Too much ${TILE[t2].en}! Count them!`;zh=`${TILE[t2].zh}太多了，數一數！`}
+ ZY["每"]="ㄇㄟˇ";ZY["不"]="ㄅㄨˋ";ZY["夠"]="ㄍㄡˋ";ZY["數"]="ㄕㄨˇ";
+ if(HB.tries>=2){HB.slots=[];Object.keys(need).forEach(k=>{for(let i=0;i<need[k];i++)HB.slots.push(k)});habLayout();en=`Like this! ${need[t1]} ${TILE[t1].en} and ${need[t2]} ${TILE[t2].en} make 6. Tap Done!`;zh=`像這樣！${NUMZ[need[t1]]}格${TILE[t1].zh}和${NUMZ[need[t2]]}格${TILE[t2].zh}，一共六格。按完成！`;ZY["像"]="ㄒㄧㄤˋ";ZY["樣"]="ㄧㄤˋ";ZY["共"]="ㄍㄨㄥˋ";HB.tries=-5}
+ toast(T(en,zh),2200);say(en,zh)};
+function finishRescue(k){sfx.yay();confetti(60);S.rescued.push(k);addVisitors(3);save();missionsInRow++;
+ toast(`${T("New home!","新家！")}<br><img src="${AN[k].img}" style="height:100px"><br>🧒🧒🧒 +3`,2200);say(`The ${AN[k].en.toLowerCase()} loves its new home! Three visitors came to see it!`,`${AN[k].zh}好喜歡新家！來了三個遊客！`);ZY["喜"]="ㄒㄧˇ";ZY["歡"]="ㄏㄨㄢ";
+ HB=null;PZ=null;setTimeout(()=>{goMap();if(missionsInRow>=3){missionsInRow=0;showBreak()}},2400)}
+function showBreak(){$("breakT").innerHTML=Tb("Great practice! Time for a break","練習得好棒！休息一下");ZY["練"]="ㄌㄧㄢˋ";ZY["習"]="ㄒㄧˊ";ZY["得"]="˙ㄉㄜ";$("breakOk").innerHTML=Tb("Finish for now","先到這裡");ZY["裡"]="ㄌㄧˇ";$("breakM").classList.add("on");say("Great practice! Time for a break.","練習得好棒！休息一下。")}
+$("breakOk").onclick=()=>{$("breakM").classList.remove("on");show("start")};
+
+/* ---------- MIX-A-ANIMAL ---------- */
+let MX=null;const NORM={};
+function normCanvas(k){if(NORM[k])return NORM[k];const im=IMG[k];const c=document.createElement("canvas");c.width=300;c.height=360;const x=c.getContext("2d");
+ // scale each animal to fill the box height-wise so bands line up (head / body / legs)
+ const s=Math.min(300/im.naturalWidth,360/im.naturalHeight);const w=im.naturalWidth*s,h=im.naturalHeight*s;x.drawImage(im,(300-w)/2,360-h,w,h);NORM[k]=c;return c}
+const BANDS=[[0,.42],[.42,.72],[.72,1]];
+function startMix(){const pool=S.rescued.slice();const target=pick(pool);MX={pool,idx:[rnd(pool.length),rnd(pool.length),rnd(pool.length)],target,done:false,mode:"make"};
+ if(MX.idx.every(i=>pool[i]===target))MX.idx[0]=(MX.idx[0]+1)%pool.length;
+ show("mix",T("Mix-a-Animal","動物剪貼"));mixPrompt();mixLayout()}
+function mixPrompt(){const A=AN[MX.target];const en=MX.mode==="make"?`Make ${/^[aeiou]/i.test(A.en)?"an":"a"} ${A.en.toLowerCase()}! Match the head, body and legs.`:"Now make a silly animal! Any mix you like.";const zh=MX.mode==="make"?`做一隻${A.zh}！頭、身體、腳都要對。`:"做一隻奇怪的動物！隨便配！";ZY["身"]="ㄕㄣ";ZY["體"]="ㄊㄧˇ";ZY["腳"]="ㄐㄧㄠˇ";ZY["隨"]="ㄙㄨㄟˊ";ZY["便"]="ㄅㄧㄢˋ";ZY["配"]="ㄆㄟˋ";ZY["、"]="";
+ $("mixPrompt").innerHTML=`<button class="spk" onclick="sayAgain()">🔊</button><span>${T(en,zh)}</span>`;say(en,zh)}
+function mixLayout(){if(!MX)return;const st=$("mixStage");const {w:W,h:H}=stageRect(st);const top=pBot("mixPrompt",74);const cv=$("mixCv");const short=W>H&&(H-top)<380;const avail=short?H-top-12:H-top-150;const ch=Math.max(140,Math.min(avail,W*.6*1.2));const cw=ch*300/360;
+ cv.style.width=cw+"px";cv.style.height=ch+"px";const dpr=Math.min(2,devicePixelRatio||1);cv.width=Math.round(cw*dpr);cv.height=Math.round(ch*dpr);
+ const wrap=$("mixWrap");wrap.style.left="0";wrap.style.right=short?"38%":"0";wrap.style.top=top+"px";wrap.style.height=ch+"px";
+ ["mixL","mixR"].forEach((id,side)=>{const d=$(id);d.innerHTML="";d.style.height=ch+"px";for(let b=0;b<3;b++){const btn=document.createElement("button");btn.className="pbtn";btn.textContent=side?"▶":"◀";btn.onclick=()=>{MX.idx[b]=(MX.idx[b]+(side?1:MX.pool.length-1))%MX.pool.length;sfx.pop();mixDraw();mixCheck()};d.appendChild(btn)}});
+ const nm=$("mixName"),mb=$("mixBtns");if(short){nm.style.left="81%";nm.style.top=(top+ch*.25)+"px";mb.style.left="62%";mb.style.right="0";mb.style.top=(top+ch*.25+56)+"px"}else{nm.style.left="50%";nm.style.top=(top+ch+8)+"px";mb.style.left="0";mb.style.right="0";mb.style.top=(top+ch+52)+"px"}mixDraw()}
+function mixDraw(){if(!MX)return;const cv=$("mixCv"),x=cv.getContext("2d");x.clearRect(0,0,cv.width,cv.height);
+ BANDS.forEach(([a,b],i)=>{const src=normCanvas(MX.pool[MX.idx[i]]);x.drawImage(src,0,a*360,300,(b-a)*360,0,a*cv.height,cv.width,(b-a)*cv.height)});
+ x.strokeStyle="rgba(160,120,80,.35)";x.setLineDash([8,8]);x.lineWidth=2;BANDS.slice(1).forEach(([a])=>{x.beginPath();x.moveTo(0,a*cv.height);x.lineTo(cv.width,a*cv.height);x.stroke()});
+ const h=AN[MX.pool[MX.idx[0]]],l=AN[MX.pool[MX.idx[2]]];const same=MX.idx.every(i=>MX.pool[i]===MX.pool[MX.idx[0]]);
+ $("mixName").innerHTML=same?Tb(h.en,h.zh):`${esc(h.pre+l.suf)}!`;
+ const mb=$("mixBtns");mb.innerHTML="";if(MX.mode==="silly"){const b=document.createElement("button");b.className="pbtn big go";b.innerHTML="📸 "+T("Keep it!","存起來！");ZY["存"]="ㄘㄨㄣˊ";ZY["起"]="ㄑㄧˇ";b.onclick=keepMix;mb.appendChild(b)}}
+function mixCheck(){if(MX.mode!=="make")return;const ok=MX.idx.every(i=>MX.pool[i]===MX.target);if(!ok)return;rec({q:"mix "+MX.target,given:MX.target,expected:MX.target,correct:true,tryNo:1,topic:"parts"});
+ sfx.yay();confetti(30);addVisitors(1);toast(T("Perfect match!","配對成功！"),1500);ZY["功"]="ㄍㄨㄥ";say(`That's a ${AN[MX.target].en.toLowerCase()}!`,`是${AN[MX.target].zh}！`);
+ setTimeout(()=>{MX.mode="silly";mixPrompt();mixLayout()},1700)}
+function keepMix(){const name=AN[MX.pool[MX.idx[0]]].pre+AN[MX.pool[MX.idx[2]]].suf;S.mixes.push({parts:MX.idx.map(i=>MX.pool[i]),name});S.album.push({k:"mix",parts:MX.idx.map(i=>MX.pool[i]),name,d:Date.now()});addVisitors(1);save();sfx.cam();flash();say(`Hello, ${name}! It's in your album.`,`${name}放進相簿了！`);ZY["放"]="ㄈㄤˋ";missionsInRow++;
+ setTimeout(()=>{goMap();if(missionsInRow>=3){missionsInRow=0;showBreak()}},1600)}
+
+/* ---------- PHOTO SAFARI ---------- */
+let SF=null;
+function startSafari(){SF={n:0,total:3,qs:[]};show("safari",T("Photo Safari","拍照探險"));ZY["探"]="ㄊㄢˋ";ZY["險"]="ㄒㄧㄢˇ";safLayout();nextSaf()}
+function safLayout(){const L=$("safLayer");L.innerHTML="";const W=L.clientWidth,H=L.clientHeight;const pool=S.rescued;const base=W>H?Math.min(W*.2,H*.28):Math.min(W*.27,H*.2);const xs=shuffle([.12,.36,.6,.84]).slice(0,pool.length);
+ pool.forEach((k,i)=>{const d=document.createElement("button");d.className="ani";d.style.background="none";d.dataset.k=k;const w=base*(k==="giraffe"?.6:k==="penguin"?.7:1);d.style.width=w+"px";d.style.left=(xs[i]*W-w/2)+"px";d.style.top=(H*.78-w*AN[k].h)+"px";d.innerHTML=`<img src="${AN[k].img}" alt="${AN[k].en}">`;d.onclick=()=>snap(k,d);L.appendChild(d)})}
+function safQ(){const pool=S.rescued;const t=pick(S.lang==="zh"?["zy","tall","short","color","name"]:["letter","tall","short","color","name"]);const k=pick(pool);const A=AN[k];
+ if(t==="tall"){const best=pool.slice().sort((a,b)=>AN[b].h-AN[a].h)[0];return {ans:best,en:"Snap the TALLEST animal!",zh:"拍最高的動物！",t}}
+ if(t==="short"){const best=pool.slice().sort((a,b)=>AN[a].h-AN[b].h)[0];return {ans:best,en:"Snap the SHORTEST animal!",zh:"拍最矮的動物！",t}}
+ if(t==="letter")return {ans:k,en:`Snap the animal that starts with ${A.letter}!`,zh:`拍 ${A.letter} 開頭的動物！`,t};
+ if(t==="zy")return {ans:k,en:`Snap the animal whose name starts with ${A.zyFirst}!`,zh:`拍名字第一個聲音是 ${A.zyFirst} 的動物！`,t};
+ if(t==="color")return {ans:k,en:`Snap the ${A.color} animal!`,zh:`拍${A.colorZh}的動物！`,t};
+ return {ans:k,en:`Snap the ${A.en.toLowerCase()}!`,zh:`拍${A.zh}！`,t}}
+ZY["名"]="ㄇㄧㄥˊ";
+function nextSaf(){let q,g=0;do{q=safQ();g++}while(g<12&&SF.qs.some(p=>p.en===q.en));SF.q=q;SF.qs.push(q);SF.tries=0;
+ $("safPrompt").innerHTML=`<button class="spk" onclick="sayAgain()">🔊</button><span>📷 ${T(q.en,q.zh)} <small>(${SF.n+1}/${SF.total})</small></span>`;say(q.en,q.zh)}
+function snap(k,el){if(!SF||SF.busy)return;const q=SF.q;flash();sfx.cam();
+ if(k===q.ans){rec({q:q.en,given:k,expected:q.ans,correct:true,tryNo:SF.tries+1,topic:"safari-"+q.t});S.album.push({k,d:Date.now()});addVisitors(1);save();SF.busy=true;
+  el.querySelector("img").animate([{transform:"scale(1)"},{transform:"scale(1.25)"},{transform:"scale(1)"}],{duration:500});say(pick(["Click! Great photo!","Got it!"]),pick(["喀擦！拍得好棒！","拍到了！"]));ZY["喀"]="ㄎㄚ";ZY["擦"]="ㄘㄚ";
+  setTimeout(()=>{SF.busy=false;SF.n++;if(SF.n>=SF.total){sfx.yay();confetti();toast(T("3 photos! Look in your album 📒","拍了三張！看看相簿📒"),1800);ZY["張"]="ㄓㄤ";missionsInRow++;setTimeout(()=>{goMap();if(missionsInRow>=3){missionsInRow=0;showBreak()}},1900)}else nextSaf()},1200)}
+ else{SF.tries++;rec({q:q.en,given:k,expected:q.ans,correct:false,tryNo:SF.tries,topic:"safari-"+q.t});sfx.no();
+  const right=[...$("safLayer").children].find(d=>d.dataset.k===q.ans);
+  if(SF.tries===1){say("Hmm, not that one. Look again!","不是這隻，再看看！");right.querySelector("img").animate([{transform:"rotate(0)"},{transform:"rotate(-8deg)"},{transform:"rotate(8deg)"},{transform:"rotate(0)"}],{duration:600,iterations:2})}
+  else{say(`It's the ${AN[q.ans].en.toLowerCase()}! Snap it!`,`是${AN[q.ans].zh}！拍它！`);ZY["它"]="ㄊㄚ";right.querySelector("img").animate([{transform:"scale(1)"},{transform:"scale(1.3)"},{transform:"scale(1)"}],{duration:700,iterations:2})}}}
+function flash(){const f=$("flash");f.style.transition="none";f.style.opacity=".9";void f.offsetWidth;f.style.transition="";f.style.opacity="0"}
+
+/* ---------- ALBUM ---------- */
+function showAlbum(){show("album",T("My Album","我的相簿"));const g=$("albumGrid");g.innerHTML="";
+ S.album.slice().reverse().forEach(p=>{const d=document.createElement("div");d.className="photo";d.style.setProperty("--r",(Math.random()*6-3)+"deg");
+  if(p.k==="mix"){const c=document.createElement("canvas");c.width=150;c.height=180;const x=c.getContext("2d");BANDS.forEach(([a,b],i)=>x.drawImage(normCanvas(p.parts[i]),0,a*360,300,(b-a)*360,0,a*180,150,(b-a)*180));d.innerHTML=`<div class="pic"></div><div>${esc(p.name)}</div>`;c.style.maxHeight="90%";d.querySelector(".pic").appendChild(c);d.onclick=()=>say(p.name+"!",p.name)}
+  else{d.innerHTML=`<div class="pic"><img src="${AN[p.k].img}" alt=""></div><div>${Tb(AN[p.k].en,AN[p.k].zh)}</div>`;d.onclick=()=>say(AN[p.k].en,AN[p.k].zh)}
+  g.appendChild(d)});say("Your photo album!","你的相簿！")}
+
+/* ---------- test hook ---------- */
+window.__test={
+ state:()=>({screen:cur,rescued:S.rescued.slice(),visitors:S.visitors,q:!!QA,pz:PZ?{placed:PZ.placed,total:PZ.pieces.length}:null,hab:!!HB,mix:MX?MX.mode:null,saf:SF?SF.n:null}),
+ solve:()=>{if(QA){const b=[...$("qAns").children].find(x=>x.dataset.v===String(QA.q.ans));b.click();return "q"}
+  if(cur==="puzzle"&&PZ){const p=PZ.pieces.find(p=>!p.placed);if(!p)return "done";if(p.locked){openLockQ(p);return "lock"}placePiece(p);return "piece"}
+  if(cur==="habitat"&&HB){HB.slots=[];Object.keys(HB.need).forEach(k=>{for(let i=0;i<HB.need[k];i++)HB.slots.push(k)});habLayout();$("habDone").click();return "hab"}
+  if(cur==="mix"&&MX){if(MX.mode==="make"){MX.idx=MX.idx.map(()=>MX.pool.indexOf(MX.target));mixDraw();mixCheck();return "mix"}keepMix();return "keep"}
+  if(cur==="safari"&&SF){const d=[...$("safLayer").children].find(d=>d.dataset.k===SF.q.ans);snap(SF.q.ans,d);return "snap"}
+  return "none"},
+ wrongQ:()=>{if(!QA)return;const b=[...$("qAns").children].find(x=>x.dataset.v!==String(QA.q.ans));b.click()},
+ go:(w)=>{if(w==="map")goMap();if(w==="rescue")$("rescueBtn").click();if(w==="safari")startSafari();if(w==="mix")startMix();if(w==="album")showAlbum();if(w==="q")askQ(()=>{})},
+ reset:()=>{try{localStorage.removeItem(SKEY)}catch(e){}Object.assign(S,load())}
+};
+relabel();updTop();
+</script>
+<div id="kaVer" data-v="1.0" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.0 · 2026-11-26</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+</body>
+</html>
