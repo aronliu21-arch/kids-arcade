@@ -315,3 +315,17 @@ function stat_(label, value) {
 function section_(t) { return '<div style="font-size:13px;font-weight:600;margin:12px 0 3px">' + t + '</div>'; }
 
 if (typeof module !== "undefined") module.exports = { buildReport: buildReport, renderHtml: renderHtml, CONFIG: CONFIG };
+
+/* Removes rows recorded from games that only appear on the Tester page (parent test play). */
+function removeTesterGames() {
+  var TESTER_ONLY = ["life-skills", "story-maker", "idea-studio", "wand-writing", "cursive-quest", "doodle-studio", "song-blocks", "setup-test"];
+  var ss = sheet_(), report = [];
+  ["Answers", "Time"].forEach(function (name) {
+    var sh = ss.getSheetByName(name), v = sh.getDataRange().getValues(), head = v[0], gi = head.indexOf("game");
+    var keep = [head], removed = 0;
+    for (var i = 1; i < v.length; i++) { if (TESTER_ONLY.indexOf(String(v[i][gi])) >= 0) removed++; else keep.push(v[i]); }
+    if (removed) { sh.clearContents(); var r = sh.getRange(1, 1, keep.length, head.length); r.setNumberFormat("@"); r.setValues(keep.map(function (row) { return row.map(String); })); }
+    report.push(name + ": removed " + removed + ", kept " + (keep.length - 1));
+  });
+  Logger.log(report.join(" | "));
+}
