@@ -9,7 +9,7 @@
 *{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-tap-highlight-color:transparent;overflow:hidden;user-select:none;-webkit-user-select:none}
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-spacing:0}
-.app{height:100%;display:flex;flex-direction:column;padding:8px max(10px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-bottom))}
+.app{height:var(--appH,100%);display:flex;flex-direction:column;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
 .top{display:flex;align-items:center;gap:6px;flex:0 0 auto;margin-bottom:6px}
 .top a,.ico{width:48px;height:48px;border-radius:14px;border:3px solid var(--ink);background:#fff;display:grid;place-items:center;text-decoration:none;color:var(--ink);font-size:1.3rem;flex:0 0 48px;padding:0}
 .ico.txt{width:auto;flex:0 0 auto;padding:0 8px;font-size:.85rem;font-weight:800}
@@ -32,7 +32,7 @@ ruby{ruby-position:over}rt{font-size:.42em;font-weight:700;color:#5b6782;letter-
 .modal h2{margin:4px 0 10px}
 .rot{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:max(8px,env(safe-area-inset-bottom));pointer-events:none;background:var(--gold);border:3px solid var(--ink);border-radius:999px;padding:4px 14px;font-weight:800;font-size:.85rem;z-index:45;white-space:nowrap}
 @media (orientation:landscape) and (max-height:450px){body[data-pref="port"] .rot.p{display:block}}
-@media (max-width:600px),(max-height:450px){.main{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}.tag{display:none}.ttl{font-size:1rem}.top a,.ico{width:44px;height:44px;flex-basis:44px}.pill{padding:2px 7px;font-size:.92rem}.app{padding-top:4px}
+@media (max-width:600px),(max-height:450px){.main{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}.tag{display:none}.ttl{font-size:1rem}.top a,.ico{width:44px;height:44px;flex-basis:44px}.pill{padding:2px 7px;font-size:.92rem}.app{padding-top:max(4px,env(safe-area-inset-top))}
  .scr{min-height:100%;bottom:auto}}
 @media (max-width:430px){.ttl .en{display:none}}
 .drag{touch-action:none;cursor:grab}
@@ -1366,7 +1366,13 @@ function zooTick(t){const dt=Math.min(.05,(t-Z.last)/1000);Z.last=t;const W=Z.W;
   const b=o.pause<=0?Math.sin(o.ph)*2.2:0;o.legs.forEach(l=>l.setAttribute('transform',`translate(0,${(l.dataset.leg==='0'?b:-b).toFixed(2)})`));
   o.wings.forEach(l=>l.setAttribute('transform',`translate(50,40) scale(1,${(1-Math.abs(Math.sin(t/180))*.5).toFixed(2)}) translate(-50,-40)`));}
  Z.raf=requestAnimationFrame(zooTick);}
-let rzT;addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(SCREEN==='zoo')zooStart();else if(SCREEN==='map')mapDraw();else if(SCREEN==='station'&&CUR!==null)openStation(CUR);},250);});
+let rzT;// phone rotation: iPhone Safari can leave the page scrolled and the old height after turning back to upright,
+// which pushes the top buttons off screen. Re-measure the real screen height and snap back to the top.
+function fixViewport(){try{document.documentElement.style.setProperty('--appH',window.innerHeight+'px');window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;}catch(e){}}
+fixViewport();['orientationchange','resize','pageshow'].forEach(ev=>addEventListener(ev,()=>{fixViewport();setTimeout(fixViewport,150);setTimeout(fixViewport,500);setTimeout(fixViewport,1000);}));
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>setTimeout(fixViewport,60));
+addEventListener('scroll',()=>{if(window.scrollY||window.scrollX)window.scrollTo(0,0);},{passive:true});
+addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(SCREEN==='zoo')zooStart();else if(SCREEN==='map')mapDraw();else if(SCREEN==='station'&&CUR!==null)openStation(CUR);},250);});
 $('mapZoo').onclick=()=>{ac();goZoo();};
 
 /* ---------- skill levels: 4 right first try in a row → level up (once per puzzle); 2 misses in a row → level down ---------- */
@@ -1713,6 +1719,6 @@ window.__test={state:()=>({step:S.step,screen:SCREEN,scene:!!document.querySelec
 </script>
 <script src="../../../tracker.js" data-game="dino-world"></script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="2.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.2 · 2026-11-25</div>
+<div id="kaVer" data-v="2.3" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.3 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>
