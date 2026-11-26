@@ -54,7 +54,9 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 .group{display:flex;flex-direction:column;gap:7px;overflow:auto;padding:3px}
 .sw{width:48px;height:48px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px #ccc;flex:none}
 .sw.sel{box-shadow:0 0 0 4px #2b2118}
-.stage{flex:1;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;padding:8px}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;min-height:0;padding:8px}
+#paper{position:relative;flex:none}
+#guide{position:absolute;left:0;top:0;pointer-events:none;border-radius:16px}
 #cv{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.14);touch-action:none;display:block}
 #stamps{display:none;position:fixed;z-index:6;background:#fff;border-radius:18px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.25);flex-wrap:wrap;gap:6px;max-width:300px}
 #stamps button{font-size:30px;background:#f8f9fa}
@@ -63,6 +65,16 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:8;padding:12px}
 .modal>div{background:#fff;border-radius:20px;padding:18px;max-width:440px;width:100%;text-align:center;max-height:100%;overflow:auto}
 #nameIn{display:block;margin:12px auto;font-size:20px;width:100%;padding:10px;border-radius:12px;border:2px solid #ccc}
+#trBox>div{max-width:760px;height:min(92vh,760px);display:flex;flex-direction:column}
+#trCats{display:flex;gap:6px;overflow-x:auto;padding:8px 0;flex:none}#trCats button{background:#f1f3f5;font-size:15px;padding:0 12px;white-space:nowrap;flex:none}#trCats button.sel{background:#ffd43b}
+#trGrid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;padding:4px;align-content:start}
+#trGrid button{background:#fff;border:2px solid #f1d9a8;border-radius:14px;padding:4px;display:flex;flex-direction:column;align-items:center;font-size:13px;font-weight:700;min-height:110px}
+#trGrid svg{width:72px;height:72px}
+#stepBar{display:none;align-items:center;gap:6px;justify-content:center;padding:6px 0 0;flex:none}
+#stepBar .lbl{font-weight:800;font-size:17px;min-width:150px;text-align:center}
+#stepBar button{background:#fff;font-size:20px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+#trIn{flex:1;min-width:0;font-size:20px;padding:10px;border-radius:12px;border:2px solid #ccc}
+.seg button{background:#f1f3f5;font-size:16px;padding:0 14px}.seg button.sel{background:#ffd43b}
 #chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 #chips button{font-size:16px;background:#f1f3f5;padding:0 12px}
 #hint{display:none;position:fixed;left:50%;bottom:8px;transform:translateX(-50%);background:#2b2118;color:#fff;padding:6px 14px;border-radius:999px;font-size:13px;z-index:7;pointer-events:none}
@@ -90,7 +102,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   </div>
   <div class="row"><button class="btn" id="voiceBtn">🗣 聲音 Voice</button></div>
   <p class="small">Saved pictures go to the Photos app 畫好的畫存在「照片」裡</p>
-  <p class="small">Test sample · 測試版 · v1.2</p>
+  <p class="small">Test sample · 測試版 · v1.3</p>
 </section>
 
 <!-- choose -->
@@ -118,6 +130,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
     <button class="btn" id="hear" style="font-size:22px">🔊</button>
     <button class="btn" id="reroll" style="font-size:20px">🎲 New idea 換一個</button>
     <button class="btn go" id="drawIt" style="font-size:22px;min-height:60px">✏️ Draw it! 開始畫</button>
+    <button class="btn blue" id="traceIt" style="font-size:20px;min-height:60px">🖍️ Trace it 描描看</button>
   </div>
   <p class="small" id="partHint">Tap a 🎲 part to change just that part 點一個部分只換那一個</p>
 </section>
@@ -141,11 +154,14 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
         <button class="tool" data-tool="fill" title="Fill">🪣</button>
         <button class="tool" data-tool="stamp" id="stampBtn" title="Stickers">⭐</button>
         <button class="tool" data-tool="eraser" title="Eraser">🧽</button>
+        <button class="tool" id="traceBtn" title="Trace">🖍️</button>
+        <button class="tool" id="guideBtn" title="Show or hide the tracing picture" style="display:none">👁️</button>
         <button class="tool" id="sizeBtn" title="Size">●</button>
       </div>
       <div class="group" id="colors"></div>
     </div>
-    <div class="stage" id="stage"><canvas id="cv" width="1000" height="750"></canvas></div>
+    <div class="stage" id="stage"><div id="paper"><canvas id="cv" width="1000" height="750"></canvas><canvas id="guide" width="1000" height="750"></canvas></div>
+      <div id="stepBar"><button id="stPrev" aria-label="Previous step">◀</button><div class="lbl" id="stLbl"></div><button id="stNext" aria-label="Next step">▶</button><button id="stSay" aria-label="Read step">🔊</button><button id="stMode" style="font-size:15px;padding:0 10px"></button></div></div>
   </div>
 </section>
 
@@ -159,6 +175,13 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   <p class="small" style="margin-top:10px">Then tap <b>Save Image 儲存影像</b> 然後點「儲存影像」</p>
   <div class="row" style="margin-top:8px"><button class="btn blue" id="nameOk">📲 Save 存起來</button><button class="btn" id="nameNo">Back 返回</button></div>
 </div></div>
+<div class="modal" id="trBox"><div>
+  <div style="display:flex;align-items:center;gap:8px;flex:none"><b style="font-size:20px;flex:1;text-align:left">🖍️ Pick something to trace 選一個來描</b><button class="btn" id="trClose">✖</button></div>
+  <div style="display:flex;gap:8px;margin-top:8px;flex:none"><input id="trIn" maxlength="30" placeholder="🔍 Search: cat, 恐龍, rocket…" autocomplete="off" autocorrect="off" spellcheck="false" name="trace-search"><button class="btn" id="trNone">🚫 No guide 不描</button></div>
+  <div id="trCats"></div>
+  <p id="trMsg" class="small" style="min-height:0;margin:0"></p>
+  <div id="trGrid"></div>
+</div></div>
 <div class="modal" id="leaveBox"><div>
   <div style="font-size:48px">🖼️</div><b style="font-size:21px">Save your picture first? 要先把畫存起來嗎?</b>
   <div class="row" style="margin-top:14px"><button class="btn blue" id="lvSave">📲 Save 存起來</button><button class="btn" id="lvLater">Not now 先不要</button><button class="btn go" id="lvStay">✏️ Keep drawing 繼續畫</button></div>
@@ -167,8 +190,9 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 
 <script src="../../../voice.js"></script>
 <script src="../../../savepic.js"></script>
+<script src="trace-art.js"></script>
 <script>
-const VERSION='v1.2';
+const VERSION='v1.3';
 const $=id=>document.getElementById(id);
 const KIDS={nora:{name:'Nora',color:'#7048e8',size:1,stamps:['⭐','💜','🌸','⚽','🦄','🌈','🎀','🦋']},
             lucas:{name:'Lucas',color:'#f76707',size:1,stamps:['⚡','🔥','⚽','🐉','⭐','🚀','🃏','🤖']},
@@ -221,13 +245,13 @@ function renderIdea(read){$('ideaEmo').textContent=[idea.who,idea.where,idea.do,
   $('ideaZh').innerHTML=ideaParts().map(p=>p.zh===','?',':ruby(p)).join('')+'!';$('ideaEn').textContent=ideaEn();
   $('parts').innerHTML=Object.keys(idea).map(k=>`<button class="part" data-part="${k}">🎲 ${LABEL[k][0]} ${LABEL[k][1]} <b>${idea[k].e}</b></button>`).join('');
   $('parts').querySelectorAll('[data-part]').forEach(b=>b.onclick=()=>{const k=b.dataset.part;const s=slotsFor(kid);idea[k]=pickOne(s[k]||TWIST,idea[k]);pop();renderIdea(true)});
-  $('partHint').style.display=kid==='milo'?'none':'';if(read)sayBoth(ideaZh(),ideaEn())}
+  $('partHint').style.display=kid==='milo'?'none':'';$('traceIt').style.display=WHO_TRACE[idea.who.en]?'':'none';if(read)sayBoth(ideaZh(),ideaEn())}
 
 /* ================= drawing ================= */
 const cv=$('cv'),g=cv.getContext('2d',{willReadFrequently:true}),CW=1000,CH=750;
 let kid=null,tool='pen',color=COLORS[0],sizeI=1,stamp='⭐',hue=0,dirty=false,undoSt=[],drawingIdea=null,stashKey=null,lastAuto=0;
 function blank(){g.fillStyle='#fff';g.fillRect(0,0,CW,CH)}
-function fit(){const st=$('stage').getBoundingClientRect();const w=Math.max(100,st.width-16),h=Math.max(80,st.height-16);const s=Math.min(w/CW,h/CH);cv.style.width=Math.floor(CW*s)+'px';cv.style.height=Math.floor(CH*s)+'px'}
+function fit(){const st=$('stage').getBoundingClientRect();const sb=$('stepBar').style.display==='flex'?$('stepBar').offsetHeight||58:0;const w=Math.max(100,st.width-16),h=Math.max(80,st.height-16-sb);const s=Math.min(w/CW,h/CH);cv.style.width=gcv.style.width=Math.floor(CW*s)+'px';cv.style.height=gcv.style.height=Math.floor(CH*s)+'px'}
 addEventListener('resize',()=>{if($('studio').classList.contains('on'))fit();hint()});
 function pt(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*CW/r.width,y:(e.clientY-r.top)*CH/r.height}}
 function pushUndo(){undoSt.push(g.getImageData(0,0,CW,CH));if(undoSt.length>10)undoSt.shift()}
@@ -267,6 +291,49 @@ $('undo').onclick=()=>{const im=undoSt.pop();if(!im){toast('Nothing to undo 沒�
 $('clear').onclick=()=>{if(!confirm('Clear the whole picture? 全部擦掉?'))return;pushUndo();blank();changed()};
 $('bannerHear').onclick=()=>{if(drawingIdea){const k=idea;idea=drawingIdea;sayBoth(ideaZh(),ideaEn());idea=k}};
 
+/* ================= tracing: 100 hand-drawn pictures (trace-art.js), step by step, on a layer above the paper (never saved) ================= */
+const SVGSTYLE='fill:none;stroke-linecap:round;stroke-linejoin:round';
+function artSVG(key,upto,mode,px){const a=ART[key],n=a.steps.length;let g='';
+  if(mode==='all')g=`<g style="${SVGSTYLE};stroke:#868e96;stroke-width:4.5;stroke-dasharray:1 8;color:#868e96">${a.steps.map(x=>x[2]).join('')}</g>`;
+  else if(mode==='thumb')g=`<g style="${SVGSTYLE};stroke:#2b2118;stroke-width:5;color:#2b2118">${a.steps.map(x=>x[2]).join('')}</g>`;
+  else g=`<g style="${SVGSTYLE};stroke:#adb5bd;stroke-width:4;color:#adb5bd">${a.steps.slice(0,upto).map(x=>x[2]).join('')}</g><g style="${SVGSTYLE};stroke:#1c7ed6;stroke-width:5.5;stroke-dasharray:1 9;color:#1c7ed6">${a.steps[upto][2]}</g>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="${px||200}" height="${px||200}"><style>.f{fill:currentColor}</style>${g}</svg>`}
+const gcv=$('guide'),gg=gcv.getContext('2d');let guide=null,guideOn=true,guideTok=0;
+function drawGuide(){const tok=++guideTok;gg.clearRect(0,0,CW,CH);$('guideBtn').style.display=guide?'':'none';
+  $('stepBar').style.display=guide?'flex':'none';if(guide)stepUI();if(!guide||!guideOn)return;
+  const S=Math.round(CH*.9),img=new Image();img.onload=()=>{if(tok!==guideTok)return;gg.clearRect(0,0,CW,CH);gg.drawImage(img,(CW-S)/2,(CH-S)/2,S,S)};
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(artSVG(guide.key,guide.step,guide.mode,S))}
+function stepUI(){const a=ART[guide.key],n=a.steps.length,st=a.steps[guide.step];
+  $('stLbl').textContent=guide.mode==='all'?`${a.zh} ${a.en}`:`${guide.step+1}/${n} ${st[0]} ${st[1]}`;
+  $('stPrev').style.visibility=$('stNext').style.visibility=guide.mode==='all'?'hidden':'visible';
+  $('stPrev').disabled=guide.step===0;$('stNext').textContent=guide.step===n-1?'🎉':'▶';
+  $('stMode').textContent=guide.mode==='all'?'👣 Steps 一步步':'🖼️ Whole 整張'}
+function sayStep(){if(!guide)return;const a=ART[guide.key],st=a.steps[guide.step];
+  if(guide.mode==='all')sayBoth(`描描看,${a.zh}`,`Trace the ${a.en.toLowerCase()}`);else sayBoth(`第${guide.step+1}步,畫${st[0]}`,`Step ${guide.step+1}: the ${st[1].toLowerCase()}`)}
+function setGuide(key,mode,step){guide=key&&ART[key]?{key,mode:mode||'steps',step:step||0}:null;guideOn=true;$('guideBtn').textContent='👁️';drawGuide();fit()}
+$('guideBtn').onclick=()=>{guideOn=!guideOn;$('guideBtn').textContent=guideOn?'👁️':'🙈';drawGuide()};
+$('stPrev').onclick=()=>{if(guide.step>0){guide.step--;drawGuide();sayStep()}};
+$('stNext').onclick=()=>{const n=ART[guide.key].steps.length;if(guide.step<n-1){guide.step++;pop();drawGuide();sayStep()}
+  else{toast('🎉 You drew it! Now add colors 畫好了!來塗顏色吧');sayBoth('畫好了!來塗顏色吧','You drew it! Now add colors!');guide.mode='all';drawGuide()}};
+$('stSay').onclick=sayStep;
+$('stMode').onclick=()=>{guide.mode=guide.mode==='all'?'steps':'all';if(guide.mode==='steps')guide.step=0;drawGuide();sayStep()};
+let trCat='all';
+const FAV={nora:['unicorn','cat','butterfly','flower','soccer','bunny','castle','cupcake'],lucas:['dragon','trex','robot','soccer','rocket','shark','car','lion'],milo:['trex','dinosaur','car','dog','firetruck','apple','cat','train']};
+function trList(){const q=$('trIn').value.trim().toLowerCase();let keys=Object.keys(ART);
+  if(q){keys=keys.filter(k=>{const a=ART[k];return (a.words+','+a.zh+','+a.en).toLowerCase().split(',').some(w=>w&&(w.includes(q)||q.includes(w)&&w.length>1))});
+    $('trMsg').textContent=keys.length?'':`🤔 “${q}” isn't in the library yet — pick one below 還沒有這個,選下面的吧`;if(!keys.length)keys=Object.keys(ART)}
+  else{$('trMsg').textContent='';if(trCat==='fav')keys=FAV[kid];else if(trCat!=='all')keys=keys.filter(k=>ART[k].cat===trCat)}
+  $('trGrid').innerHTML=keys.map(k=>`<button data-k="${k}">${artSVG(k,0,'thumb',72)}<span>${ART[k].zh}</span><span style="font-weight:600;color:#7a6a58">${ART[k].en}</span></button>`).join('');
+  $('trGrid').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{$('trBox').style.display='none';setGuide(b.dataset.k,'steps',0);pop();sayStep()})}
+function trCatsUI(){const cats=[['fav','⭐ 推薦','For you']].concat(ART_CATS);
+  $('trCats').innerHTML=cats.map(c=>`<button data-c="${c[0]}" class="${c[0]===trCat?'sel':''}">${c[1]} ${c[2]}</button>`).join('');
+  $('trCats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{trCat=b.dataset.c;$('trIn').value='';trCatsUI();trList()})}
+function openTrace(){closeStamps();trCat='fav';$('trIn').value='';trCatsUI();trList();$('trBox').style.display='flex';if(kid==='milo')say('你想描什麼?點一個')}
+$('trIn').addEventListener('input',trList);
+$('trNone').onclick=()=>{setGuide(null);$('trBox').style.display='none'};$('trClose').onclick=()=>$('trBox').style.display='none';
+$('traceBtn').onclick=openTrace;
+const WHO_TRACE={'a dinosaur':'dinosaur','a T-Rex':'trex','a cat':'cat','a robot':'robot','a dragon':'dragon','a unicorn':'unicorn','a puppy':'dog','an alien':'alien','an octopus':'octopus','a penguin':'penguin','a bunny':'bunny','a shark':'shark','a giraffe':'giraffe','an owl':'owl','a triceratops':'triceratops'};
+
 /* ================= drafts (IndexedDB, one slot per kid, overwritten) ================= */
 let dbp=null;
 function db(){return dbp=dbp||new Promise((res,rej)=>{const r=indexedDB.open('idea-studio',1);r.onupgradeneeded=()=>r.result.createObjectStore('drafts');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
@@ -274,7 +341,7 @@ async function putDraft(k,v){try{const d=await db();await new Promise(res=>{cons
 async function getDraft(k){try{const d=await db();return await new Promise(res=>{const r=d.transaction('drafts').objectStore('drafts').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)})}catch(e){return null}}
 function setStatus(m){$('status').textContent=m}
 async function autosave(){if(!kid||!$('studio').classList.contains('on'))return;
-  await putDraft(kid,{png:cv.toDataURL('image/png'),idea:drawingIdea,time:Date.now(),unsaved:dirty});lastAuto=Date.now();
+  await putDraft(kid,{png:cv.toDataURL('image/png'),idea:drawingIdea,guide,time:Date.now(),unsaved:dirty});lastAuto=Date.now();
   if(dirty)setStatus('Auto-saved 已自動存 '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}))}
 setInterval(()=>{if(dirty)autosave()},30000);
 
@@ -313,14 +380,14 @@ async function openChoose(){whoTag($('chWho'));resetResume();const d=await getDr
   $('resume').style.display=pending?'block':'none';$('choiceBox').style.display=pending?'none':'flex';
   if(pending){$('resumeImg').src=pending.png;$('resumeMsg').textContent=pending.unsaved?'Your last picture isn’t saved yet! 上次的畫還沒存喔':'Your last picture 上次的畫 (saved ✓ 已存好)'}
   if(kid==='milo')say('你想怎麼畫?')}
-$('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved);
+$('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved,pending.guide);
 $('fresh').onclick=()=>{const d=pending;const go=()=>{pending=null;$('resume').style.display='none';$('choiceBox').style.display='flex'};
   if(d&&d.unsaved){$('resumeMsg').textContent='Save it first? 要先存起來嗎?';$('keep').textContent='📲 Save 存起來';$('fresh').textContent='Skip 不用';
     $('keep').onclick=()=>{const t=d.idea?(idea=d.idea,ideaTitle()):'我的畫';KASave.share([{dataURL:d.png,name:`${KIDS[kid].name} - ${t} - ${today()}.png`}],t).then(r=>{if(r!=='cancelled'&&r!=='failed'){putDraft(kid,{...d,unsaved:false});toast('🖼️ Saved! 存好了!')}resetResume();go()})};
     $('fresh').onclick=()=>{putDraft(kid,{...d,unsaved:false});resetResume();go()};return}
   go()};
 function resetResume(){$('keep').textContent='✏️ Keep drawing 繼續畫';$('fresh').textContent='✨ New 新的';
-  $('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved);$('fresh').onclick=freshClick}
+  $('keep').onclick=()=>startStudio(pending.idea,pending.png,pending.unsaved,pending.guide);$('fresh').onclick=freshClick}
 const freshClick=$('fresh').onclick;
 $('chHome').onclick=()=>show('home');
 $('free').onclick=()=>startStudio(null);
@@ -328,8 +395,9 @@ $('idea').onclick=()=>{newIdea();whoTag($('idWho'));show('ideaScr');renderIdea(t
 $('reroll').onclick=()=>{newIdea();pop();renderIdea(true)};
 $('hear').onclick=()=>sayBoth(ideaZh(),ideaEn());
 $('idBack').onclick=()=>{try{KAVoice.stop()}catch(e){}show('choose')};
+$('traceIt').onclick=()=>{try{KAVoice.stop()}catch(e){}const d=JSON.parse(JSON.stringify(idea)),key=WHO_TRACE[d.who.en];startStudio(d,null,false,key?{key,mode:'steps',step:0}:null);if(key)setTimeout(sayStep,300)};
 $('drawIt').onclick=()=>{try{KAVoice.stop()}catch(e){}startStudio(JSON.parse(JSON.stringify(idea)))};
-function startStudio(theIdea,png,wasDirty){drawingIdea=theIdea||null;undoSt=[];blank();dirty=!!wasDirty;setStatus('');whoTag($('who'));setTool('pen');stamp=KIDS[kid].stamps[0];$('stampBtn').textContent=stamp;
+function startStudio(theIdea,png,wasDirty,theGuide){setGuide(theGuide&&theGuide.key,theGuide&&theGuide.mode,theGuide&&theGuide.step);drawingIdea=theIdea||null;undoSt=[];blank();dirty=!!wasDirty;setStatus('');whoTag($('who'));setTool('pen');stamp=KIDS[kid].stamps[0];$('stampBtn').textContent=stamp;
   if(drawingIdea){idea=drawingIdea;$('bannerTxt').textContent='💡 '+ideaZh()+'  '+ideaEn();$('banner').style.visibility='visible'}else{$('bannerTxt').textContent='';$('banner').style.visibility='hidden'}
   if(png){const im=new Image();im.onload=()=>g.drawImage(im,0,0,CW,CH);im.src=png}
   show('studio');if(!png)autosave()}
@@ -341,7 +409,7 @@ window.__test={state:()=>({screen:[...document.querySelectorAll('.screen.on')].m
 </script>
 <script src="../../../tracker.js" data-game="idea-studio"></script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
+<div id="kaVer" data-v="1.3" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.3 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
