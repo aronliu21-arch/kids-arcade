@@ -828,7 +828,18 @@ const DEFS=`<defs>
 <filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 <radialGradient id="warm"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".9"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient>
 </defs>`;
+const FRIEND_ART={mei:[105,190,300],iris:[113,190,300],sunny:[148,191,300],juni:[113,189,300],lola:[133,193,305],wren:[121,192,305],bree:[108,242,360],gran:[109,225,345],prof:[144,247,370]};
 function girl(who,x,y,s,o={}){
+ if(FRIEND_ART[who]&&window.NORA_ART!==false){ const [iw,ih,h]=FRIEND_ART[who], w=h*iw/ih;
+  const glow=o.glow?`<ellipse cx="0" cy="120" rx="110" ry="170" fill="url(#warm)" opacity=".8"/>`:'';
+  return `<g transform="translate(${x},${y}) scale(${o.flip?-s:s},${s})">${glow}<ellipse cx="0" cy="252" rx="${w*.34}" ry="9" fill="#000" opacity=".16"/><image href="art/f-${who}.webp" x="${-w/2}" y="${252-h}" width="${w}" height="${h}"/></g>`; }
+ if(who==='nora'&&window.NORA_ART!==false){ const ex=o.expr||'happy', arm=o.arm||'none';
+  const pose=ex==='wow'?'wow':arm==='wand'?(o.glow?'happy':'cast'):(ex==='sad'||ex==='smirk')?'brave':'happy';
+  const R={happy:[315,495],wow:[189,500],brave:[267,501],cast:[320,491]}[pose]; const h=340,w=h*R[0]/R[1];
+  const glow=o.glow?`<ellipse cx="0" cy="120" rx="120" ry="180" fill="url(#warm)" opacity=".8"/>`:'';
+  const badge=o.badge!==false?`<g transform="translate(-42,262)"><rect width="84" height="28" rx="14" fill="#7048e8"/><text x="42" y="20" font-family="Poppins,system-ui" font-weight="700" font-size="16" fill="#fff" text-anchor="middle">Nora</text></g>`:'';
+  const sc=s*1.12;
+  return `<g transform="translate(${x},${y}) scale(${o.flip?-sc:sc},${sc})">${glow}<ellipse cx="0" cy="262" rx="${w*.32}" ry="10" fill="#000" opacity=".18"/><image href="art/nora-${pose}.webp" x="${-w/2}" y="${262-h}" width="${w}" height="${h}"/>${badge}</g>`; }
  const hair=HAIR[who],robe=ROBE[who],trim=TRIM[who],skin=(who==='gran'||who==='prof')?'#f3d3bd':who==='lola'?'#eef6ff':'#f9dcc6';const g=[];
  const glow=o.glow?`<ellipse cx="0" cy="120" rx="110" ry="170" fill="url(#warm)" opacity=".8"/>`:'';
  g.push(glow);
@@ -876,7 +887,9 @@ const BGS={
  stairs:()=>`<rect width="1024" height="640" fill="#e7f5ff"/><g filter="url(#wash)" opacity=".85"><rect x="-30" y="-30" width="1100" height="700" fill="#a5d8ff"/>${[0,1,2,3,4,5].map(i=>`<rect x="${80+i*150}" y="${460-i*60}" width="190" height="40" fill="#d0ebff"/>`).join('')}<path d="M0 0L60 80L120 0L180 90L240 0L300 70L360 0" fill="#e7f5ff"/></g>`,
  tower:()=>`<rect width="1024" height="640" fill="#ced4da"/><g filter="url(#wash)" opacity=".9"><rect x="-30" y="-30" width="1100" height="700" fill="#495057"/><path d="M380 640V160l132-120 132 120V640Z" fill="#343a40"/><rect x="470" y="220" width="84" height="120" fill="#5f3dc4"/><path d="M-30 500C200 470 600 520 1060 490V680H-30Z" fill="#2b3a33"/></g><path d="M150 40l-30 80 40 0-40 90" stroke="#ffe066" stroke-width="6" fill="none" opacity=".7"/>`,
 };
-function sceneSVG(bg,chars,extra=''){ return svg(BGS[bg]()+chars.map(c=>girl(...c)).join('')+extra); }
+const ART_BG={room:1,gate:1,library:1,hall:1,courtyard:1,stairs:1,tower:1};
+function BG(k){ return BGS[k]()+(ART_BG[k]?`<image href="art/bg-${k}.webp" x="-24" y="-16" width="1072" height="670" preserveAspectRatio="xMidYMid slice"/>`:''); }
+function sceneSVG(bg,chars,extra=''){ return svg(BG(bg)+chars.map(c=>girl(...c)).join('')+extra); }
 
 // ============ dragons (original designs) ============
 const DRAGONS={ember:{c:'#ffa94d',belly:'#fff3bf',wing:'#ffd8a8',horn:'#e8590c'},thistle:{c:'#e599f7',belly:'#fff0f6',wing:'#f3d9fa',horn:'#9c36b5'},dawn:{c:'#ffd43b',belly:'#fff9db',wing:'#ffec99',horn:'#f08c00'}};
@@ -1137,7 +1150,7 @@ let hintShown=false; function updateHint(){ const port=innerHeight>innerWidth&&i
 addEventListener('resize',()=>{ updateHint(); if(current==='map') drawMap(); if(current==='mini') miniResize(); });
 function refreshStars(){ ['#stStars','#mapStars','#playStars'].forEach(s=>$(s).textContent=S.stars); const n=Math.min(S.ch,CHAPTERS.length), d=mainOf(n).filter(m=>isDone(n,m.id)).length; $('#stCh').textContent=d+'/'+mainOf(n).length; $('#stChL').textContent=S.allDone?'All chapters ✓':'Chapter '+n; }
 
-$('#titleArt').innerHTML=svg(BGS.gate()+girl('nora',512,260,1.05,{arm:'wand',glow:true})+`<text x="660" y="180" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="74" fill="#e9a91c" filter="url(#glow)">magic</text>`);
+$('#titleArt').innerHTML=svg(BG('gate')+girl('nora',512,260,1.05,{arm:'wand',glow:true})+`<text x="660" y="180" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="74" fill="#e9a91c" filter="url(#glow)">magic</text>`);
 $('#startBtn').onclick=()=>{ FX.burst(...FX.center($('#startBtn')),{n:60,speed:9}); Snd.init(); try{Snd.ctx.resume();}catch(e){} Snd.sfx('chime'); if(!S.introSeen){ playStory(INTRO(),()=>{ S.introSeen=true; save(); startTrial(); },{skippable:true}); } else if(!S.trial) startTrial(); else { S.view=Math.min(S.ch,CHAPTERS.length); goMap(); } };
 $('#voiceBtn').onclick=()=>{ try{KAVoice.picker();}catch(e){} };
 $('#friendsBtn').onclick=()=>{ Snd.init(); openFriends(()=>{ show('title'); refreshStars(); }); };
@@ -1219,7 +1232,7 @@ function loadItem(){ const t=M.items[M.i]; M.tries=0; pad.pen=false; pad.set(t);
  const isWord=t.length>1, cap=t.length===1&&t===t.toUpperCase();
  $('#playPrompt').textContent=t.includes(' ')?'Write the courage words':isWord?'Trace the joined word':'Trace the rune';
  $('#playTarget').textContent=t;
- $('#playArt').innerHTML=svg(BGS.hall()+girl('nora',480,300,1.3,{arm:'wand'}),'232 100 520 520');
+ $('#playArt').innerHTML=svg(BG('hall')+girl('nora',480,300,1.3,{arm:'wand'}),'232 100 520 520');
  $('#penBadge').textContent='✏️ Use the Pencil for a bonus star!';
  $('#playDots').innerHTML=M.items.map((_,k)=>`<i class="${k<M.i?'ok':k===M.i?'cur':''}"></i>`).join('');
  setTimeout(()=>Voice.say(isWord?`Write ${t}, all joined together.`:`Trace ${cap?'capital':'lowercase'} ${t}.`),M.i===0?2600:200);
@@ -1253,7 +1266,7 @@ function finishMission(){ const m=M.m,n=M.n,pts=M.pts; const st=Math.max(1,Math.
 }
 function resultScreen(big,stars,txt,tip,n=S.view){
  show('result'); $('#resBig').textContent=big; $('#resStars').innerHTML=[...stars].map((ch,i)=>`<span style="animation-delay:${.3+i*.25}s">${ch}</span>`).join(''); FX.confetti(); Snd.sfx('fanfare'); setTimeout(()=>{ const c=FX.center($('#resStars')); FX.burst(c[0],c[1],{n:70,speed:10,size:7}); },500); $('#resTxt').textContent=txt; $('#resTip').textContent=tip?'💡 '+tip:''; $('#resTip').style.display=tip?'':'none';
- $('#resArt').innerHTML=`<div style="width:min(320px,60vw)">${svg(BGS.hall()+girl('nora',512,280,1.2,{arm:'wand',glow:true}),'0 0 1024 640')}</div>`;
+ $('#resArt').innerHTML=`<div style="width:min(320px,60vw)">${svg(BG('hall')+girl('nora',512,280,1.2,{arm:'wand',glow:true}),'0 0 1024 640')}</div>`;
  Voice.say(big);
  const nm=nextMain(n), nb=$('#resNext');
  if(nm){ nb.textContent=`Next: ${nm.name} ▶`; nb.onclick=()=>{ Snd.sfx('tap'); startMission(nm,n); }; }
@@ -1273,7 +1286,7 @@ function foeBody(f,state,x,y,k){ const hurt=state==='hurt'; const eyes=(ex,ey,r)
  if(f.kind==='golem') b=`<ellipse cx="0" cy="40" rx="220" ry="190" fill="#868e96" opacity=".35" filter="url(#wash)"/><rect x="-130" y="-90" width="260" height="230" rx="30" fill="${f.body}"/><rect x="-90" y="-180" width="180" height="110" rx="24" fill="${f.body}"/><rect x="-210" y="-60" width="70" height="170" rx="26" fill="${f.body}"/><rect x="140" y="-60" width="70" height="170" rx="26" fill="${f.body}"/><path d="M-40 -60L-10 0L-40 40L0 100M60 -20L30 30L60 70" stroke="${f.eye}" stroke-width="6" fill="none" filter="url(#glow)"/>${eyes(36,-130,14)}`;
  if(f.kind==='girl'){ const aura=f.who==='wren'?`<ellipse cx="0" cy="40" rx="230" ry="260" fill="#2b2540" opacity=".55" filter="url(#wash)"/>`:''; b=`${aura}<g transform="translate(0,-110)">${girl(f.who,0,0,1.25,{arm:'wand',expr:hurt?'sad':(f.who==='wren'?'sad':'smirk'),flip:true})}</g><ellipse cx="0" cy="10" rx="215" ry="250" fill="${f.shield}" opacity="${hurt?.45:.22}" stroke="${f.shield}" stroke-width="6"/>`; }
  return `<g transform="translate(${x},${y}) scale(${k})" filter="url(#soft)">${b}</g>`; }
-function foeSVG(f,state=''){ return svg(BGS[f.bg]()+foeBody(f,state,512,330,1),'272 130 480 400'); }
+function foeSVG(f,state=''){ return svg(BG(f.bg)+foeBody(f,state,512,330,1),'272 130 480 400'); }
 function drawHP(){ const f=M.mon, a=f.kind==='girl'?'🛡️':'🖤'; $('#hp').textContent=a.repeat(f.hp)+'▫️'.repeat(f.max-f.hp); }
 function sideMode(battle){ $('#hp').style.display=battle?'block':'none'; $('#cards').style.display=battle?'flex':'none'; $('#playTarget').style.display=battle?'none':''; }
 function startBattle(m,n){ const f=Object.assign({},FOES[m.foe]); f.max=f.hp;
@@ -1337,7 +1350,7 @@ const TRIAL=[{t:'a',lv:1},{t:'B',lv:2},{t:'me',lv:3}];
 let T=null;
 function startTrial(){ T={i:0,sc:[]}; M=null; show('play'); $('#playTtl').textContent='🪄 The Wand Trial'; runTrial(); }
 function runTrial(){ sideMode(false); const it=TRIAL[T.i]; pad.pen=false; pad.set(it.t); $('#playTarget').textContent=it.t; $('#playPrompt').textContent=['Lowercase rune','Capital rune','Joined word'][T.i]; $('#penBadge').textContent='Do your best — there is no wrong answer!';
- $('#playArt').innerHTML=svg(BGS.gate()+girl('prof',512,330,1.2,{arm:'wave'}),'252 80 520 520');
+ $('#playArt').innerHTML=svg(BG('gate')+girl('prof',512,330,1.2,{arm:'wave'}),'252 80 520 520');
  $('#playDots').innerHTML=TRIAL.map((_,k)=>`<i class="${k<T.i?'ok':k===T.i?'cur':''}"></i>`).join('');
  const say=T.i===0?'Trace the lowercase a. Start at the green dot and follow the arrows.':T.i===1?'Now trace a capital B.':'Last one: write the word me, joined together.';
  showFb(say); Voice.say(say,'prof');
@@ -1704,7 +1717,7 @@ window.__test={
  resetSession:()=>{ sessionMissions=0; }
 };
 </script>
-<div id="kaVer" data-v="1.0" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.0 · 2026-11-26</div>
+<div id="kaVer" data-v="1.1" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>

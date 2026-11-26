@@ -13,6 +13,9 @@ for p in sorted((root / "games").rglob("*.html")):
     s = p.read_text(encoding="utf-8", errors="ignore")
     ext.update(re.findall(r'<script[^>]+src="(https://[^"]+)"', s))
     ext.update(re.findall(r'<link[^>]+href="(https://fonts\.googleapis\.com/css2[^"]+)"', s))
+for p in sorted((root / "games").rglob("art/*")):
+    if p.suffix.lower() in (".webp", ".jpg", ".jpeg", ".png"):
+        files.append(p.relative_to(root).as_posix())
 files = [f for f in files if (root / f.rstrip("/")).exists() or f == "./" or f.endswith("/")]
 out = sorted(set(files)) + sorted(ext)
 (root / "offline-files.json").write_text(json.dumps(out, indent=0) + "\n", encoding="utf-8")
