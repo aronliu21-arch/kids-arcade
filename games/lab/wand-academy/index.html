@@ -1089,7 +1089,7 @@ const CHAPTERS=[
    intro:'Capitals are the strongest runes. Even the tricky Q!',tip:'Try it today: write the first letter of everyone in your family as a cursive capital.'},
   {id:'midnight',icon:'🌙',name:'Night Tower',x:46,y:24,kind:'story',story:'midnight',title:'Midnight Practice'},
   {id:'juni',icon:'🌳',name:'Orchard',x:32,y:60,kind:'story',story:'juniFear',title:'Brave and Scared'},
-  {id:'flight',icon:'🐉',name:'Dragon Field',x:56,y:66,kind:'write',pool:'flight',pre:'flightPre',post:'flightPost',title:'Ember\'s First Flight',goal:'Give Ember wind words',done:'Ember can fly!',
+  {id:'flight',icon:'🐉',name:'Dragon Field',x:56,y:66,kind:'write',pool:'flight',needs:'c1:roost',pre:'flightPre',post:'flightPost',title:'Ember\'s First Flight',goal:'Give Ember wind words',done:'Ember can fly!',
    intro:'Write wind words to lift Ember\'s wings!',tip:'Try it today: make a paper airplane and write a cursive word on its wings.'},
   {id:'broom',icon:'🧹',name:'Broom Field',x:16,y:76,kind:'mini',game:'broom',after:'juni'},
   {id:'irisDuel',icon:'⚔️',name:'Duel Ring',x:66,y:40,kind:'battle',foe:'iris',pre:'irisPre',post:'irisPost',title:'Wand Duel',
@@ -1128,7 +1128,7 @@ const key=(n,id)=>`c${n}:${id}`;
 const isDone=(n,id)=>!!S.done[key(n,id)];
 const mainOf=n=>CH(n).missions.filter(m=>m.kind!=='mini');
 const nextMain=(n=S.view)=>mainOf(n).find(m=>!isDone(n,m.id));
-function isOpen(n,m){ if(n>S.ch) return false; if(m.kind==='mini') return isDone(n,m.after); const L=mainOf(n),k=L.indexOf(m); return k===0||isDone(n,L[k-1].id); }
+function isOpen(n,m){ if(n>S.ch) return false; if(m.needs&&!S.done[m.needs]) return false; if(m.kind==='mini') return isDone(n,m.after); const L=mainOf(n),k=L.indexOf(m); return k===0||isDone(n,L[k-1].id); }
 
 // ============ screens ============
 function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id)); current=id; FX.ambient(id==='title'||id==='story'||id==='result'?'light':null); updateHint(); if(id==='map'){ drawMap(); } }
@@ -1186,7 +1186,7 @@ function renderSpots(){ const n=S.view, k=JSON.stringify(S.done)+n+S.ch; if(k===
  CH(n).missions.forEach(m=>{ const b=document.createElement('button'); const open=isOpen(n,m); b.className='spot'+(open?'':' lock')+(isDone(n,m.id)?' done':'')+(m===nm?' next':''); b.style.left=m.x+'%'; b.style.top=m.y+'%'; b.innerHTML=`<span class="ic">${open?m.icon:'🔒'}</span><span>${m.name}</span>`; b.dataset.id=m.id; b.onclick=()=>openSpot(m); box.appendChild(b); });
  $('#mapTtl').textContent=`Chapter ${n} · ${CH(n).title}`;
  $('#chPrev').style.visibility=n>1?'visible':'hidden'; $('#chNext').style.visibility=n<Math.min(S.ch,CHAPTERS.length)?'visible':'hidden';
- $('#mapMsg').textContent= nm ? `Go to the ${nm.name}! ${nm.icon}` : (n<CHAPTERS.length?`Chapter ${n} complete! ▶ Chapter ${n+1}`:'You saved Inkwell Academy! ✨');
+ $('#mapMsg').textContent= nm&&nm.needs&&!S.done[nm.needs] ? 'First hatch the dragon egg in Chapter 1 ◀' : nm ? `Go to the ${nm.name}! ${nm.icon}` : (n<CHAPTERS.length?`Chapter ${n} complete! ▶ Chapter ${n+1}`:'You saved Inkwell Academy! ✨');
 }
 $('#chPrev').onclick=()=>{ if(S.view>1){ S.view--; save(); spotsKey=''; Snd.sfx('tap'); } };
 $('#chNext').onclick=()=>{ if(S.view<Math.min(S.ch,CHAPTERS.length)){ S.view++; save(); spotsKey=''; Snd.sfx('tap'); } };
@@ -1704,7 +1704,7 @@ window.__test={
  resetSession:()=>{ sessionMissions=0; }
 };
 </script>
-<div id="kaVer" data-v="3.0" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v3.0 · 2026-11-26</div>
+<div id="kaVer" data-v="3.1" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v3.1 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
