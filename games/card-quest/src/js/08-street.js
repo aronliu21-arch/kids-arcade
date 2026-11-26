@@ -1,7 +1,7 @@
 /* ---------- Card Quest Street: the walkable village ---------- */
 const VH=600,GROUND=470;
 const BLD=[
- {k:'home',x:60,w:300,door:200,e:'🏠',n:'Lucas’s House',z:[['陸','ㄌㄨˋ'],['晨','ㄔㄣˊ'],['的','˙ㄉㄜ'],['家','ㄐㄧㄚ']],d:'Your binder and trophies',go:()=>S.freePacks>0?openPack(true):binder()},
+ {k:'home',x:60,w:300,door:200,e:'🏠',n:ME.n+'’s House',z:[...ME.zhName,['的','˙ㄉㄜ'],['家','ㄐㄧㄚ']],d:'Your binder and trophies',go:()=>S.freePacks>0?openPack(true):binder()},
  {k:'store',x:420,w:320,door:580,e:'🛒',n:'Card Store',z:[['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['店','ㄉㄧㄢˋ']],d:'Packs $2 and single cards',go:()=>store()},
  {k:'cash',x:800,w:260,door:930,e:'🧾',n:'Corner Shop',z:[['收','ㄕㄡ'],['銀','ㄧㄣˊ'],['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],d:'Cashier job · 35–50¢ a customer + tips',go:()=>cashier(false)},
  {k:'sort',x:1110,w:280,door:1250,e:'🗂️',n:'Card Warehouse',z:[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],d:'Sorting job · 50¢ a row',go:()=>sortJob()},
@@ -20,7 +20,7 @@ function bHome(b,night){const x=b.x,lit=night?'#ffe066':'#d0ebff';return `<g>
  <rect x="${x+40}" y="${GROUND-160}" width="70" height="60" fill="${lit}" ${SW5}/><text x="${x+75}" y="${GROUND-118}" font-size="34" text-anchor="middle">🏆</text>
  <rect x="${x+190}" y="${GROUND-160}" width="70" height="60" fill="${lit}" ${SW5}/><text x="${x+225}" y="${GROUND-118}" font-size="34" text-anchor="middle">📒</text>
  <rect x="${x+125}" y="${GROUND-110}" width="50" height="110" rx="6" fill="#1c7ed6" ${SW5}/><circle cx="${x+165}" cy="${GROUND-55}" r="5" fill="#ffd43b"/>
- <rect x="${x+70}" y="${GROUND-185}" width="160" height="22" rx="6" fill="#f76707" ${SW5}/><text x="${x+150}" y="${GROUND-168}" font-size="17" font-weight="900" fill="#fff" text-anchor="middle">LUCAS’S HOUSE</text>
+ <rect x="${x+70}" y="${GROUND-185}" width="160" height="22" rx="6" fill="#f76707" ${SW5}/><text x="${x+150}" y="${GROUND-168}" font-size="17" font-weight="900" fill="#fff" text-anchor="middle">${ME.n.toUpperCase()}’S HOUSE</text>
  ${S.freePacks>0?`<g class="bob"><text x="${x+150}" y="${GROUND-330}" font-size="40" text-anchor="middle">🎁</text></g>`:''}</g>`;}
 function bStore(b,night){const x=b.x;let stripes='';for(let i=0;i<8;i++)stripes+=`<path d="M${x+i*40} ${GROUND-210}H${x+i*40+40}L${x+i*40+34} ${GROUND-180}H${x+i*40+6}Z" fill="${i%2?'#fff':'#f76707'}" stroke="#1b1f3b" stroke-width="3"/>`;
  return `<g><rect x="${x}" y="${GROUND-300}" width="320" height="300" fill="#4c6ef5" ${SW5}/><rect x="${x+20}" y="${GROUND-290}" width="280" height="60" rx="10" fill="#1b1f3b"/>
@@ -55,7 +55,7 @@ function bStadium(b,night){const x=b.x;let lights='';for(let i=0;i<9;i++)lights+
  ${[0,1,2].map(i=>`<rect x="${x+40+i*120}" y="${GROUND-150}" width="80" height="80" fill="${['#e03131','#1c7ed6','#2f9e44'][i]}" stroke="#1b1f3b" stroke-width="4"/><text x="${x+80+i*120}" y="${GROUND-98}" font-size="36" text-anchor="middle">${['🔥','💧','🍃'][i]}</text>`).join('')}
  <path d="M${x+160} ${GROUND}V${GROUND-60}H${x+240}V${GROUND}Z" fill="#1b1f3b"/><text x="${x+200}" y="${GROUND-75}" font-size="16" font-weight="900" fill="#fff" text-anchor="middle">🏆 ×${S.trophies}</text></g>`;}
 function bLot(b,night){const x=b.x;if(S.shopOpen)return `<g><rect x="${x}" y="${GROUND-290}" width="330" height="290" fill="#1b1f3b" ${SW5}/><rect x="${x+15}" y="${GROUND-280}" width="300" height="56" rx="12" fill="#1b1f3b" stroke="#ffd43b" stroke-width="5"/>
- <text class="neon pink" x="${x+165}" y="${GROUND-240}" font-size="34" font-weight="900" font-style="italic" fill="#ff8cc6" text-anchor="middle">LUCAS’S CARDS</text>
+ <text class="neon pink" x="${x+165}" y="${GROUND-240}" font-size="34" font-weight="900" font-style="italic" fill="#ff8cc6" text-anchor="middle">${ME.shop.toUpperCase()}</text>
  <rect x="${x+20}" y="${GROUND-200}" width="180" height="150" fill="#fff3bf" ${SW5}/>${[0,1,2].map(i=>`<g transform="translate(${x+35+i*55} ${GROUND-185}) scale(.34)">${cardBackMini(['#e03131','#ffd43b','#4dabf7'][i])}</g>`).join('')}
  <rect x="${x+220}" y="${GROUND-180}" width="90" height="180" rx="6" fill="#f76707" ${SW5}/><text x="${x+265}" y="${GROUND-120}" font-size="16" font-weight="900" fill="#fff" text-anchor="middle">OPEN</text></g>`;
  const pr=Math.min(1,(S.cents/GOAL)*.6+(Math.min(S.trophies,TITLES)/TITLES)*.4),hgt=Math.round(40+pr*220);
@@ -68,8 +68,8 @@ function bLot(b,night){const x=b.x;if(S.shopOpen)return `<g><rect x="${x}" y="${
 const BART={home:bHome,store:bStore,cash:bCash,sort:bSort,insp:bInsp,arena:bArena,stadium:bStadium,lot:bLot};
 function lucasWalker(){return `<g id="lw"><g id="lwb"><ellipse cx="0" cy="58" rx="26" ry="6" fill="#000" opacity=".2"/>
  <path id="lgL" d="M-6 30L-10 54" stroke="#1b1f3b" stroke-width="9" stroke-linecap="round"/><path id="lgR" d="M6 30L10 54" stroke="#1b1f3b" stroke-width="9" stroke-linecap="round"/>
- <g transform="translate(-50 -78) scale(1)" filter="url(#glow)">${LUCAS.replace('<svg viewBox="0 0 100 112">','<g>').replace('</svg>','</g>')}</g></g>
- <rect x="-32" y="-96" width="64" height="20" rx="10" fill="#f76707" stroke="#1b1f3b" stroke-width="3"/><text x="0" y="-81" font-size="14" font-weight="900" fill="#fff" text-anchor="middle">Lucas</text></g>`;}
+ <g transform="translate(-50 -78) scale(1)" filter="url(#glow)">${MEAV.replace('<svg viewBox="0 0 100 112">','<g>').replace('</svg>','</g>')}</g></g>
+ <rect x="-32" y="-96" width="64" height="20" rx="10" fill="#f76707" stroke="#1b1f3b" stroke-width="3"/><text x="0" y="-81" font-size="14" font-weight="900" fill="#fff" text-anchor="middle">${ME.n}</text></g>`;}
 function kidWalker(f){return `<g><ellipse cx="0" cy="58" rx="22" ry="5" fill="#000" opacity=".2"/><path class="kl" d="M-5 30L-7 54M5 30L7 54" stroke="#495057" stroke-width="8" stroke-linecap="round"/><g transform="translate(-42 -62) scale(.84)">${kidSVG(f[1],f[2]).replace('<svg viewBox="0 0 100 112">','<g>').replace('</svg>','</g>')}</g></g>`;}
 function villageSVG(night,dusk){const sky=night?['#0b1026','#364fc7']:dusk?['#ff922b','#ffd8a8']:['#4dabf7','#d0ebff'];
  let stars='';if(night)for(let i=0;i<60;i++)stars+=`<circle cx="${(i*197)%WORLD_W}" cy="${(i*71)%260}" r="${i%4?1.5:2.6}" fill="#fff" class="${i%5?'':'twink'}" style="animation-delay:${(i%7)*.3}s"/>`;
@@ -81,7 +81,7 @@ function villageSVG(night,dusk){const sky=night?['#0b1026','#364fc7']:dusk?['#ff
  <rect x="-400" y="0" width="${WORLD_W+800}" height="${VH}" fill="url(#skyg)"/>
  <g id="pfar">${stars}<circle cx="300" cy="90" r="${night?34:46}" fill="${night?'#f8f9fa':'#ffe066'}"/>${night?'':'<circle cx="300" cy="90" r="64" fill="#ffe066" opacity=".25"/>'}</g>
  <g id="pcloud">${[100,700,1300,1900,2500].map((x,i)=>`<g class="drift" style="animation-delay:${-i*7}s"><ellipse cx="${x}" cy="${70+i%2*50}" rx="70" ry="22" fill="#fff" opacity="${night?.25:.9}"/><ellipse cx="${x+40}" cy="${60+i%2*50}" rx="40" ry="20" fill="#fff" opacity="${night?.25:.9}"/></g>`).join('')}
-  <g class="blimp"><ellipse cx="900" cy="150" rx="110" ry="34" fill="#f76707" stroke="#1b1f3b" stroke-width="5"/><path d="M1000 150L1040 126V174Z" fill="#e8590c" stroke="#1b1f3b" stroke-width="4"/><rect x="870" y="182" width="60" height="18" rx="5" fill="#495057" stroke="#1b1f3b" stroke-width="3"/><text x="900" y="160" font-size="26" font-weight="900" font-style="italic" fill="#fff" text-anchor="middle">CARD QUEST</text></g></g>
+  <g class="blimp"><ellipse cx="900" cy="150" rx="110" ry="34" fill="#f76707" stroke="#1b1f3b" stroke-width="5"/><path d="M1000 150L1040 126V174Z" fill="#e8590c" stroke="#1b1f3b" stroke-width="4"/><rect x="870" y="182" width="60" height="18" rx="5" fill="#495057" stroke="#1b1f3b" stroke-width="3"/><text x="900" y="160" font-size="26" font-weight="900" font-style="italic" fill="#fff" text-anchor="middle">${ME.g?'CARD SHOP':'CARD QUEST'}</text></g></g>
  <g id="pmid">${sky2}</g>
  <g id="phill"><path d="M-400 ${GROUND-60}Q200 ${GROUND-160} 800 ${GROUND-70}T2000 ${GROUND-80}T3400 ${GROUND-60}V${GROUND}H-400Z" fill="${night?'#2b8a3e':'#69db7c'}" opacity=".9"/></g>
  <g id="blds">${BLD.map(b=>`<g class="bld" data-b="${b.k}">${BART[b.k](b,night)}</g>`).join('')}</g>
@@ -137,7 +137,7 @@ function vTick(dt,now){const V=VL,sp=330;let moving=false;
   FX.emit(sx,sy,'gold',14,{speed:5});tone(1800,.08,'square',.06);tone(2400,.12,'square',.05,.06);toast(`🪙 You found ${c.v}¢!`,1200);}});
  V.kids.forEach((k,i)=>{const el=$('kid'+i);if(!el)return;if(Math.abs(k.x-V.x)>90||!k.stop){k.x+=k.dir*k.spd*dt;if(k.x<500||k.x>2700)k.dir*=-1;}k.stop=Math.abs(k.x-V.x)<90;
   el.setAttribute('transform',`translate(${k.x} ${GROUND-26}) scale(${k.dir} 1)`);const kb=el.querySelector('.kbub');if(kb)kb.setAttribute('transform',`scale(${k.dir} 1)`);el.querySelector('.kl').setAttribute('transform',k.stop?'':`rotate(${Math.sin(now/90+i)*6})`);});}
-function arrive(b,quiet){VL.at=b.k;const name=b.k==='lot'?(S.shopOpen?'Lucas’s Cards':'Your future shop'):b.n;let desc=b.d;
+function arrive(b,quiet){VL.at=b.k;const name=b.k==='lot'?(S.shopOpen?ME.shop:'Your future shop'):b.n;let desc=b.d;
  if(b.k==='lot')desc=S.shopOpen?'Sell cards and buy upgrades':`Needs ${money(GOAL)} + ${TITLES} 🏆 · you have ${money(S.cents)} + ${S.trophies} 🏆`;
  if(b.k==='home'&&S.freePacks>0)desc=`🎁 ${S.freePacks} free pack${S.freePacks>1?'s':''} waiting!`;
  $('vinfo').innerHTML=`<span class="ve">${b.e}</span><span class="vt"><b>${name}</b> ${zh(b.z)}<br><small>${desc}</small></span><button class="btn gold" id="vgo">Go in ▶</button>`;

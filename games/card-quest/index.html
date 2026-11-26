@@ -358,6 +358,44 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 .ach .ae{font-size:2rem}.ach small{font-weight:700;color:var(--muted)}
 .ach.got{background:linear-gradient(#fff9db,#ffe066);opacity:1;box-shadow:0 3px 0 var(--ink)}
 @media (max-width:420px){.achs{grid-template-columns:1fr 1fr}}
+/* duo battle */
+.duob{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.bigcode{display:flex;justify-content:center;gap:8px;margin:12px 0}
+.bigcode span{width:clamp(52px,14vw,74px);height:clamp(66px,17vw,92px);display:flex;align-items:center;justify-content:center;font-size:clamp(2.4rem,9vw,3.6rem);font-weight:900;background:#fff;border:4px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink)}
+.bigcode span.empty{background:#f1f3f5}
+.keys{display:grid;grid-template-columns:repeat(3,minmax(64px,90px));gap:8px;justify-content:center;margin:8px auto}
+.keys .btn{min-height:58px;font-size:1.5rem;font-weight:900}
+.dst{font-weight:800;min-height:1.4em}
+.spin{font-size:3rem;animation:spin 1.6s linear infinite;display:inline-block}
+.pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.pickgrid .pickc.sel{outline:5px solid #2f9e44;border-radius:12px;transform:translateY(-4px)}
+.hands{display:flex;align-items:center;justify-content:center;gap:clamp(8px,4vw,30px);margin:12px 0}
+.hav{width:clamp(80px,22vw,130px);display:flex;flex-direction:column;align-items:center;position:relative}.hav .ok{position:absolute;top:-6px;right:-6px;font-size:1.6rem}
+.hs{font-size:clamp(3rem,12vw,5rem);animation:pulse 1s infinite}.hs.done{animation:none;transform:scale(1.2)}
+.gg{display:block;white-space:nowrap;line-height:1.15;margin:4px 0;font-size:clamp(2rem,9vw,3.4rem);font-weight:900;color:#f76707;text-shadow:3px 3px 0 var(--ink);-webkit-text-stroke:1px var(--ink)}
+.gg .ggz{display:block;white-space:normal;font-size:1.2rem;text-shadow:none;-webkit-text-stroke:0;color:var(--ink)}
+.btn.big{font-size:1.25rem;min-height:64px;padding:10px 22px}
+.dbat{display:grid;grid-template-columns:1fr minmax(240px,1.1fr) 1fr;gap:10px;align-items:center;padding:8px;max-width:1100px;margin:0 auto}
+.dside{background:#fff;border:3px solid var(--ink);border-radius:16px;padding:8px;text-align:center;opacity:.85}
+.dside.turn{opacity:1;box-shadow:0 0 0 4px #ffd43b}
+.dside.op{background:#fff5f5}.dside.me{background:#e7f5ff}
+.dwho{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;font-size:1.05rem}
+.dd{width:16px;height:16px;border-radius:50%;background:var(--c);border:2px solid var(--ink);display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-style:normal;color:#fff;opacity:.6}.dd.on{opacity:1;transform:scale(1.2)}.dd.ko{background:#868e96}
+.den{font-weight:900;background:#fff3bf;border-radius:999px;padding:0 6px}
+.dcard{width:clamp(110px,22vh,190px);margin:6px auto;position:relative}
+.dcard.hit{animation:dshake .45s}.dcard.lunge{animation:dlunge .4s}
+@keyframes dshake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes dlunge{50%{transform:scale(1.12)}}
+.dmgf{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-size:2rem;font-weight:900;color:#e03131;-webkit-text-stroke:1px #fff;animation:dfly 1.2s forwards;pointer-events:none}
+@keyframes dfly{to{transform:translate(-50%,-60px);opacity:0}}
+.hpb{height:12px;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:#dee2e6}.hpb i{display:block;height:100%;background:#2f9e44}
+.dmid{display:flex;flex-direction:column;gap:8px}
+.dlog{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px;font-weight:700;min-height:3em;text-align:center}
+.dturn{text-align:center;font-size:1.15rem}
+.dctrl{display:flex;flex-direction:column;gap:6px}.dctrl .btn{min-height:50px}
+@media (max-width:700px){.dbat{grid-template-columns:1fr}.dside{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px;text-align:left}.dside .dwho{grid-column:1/3;justify-content:flex-start}.dcard{width:96px;margin:0;grid-row:span 2}.dside.me{order:2}.dmid{order:3}.dside.op{order:1}}
+@media (max-height:420px) and (min-width:701px){.dcard{width:clamp(80px,26vh,120px)}.dctrl .btn{min-height:44px;padding:4px 8px}}
+@media (prefers-reduced-motion:reduce){.hs,.spin{animation:none}}
 
 </style></head><body>
 <div class="app">
@@ -367,6 +405,11 @@ h2.h{margin:2px 0 8px;font-size:1.3rem}
 <div class="toast hide" id="toast"></div>
 <div class="rot p">Best with your phone upright ↻</div>
 <script>
+/* ---------- whose game this is: ?kid=nora → Nora's Card Shop, otherwise Lucas's Card Quest ---------- */
+const KID=(()=>{let k='';try{k=(new URLSearchParams(location.search).get('kid')||sessionStorage.getItem('ka-kid')||'').toLowerCase();}catch(e){}return k==='nora'?'nora':'lucas';})();
+try{sessionStorage.setItem('ka-kid',KID);}catch(e){}
+const ME=KID==='nora'?{k:'nora',n:'Nora',g:true,col:'#7048e8',num:9,title:'Nora’s Card Shop',logo:'Nora’s<br>Card Shop',zh:[['幼','ㄧㄡˋ'],['晴','ㄑㄧㄥˊ'],['的','˙ㄉㄜ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['店','ㄉㄧㄢˋ']],zhName:[['幼','ㄧㄡˋ'],['晴','ㄑㄧㄥˊ']],shop:'Nora’s Cards',other:'lucas',otherN:'Lucas'}
+ :{k:'lucas',n:'Lucas',g:false,col:'#f76707',num:6,title:'Lucas’s Card Quest',logo:'Lucas’s<br>Card Quest',zh:[['陸','ㄌㄨˋ'],['晨','ㄔㄣˊ'],['的','˙ㄉㄜ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['大','ㄉㄚˋ'],['冒','ㄇㄠˋ'],['險','ㄒㄧㄢˇ']],zhName:[['陸','ㄌㄨˋ'],['晨','ㄔㄣˊ']],shop:'Lucas’s Cards',other:'nora',otherN:'Nora'};
 
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rnd(a,b+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
@@ -376,7 +419,7 @@ function zh(t){return '<span class="zh" lang="zh-Hant">'+t.map(([c,z])=>{const n
  const col=(neutral?'<i class="zn">˙</i>':'')+[...body].map(s=>'<i>'+s+'</i>').join('');return '<span class="zc"><span>'+c+'</span><span class="zy"><span class="zs">'+col+'</span>'+(tone?'<span class="zt">'+tone+'</span>':'')+'</span></span>';}).join('')+'</span>';}
 
 /* ---------- save: versioned, with a backup and import from the sample ---------- */
-const KEY='cardquest.lucas',BAK='cardquest.lucas.backup',OLD='lab.cardshop2',VER=1;
+const KEY='cardquest.'+KID,BAK=KEY+'.backup',OLD=KID==='lucas'?'lab.cardshop2':'-none-',VER=1;
 const DEF={ver:VER,started:false,cents:200,stars:0,owned:{},shopOpen:false,trophies:0,shelf:[],masterMet:0,acts:0,stats:{}};
 function migrate(s){s=Object.assign({},DEF,s);if(!s.stats||typeof s.stats!=='object')s.stats={};
  /* future versions add steps here, e.g. if(s.ver<2){...;s.ver=2;} */
@@ -1002,21 +1045,33 @@ const LUCAS=`<svg viewBox="0 0 100 112"><path d="M14 112Q16 80 50 77Q84 80 86 11
 <circle cx="50" cy="50" r="27" fill="#ffd8b1" stroke="${O}" stroke-width="3.5"/><path d="M22 52L13 30L27 33L22 12L39 24L46 2L57 21L72 6L72 27L90 20L80 40L84 52L72 34L60 30L45 32L32 34Z" fill="${O}" stroke="${O}" stroke-width="3" stroke-linejoin="round"/>
 <path d="M30 44L46 49M70 44L54 49" stroke="${O}" stroke-width="4.5" stroke-linecap="round"/><ellipse cx="40" cy="56" rx="6" ry="7.5" fill="#fff" stroke="${O}" stroke-width="2.5"/><ellipse cx="60" cy="56" rx="6" ry="7.5" fill="#fff" stroke="${O}" stroke-width="2.5"/><circle cx="41" cy="57" r="3.8" fill="${O}"/><circle cx="59" cy="57" r="3.8" fill="${O}"/><circle cx="42.5" cy="55" r="1.4" fill="#fff"/><circle cx="60.5" cy="55" r="1.4" fill="#fff"/>
 <path d="M38 66Q50 78 62 66Z" fill="#fff" stroke="${O}" stroke-width="3" stroke-linejoin="round"/><path d="M39 68H61" stroke="${O}" stroke-width="1.5"/><circle cx="32" cy="66" r="3.5" fill="#ffa8a8"/><circle cx="68" cy="66" r="3.5" fill="#ffa8a8"/></svg>`;
+/* Nora: bold retro sports-anime; smooth rounded hair, side-swept bangs, high ponytail with curled tip, pink scrunchie, gold star clip, blue #9 jersey with gold trim */
+const NORA=`<svg viewBox="0 0 100 112"><path d="M68 30Q90 16 93 40Q95 58 84 68Q80 72 78 66Q86 56 84 44Q82 32 70 36Z" fill="#1b1f3b" stroke="${O}" stroke-width="3" stroke-linejoin="round"/><path d="M80 64Q74 72 81 74" fill="none" stroke="${O}" stroke-width="3" stroke-linecap="round"/>
+<path d="M14 112Q16 80 50 77Q84 80 86 112Z" fill="#1c7ed6" stroke="${O}" stroke-width="3.5"/><path d="M38 79L50 90L62 79" fill="none" stroke="#ffd43b" stroke-width="4"/><text x="50" y="108" font-size="17" font-weight="900" fill="#ffd43b" text-anchor="middle" font-family="system-ui">9</text>
+<path d="M24 46Q20 62 25 72L31 70Q27 60 29 48Z" fill="#1b1f3b" stroke="${O}" stroke-width="2.5" stroke-linejoin="round"/><path d="M76 46Q80 62 75 72L69 70Q73 60 71 48Z" fill="#1b1f3b" stroke="${O}" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="50" cy="50" r="27" fill="#ffd8b1" stroke="${O}" stroke-width="3.5"/>
+<path d="M22 50Q19 20 50 19Q81 20 78 50Q76 38 68 32Q60 44 38 42Q30 44 22 50Z" fill="#1b1f3b" stroke="${O}" stroke-width="3" stroke-linejoin="round"/><path d="M34 27Q44 22 56 24" fill="none" stroke="#868e96" stroke-width="3" stroke-linecap="round"/>
+<circle cx="72" cy="30" r="6.5" fill="#f783ac" stroke="${O}" stroke-width="2.5"/><path d="M30 31L32.4 35.6L37.5 36.2L33.8 39.6L34.8 44.6L30 42.2L25.2 44.6L26.2 39.6L22.5 36.2L27.6 35.6Z" fill="#ffd43b" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M33 45Q39 42 45 44M55 44Q61 42 67 45" fill="none" stroke="${O}" stroke-width="2.5" stroke-linecap="round"/>
+<ellipse cx="40" cy="56" rx="6" ry="7.5" fill="#fff" stroke="${O}" stroke-width="2"/><ellipse cx="60" cy="56" rx="6" ry="7.5" fill="#fff" stroke="${O}" stroke-width="2"/><circle cx="41" cy="57.5" r="4.2" fill="#8b5a2b"/><circle cx="59" cy="57.5" r="4.2" fill="#8b5a2b"/><circle cx="41" cy="58" r="2" fill="${O}"/><circle cx="59" cy="58" r="2" fill="${O}"/><circle cx="42.6" cy="55.4" r="1.4" fill="#fff"/><circle cx="60.6" cy="55.4" r="1.4" fill="#fff"/><circle cx="39.6" cy="59.6" r=".8" fill="#fff"/><circle cx="57.6" cy="59.6" r=".8" fill="#fff"/>
+<path d="M33 52Q40 46 47 51M53 51Q60 46 67 52" fill="none" stroke="${O}" stroke-width="3" stroke-linecap="round"/>
+<path d="M41 66Q50 76 59 66Z" fill="#ff8787" stroke="${O}" stroke-width="2.5" stroke-linejoin="round"/><path d="M42.5 67H57.5" stroke="#fff" stroke-width="2.5"/><circle cx="32" cy="65" r="3.5" fill="#ffa8a8"/><circle cx="68" cy="65" r="3.5" fill="#ffa8a8"/></svg>`;
+const MEAV=ME.g?NORA:LUCAS;
 /* opponents: softer style, no outlines, red shirts */
-function kidSVG(hair,skin){return `<svg viewBox="0 0 100 112"><path d="M16 112Q18 82 50 79Q82 82 84 112Z" fill="#e03131"/><path d="M40 81L50 89L60 81" fill="none" stroke="#ffc9c9" stroke-width="4"/><circle cx="50" cy="52" r="26" fill="${skin}"/><path d="M24 50Q24 22 50 22Q76 22 76 50Q70 34 50 34Q32 34 24 50Z" fill="${hair}"/><circle cx="41" cy="55" r="3.5" fill="#343a40"/><circle cx="59" cy="55" r="3.5" fill="#343a40"/><path d="M42 66Q50 72 58 66" fill="none" stroke="#c92a2a" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="63" r="3.5" fill="#ffc9c9"/><circle cx="67" cy="63" r="3.5" fill="#ffc9c9"/></svg>`;}
-const FOES=[['Leo','#5c3d2e','#f1c27d'],['Max','#e0a96d','#ffe0bd'],['Kai','#212529','#c68642'],['Ben','#a0522d','#ffdbac'],['Theo','#343a40','#e0ac69'],['Sam','#d9480f','#ffe0bd'],['Jay','#1b1f3b','#8d5524'],['Ryan','#ffd43b','#ffdbac']];
+function kidSVG(hair,skin){return `<svg viewBox="0 0 100 112">${ME.g?`<path d="M22 50Q18 80 30 92L70 92Q82 80 78 50Z" fill="${hair}"/>`:''}<path d="M16 112Q18 82 50 79Q82 82 84 112Z" fill="#e03131"/><path d="M40 81L50 89L60 81" fill="none" stroke="#ffc9c9" stroke-width="4"/><circle cx="50" cy="52" r="26" fill="${skin}"/><path d="M24 50Q24 22 50 22Q76 22 76 50Q70 34 50 34Q32 34 24 50Z" fill="${hair}"/>${ME.g?'<circle cx="68" cy="30" r="5" fill="#f06595"/><circle cx="74" cy="34" r="4" fill="#f06595"/>':''}<circle cx="41" cy="55" r="3.5" fill="#343a40"/><circle cx="59" cy="55" r="3.5" fill="#343a40"/><path d="M42 66Q50 72 58 66" fill="none" stroke="#c92a2a" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="63" r="3.5" fill="#ffc9c9"/><circle cx="67" cy="63" r="3.5" fill="#ffc9c9"/></svg>`;}
+const FOES=ME.g?[['Mia','#5c3d2e','#f1c27d'],['Emma','#e0a96d','#ffe0bd'],['Ava','#212529','#c68642'],['Lily','#a0522d','#ffdbac'],['Zoe','#343a40','#e0ac69'],['Ruby','#d9480f','#ffe0bd'],['Ivy','#1b1f3b','#8d5524'],['Chloe','#ffd43b','#ffdbac']]:[['Leo','#5c3d2e','#f1c27d'],['Max','#e0a96d','#ffe0bd'],['Kai','#212529','#c68642'],['Ben','#a0522d','#ffdbac'],['Theo','#343a40','#e0ac69'],['Sam','#d9480f','#ffe0bd'],['Jay','#1b1f3b','#8d5524'],['Ryan','#ffd43b','#ffdbac']];
 const MASTER=`<svg viewBox="0 0 100 112"><path d="M10 112L26 40Q50 6 74 40L90 112Z" fill="#5f3dc4"/><path d="M28 44Q50 14 72 44Q72 70 50 74Q28 70 28 44Z" fill="#3b2a80"/><circle cx="50" cy="52" r="18" fill="#e0b48a"/><path d="M34 58Q50 96 66 58Q60 68 50 68Q40 68 34 58Z" fill="#f8f9fa"/><circle cx="43" cy="50" r="2.8" fill="#212529"/><circle cx="57" cy="50" r="2.8" fill="#212529"/><path d="M38 45L46 46M62 45L54 46" stroke="#f8f9fa" stroke-width="3" stroke-linecap="round"/><g fill="#ffd43b"><path d="M20 30l2 5 5 1-4 3 1 5-4-3-4 3 1-5-4-3 5-1z"/><path d="M80 24l2 4 4 1-3 3 1 4-4-2-3 2 1-4-3-3 4-1z"/></g><rect x="60" y="80" width="18" height="25" rx="3" fill="#1c7ed6" transform="rotate(12 69 92)"/><rect x="64" y="84" width="10" height="17" rx="2" fill="#ffd43b" transform="rotate(12 69 92)"/></svg>`;
 
 /* ---------- screens ---------- */
 let SCREEN='title',RUN=0; // RUN = missions in a row this session
 const main=$('main');
-function setScreen(n,html){SCREEN=n;{const hb=$('homeb');if(hb)hb.style.display=['title','hub','starter','break'].includes(n)?'none':'';const pb=$('padb');if(pb)pb.style.display=['cash','battle','master','sort','insp'].includes(n)?'':'none';padClose();padClear();if(typeof deskClose==='function')deskClose();}main.innerHTML=html;main.scrollTop=0;const th=placeTheme(n);th?musicStart(th):musicStop();if(typeof achCheck==='function'&&n!=='title')achCheck();}
-function placeTheme(n){if(n==='hub')return S.hubMode!=='list'&&typeof skyMode==='function'&&skyMode()==='night'?'night':'anthem';return {title:'anthem',store:'shop',myshop:'shop',binder:'calm',quest:'calm',skills:'calm',ach:'calm',intro:'calm',tour:'stadium',rival:'stadium',pick:'stadium',result:'anthem'}[n]||null;}
+function setScreen(n,html){SCREEN=n;{const hb=$('homeb');if(hb)hb.style.display=['title','hub','starter','break'].includes(n)?'none':'';const pb=$('padb');if(pb)pb.style.display=['cash','battle','master','sort','insp'].includes(n)?'':'none';padClose();padClear();if(typeof deskClose==='function')deskClose();}main.innerHTML=html;main.scrollTop=0;const th=placeTheme(n);th?musicStart(th):musicStop();if(typeof achCheck==='function'&&n!=='title')achCheck();if(typeof duoLeaveCheck==='function')duoLeaveCheck(n);}
+function placeTheme(n){if(n==='hub')return S.hubMode!=='list'&&typeof skyMode==='function'&&skyMode()==='night'?'night':'anthem';return {title:'anthem',store:'shop',myshop:'shop',binder:'calm',quest:'calm',skills:'calm',ach:'calm',intro:'calm',duo:'calm',tour:'stadium',rival:'stadium',pick:'stadium',result:'anthem'}[n]||null;}
 function bindAll(map){main.querySelectorAll('[data-a]').forEach(b=>b.onclick=e=>{audio();const f=map[b.dataset.a];if(f)f(b.dataset.v,b);});}
 
 function title(){
  const ids=[10,13,1];
- setScreen('title',`<div class="title" id="tt"><div class="logo">Lucas’s<br>Card Quest</div><div style="font-size:1.6rem">${zh([['陸','ㄌㄨˋ'],['晨','ㄔㄣˊ'],['的','˙ㄉㄜ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['大','ㄉㄚˋ'],['冒','ㄇㄠˋ'],['險','ㄒㄧㄢˇ']])}</div>
+ setScreen('title',`<div class="title" id="tt"><div class="logo">${ME.logo}</div><div style="font-size:1.6rem">${zh(ME.zh)}</div>
  <div class="fan" id="fan">${ids.map(i=>cardHTML(byId(i))).join('')}</div>
  <button class="btn gold tapgo" id="go">▶ Tap to start</button>
  <button class="btn ghost small" id="rst">Reset records</button></div>`);
@@ -1032,14 +1087,14 @@ function parentGate(){const a=ri(101,999),b=ri(11,99);
  const m=modal(`<div class="gate"><h2>Grown-ups only</h2><p>What is <b>${a} × ${b}</b>?</p><input id="pg" inputmode="numeric" autocomplete="off"><p id="pgm" style="color:var(--bad);min-height:1.2em"></p></div>`,
   [['Check',null],['Cancel',null,'ghost']]);
  const btn=m.querySelector('.row:last-child .btn');btn.onclick=()=>{if(+m.querySelector('#pg').value===a*b){m.remove();
-   modal(`<h2>Reset which kid?</h2><label style="font-size:1.2rem;font-weight:800"><input type="checkbox" id="rk" style="width:24px;height:24px"> Lucas (this device)</label>`,[['Reset',()=>{if(document.getElementById('rk')&&document.getElementById('rk').checked){S=Object.assign({},DEF);RUN=0;save();toast('Records reset');}title();}],['Cancel',null,'ghost']]);
+   modal(`<h2>Reset which kid?</h2><label style="font-size:1.2rem;font-weight:800"><input type="checkbox" id="rk" style="width:24px;height:24px"> ${ME.n} (this device)</label>`,[['Reset',()=>{if(document.getElementById('rk')&&document.getElementById('rk').checked){S=Object.assign({},DEF);RUN=0;save();toast('Records reset');}title();}],['Cancel',null,'ghost']]);
    const chk=document.getElementById('rk');const rb=chk.closest('div').querySelector('.btn');rb.onclick=()=>{const on=chk.checked;chk.closest('.modal').remove();if(on){S=Object.assign({},DEF);RUN=0;save();toast('Records reset');}title();};}
   else{parentGate();m.remove();}};}
 
 function starter(){
- setScreen('starter',`<div class="hub"><div class="hero"><div class="av me">${LUCAS}<span class="badge">Lucas</span></div><div class="goal"><b>Welcome, Lucas! Here is your starter deck.</b><div style="font-size:.9rem;color:var(--muted)">Tip: tap any word to hear it 🔈</div>${zh([['新','ㄒㄧㄣ'],['手','ㄕㄡˇ'],['牌','ㄆㄞˊ'],['組','ㄗㄨˇ']])}<div>One card of every type, plus <b>5 free packs</b> to rip open and <b>$2.00</b>!</div></div></div>
+ setScreen('starter',`<div class="hub"><div class="hero"><div class="av me">${MEAV}<span class="badge">${ME.n}</span></div><div class="goal"><b>Welcome, ${ME.n}! Here is your starter deck.</b><div style="font-size:.9rem;color:var(--muted)">Tip: tap any word to hear it 🔈</div>${zh([['新','ㄒㄧㄣ'],['手','ㄕㄡˇ'],['牌','ㄆㄞˊ'],['組','ㄗㄨˇ']])}<div>One card of every type, plus <b>5 free packs</b> to rip open and <b>$2.00</b>!</div></div></div>
  <div class="cgrid">${STARTER.map(i=>cardHTML(byId(i))).join('')}</div><div class="row"><button class="btn gold" data-a="ok">Add to my binder ▶</button></div></div>`);
- say('Welcome Lucas! Here is your starter deck. One card of every type.');
+ say('Welcome '+ME.n+'! Here is your starter deck. One card of every type.');
  bindAll({ok(){STARTER.forEach(i=>S.owned[i]=(S.owned[i]||0)+1);S.started=true;S.cents=200;S.freePacks=5;restock();save();sfx.good();openPack(true);}});}
 
 function restock(){S.shelf=[0,1,2].map(i=>randCard(i===2?[['rare',6],['holo',3],['legend',1]]:[['common',6],['rare',4]]).id);}
@@ -1048,9 +1103,9 @@ function hubList(fromAct){
  if(fromAct&&RUN>=3){return breakScreen();}
  const owned=Object.keys(S.owned).length;
  const T2=(e,en,z,a,sub,cls)=>`<button class="tile ${cls||''}" data-a="${a}"><span class="e">${e}</span><span class="en">${en}</span>${zh(z)}${sub?`<small>${sub}</small>`:''}</button>`;
- setScreen('hub',`<div class="hub"><div class="hero"><div class="av me">${LUCAS}<span class="badge">Lucas</span></div><div class="goal">
- ${S.shopOpen?`<b>🏪 Lucas’s Cards is open!</b><div>🏆 ×${S.trophies} · 📒 ${owned}/${C.length} cards</div>`:`<b>To open your own shop: save ${money(GOAL)} and win ${TITLES} tournament titles!</b><div>💵 ${money(S.cents)} of ${money(GOAL)}</div><div class="bar"><i style="width:${Math.min(100,S.cents/GOAL*100)}%"></i></div><div style="margin-top:4px;font-size:1.3rem">${Array.from({length:TITLES},(_,i)=>i<S.trophies?'🏆':'<span style="filter:grayscale(1);opacity:.35">🏆</span>').join(' ')} <span style="font-size:.95rem">${Math.min(S.trophies,TITLES)}/${TITLES} titles · 📒 ${owned}/${C.length}</span></div>`}</div></div>
- <div class="row" style="font-size:.9rem;color:var(--muted);font-weight:700"><span>🔈 Tap any word to hear it</span><button class="btn small" data-a="qb">📜 Quest Book</button><button class="btn small" data-a="sk">🎓 Skills</button><button class="btn small" data-a="ach">🏅 Awards</button><button class="btn gold small" data-a="street">🗺️ Walk the street</button></div>
+ setScreen('hub',`<div class="hub"><div class="hero"><div class="av me">${MEAV}<span class="badge">${ME.n}</span></div><div class="goal">
+ ${S.shopOpen?`<b>🏪 ${ME.shop} is open!</b><div>🏆 ×${S.trophies} · 📒 ${owned}/${C.length} cards</div>`:`<b>To open your own shop: save ${money(GOAL)} and win ${TITLES} tournament titles!</b><div>💵 ${money(S.cents)} of ${money(GOAL)}</div><div class="bar"><i style="width:${Math.min(100,S.cents/GOAL*100)}%"></i></div><div style="margin-top:4px;font-size:1.3rem">${Array.from({length:TITLES},(_,i)=>i<S.trophies?'🏆':'<span style="filter:grayscale(1);opacity:.35">🏆</span>').join(' ')} <span style="font-size:.95rem">${Math.min(S.trophies,TITLES)}/${TITLES} titles · 📒 ${owned}/${C.length}</span></div>`}</div></div>
+ <div class="row" style="font-size:.9rem;color:var(--muted);font-weight:700"><span>🔈 Tap any word to hear it</span><button class="btn small" data-a="qb">📜 Quest Book</button><button class="btn small" data-a="sk">🎓 Skills</button><button class="btn small" data-a="ach">🏅 Awards</button><button class="btn small" data-a="duo">👫 Duo</button><button class="btn gold small" data-a="street">🗺️ Walk the street</button></div>
  <div class="tiles">
  ${T2('🧾','Cashier job',[['收','ㄕㄡ'],['銀','ㄧㄣˊ'],['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],'cash','Earn 35–50¢ a customer')}
  ${T2('🗂️','Sorting job',[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],'sort','Earn 50¢ a row')}
@@ -1063,7 +1118,7 @@ function hubList(fromAct){
  ${S.shopOpen?T2('🏪','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'myshop','Sell cards · upgrades','hot'):
   T2(canOpen()?'🔑':'🔒','My shop',[['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']],'open',canOpen()?'Ready to open!':'Needs '+money(GOAL)+' + '+TITLES+' 🏆',canOpen()?'hot':'lock')}
  </div></div>`);
- bindAll({qb:()=>questBook(),sk:()=>skillPath(),ach:()=>achRoom(),street:()=>{S.hubMode='street';save();hub();},free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,insp:inspectJob,battle:()=>arenaMenu(),tour:tourStart,store,binder,myshop:myShop,
+ bindAll({qb:()=>questBook(),sk:()=>skillPath(),ach:()=>achRoom(),duo:()=>duoMenu(),street:()=>{S.hubMode='street';save();hub();},free:()=>openPack(true),cash:()=>cashier(false),sort:sortJob,insp:inspectJob,battle:()=>arenaMenu(),tour:tourStart,store,binder,myshop:myShop,
   open(){if(!canOpen()){const need=[];if(S.cents<GOAL)need.push('save '+money(GOAL-S.cents)+' more');if(S.trophies<TITLES)need.push('win '+(TITLES-S.trophies)+' more tournament title'+(TITLES-S.trophies>1?'s':''));toast('🔒 You need to '+need.join(' and ')+'!',2400);sfx.bad();return;}
    modal(`<div class="big">🏪</div><h2>Open your own shop?</h2><p>It costs <b>${money(GOAL)}</b>. You will have ${money(S.cents-GOAL)} left.</p>`,[['Open it! 🎉',()=>{S.cents-=GOAL;S.shopOpen=true;S.up=S.up||{};S.stock=S.stock||[];save();confetti();setTimeout(confetti,400);fanfare();FX.stamp('GRAND OPENING!','small','#ffd43b');shout('Your shop is open! Put your extra cards on the shelf and pick a price.');setTimeout(myShop,900);}],['Not yet',null,'ghost']]);}});
  if(fromAct)maybeMaster();}
@@ -1071,7 +1126,7 @@ function hubList(fromAct){
 /* ---------- Card Quest Street: the walkable village ---------- */
 const VH=600,GROUND=470;
 const BLD=[
- {k:'home',x:60,w:300,door:200,e:'🏠',n:'Lucas’s House',z:[['陸','ㄌㄨˋ'],['晨','ㄔㄣˊ'],['的','˙ㄉㄜ'],['家','ㄐㄧㄚ']],d:'Your binder and trophies',go:()=>S.freePacks>0?openPack(true):binder()},
+ {k:'home',x:60,w:300,door:200,e:'🏠',n:ME.n+'’s House',z:[...ME.zhName,['的','˙ㄉㄜ'],['家','ㄐㄧㄚ']],d:'Your binder and trophies',go:()=>S.freePacks>0?openPack(true):binder()},
  {k:'store',x:420,w:320,door:580,e:'🛒',n:'Card Store',z:[['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['店','ㄉㄧㄢˋ']],d:'Packs $2 and single cards',go:()=>store()},
  {k:'cash',x:800,w:260,door:930,e:'🧾',n:'Corner Shop',z:[['收','ㄕㄡ'],['銀','ㄧㄣˊ'],['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],d:'Cashier job · 35–50¢ a customer + tips',go:()=>cashier(false)},
  {k:'sort',x:1110,w:280,door:1250,e:'🗂️',n:'Card Warehouse',z:[['整','ㄓㄥˇ'],['理','ㄌㄧˇ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ']],d:'Sorting job · 50¢ a row',go:()=>sortJob()},
@@ -1090,7 +1145,7 @@ function bHome(b,night){const x=b.x,lit=night?'#ffe066':'#d0ebff';return `<g>
  <rect x="${x+40}" y="${GROUND-160}" width="70" height="60" fill="${lit}" ${SW5}/><text x="${x+75}" y="${GROUND-118}" font-size="34" text-anchor="middle">🏆</text>
  <rect x="${x+190}" y="${GROUND-160}" width="70" height="60" fill="${lit}" ${SW5}/><text x="${x+225}" y="${GROUND-118}" font-size="34" text-anchor="middle">📒</text>
  <rect x="${x+125}" y="${GROUND-110}" width="50" height="110" rx="6" fill="#1c7ed6" ${SW5}/><circle cx="${x+165}" cy="${GROUND-55}" r="5" fill="#ffd43b"/>
- <rect x="${x+70}" y="${GROUND-185}" width="160" height="22" rx="6" fill="#f76707" ${SW5}/><text x="${x+150}" y="${GROUND-168}" font-size="17" font-weight="900" fill="#fff" text-anchor="middle">LUCAS’S HOUSE</text>
+ <rect x="${x+70}" y="${GROUND-185}" width="160" height="22" rx="6" fill="#f76707" ${SW5}/><text x="${x+150}" y="${GROUND-168}" font-size="17" font-weight="900" fill="#fff" text-anchor="middle">${ME.n.toUpperCase()}’S HOUSE</text>
  ${S.freePacks>0?`<g class="bob"><text x="${x+150}" y="${GROUND-330}" font-size="40" text-anchor="middle">🎁</text></g>`:''}</g>`;}
 function bStore(b,night){const x=b.x;let stripes='';for(let i=0;i<8;i++)stripes+=`<path d="M${x+i*40} ${GROUND-210}H${x+i*40+40}L${x+i*40+34} ${GROUND-180}H${x+i*40+6}Z" fill="${i%2?'#fff':'#f76707'}" stroke="#1b1f3b" stroke-width="3"/>`;
  return `<g><rect x="${x}" y="${GROUND-300}" width="320" height="300" fill="#4c6ef5" ${SW5}/><rect x="${x+20}" y="${GROUND-290}" width="280" height="60" rx="10" fill="#1b1f3b"/>
@@ -1125,7 +1180,7 @@ function bStadium(b,night){const x=b.x;let lights='';for(let i=0;i<9;i++)lights+
  ${[0,1,2].map(i=>`<rect x="${x+40+i*120}" y="${GROUND-150}" width="80" height="80" fill="${['#e03131','#1c7ed6','#2f9e44'][i]}" stroke="#1b1f3b" stroke-width="4"/><text x="${x+80+i*120}" y="${GROUND-98}" font-size="36" text-anchor="middle">${['🔥','💧','🍃'][i]}</text>`).join('')}
  <path d="M${x+160} ${GROUND}V${GROUND-60}H${x+240}V${GROUND}Z" fill="#1b1f3b"/><text x="${x+200}" y="${GROUND-75}" font-size="16" font-weight="900" fill="#fff" text-anchor="middle">🏆 ×${S.trophies}</text></g>`;}
 function bLot(b,night){const x=b.x;if(S.shopOpen)return `<g><rect x="${x}" y="${GROUND-290}" width="330" height="290" fill="#1b1f3b" ${SW5}/><rect x="${x+15}" y="${GROUND-280}" width="300" height="56" rx="12" fill="#1b1f3b" stroke="#ffd43b" stroke-width="5"/>
- <text class="neon pink" x="${x+165}" y="${GROUND-240}" font-size="34" font-weight="900" font-style="italic" fill="#ff8cc6" text-anchor="middle">LUCAS’S CARDS</text>
+ <text class="neon pink" x="${x+165}" y="${GROUND-240}" font-size="34" font-weight="900" font-style="italic" fill="#ff8cc6" text-anchor="middle">${ME.shop.toUpperCase()}</text>
  <rect x="${x+20}" y="${GROUND-200}" width="180" height="150" fill="#fff3bf" ${SW5}/>${[0,1,2].map(i=>`<g transform="translate(${x+35+i*55} ${GROUND-185}) scale(.34)">${cardBackMini(['#e03131','#ffd43b','#4dabf7'][i])}</g>`).join('')}
  <rect x="${x+220}" y="${GROUND-180}" width="90" height="180" rx="6" fill="#f76707" ${SW5}/><text x="${x+265}" y="${GROUND-120}" font-size="16" font-weight="900" fill="#fff" text-anchor="middle">OPEN</text></g>`;
  const pr=Math.min(1,(S.cents/GOAL)*.6+(Math.min(S.trophies,TITLES)/TITLES)*.4),hgt=Math.round(40+pr*220);
@@ -1138,8 +1193,8 @@ function bLot(b,night){const x=b.x;if(S.shopOpen)return `<g><rect x="${x}" y="${
 const BART={home:bHome,store:bStore,cash:bCash,sort:bSort,insp:bInsp,arena:bArena,stadium:bStadium,lot:bLot};
 function lucasWalker(){return `<g id="lw"><g id="lwb"><ellipse cx="0" cy="58" rx="26" ry="6" fill="#000" opacity=".2"/>
  <path id="lgL" d="M-6 30L-10 54" stroke="#1b1f3b" stroke-width="9" stroke-linecap="round"/><path id="lgR" d="M6 30L10 54" stroke="#1b1f3b" stroke-width="9" stroke-linecap="round"/>
- <g transform="translate(-50 -78) scale(1)" filter="url(#glow)">${LUCAS.replace('<svg viewBox="0 0 100 112">','<g>').replace('</svg>','</g>')}</g></g>
- <rect x="-32" y="-96" width="64" height="20" rx="10" fill="#f76707" stroke="#1b1f3b" stroke-width="3"/><text x="0" y="-81" font-size="14" font-weight="900" fill="#fff" text-anchor="middle">Lucas</text></g>`;}
+ <g transform="translate(-50 -78) scale(1)" filter="url(#glow)">${MEAV.replace('<svg viewBox="0 0 100 112">','<g>').replace('</svg>','</g>')}</g></g>
+ <rect x="-32" y="-96" width="64" height="20" rx="10" fill="#f76707" stroke="#1b1f3b" stroke-width="3"/><text x="0" y="-81" font-size="14" font-weight="900" fill="#fff" text-anchor="middle">${ME.n}</text></g>`;}
 function kidWalker(f){return `<g><ellipse cx="0" cy="58" rx="22" ry="5" fill="#000" opacity=".2"/><path class="kl" d="M-5 30L-7 54M5 30L7 54" stroke="#495057" stroke-width="8" stroke-linecap="round"/><g transform="translate(-42 -62) scale(.84)">${kidSVG(f[1],f[2]).replace('<svg viewBox="0 0 100 112">','<g>').replace('</svg>','</g>')}</g></g>`;}
 function villageSVG(night,dusk){const sky=night?['#0b1026','#364fc7']:dusk?['#ff922b','#ffd8a8']:['#4dabf7','#d0ebff'];
  let stars='';if(night)for(let i=0;i<60;i++)stars+=`<circle cx="${(i*197)%WORLD_W}" cy="${(i*71)%260}" r="${i%4?1.5:2.6}" fill="#fff" class="${i%5?'':'twink'}" style="animation-delay:${(i%7)*.3}s"/>`;
@@ -1151,7 +1206,7 @@ function villageSVG(night,dusk){const sky=night?['#0b1026','#364fc7']:dusk?['#ff
  <rect x="-400" y="0" width="${WORLD_W+800}" height="${VH}" fill="url(#skyg)"/>
  <g id="pfar">${stars}<circle cx="300" cy="90" r="${night?34:46}" fill="${night?'#f8f9fa':'#ffe066'}"/>${night?'':'<circle cx="300" cy="90" r="64" fill="#ffe066" opacity=".25"/>'}</g>
  <g id="pcloud">${[100,700,1300,1900,2500].map((x,i)=>`<g class="drift" style="animation-delay:${-i*7}s"><ellipse cx="${x}" cy="${70+i%2*50}" rx="70" ry="22" fill="#fff" opacity="${night?.25:.9}"/><ellipse cx="${x+40}" cy="${60+i%2*50}" rx="40" ry="20" fill="#fff" opacity="${night?.25:.9}"/></g>`).join('')}
-  <g class="blimp"><ellipse cx="900" cy="150" rx="110" ry="34" fill="#f76707" stroke="#1b1f3b" stroke-width="5"/><path d="M1000 150L1040 126V174Z" fill="#e8590c" stroke="#1b1f3b" stroke-width="4"/><rect x="870" y="182" width="60" height="18" rx="5" fill="#495057" stroke="#1b1f3b" stroke-width="3"/><text x="900" y="160" font-size="26" font-weight="900" font-style="italic" fill="#fff" text-anchor="middle">CARD QUEST</text></g></g>
+  <g class="blimp"><ellipse cx="900" cy="150" rx="110" ry="34" fill="#f76707" stroke="#1b1f3b" stroke-width="5"/><path d="M1000 150L1040 126V174Z" fill="#e8590c" stroke="#1b1f3b" stroke-width="4"/><rect x="870" y="182" width="60" height="18" rx="5" fill="#495057" stroke="#1b1f3b" stroke-width="3"/><text x="900" y="160" font-size="26" font-weight="900" font-style="italic" fill="#fff" text-anchor="middle">${ME.g?'CARD SHOP':'CARD QUEST'}</text></g></g>
  <g id="pmid">${sky2}</g>
  <g id="phill"><path d="M-400 ${GROUND-60}Q200 ${GROUND-160} 800 ${GROUND-70}T2000 ${GROUND-80}T3400 ${GROUND-60}V${GROUND}H-400Z" fill="${night?'#2b8a3e':'#69db7c'}" opacity=".9"/></g>
  <g id="blds">${BLD.map(b=>`<g class="bld" data-b="${b.k}">${BART[b.k](b,night)}</g>`).join('')}</g>
@@ -1207,7 +1262,7 @@ function vTick(dt,now){const V=VL,sp=330;let moving=false;
   FX.emit(sx,sy,'gold',14,{speed:5});tone(1800,.08,'square',.06);tone(2400,.12,'square',.05,.06);toast(`🪙 You found ${c.v}¢!`,1200);}});
  V.kids.forEach((k,i)=>{const el=$('kid'+i);if(!el)return;if(Math.abs(k.x-V.x)>90||!k.stop){k.x+=k.dir*k.spd*dt;if(k.x<500||k.x>2700)k.dir*=-1;}k.stop=Math.abs(k.x-V.x)<90;
   el.setAttribute('transform',`translate(${k.x} ${GROUND-26}) scale(${k.dir} 1)`);const kb=el.querySelector('.kbub');if(kb)kb.setAttribute('transform',`scale(${k.dir} 1)`);el.querySelector('.kl').setAttribute('transform',k.stop?'':`rotate(${Math.sin(now/90+i)*6})`);});}
-function arrive(b,quiet){VL.at=b.k;const name=b.k==='lot'?(S.shopOpen?'Lucas’s Cards':'Your future shop'):b.n;let desc=b.d;
+function arrive(b,quiet){VL.at=b.k;const name=b.k==='lot'?(S.shopOpen?ME.shop:'Your future shop'):b.n;let desc=b.d;
  if(b.k==='lot')desc=S.shopOpen?'Sell cards and buy upgrades':`Needs ${money(GOAL)} + ${TITLES} 🏆 · you have ${money(S.cents)} + ${S.trophies} 🏆`;
  if(b.k==='home'&&S.freePacks>0)desc=`🎁 ${S.freePacks} free pack${S.freePacks>1?'s':''} waiting!`;
  $('vinfo').innerHTML=`<span class="ve">${b.e}</span><span class="vt"><b>${name}</b> ${zh(b.z)}<br><small>${desc}</small></span><button class="btn gold" id="vgo">Go in ▶</button>`;
@@ -1244,7 +1299,7 @@ function bigReveal(c,head,from,then){const r=document.createElement('div');r.cla
  r.querySelector('.row .btn').onclick=()=>{r.remove();REV=null;then&&then();};}
 
 /* ---------- question bank: 20 kinds, 3 levels; gets harder as Lucas gets them right ---------- */
-const qLv=()=>Math.min(3,1+Math.floor((S.qRight||0)/4));
+const qLv=()=>Math.min(3,(ME.g?2:1)+Math.floor((S.qRight||0)/4));
 let LASTQ=null;
 function qScore(first){S.qRight=first?(S.qRight||0)+1:Math.max(0,(S.qRight||0)-1);save();if(LASTQ)track(LASTQ.kind,first,LASTQ.q,LASTQ.ans);LASTQ=null;}
 /* difficulty per skill: grows with that skill's medals, never below the overall level minus one, and eases off while he is struggling */
@@ -1310,7 +1365,7 @@ function maybeMaster(then){if(then===undefined){if(Math.random()>=masterChance()
  const R0=makeQ(),q=R0.q,ans=R0.ans,opts=R0.opts,why=R0.why,extraHTML=R0.extra;window.__mops=R0.ops||[];
  setScreen('master',`<div class="hub"><div class="panel" style="text-align:center;background:#f3f0ff"><div class="av" style="margin:0 auto;width:110px">${MASTER}<span class="badge" style="background:#5f3dc4">${nm}</span></div>
  <h2 class="h" style="margin-top:14px">✨ A mystery Card Master appears!</h2>${zh([['神','ㄕㄣˊ'],['秘','ㄇㄧˋ'],['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['大','ㄉㄚˋ'],['師','ㄕ']])}
- <p style="font-size:1.15rem;font-weight:700">“Solve my riddle and I will give you a card, young Lucas.”</p><p style="font-size:1.2rem;font-weight:700;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px 12px;max-width:560px;margin:6px auto">${q}</p>${extraHTML}<div class="opts" id="mo">${opts.map(o=>`<button class="btn" data-a="o" data-v="${o}">${o}</button>`).join('')}</div>${(R0.ops&&R0.ops.length)?'<button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button>':''}<p id="mm" style="font-weight:800;min-height:1.3em"></p></div></div>`);
+ <p style="font-size:1.15rem;font-weight:700">“Solve my riddle and I will give you a card, young ${ME.n}.”</p><p style="font-size:1.2rem;font-weight:700;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px 12px;max-width:560px;margin:6px auto">${q}</p>${extraHTML}<div class="opts" id="mo">${opts.map(o=>`<button class="btn" data-a="o" data-v="${o}">${o}</button>`).join('')}</div>${(R0.ops&&R0.ops.length)?'<button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button>':''}<p id="mm" style="font-weight:800;min-height:1.3em"></p></div></div>`);
  say('A mystery Card Master appears! '+q.replace(/<[^>]+>/g,'').replace(/▢/g,'blank'));
  let tries=0;window.__mans=ans;
  const gift=(good)=>{const c=prizeCard(good?[['promo',4],['legend',3],['holo',3]]:[['holo',7],['legend',3]]);
@@ -1400,7 +1455,7 @@ function myShop(){S.up=S.up||{};S.stock=S.stock||[];const n=slotsN();
  const slot=(it,i)=>{if(!it)return `<button class="mslot empty" data-a="add"><span class="big">＋</span>Add a card</button>`;const c=byId(it.id),[tg,tc]=priceTag(it);
   return `<div class="mslot"><div class="mcard">${cardHTML(c)}</div><div class="prc"><button class="btn ghost pm" data-a="dn" data-v="${i}" aria-label="Lower price">−</button><b>${money(it.price)}</b><button class="btn ghost pm" data-a="up" data-v="${i}" aria-label="Raise price">＋</button></div>
    <small style="color:${tc};font-weight:900">${tg}</small><small>worth about ${money(fair(c))}</small><button class="btn ghost small" data-a="back" data-v="${i}">↩ Back to binder</button></div>`;};
- setScreen('myshop',`<div class="hub"><div class="panel shopsign"><div class="sign ${S.up.sign?'neon':''}">🏪 Lucas’s Cards</div>${zh([['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']])}
+ setScreen('myshop',`<div class="hub"><div class="panel shopsign"><div class="sign ${S.up.sign?'neon':''}">🏪 ${ME.shop}</div>${zh([['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']])}
  <p>Put your <b>extra</b> cards on the shelf and pick a price. Too high and customers walk away. Too low and you earn less!</p>
  <div class="row" style="font-weight:800">${UPG.filter(u=>S.up[u.k]).map(u=>`<span>${u.e} ${u.n}</span>`).join(' · ')||''}</div></div>
  <div class="panel"><h2 class="h">Shelf (${S.stock.length}/${n})</h2><div class="mshelf">${Array.from({length:n},(_,i)=>slot(S.stock[i],i)).join('')}</div></div>
@@ -1432,7 +1487,7 @@ let CJ=null;
 function coinEl(k){const c=CO.find(x=>x[0]===k),d=document.createElement('div');d.className='coin '+k;d.innerHTML=(k==='b'?'$1':c[1]+'¢')+'<small>'+c[2]+'</small>';d._v=c[1];return d;}
 function cashier(own){
  CJ={own,jar:0,n:0,earn:0,tries:0,price:0,pay:0,item:null,sold:0,walk:0,tips:0,total:own?3+(S.up&&S.up.sign?1:0):3};
- setScreen('cash',`<div class="m"><div class="counter"><div class="jar" id="jar">${jarSVG(0)}<b id="jart">0¢</b></div><div style="font-weight:800">${own?'🏪 Lucas’s Cards':'🧾 Cashier job'} · customer <span id="cn">1</span>/${CJ.total}</div><div class="av" id="cav" style="width:90px"></div><div class="bub" id="bub"></div><div class="mini-item" id="it"></div><div class="paid" id="paid"></div><button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button></div>
+ setScreen('cash',`<div class="m"><div class="counter"><div class="jar" id="jar">${jarSVG(0)}<b id="jart">0¢</b></div><div style="font-weight:800">${own?'🏪 '+ME.shop:'🧾 Cashier job'} · customer <span id="cn">1</span>/${CJ.total}</div><div class="av" id="cav" style="width:90px"></div><div class="bub" id="bub"></div><div class="mini-item" id="it"></div><div class="paid" id="paid"></div><button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button></div>
  <div class="tray"><h3>Change tray · tap a coin to take it back</h3><div id="change"></div><button class="btn" id="give">Give change 🤲</button></div>
  <div class="reg" id="reg"><b>Drag coins →</b></div></div>`);
  CO.forEach(([k])=>{const src=coinEl(k);$('reg').appendChild(src);makeDrag(src,{move:(el,x,y)=>$('change').classList.toggle('glow',hit($('change'),x,y)),drop:(el,x,y)=>{$('change').classList.remove('glow');if(hit($('change'),x,y))addCoin(k);}});});
@@ -1596,7 +1651,7 @@ function startBattle(team,p){B={kind:p.kind,round:p.round||0,foe:p.foe,me:{team,
 const act=s=>byId(B[s].team[B[s].idx]);
 function renderSide(s){const P=B[s],c=act(s),el=$(s==='me'?'sMe':'sOpp'),pct=P.hp/c.hp*100;if(!el||!c)return;
  const dots=P.team.map((id,i)=>`<span style="color:${P.ko[i]?'#868e96':T[byId(id).type].c}">${P.ko[i]?'✖':i===P.idx?'◉':'●'}</span>`).join('');
- el.innerHTML=`<div class="who">${s==='me'?`<div class="mini av me" style="width:38px;flex-basis:38px">${LUCAS}</div><span style="color:var(--lucas)">Lucas</span>`:`<div class="mini">${kidSVG(B.foe[1],B.foe[2])}</div><span style="color:var(--red)">${B.foe[0]}</span>`}<span class="dots">${dots}</span><span class="enb" id="en-${s}">⚡${P.en}</span></div>
+ el.innerHTML=`<div class="who">${s==='me'?`<div class="mini av me" style="width:38px;flex-basis:38px">${MEAV}</div><span style="color:var(--lucas)">${ME.n}</span>`:`<div class="mini">${kidSVG(B.foe[1],B.foe[2])}</div><span style="color:var(--red)">${B.foe[0]}</span>`}<span class="dots">${dots}</span><span class="enb" id="en-${s}">⚡${P.en}</span></div>
  <div class="slot" id="slot-${s}">${cardHTML(c)}</div><div class="hp"><div class="bar"><i class="${pct<=25?'crit':pct<=50?'low':''}" style="width:${pct}%"></i></div><span>${P.hp}/${c.hp}</span></div>`;}
 function setEn(s){const e=$('en-'+s);if(e&&B){e.textContent='⚡'+B[s].en;e.classList.remove('pulse');void e.offsetWidth;e.classList.add('pulse');}}
 function msg(h){if(!$('mid'))return;$('mid').innerHTML='<div>'+h+'</div>';}
@@ -1650,7 +1705,7 @@ function hit2(target,dmg,label,info){const atkSide=target==='op'?'me':'op',P=B[t
    else{target==='op'?endMyTurn():startMyTurn();}},1000);}),450);}
 function cardEnter(s){const sl=$('slot-'+s);if(!sl)return;sl.classList.add('enter');whoosh();setTimeout(()=>{const [x,y]=ctr(sl);FX.ring(x,y,s==='me'?'#4dabf7':'#ff6b6b',90);FX.emit(x,y+50,'rock',8,{dir:-Math.PI/2,spread:2.4,speed:4,life:22,size:3});tone(120,.15,'square',.1);},500);}
 function vsIntro(then){if(RM){then();return;}const me=act('me'),op=act('op'),v=document.createElement('div');v.className='vs';
- v.innerHTML=`<div class="l"><div class="av me">${LUCAS}</div>Lucas<div style="width:clamp(90px,22vh,170px)">${cardHTML(me)}</div></div><div class="r"><div class="av">${kidSVG(B.foe[1],B.foe[2])}</div>${B.foe[0]}<div style="width:clamp(90px,22vh,170px)">${cardHTML(op)}</div></div><b>VS</b>`;
+ v.innerHTML=`<div class="l"><div class="av me">${MEAV}</div>${ME.n}<div style="width:clamp(90px,22vh,170px)">${cardHTML(me)}</div></div><div class="r"><div class="av">${kidSVG(B.foe[1],B.foe[2])}</div>${B.foe[0]}<div style="width:clamp(90px,22vh,170px)">${cardHTML(op)}</div></div><b>VS</b>`;
  document.body.appendChild(v);whoosh();setTimeout(()=>{boom();FX.quake();FX.flash('#fff');},500);
  let done=false;const end=()=>{if(done)return;done=true;v.classList.add('out');setTimeout(()=>{v.remove();then();},330);};v.onclick=end;setTimeout(end,2200);}
 function banner(won,then){const d=document.createElement('div');d.className='banner'+(won?'':' lose');d.innerHTML=`<div class="rays"></div><h1>${won?'VICTORY!':'GOOD BATTLE!'}</h1>`;document.body.appendChild(d);
@@ -1787,13 +1842,13 @@ function tourStart(){if(Object.keys(S.owned).length<3){toast('You need 3 cards')
  bindAll({home:()=>hub(),cup(k){const c=cupBy(k);if(!cupCanEnter(c)){sfx.bad();toast('You need 3 cards that follow the rule!');return;}if(S.cents<100){sfx.bad();toast('You need $1.00. Try a job! 🧾');return;}
   modal(`<div class="big">${c.e}</div><h2>${c.n}</h2><p><b>Rule:</b> ${c.d}.<br>Pay $1.00 to enter?</p>`,[['Enter! ▶',()=>{S.cents-=100;save();sfx.coin();TR={round:0,cup:k};tourBracket();}],['Not now',null,'ghost']]);}});}
 /* Rival Road: six rivals with their own decks, beaten in order */
-const RIVALS=[{n:'Sprout Sam',f:['#5c940d','#ffdbac'],deck:[4,27,74],e:'🌱',say:'My leafy team grows stronger every day!',cash:100},
- {n:'Splash Kai',f:['#1c7ed6','#c68642'],deck:[3,77,34],e:'💧',say:'Water beats fire. Just saying!',cash:150},
- {n:'Blaze Leo',f:['#e03131','#f1c27d'],deck:[24,73,10],e:'🔥',say:'Feel the heat of my fire deck!',cash:200},
- {n:'Rocky Ben',f:['#5c5f66','#ffdbac'],deck:[99,49,15],e:'🪨',say:'My rock cards never back down.',cash:250},
- {n:'Storm Ryan',f:['#7048e8','#ffe0bd'],deck:[104,62,16],e:'🌪️',say:'Lightning and wind. Good luck!',cash:300},
- {n:'Champion Max',f:['#ffd43b','#e0ac69'],deck:[114,13,108],e:'👑',say:'I am the Champion. Show me your best!',cash:500}];
-function arenaMenu(){modal(`<div class="big">⚔️</div><h2>Battle Arena ${zh([['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']])}</h2><p>Practice against a kid, or take on the Rival Road!</p>`,[['🤝 Friendly battle',()=>teamPick('friendly')],['🛣️ Rival Road',rivalRoad,'gold']]);}
+const RIVALS=[{n:ME.g?'Sprout Sara':'Sprout Sam',f:['#5c940d','#ffdbac'],deck:[4,27,74],e:'🌱',say:'My leafy team grows stronger every day!',cash:100},
+ {n:ME.g?'Splash Kaia':'Splash Kai',f:['#1c7ed6','#c68642'],deck:[3,77,34],e:'💧',say:'Water beats fire. Just saying!',cash:150},
+ {n:ME.g?'Blaze Leah':'Blaze Leo',f:['#e03131','#f1c27d'],deck:[24,73,10],e:'🔥',say:'Feel the heat of my fire deck!',cash:200},
+ {n:ME.g?'Rocky Bella':'Rocky Ben',f:['#5c5f66','#ffdbac'],deck:[99,49,15],e:'🪨',say:'My rock cards never back down.',cash:250},
+ {n:ME.g?'Storm Rina':'Storm Ryan',f:['#7048e8','#ffe0bd'],deck:[104,62,16],e:'🌪️',say:'Lightning and wind. Good luck!',cash:300},
+ {n:ME.g?'Champion Maya':'Champion Max',f:['#ffd43b','#e0ac69'],deck:[114,13,108],e:'👑',say:'I am the Champion. Show me your best!',cash:500}];
+function arenaMenu(){modal(`<div class="big">⚔️</div><h2>Battle Arena ${zh([['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']])}</h2><p>Practice against a kid, or take on the Rival Road!</p>`,[['🤝 Friendly battle',()=>teamPick('friendly')],['🛣️ Rival Road',rivalRoad,'gold'],[`👫 Duo with ${ME.otherN}`,duoMenu]]);}
 function rivalRoad(){const st=S.rivalStage||0;
  setScreen('rival',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🛣️ Rival Road ${zh([['對','ㄉㄨㄟˋ'],['手','ㄕㄡˇ'],['之','ㄓ'],['路','ㄌㄨˋ']])}</h2><p style="font-weight:700">Beat each rival to win their badge. The Champion waits at the end!</p>
  <div class="road">${RIVALS.map((r,i)=>`<button class="rv ${i<st?'done':i===st?'now':'lock'}" data-a="rv" data-v="${i}"><div class="rva">${kidSVG(r.f[0],r.f[1])}</div><div class="rvt"><b>${i+1}. ${r.n}</b><small>${i<st?'Badge won! '+r.e:i===st?'Tap to battle!':'🔒 Beat '+RIVALS[i-1].n+' first'}</small><span>${r.deck.map(id=>T[byId(id).type].i).join(' ')}</span></div><span class="badge2">${i<st?r.e:i===st?'⚔️':'🔒'}</span></button>`).join('')}</div>
@@ -1816,7 +1871,7 @@ function evolveGo(c){const to=evoTo(c.id);if(!to||(S.owned[c.id]||0)<3)return;S.
  setTimeout(()=>{clearInterval(sp);FX.flash('#fff');boom();d.remove();bigReveal(to,'✨ Evolution!',`${c.name} evolved into ${to.name}!`,()=>binder());},RM?100:2400);}
 /* ---------- Story intro + Quest Book (how the game works, what to do next) ---------- */
 const STORY=[
- {art:()=>`<div class="sav">${LUCAS}</div>`,h:'Welcome to Card Town, Lucas!',zh:[['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['小','ㄒㄧㄠˇ'],['鎮','ㄓㄣˋ']],t:'This town is full of amazing creature cards. Every kid here collects them and battles with them.'},
+ {art:()=>`<div class="sav">${MEAV}</div>`,h:'Welcome to Card Town, '+ME.n+'!',zh:[['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['小','ㄒㄧㄠˇ'],['鎮','ㄓㄣˋ']],t:'This town is full of amazing creature cards. Every kid here collects them and battles with them.'},
  {art:()=>`<div class="sfan">${[10,94,13].map(i=>cardHTML(byId(i))).join('')}</div>`,h:'Your big dream',zh:[['夢','ㄇㄥˋ'],['想','ㄒㄧㄤˇ']],t:'Become the Card Quest Champion and open your very own card shop!'},
  {art:()=>`<div class="sbig">🎁📒</div>`,h:'Step 1: Collect cards',zh:[['收','ㄕㄡ'],['集','ㄐㄧˊ']],t:'Rip packs to get cards. Keep them in your binder. Get 3 of the same card to evolve it into a stronger one!'},
  {art:()=>`<div class="sbig">🧾🗂️🔍</div>`,h:'Step 2: Work and earn money',zh:[['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],t:'Do jobs at the store: give change, sort cards, and spot fake cards. Use your math to earn money and ⭐ stars.'},
@@ -1859,7 +1914,7 @@ const LVN=['Starter','🥉 Bronze','🥈 Silver','🥇 Gold'],LVAT=[0,5,15,30];
 function skRec(k){S.sk=S.sk||{};return S.sk[k]=S.sk[k]||{n:0,ok:0,r:[]};}
 /* level = how many first-try right answers, but drops back while recent answers are mostly wrong */
 function skLevel(k){const s=skRec(k);let lv=LVAT.filter(x=>s.ok>=x).length-1;const rec=s.r.slice(-6);if(rec.length>=5&&rec.filter(Boolean).length<=2)lv=Math.max(0,lv-1);return lv;}
-const skDiff=k=>Math.min(3,1+skLevel(k));
+const skDiff=k=>Math.min(3,(ME.g?2:1)+skLevel(k));
 /* every answered question goes through here: first = right on the first try */
 function track(kind,first,qtext,ans){const k=skillOf(kind),s=skRec(k),before=LVAT.filter(x=>s.ok>=x).length-1;
  s.n++;if(first)s.ok++;s.r=s.r.concat(first?1:0).slice(-10);
@@ -1886,8 +1941,8 @@ function practice(k,i,earn){const sk=SKILLS.find(s=>s.k===k);if(i>=5){return res
   else{tries++;sfx.bad();b.disabled=true;if(tries>=2){qScore(false);$('pm').innerHTML='The answer is <b>'+R0.ans+'</b>. '+R0.why;main.querySelector(`[data-a=o][data-v="${R0.ans}"]`).classList.add('green');tries=-1;next(2600);}else $('pm').textContent='Not quite. Try again!';}}});}
 /* shared arcade progress tracker (weekly report): one row per tap */
 const kaTxt=v=>String(v==null?'':v).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-function kaAns(q,given,expected,ok,tryNo,topic,qid){try{if(window.KA){KA.setKid('lucas');KA.answer({q:kaTxt(q),qid:qid?kaTxt(qid):undefined,given:kaTxt(given),expected:kaTxt(expected),correct:!!ok,tryNo:tryNo||1,topic:topic||''});}}catch(e){}}
-function kaShown(){try{if(window.KA){KA.setKid('lucas');KA.shown();}}catch(e){}}
+function kaAns(q,given,expected,ok,tryNo,topic,qid){try{if(window.KA){KA.setKid(KID);KA.answer({q:kaTxt(q),qid:qid?kaTxt(qid):undefined,given:kaTxt(given),expected:kaTxt(expected),correct:!!ok,tryNo:tryNo||1,topic:topic||''});}}catch(e){}}
+function kaShown(){try{if(window.KA){KA.setKid(KID);KA.shown();}}catch(e){}}
 const skName=kind=>{const s=SKILLS.find(x=>x.q.includes(kind));return s?s.n:kind;};
 /* ---------- Achievements: checked on every screen change; each pays 25¢ once ---------- */
 const own=()=>Object.keys(S.owned).map(Number);
@@ -1902,7 +1957,7 @@ const ACH=[
  {k:'w10',e:'🛡️',n:'Battle Pro',d:'Win 10 battles',ok:()=>(S.wins||0)>=10},
  {k:'w30',e:'🗡️',n:'Battle Legend',d:'Win 30 battles',ok:()=>(S.wins||0)>=30},
  {k:'b3',e:'🎖️',n:'Badge Hunter',d:'Win 3 Rival Road badges',ok:()=>(S.rivalStage||0)>=3},
- {k:'champ',e:'🏅',n:'Card Quest Champion',d:'Beat Champion Max',ok:()=>(S.rivalStage||0)>=6},
+ {k:'champ',e:'🏅',n:'Card Quest Champion',d:'Beat '+RIVALS[5].n,ok:()=>(S.rivalStage||0)>=6},
  {k:'t1',e:'🏆',n:'Title Winner',d:'Win a tournament',ok:()=>S.trophies>=1},
  {k:'shop',e:'🏪',n:'Shop Owner',d:'Open your own card shop',ok:()=>!!S.shopOpen},
  {k:'evo',e:'✨',n:'Evolver',d:'Evolve a card',ok:()=>(S.evolved||0)>=1},
@@ -1921,10 +1976,157 @@ function achRoom(){S.ach=S.ach||{};const got=ACH.filter(a=>S.ach[a.k]).length;
  <div class="achs">${ACH.map(a=>{const g=S.ach[a.k];return `<div class="ach ${g?'got':''}"><span class="ae">${g?a.e:'🔒'}</span><b>${a.n}</b><small>${a.d}</small></div>`;}).join('')}</div>
  <div class="row"><button class="btn ghost" data-a="qb">📜 Quest Book</button><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
  bindAll({qb:()=>questBook(),home:()=>hub()});}
+/* ---------- Duo battle: Nora vs Lucas on two devices with a 4-digit room code ----------
+   Finding each other: the free public PeerJS relay (0.peerjs.com) passes a few setup messages,
+   then the two devices talk directly (WebRTC). If a direct link can't be made in time, the
+   game messages go through the relay instead. The room maker's device runs the battle
+   (it holds the true state) and sends it to the other device after every move. */
+const DUO_NS='liukidscq-';
+const NET={};
+function netReset(){try{NET.dc&&NET.dc.close();}catch(e){}try{NET.pc&&NET.pc.close();}catch(e){}try{NET.ws&&NET.ws.close();}catch(e){}
+ clearInterval(NET.hb);clearInterval(NET.ping);clearTimeout(NET.t1);clearTimeout(NET.t2);
+ Object.keys(NET).forEach(k=>delete NET[k]);}
+function sigSend(type,payload){try{NET.ws&&NET.ws.send(JSON.stringify({type,payload,dst:NET.peer}));}catch(e){}}
+/* the relay connection; window.__duoBC swaps in a same-browser stand-in for automated tests */
+function sigOpen(id,onOpen,onFail){NET.id=id;
+ if(window.__duoBC){const bc=new BroadcastChannel('cqduo');NET.ws={send:s=>{const o=JSON.parse(s);if(o.type==='HEARTBEAT')return;o.src=id;bc.postMessage(o);},close:()=>bc.close()};
+  bc.onmessage=e=>{if(e.data.dst===id)sigMsg(e.data);};setTimeout(()=>onOpen(),60);NET.onOpen=onOpen;return;}
+ let ws;try{ws=new WebSocket(`wss://0.peerjs.com/peerjs?key=peerjs&id=${id}&token=${Math.random().toString(36).slice(2,12)}&version=1.5.4`);}catch(e){return onFail('net');}
+ NET.ws=ws;NET.onOpen=onOpen;NET.onFail=onFail;
+ ws.onmessage=e=>{let m;try{m=JSON.parse(e.data);}catch(x){return;}if(m.type==='OPEN'){const f=NET.onOpen;NET.onOpen=null;f&&f();}else if(m.type==='ID-TAKEN'){onFail('taken');}else if(m.type==='ERROR'){onFail('net');}else sigMsg(m);};
+ ws.onerror=()=>{if(!NET.live)onFail('net');};ws.onclose=()=>{if(!NET.live&&!NET.closing)onFail('net');};
+ NET.hb=setInterval(()=>{try{ws.readyState===1&&ws.send('{"type":"HEARTBEAT"}');}catch(e){}},5000);}
+function mkPC(){const pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]});NET.qc=[];
+ pc.onicecandidate=e=>{if(e.candidate)sigSend('CANDIDATE',{c:e.candidate.toJSON?e.candidate.toJSON():e.candidate});};
+ pc.onconnectionstatechange=()=>{if(['failed','closed'].includes(pc.connectionState)&&NET.live&&!NET.relay)duoLost();};return pc;}
+function wireDC(dc){NET.dc=dc;dc.onopen=()=>netLive(false);dc.onmessage=e=>{try{netIn(JSON.parse(e.data));}catch(x){}};dc.onclose=()=>{if(NET.live&&!NET.relay&&!NET.closing)duoLost();};}
+async function sigMsg(m){const p=m.payload||{};
+ if(m.type==='OFFER'&&NET.host){if(NET.peer&&NET.peer!==m.src)return;NET.peer=m.src;const pc=NET.pc=mkPC();pc.ondatachannel=e=>wireDC(e.channel);
+  try{await pc.setRemoteDescription(p.sdp);for(const c of NET.qc)await pc.addIceCandidate(c).catch(()=>{});NET.qc=null;const a=await pc.createAnswer();await pc.setLocalDescription(a);sigSend('ANSWER',{sdp:pc.localDescription});}catch(e){}
+  netFallbackTimer();duoStatus('🔗 Connecting to the other player…');}
+ else if(m.type==='ANSWER'&&!NET.host&&NET.pc){NET.got=true;clearTimeout(NET.t1);try{await NET.pc.setRemoteDescription(p.sdp);for(const c of NET.qc)await NET.pc.addIceCandidate(c).catch(()=>{});NET.qc=null;}catch(e){}netFallbackTimer();}
+ else if(m.type==='CANDIDATE'){if(p.g){if(!NET.live)netLive(true);netIn(p.g);return;}if(!p.c||!NET.pc)return;if(NET.qc)NET.qc.push(p.c);else NET.pc.addIceCandidate(p.c).catch(()=>{});}
+ else if(m.type==='EXPIRE'&&!NET.host&&!NET.got)duoNoRoom();
+ else if(m.type==='LEAVE'&&NET.live)duoLost();}
+/* if the direct link isn't up after 9 seconds, use the relay for game messages */
+function netFallbackTimer(){clearTimeout(NET.t2);NET.t2=setTimeout(()=>{if(!NET.live){netLive(true);netSend({t:'relay'});}},9000);}
+function netLive(relay){if(NET.live)return;NET.live=true;NET.relay=relay;NET.seen=Date.now();
+ NET.ping=setInterval(()=>{netSend({t:'ping'});if(Date.now()-NET.seen>20000)duoLost();},4000);
+ netSend({t:'hi',kid:KID,n:ME.n,col:ME.col,g:ME.g});}
+function netSend(o){try{if(NET.dc&&NET.dc.readyState==='open'&&!NET.relay)NET.dc.send(JSON.stringify(o));else if(NET.live)sigSend('CANDIDATE',{g:o});}catch(e){}}
+function netIn(m){NET.seen=Date.now();if(m.t==='ping')return;if(m.t==='relay'){if(!NET.relay){NET.relay=true;}return;}duoIn(m);}
+
+/* ---------- screens: make a room / join a room ---------- */
+let DU=null; // this device's view of the duo game
+function duoMenu(){netReset();DU=null;const o=ME.otherN;
+ setScreen('duo',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">👫 Duo Battle ${zh([['雙','ㄕㄨㄤ'],['人','ㄖㄣˊ'],['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']])}</h2>
+ <p style="font-weight:700">Battle ${o} on another iPad or phone! Both of you need the internet.</p>
+ <div class="duob"><button class="cupb" data-a="mk"><span class="e">🏠</span><b>Make a room</b><small>You get a 4-digit code</small></button><button class="cupb" data-a="jn"><span class="e">🔢</span><b>Join a room</b><small>Type ${o}’s code</small></button></div>
+ <div class="tip" style="text-align:left">🤝 Shake hands before and after. Say “Good game!” at the end.<br>🎁 You <b>both</b> get a mystery card after the battle!</div>
+ <div class="row"><button class="btn ghost" data-a="home">🏠 Home</button></div></div></div>`);
+ bindAll({home:()=>hub(),mk:()=>duoHost(0),jn:()=>duoJoinPad('')});}
+function duoWait(h){setScreen('duo',`<div class="hub"><div class="panel" style="text-align:center">${h}<p id="dst" class="dst"></p><div class="row"><button class="btn ghost" data-a="x">✖ Cancel</button></div></div></div>`);bindAll({x:()=>{NET.closing=true;duoMenu();}});}
+function duoStatus(t){const e=$('dst');if(e)e.textContent=t;}
+function duoHost(tries){netReset();const code=String(ri(1000,9999));NET.host=true;NET.code=code;
+ duoWait(`<h2 class="h">🏠 Your room</h2><p style="font-weight:700">Tell ${ME.otherN} to tap <b>Join a room</b> and type:</p><div class="bigcode">${code.split('').map(d=>`<span>${d}</span>`).join('')}</div>`);duoStatus('Opening the room…');
+ sigOpen(DUO_NS+code,()=>duoStatus(`⏳ Waiting for ${ME.otherN}…`),why=>{if(why==='taken'&&tries<4)return duoHost(tries+1);duoNet();});}
+function duoJoinPad(v){const o=ME.otherN;
+ setScreen('duo',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🔢 Join ${o}’s room</h2><p style="font-weight:700">Type the 4 numbers on ${o}’s screen.</p>
+ <div class="bigcode">${[0,1,2,3].map(i=>`<span class="${v[i]?'':'empty'}">${v[i]||''}</span>`).join('')}</div>
+ <div class="keys">${[1,2,3,4,5,6,7,8,9,'⌫',0,'✔'].map(k=>`<button class="btn ${k==='✔'?'gold':''}" data-a="k" data-v="${k}" ${k==='✔'&&v.length<4?'disabled':''}>${k}</button>`).join('')}</div>
+ <div class="row"><button class="btn ghost" data-a="back">◀ Back</button></div></div></div>`);
+ bindAll({back:duoMenu,k(k){if(k==='⌫')return duoJoinPad(v.slice(0,-1));if(k==='✔')return duoJoin(v);if(v.length<4){sfx.pop();duoJoinPad(v+k);}}});}
+function duoJoin(code){netReset();NET.host=false;NET.code=code;NET.peer=DUO_NS+code;
+ duoWait(`<h2 class="h">🔢 Room ${code}</h2><div class="spin">🃏</div>`);duoStatus('Looking for the room…');
+ sigOpen(DUO_NS+code+'-g'+Math.random().toString(36).slice(2,7),async()=>{const pc=NET.pc=mkPC();wireDC(pc.createDataChannel('cq'));
+  try{const off=await pc.createOffer();await pc.setLocalDescription(off);sigSend('OFFER',{sdp:pc.localDescription});}catch(e){return duoNet();}
+  NET.t1=setTimeout(()=>{if(!NET.got)duoNoRoom();},10000);},()=>duoNet());}
+function duoNoRoom(){if(SCREEN!=='duo')return;const c=NET.code;netReset();sfx.bad();
+ modal(`<div class="big">🤔</div><h2>No room ${c}</h2><p>Check the 4 numbers on ${ME.otherN}’s screen, and make sure ${ME.otherN} made the room first.</p>`,[['Try again',()=>duoJoinPad('')],['Back',duoMenu,'ghost']]);}
+function duoNet(){if(SCREEN!=='duo'&&SCREEN!=='duob')return;netReset();sfx.bad();
+ modal(`<div class="big">📶</div><h2>Can’t connect</h2><p>Check that this device is on the internet, then try again.</p>`,[['OK',duoMenu]]);}
+function duoLost(){if(!NET.live||NET.closing)return;NET.closing=true;const st=DU&&DU.st;netReset();
+ if(st&&st.phase==='prize')return;toast('📶 Lost the connection to the other player',3000);sfx.bad();setTimeout(()=>{if(['duo','duob'].includes(SCREEN))duoMenu();},400);}
+
+/* ---------- the game: host holds DU.st and sends it after every change ---------- */
+function duoIn(m){if(m.t==='hi'){DU={me:NET.host?0:1,foe:m,st:null};sfx.good();if(NET.host){DU.st={phase:'pick',turn:0,log:'',fx:null,seq:0,p:[duoP({kid:KID,n:ME.n,col:ME.col,g:ME.g}),duoP(m)]};duoPush();}return;}
+ if(m.t==='st'){if(NET.host)return;if(!DU)DU={me:1,foe:{},st:null};DU.st=m.st;duoShow();return;}
+ if(NET.host&&DU&&DU.st)duoAct(1,m);}
+const duoP=h=>({kid:h.kid,n:h.n,col:h.col,g:!!h.g,team:null,hp:[],ko:[],idx:0,en:0,shook:0});
+function duoPush(){DU.st.seq++;netSend({t:'st',st:DU.st});duoShow();}
+function duoMine(m){if(!DU||!DU.st)return;if(NET.host)duoAct(0,m);else netSend(m);}
+function duoAct(s,m){const st=DU.st,P=st.p[s],F=st.p[1-s];st.fx=null;
+ if(m.t==='team'&&st.phase==='pick'&&!P.team){P.team=m.ids.slice(0,3);P.hp=P.team.map(id=>byId(id).hp);P.ko=[0,0,0];
+  if(st.p.every(p=>p.team)){st.phase='shake1';}}
+ else if(m.t==='shake'){if(st.phase==='shake1'||st.phase==='gg'){P.shook=1;if(st.p.every(p=>p.shook)){st.p.forEach(p=>p.shook=0);if(st.phase==='shake1'){st.phase='battle';st.turn=Math.random()<.5?0:1;st.drew=0;st.sw=0;st.log=`🪙 Coin flip: <b>${st.p[st.turn].n}</b> goes first!`;}else st.phase='prize';}}}
+ else if(st.phase==='battle'&&st.turn===s){const c=byId(P.team[P.idx]),foe=byId(F.team[F.idx]);
+  if(m.t==='draw'&&!st.drew){const n=Math.random()<.6?1:2;P.en+=n;st.drew=1;st.log=`${P.n} drew <b>+${n}</b> ⚡`;st.fx={k:'en',s};}
+  else if(m.t==='atk'&&st.drew){const a=c.atk[+m.i];if(!a||P.en<a.c)return;P.en-=a.c;const weak=WEAK[foe.type]===c.type,dmg=a.d*(weak?2:1);F.hp[F.idx]=Math.max(0,F.hp[F.idx]-dmg);
+   st.log=`${P.n}’s <b>${c.name}</b> used <b>${a.n}</b>! ${dmg} damage${weak?' (×2!)':''}`;st.fx={k:'hit',s,a:a.n,type:c.type,dmg,weak};
+   if(!F.hp[F.idx]){F.ko[F.idx]=1;const nx=F.ko.findIndex(k=>!k);st.log+=`<br>💥 ${foe.name} is knocked out!`;st.fx.ko=1;
+    if(nx<0){st.phase='gg';st.win=s;st.log+=`<br>🏆 <b>${P.n}</b> wins!`;return duoPush();}F.idx=nx;st.log+=` ${F.n} sends out <b>${byId(F.team[nx]).name}</b>.`;}
+   duoNext(st);}
+  else if(m.t==='sw'&&!st.sw){const j=+m.i,rc=retreatCost(c);if(j===P.idx||P.ko[j]||P.en<rc)return;P.en-=rc;P.idx=j;st.sw=1;st.log=`🔄 ${P.n} switched to <b>${byId(P.team[j]).name}</b>`;st.fx={k:'sw',s};}
+  else if(m.t==='end'&&st.drew){st.log=`${P.n} ended the turn.`;duoNext(st);}
+  else return;}
+ else return;
+ duoPush();}
+function duoNext(st){st.turn=1-st.turn;st.drew=0;st.sw=0;}
+let duoLastSeq=-1,duoLastPhase='';
+function duoShow(){const st=DU.st;if(!st)return;const me=DU.me,P=st.p[me],F=st.p[1-me];
+ const phase=st.phase,newPhase=phase!==duoLastPhase;duoLastPhase=phase;
+ if(phase==='pick'){if(P.team)return duoWait2(`✅ Team ready! Waiting for ${F.n} to pick…`);if(SCREEN!=='duopick')duoPick();return;}
+ if(phase==='shake1'||phase==='gg')return duoShake(phase,newPhase);
+ if(phase==='prize')return duoPrize();
+ if(phase==='battle')return duoBattle(newPhase);}
+function duoWait2(t){setScreen('duob',`<div class="hub"><div class="panel" style="text-align:center"><div class="spin">🃏</div><h2 class="h">${t}</h2></div></div>`);}
+function duoPick(){const sel=[],F=DU.st.p[1-DU.me];const mine=Object.keys(S.owned).map(Number).sort((a,b)=>pw(byId(b))-pw(byId(a)));
+ setScreen('duopick',`<div class="hub"><div class="panel"><h2 class="h" style="text-align:center">👫 Connected with ${F.n}!</h2><p style="text-align:center;font-weight:700">Pick your 3 best cards (<b id="pc">0</b>/3)</p>
+ <div class="pickgrid">${mine.map(id=>`<button class="pickc" data-a="t" data-v="${id}">${cardHTML(byId(id))}</button>`).join('')}</div>
+ <div class="row"><button class="btn gold" id="rdy" data-a="go" disabled>✅ Ready!</button><button class="btn ghost" data-a="x">✖ Leave</button></div></div></div>`);
+ bindAll({t(id,b){id=+id;const k=sel.indexOf(id);if(k>=0){sel.splice(k,1);b.classList.remove('sel');}else if(sel.length<3){sel.push(id);b.classList.add('sel');}sfx.pop();$('pc').textContent=sel.length;$('rdy').disabled=sel.length!==3;},
+  go:()=>{if(sel.length===3){sfx.good();duoMine({t:'team',ids:sel});if(!NET.host)duoWait2(`✅ Team ready! Waiting for ${F.n} to pick…`);}},x:duoQuit});}
+function duoQuit(){modal(`<h2>Leave the duo battle?</h2>`,[['Leave',()=>{NET.closing=true;duoMenu();}],['Stay',null,'ghost']]);}
+function duoShake(phase,fresh){const st=DU.st,P=st.p[DU.me],F=st.p[1-DU.me],end=phase==='gg',won=st.win===DU.me;
+ if(fresh&&end){if(won){sfx.win();confetti();}else sfx.good();setTimeout(()=>shout('Good game!'),500);}
+ const av=p=>p.kid===KID?MEAV:(p.g?NORA:LUCAS);
+ setScreen('duob',`<div class="hub"><div class="panel hshake" style="text-align:center">
+ ${end?`<div class="gg">Good game! <div class="ggz">${zh([['好','ㄏㄠˇ'],['比','ㄅㄧˇ'],['賽','ㄙㄞˋ']])}</div></div><p style="font-weight:800;font-size:1.15rem">${won?`🏆 You won! Great battle, ${P.n}!`:`${F.n} won this time. Great try, ${P.n}!`}</p>`:`<h2 class="h">Before you battle…</h2>`}
+ <div class="hands"><div class="hav">${av(P)}<b>${P.n}</b>${P.shook?'<span class="ok">✅</span>':''}</div><div class="hs ${P.shook&&F.shook?'done':''}">🤝</div><div class="hav">${av(F)}<b>${F.n}</b>${F.shook?'<span class="ok">✅</span>':''}</div></div>
+ <p style="font-size:1.2rem;font-weight:800">${end?`Shake hands with ${F.n} and say <b>“Good game!”</b>`:`Shake hands with ${F.n}! 🤝`}</p>
+ <div class="row">${P.shook?`<p style="font-weight:700">⏳ Waiting for ${F.n} to tap…</p>`:`<button class="btn gold big" data-a="sh">🤝 We shook hands${end?' and said “Good game!”':'!'}</button>`}</div></div></div>`);
+ bindAll({sh:()=>{sfx.good();duoMine({t:'shake'});}});}
+function duoPrize(){if(DU.prized)return;DU.prized=true;const st=DU.st,won=st.win===DU.me,F=st.p[1-DU.me];
+ S.duo=S.duo||{games:0,wins:0};S.duo.games++;if(won){S.duo.wins++;S.wins=(S.wins||0)+1;}save();
+ NET.closing=true;setTimeout(netReset,1500);
+ const c=prizeCard([['rare',5],['holo',4],['legend',1]]);
+ bigReveal(c,'🎁 Mystery card!',`For a great duo battle with ${F.n}!`,()=>hub());}
+function duoBattle(fresh){const st=DU.st,me=DU.me,P=st.p[me],F=st.p[1-me],my=st.turn===me,c=byId(P.team[P.idx]),foe=byId(F.team[F.idx]);
+ const side=(p,cd,isMe)=>`<div class="dside ${isMe?'me':'op'} ${st.turn===(isMe?me:1-me)?'turn':''}"><div class="dwho"><b style="color:${p.col}">${p.n}</b> ${p.team.map((id,i)=>`<i class="dd ${p.ko[i]?'ko':i===p.idx?'on':''}" style="--c:${T[byId(id).type].c}">${p.ko[i]?'✖':''}</i>`).join('')} <span class="den">⚡${p.en}</span></div>
+  <div class="dcard" id="dc-${isMe?'me':'op'}">${cardHTML(cd)}</div><div class="hpb"><i style="width:${p.hp[p.idx]/cd.hp*100}%"></i></div><b>${p.hp[p.idx]}/${cd.hp}</b></div>`;
+ setScreen('duob',`<div class="dbat">${side(F,foe,false)}<div class="dmid"><div class="dlog">${st.log||''}</div><div class="dturn">${my?`🟢 <b>Your turn, ${P.n}!</b>`:`⏳ ${F.n}’s turn…`}</div>
+ <div class="dctrl"><button class="btn gold" data-a="draw" ${!my||st.drew?'disabled':''}>⚡ Draw energy</button>
+ ${c.atk.map((a,i)=>`<button class="btn" data-a="atk" data-v="${i}" ${!my||!st.drew||P.en<a.c?'disabled':''}>${'⚡'.repeat(a.c)} ${a.n} · ${a.d}${WEAK[foe.type]===c.type?' ×2':''}</button>`).join('')}
+ ${P.ko.filter(k=>!k).length>1?`<button class="btn ghost" data-a="sw" ${!my||st.sw||P.en<retreatCost(c)?'disabled':''}>🔄 Switch ${'⚡'.repeat(retreatCost(c))}</button>`:''}
+ <button class="btn ghost" data-a="end" ${!my||!st.drew?'disabled':''}>End turn</button></div></div>${side(P,c,true)}</div>`);
+ bindAll({draw:()=>duoMine({t:'draw'}),atk:i=>duoMine({t:'atk',i:+i}),end:()=>duoMine({t:'end'}),
+  sw:()=>{const al=P.team.map((_,i)=>i).filter(i=>i!==P.idx&&!P.ko[i]);modal(`<h2>Switch to which card?</h2><div class="row">${al.map(i=>`<button class="pickc bench" data-i="${i}" style="width:110px">${cardHTML(byId(P.team[i]))}<span class="bhp">❤️ ${P.hp[i]}</span></button>`).join('')}</div>`,[['Cancel',null,'ghost']]);
+   document.querySelectorAll('.modal .bench').forEach(b=>b.onclick=()=>{b.closest('.modal').remove();duoMine({t:'sw',i:+b.dataset.i});});}});
+ if(fresh)shout('Battle start!');
+ const fx=st.fx;if(!fx||DU.fxSeq===st.seq)return;DU.fxSeq=st.seq;
+ if(fx.k==='en'){sfx.energy&&sfx.energy();}
+ else if(fx.k==='sw'){whoosh();}
+ else if(fx.k==='hit'){const tgt=$(fx.s===me?'dc-op':'dc-me'),src=$(fx.s===me?'dc-me':'dc-op');const [x,y]=ctr(tgt);
+  try{(ATKSND[fx.type]||boom)();}catch(e){}if(src)src.classList.add('lunge');
+  setTimeout(()=>{FX.emit(x,y,fx.type,fx.weak?40:24,{speed:7});if(fx.weak)FX.flash('#fff');boom();if(tgt){tgt.classList.add('hit');const d=document.createElement('div');d.className='dmgf';d.textContent='-'+fx.dmg+(fx.weak?' ×2!':'');tgt.appendChild(d);}
+   if(fx.ko){setTimeout(()=>{FX.ring(x,y,'#ff6b6b',120);sfx.bad();},300);}},250);}}
+/* leaving the duo screens (Home, back) closes the connection; the other player sees "lost connection" */
+function duoLeaveCheck(n){if(!['duo','duob','duopick'].includes(n)&&(NET.ws||NET.pc)&&!(DU&&DU.prized)){NET.closing=true;netReset();}}
+try{document.title=ME.title;document.documentElement.style.setProperty('--lucas',ME.col);const tl=document.querySelector('.top .ttl');if(tl)tl.textContent='🃏 '+ME.title;const bk=document.querySelector('.top a');if(bk)bk.href='../../#'+KID;}catch(e){}
 /* ---------- start (keep this file last) ---------- */
 hud();title();
 
 </script><script src="../../tracker.js" data-game="card-quest"></script><!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>

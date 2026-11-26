@@ -1,5 +1,5 @@
 /* ---------- save: versioned, with a backup and import from the sample ---------- */
-const KEY='cardquest.lucas',BAK='cardquest.lucas.backup',OLD='lab.cardshop2',VER=1;
+const KEY='cardquest.'+KID,BAK=KEY+'.backup',OLD=KID==='lucas'?'lab.cardshop2':'-none-',VER=1;
 const DEF={ver:VER,started:false,cents:200,stars:0,owned:{},shopOpen:false,trophies:0,shelf:[],masterMet:0,acts:0,stats:{}};
 function migrate(s){s=Object.assign({},DEF,s);if(!s.stats||typeof s.stats!=='object')s.stats={};
  /* future versions add steps here, e.g. if(s.ver<2){...;s.ver=2;} */

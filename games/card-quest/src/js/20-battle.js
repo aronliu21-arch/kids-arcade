@@ -6,7 +6,7 @@ function startBattle(team,p){B={kind:p.kind,round:p.round||0,foe:p.foe,me:{team,
 const act=s=>byId(B[s].team[B[s].idx]);
 function renderSide(s){const P=B[s],c=act(s),el=$(s==='me'?'sMe':'sOpp'),pct=P.hp/c.hp*100;if(!el||!c)return;
  const dots=P.team.map((id,i)=>`<span style="color:${P.ko[i]?'#868e96':T[byId(id).type].c}">${P.ko[i]?'✖':i===P.idx?'◉':'●'}</span>`).join('');
- el.innerHTML=`<div class="who">${s==='me'?`<div class="mini av me" style="width:38px;flex-basis:38px">${LUCAS}</div><span style="color:var(--lucas)">Lucas</span>`:`<div class="mini">${kidSVG(B.foe[1],B.foe[2])}</div><span style="color:var(--red)">${B.foe[0]}</span>`}<span class="dots">${dots}</span><span class="enb" id="en-${s}">⚡${P.en}</span></div>
+ el.innerHTML=`<div class="who">${s==='me'?`<div class="mini av me" style="width:38px;flex-basis:38px">${MEAV}</div><span style="color:var(--lucas)">${ME.n}</span>`:`<div class="mini">${kidSVG(B.foe[1],B.foe[2])}</div><span style="color:var(--red)">${B.foe[0]}</span>`}<span class="dots">${dots}</span><span class="enb" id="en-${s}">⚡${P.en}</span></div>
  <div class="slot" id="slot-${s}">${cardHTML(c)}</div><div class="hp"><div class="bar"><i class="${pct<=25?'crit':pct<=50?'low':''}" style="width:${pct}%"></i></div><span>${P.hp}/${c.hp}</span></div>`;}
 function setEn(s){const e=$('en-'+s);if(e&&B){e.textContent='⚡'+B[s].en;e.classList.remove('pulse');void e.offsetWidth;e.classList.add('pulse');}}
 function msg(h){if(!$('mid'))return;$('mid').innerHTML='<div>'+h+'</div>';}
@@ -60,7 +60,7 @@ function hit2(target,dmg,label,info){const atkSide=target==='op'?'me':'op',P=B[t
    else{target==='op'?endMyTurn():startMyTurn();}},1000);}),450);}
 function cardEnter(s){const sl=$('slot-'+s);if(!sl)return;sl.classList.add('enter');whoosh();setTimeout(()=>{const [x,y]=ctr(sl);FX.ring(x,y,s==='me'?'#4dabf7':'#ff6b6b',90);FX.emit(x,y+50,'rock',8,{dir:-Math.PI/2,spread:2.4,speed:4,life:22,size:3});tone(120,.15,'square',.1);},500);}
 function vsIntro(then){if(RM){then();return;}const me=act('me'),op=act('op'),v=document.createElement('div');v.className='vs';
- v.innerHTML=`<div class="l"><div class="av me">${LUCAS}</div>Lucas<div style="width:clamp(90px,22vh,170px)">${cardHTML(me)}</div></div><div class="r"><div class="av">${kidSVG(B.foe[1],B.foe[2])}</div>${B.foe[0]}<div style="width:clamp(90px,22vh,170px)">${cardHTML(op)}</div></div><b>VS</b>`;
+ v.innerHTML=`<div class="l"><div class="av me">${MEAV}</div>${ME.n}<div style="width:clamp(90px,22vh,170px)">${cardHTML(me)}</div></div><div class="r"><div class="av">${kidSVG(B.foe[1],B.foe[2])}</div>${B.foe[0]}<div style="width:clamp(90px,22vh,170px)">${cardHTML(op)}</div></div><b>VS</b>`;
  document.body.appendChild(v);whoosh();setTimeout(()=>{boom();FX.quake();FX.flash('#fff');},500);
  let done=false;const end=()=>{if(done)return;done=true;v.classList.add('out');setTimeout(()=>{v.remove();then();},330);};v.onclick=end;setTimeout(end,2200);}
 function banner(won,then){const d=document.createElement('div');d.className='banner'+(won?'':' lose');d.innerHTML=`<div class="rays"></div><h1>${won?'VICTORY!':'GOOD BATTLE!'}</h1>`;document.body.appendChild(d);

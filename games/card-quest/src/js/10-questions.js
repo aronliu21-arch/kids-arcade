@@ -1,5 +1,5 @@
 /* ---------- question bank: 20 kinds, 3 levels; gets harder as Lucas gets them right ---------- */
-const qLv=()=>Math.min(3,1+Math.floor((S.qRight||0)/4));
+const qLv=()=>Math.min(3,(ME.g?2:1)+Math.floor((S.qRight||0)/4));
 let LASTQ=null;
 function qScore(first){S.qRight=first?(S.qRight||0)+1:Math.max(0,(S.qRight||0)-1);save();if(LASTQ)track(LASTQ.kind,first,LASTQ.q,LASTQ.ans);LASTQ=null;}
 /* difficulty per skill: grows with that skill's medals, never below the overall level minus one, and eases off while he is struggling */

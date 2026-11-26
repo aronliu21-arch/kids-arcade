@@ -11,7 +11,7 @@ const LVN=['Starter','🥉 Bronze','🥈 Silver','🥇 Gold'],LVAT=[0,5,15,30];
 function skRec(k){S.sk=S.sk||{};return S.sk[k]=S.sk[k]||{n:0,ok:0,r:[]};}
 /* level = how many first-try right answers, but drops back while recent answers are mostly wrong */
 function skLevel(k){const s=skRec(k);let lv=LVAT.filter(x=>s.ok>=x).length-1;const rec=s.r.slice(-6);if(rec.length>=5&&rec.filter(Boolean).length<=2)lv=Math.max(0,lv-1);return lv;}
-const skDiff=k=>Math.min(3,1+skLevel(k));
+const skDiff=k=>Math.min(3,(ME.g?2:1)+skLevel(k));
 /* every answered question goes through here: first = right on the first try */
 function track(kind,first,qtext,ans){const k=skillOf(kind),s=skRec(k),before=LVAT.filter(x=>s.ok>=x).length-1;
  s.n++;if(first)s.ok++;s.r=s.r.concat(first?1:0).slice(-10);
@@ -38,6 +38,6 @@ function practice(k,i,earn){const sk=SKILLS.find(s=>s.k===k);if(i>=5){return res
   else{tries++;sfx.bad();b.disabled=true;if(tries>=2){qScore(false);$('pm').innerHTML='The answer is <b>'+R0.ans+'</b>. '+R0.why;main.querySelector(`[data-a=o][data-v="${R0.ans}"]`).classList.add('green');tries=-1;next(2600);}else $('pm').textContent='Not quite. Try again!';}}});}
 /* shared arcade progress tracker (weekly report): one row per tap */
 const kaTxt=v=>String(v==null?'':v).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-function kaAns(q,given,expected,ok,tryNo,topic,qid){try{if(window.KA){KA.setKid('lucas');KA.answer({q:kaTxt(q),qid:qid?kaTxt(qid):undefined,given:kaTxt(given),expected:kaTxt(expected),correct:!!ok,tryNo:tryNo||1,topic:topic||''});}}catch(e){}}
-function kaShown(){try{if(window.KA){KA.setKid('lucas');KA.shown();}}catch(e){}}
+function kaAns(q,given,expected,ok,tryNo,topic,qid){try{if(window.KA){KA.setKid(KID);KA.answer({q:kaTxt(q),qid:qid?kaTxt(qid):undefined,given:kaTxt(given),expected:kaTxt(expected),correct:!!ok,tryNo:tryNo||1,topic:topic||''});}}catch(e){}}
+function kaShown(){try{if(window.KA){KA.setKid(KID);KA.shown();}}catch(e){}}
 const skName=kind=>{const s=SKILLS.find(x=>x.q.includes(kind));return s?s.n:kind;};

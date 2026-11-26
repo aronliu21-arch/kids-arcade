@@ -18,13 +18,13 @@ function tourStart(){if(Object.keys(S.owned).length<3){toast('You need 3 cards')
  bindAll({home:()=>hub(),cup(k){const c=cupBy(k);if(!cupCanEnter(c)){sfx.bad();toast('You need 3 cards that follow the rule!');return;}if(S.cents<100){sfx.bad();toast('You need $1.00. Try a job! 🧾');return;}
   modal(`<div class="big">${c.e}</div><h2>${c.n}</h2><p><b>Rule:</b> ${c.d}.<br>Pay $1.00 to enter?</p>`,[['Enter! ▶',()=>{S.cents-=100;save();sfx.coin();TR={round:0,cup:k};tourBracket();}],['Not now',null,'ghost']]);}});}
 /* Rival Road: six rivals with their own decks, beaten in order */
-const RIVALS=[{n:'Sprout Sam',f:['#5c940d','#ffdbac'],deck:[4,27,74],e:'🌱',say:'My leafy team grows stronger every day!',cash:100},
- {n:'Splash Kai',f:['#1c7ed6','#c68642'],deck:[3,77,34],e:'💧',say:'Water beats fire. Just saying!',cash:150},
- {n:'Blaze Leo',f:['#e03131','#f1c27d'],deck:[24,73,10],e:'🔥',say:'Feel the heat of my fire deck!',cash:200},
- {n:'Rocky Ben',f:['#5c5f66','#ffdbac'],deck:[99,49,15],e:'🪨',say:'My rock cards never back down.',cash:250},
- {n:'Storm Ryan',f:['#7048e8','#ffe0bd'],deck:[104,62,16],e:'🌪️',say:'Lightning and wind. Good luck!',cash:300},
- {n:'Champion Max',f:['#ffd43b','#e0ac69'],deck:[114,13,108],e:'👑',say:'I am the Champion. Show me your best!',cash:500}];
-function arenaMenu(){modal(`<div class="big">⚔️</div><h2>Battle Arena ${zh([['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']])}</h2><p>Practice against a kid, or take on the Rival Road!</p>`,[['🤝 Friendly battle',()=>teamPick('friendly')],['🛣️ Rival Road',rivalRoad,'gold']]);}
+const RIVALS=[{n:ME.g?'Sprout Sara':'Sprout Sam',f:['#5c940d','#ffdbac'],deck:[4,27,74],e:'🌱',say:'My leafy team grows stronger every day!',cash:100},
+ {n:ME.g?'Splash Kaia':'Splash Kai',f:['#1c7ed6','#c68642'],deck:[3,77,34],e:'💧',say:'Water beats fire. Just saying!',cash:150},
+ {n:ME.g?'Blaze Leah':'Blaze Leo',f:['#e03131','#f1c27d'],deck:[24,73,10],e:'🔥',say:'Feel the heat of my fire deck!',cash:200},
+ {n:ME.g?'Rocky Bella':'Rocky Ben',f:['#5c5f66','#ffdbac'],deck:[99,49,15],e:'🪨',say:'My rock cards never back down.',cash:250},
+ {n:ME.g?'Storm Rina':'Storm Ryan',f:['#7048e8','#ffe0bd'],deck:[104,62,16],e:'🌪️',say:'Lightning and wind. Good luck!',cash:300},
+ {n:ME.g?'Champion Maya':'Champion Max',f:['#ffd43b','#e0ac69'],deck:[114,13,108],e:'👑',say:'I am the Champion. Show me your best!',cash:500}];
+function arenaMenu(){modal(`<div class="big">⚔️</div><h2>Battle Arena ${zh([['對','ㄉㄨㄟˋ'],['戰','ㄓㄢˋ']])}</h2><p>Practice against a kid, or take on the Rival Road!</p>`,[['🤝 Friendly battle',()=>teamPick('friendly')],['🛣️ Rival Road',rivalRoad,'gold'],[`👫 Duo with ${ME.otherN}`,duoMenu]]);}
 function rivalRoad(){const st=S.rivalStage||0;
  setScreen('rival',`<div class="hub"><div class="panel" style="text-align:center"><h2 class="h">🛣️ Rival Road ${zh([['對','ㄉㄨㄟˋ'],['手','ㄕㄡˇ'],['之','ㄓ'],['路','ㄌㄨˋ']])}</h2><p style="font-weight:700">Beat each rival to win their badge. The Champion waits at the end!</p>
  <div class="road">${RIVALS.map((r,i)=>`<button class="rv ${i<st?'done':i===st?'now':'lock'}" data-a="rv" data-v="${i}"><div class="rva">${kidSVG(r.f[0],r.f[1])}</div><div class="rvt"><b>${i+1}. ${r.n}</b><small>${i<st?'Badge won! '+r.e:i===st?'Tap to battle!':'🔒 Beat '+RIVALS[i-1].n+' first'}</small><span>${r.deck.map(id=>T[byId(id).type].i).join(' ')}</span></div><span class="badge2">${i<st?r.e:i===st?'⚔️':'🔒'}</span></button>`).join('')}</div>

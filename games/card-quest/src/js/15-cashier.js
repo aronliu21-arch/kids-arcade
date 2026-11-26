@@ -11,7 +11,7 @@ let CJ=null;
 function coinEl(k){const c=CO.find(x=>x[0]===k),d=document.createElement('div');d.className='coin '+k;d.innerHTML=(k==='b'?'$1':c[1]+'¢')+'<small>'+c[2]+'</small>';d._v=c[1];return d;}
 function cashier(own){
  CJ={own,jar:0,n:0,earn:0,tries:0,price:0,pay:0,item:null,sold:0,walk:0,tips:0,total:own?3+(S.up&&S.up.sign?1:0):3};
- setScreen('cash',`<div class="m"><div class="counter"><div class="jar" id="jar">${jarSVG(0)}<b id="jart">0¢</b></div><div style="font-weight:800">${own?'🏪 Lucas’s Cards':'🧾 Cashier job'} · customer <span id="cn">1</span>/${CJ.total}</div><div class="av" id="cav" style="width:90px"></div><div class="bub" id="bub"></div><div class="mini-item" id="it"></div><div class="paid" id="paid"></div><button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button></div>
+ setScreen('cash',`<div class="m"><div class="counter"><div class="jar" id="jar">${jarSVG(0)}<b id="jart">0¢</b></div><div style="font-weight:800">${own?'🏪 '+ME.shop:'🧾 Cashier job'} · customer <span id="cn">1</span>/${CJ.total}</div><div class="av" id="cav" style="width:90px"></div><div class="bub" id="bub"></div><div class="mini-item" id="it"></div><div class="paid" id="paid"></div><button class="btn ghost small wio" onclick="deskOpen()">✏️ Work it out</button></div>
  <div class="tray"><h3>Change tray · tap a coin to take it back</h3><div id="change"></div><button class="btn" id="give">Give change 🤲</button></div>
  <div class="reg" id="reg"><b>Drag coins →</b></div></div>`);
  CO.forEach(([k])=>{const src=coinEl(k);$('reg').appendChild(src);makeDrag(src,{move:(el,x,y)=>$('change').classList.toggle('glow',hit($('change'),x,y)),drop:(el,x,y)=>{$('change').classList.remove('glow');if(hit($('change'),x,y))addCoin(k);}});});

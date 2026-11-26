@@ -1,6 +1,6 @@
 /* ---------- Story intro + Quest Book (how the game works, what to do next) ---------- */
 const STORY=[
- {art:()=>`<div class="sav">${LUCAS}</div>`,h:'Welcome to Card Town, Lucas!',zh:[['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['小','ㄒㄧㄠˇ'],['鎮','ㄓㄣˋ']],t:'This town is full of amazing creature cards. Every kid here collects them and battles with them.'},
+ {art:()=>`<div class="sav">${MEAV}</div>`,h:'Welcome to Card Town, '+ME.n+'!',zh:[['卡','ㄎㄚˇ'],['片','ㄆㄧㄢˋ'],['小','ㄒㄧㄠˇ'],['鎮','ㄓㄣˋ']],t:'This town is full of amazing creature cards. Every kid here collects them and battles with them.'},
  {art:()=>`<div class="sfan">${[10,94,13].map(i=>cardHTML(byId(i))).join('')}</div>`,h:'Your big dream',zh:[['夢','ㄇㄥˋ'],['想','ㄒㄧㄤˇ']],t:'Become the Card Quest Champion and open your very own card shop!'},
  {art:()=>`<div class="sbig">🎁📒</div>`,h:'Step 1: Collect cards',zh:[['收','ㄕㄡ'],['集','ㄐㄧˊ']],t:'Rip packs to get cards. Keep them in your binder. Get 3 of the same card to evolve it into a stronger one!'},
  {art:()=>`<div class="sbig">🧾🗂️🔍</div>`,h:'Step 2: Work and earn money',zh:[['打','ㄉㄚˇ'],['工','ㄍㄨㄥ']],t:'Do jobs at the store: give change, sort cards, and spot fake cards. Use your math to earn money and ⭐ stars.'},

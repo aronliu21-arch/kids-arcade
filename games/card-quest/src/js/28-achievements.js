@@ -11,7 +11,7 @@ const ACH=[
  {k:'w10',e:'🛡️',n:'Battle Pro',d:'Win 10 battles',ok:()=>(S.wins||0)>=10},
  {k:'w30',e:'🗡️',n:'Battle Legend',d:'Win 30 battles',ok:()=>(S.wins||0)>=30},
  {k:'b3',e:'🎖️',n:'Badge Hunter',d:'Win 3 Rival Road badges',ok:()=>(S.rivalStage||0)>=3},
- {k:'champ',e:'🏅',n:'Card Quest Champion',d:'Beat Champion Max',ok:()=>(S.rivalStage||0)>=6},
+ {k:'champ',e:'🏅',n:'Card Quest Champion',d:'Beat '+RIVALS[5].n,ok:()=>(S.rivalStage||0)>=6},
  {k:'t1',e:'🏆',n:'Title Winner',d:'Win a tournament',ok:()=>S.trophies>=1},
  {k:'shop',e:'🏪',n:'Shop Owner',d:'Open your own card shop',ok:()=>!!S.shopOpen},
  {k:'evo',e:'✨',n:'Evolver',d:'Evolve a card',ok:()=>(S.evolved||0)>=1},

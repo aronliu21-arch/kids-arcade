@@ -9,7 +9,7 @@ function myShop(){S.up=S.up||{};S.stock=S.stock||[];const n=slotsN();
  const slot=(it,i)=>{if(!it)return `<button class="mslot empty" data-a="add"><span class="big">＋</span>Add a card</button>`;const c=byId(it.id),[tg,tc]=priceTag(it);
   return `<div class="mslot"><div class="mcard">${cardHTML(c)}</div><div class="prc"><button class="btn ghost pm" data-a="dn" data-v="${i}" aria-label="Lower price">−</button><b>${money(it.price)}</b><button class="btn ghost pm" data-a="up" data-v="${i}" aria-label="Raise price">＋</button></div>
    <small style="color:${tc};font-weight:900">${tg}</small><small>worth about ${money(fair(c))}</small><button class="btn ghost small" data-a="back" data-v="${i}">↩ Back to binder</button></div>`;};
- setScreen('myshop',`<div class="hub"><div class="panel shopsign"><div class="sign ${S.up.sign?'neon':''}">🏪 Lucas’s Cards</div>${zh([['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']])}
+ setScreen('myshop',`<div class="hub"><div class="panel shopsign"><div class="sign ${S.up.sign?'neon':''}">🏪 ${ME.shop}</div>${zh([['我','ㄨㄛˇ'],['的','˙ㄉㄜ'],['店','ㄉㄧㄢˋ']])}
  <p>Put your <b>extra</b> cards on the shelf and pick a price. Too high and customers walk away. Too low and you earn less!</p>
  <div class="row" style="font-weight:800">${UPG.filter(u=>S.up[u.k]).map(u=>`<span>${u.e} ${u.n}</span>`).join(' · ')||''}</div></div>
  <div class="panel"><h2 class="h">Shelf (${S.stock.length}/${n})</h2><div class="mshelf">${Array.from({length:n},(_,i)=>slot(S.stock[i],i)).join('')}</div></div>
