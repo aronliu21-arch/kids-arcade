@@ -67,7 +67,7 @@ canvas{width:100%;height:100%;background:#fff;border-radius:16px;box-shadow:0 2p
   </div>
   <button class="big no" id="gpBtn">🔗 Google Photos (parents 家長)</button>
   <div id="gpState" style="font-size:13px;color:#666"></div>
-  <p style="font-size:13px;color:#888">Test sample · 測試版 · v0.2</p>
+  <p style="font-size:13px;color:#888">Test sample · 測試版 · v1.1</p>
 </section>
 
 <section id="studio" class="screen">
@@ -103,14 +103,8 @@ canvas{width:100%;height:100%;background:#fff;border-radius:16px;box-shadow:0 2p
     <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
       <button class="big yes" id="nameOk">💾 Save 儲存</button><button class="big no" id="nameNo">Back 返回</button></div>
   </div></div>
-<div id="gate" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:8">
-  <div style="background:#fff;border-radius:18px;padding:20px;max-width:340px;text-align:center">
-    <b>Parents only 家長專用</b><p id="gateQ" style="font-size:22px"></p>
-    <input id="gateA" inputmode="numeric" style="font-size:20px;width:140px;padding:8px;border-radius:10px;border:2px solid #ccc">
-    <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
-      <button class="big yes" id="gateOk">Connect 連結</button><button class="big no" id="gateNo">Cancel</button></div>
-  </div></div>
 
+<script src="../../../gphotos.js"></script>
 <script>
 const KIDS={nora:{name:'Nora',color:'#7048e8',size:8,stamps:['⭐','💜','🌸','⚽','🦄','🌈']},
             lucas:{name:'Lucas',color:'#f76707',size:8,stamps:['⚡','🔥','⚽','🐉','⭐','🚀']},
@@ -197,53 +191,10 @@ setInterval(()=>autosave(false),60000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)autosave(false)});
 window.addEventListener('pagehide',()=>autosave(false));
 
-/* ---------- Google Photos: one album per kid ----------
-   Paste the OAuth Web client ID from Google Cloud below. Empty = fall back to the share sheet. */
-const GOOGLE_CLIENT_ID='';
-const SCOPES='https://www.googleapis.com/auth/photoslibrary.appendonly https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata';
-const API='https://photoslibrary.googleapis.com/v1/';
-const ALBUM={nora:"Nora's Doodles 幼晴的塗鴉",lucas:"Lucas's Doodles 陸晨的塗鴉",milo:"Milo's Doodles 洛明的塗鴉"};
-const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
-let tokenClient=null,tokenWait=null;
-const tokenValid=()=>ls.get('gp.token')&&+ls.get('gp.exp')>Date.now();
-function initGIS(){if(!GOOGLE_CLIENT_ID)return;const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';
-  sc.onload=()=>{tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:SCOPES,
-    callback:r=>{const w=tokenWait;tokenWait=null;if(r.error||!r.access_token){w&&w.rej(r.error||'no token');return}
-      ls.set('gp.token',r.access_token);ls.set('gp.exp',Date.now()+(r.expires_in-60)*1000);ls.set('gp.connected','1');gpRefresh();w&&w.res(r.access_token)},
-    error_callback:e=>{const w=tokenWait;tokenWait=null;w&&w.rej(e.type||'popup')}});gpRefresh();flushQueue()};
-  document.head.appendChild(sc)}
-// must be called synchronously inside a tap, or the browser blocks the Google popup
-function askToken(prompt){return new Promise((res,rej)=>{if(!tokenClient)return rej('not ready');tokenWait={res,rej};tokenClient.requestAccessToken({prompt})})}
-async function gfetch(path,opt={}){const r=await fetch(path.startsWith('http')?path:API+path,{...opt,headers:{...(opt.headers||{}),Authorization:'Bearer '+ls.get('gp.token')}});
-  if(r.status===401){ls.del('gp.token');throw new Error('auth')}if(!r.ok)throw new Error('http '+r.status+' '+await r.text());return r}
-async function albumId(k,fresh){let id=!fresh&&ls.get('gp.album.'+k);if(id)return id;
-  let page='';do{const j=await (await gfetch('albums?pageSize=50'+(page?'&pageToken='+page:''))).json();
-    const hit=(j.albums||[]).find(a=>a.title===ALBUM[k]);if(hit){ls.set('gp.album.'+k,hit.id);return hit.id}page=j.nextPageToken||''}while(page);
-  const a=await (await gfetch('albums',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({album:{title:ALBUM[k]}})})).json();
-  ls.set('gp.album.'+k,a.id);return a.id}
-async function uploadOne(it){const up=await gfetch('uploads',{method:'POST',headers:{'Content-type':'application/octet-stream','X-Goog-Upload-Content-Type':'image/png','X-Goog-Upload-Protocol':'raw'},body:it.blob});
-  const utok=await up.text();
-  const make=async fresh=>gfetch('mediaItems:batchCreate',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({albumId:await albumId(it.kid,fresh),newMediaItems:[{description:(it.label||it.name)+' · '+KIDS[it.kid].name,simpleMediaItem:{fileName:it.name,uploadToken:utok}}]})});
-  let r;try{r=await make(false)}catch(e){if(String(e).includes('auth'))throw e;ls.del('gp.album.'+it.kid);r=await make(true)}
-  const st=((await r.json()).newMediaItemResults||[{}])[0].status||{};if(st.code)throw new Error(st.message||'create failed')}
-async function queueAll(){const d=await db();return new Promise(res=>{const out=[];const c=d.transaction('queue').objectStore('queue').openCursor();
-  c.onsuccess=()=>{const cur=c.result;if(cur){out.push({key:cur.key,...cur.value});cur.continue()}else res(out)};c.onerror=()=>res(out)})}
-async function queueAdd(v){const d=await db();return new Promise(res=>{const t=d.transaction('queue','readwrite');t.objectStore('queue').add(v);t.oncomplete=res;t.onerror=res})}
-async function queueDel(k){const d=await db();return new Promise(res=>{const t=d.transaction('queue','readwrite');t.objectStore('queue').delete(k);t.oncomplete=res;t.onerror=res})}
-let flushing=false;
-async function flushQueue(){if(flushing||!tokenValid())return 0;flushing=true;let n=0;
-  try{for(const it of await queueAll()){try{await uploadOne(it);await queueDel(it.key);n++}catch(e){console.warn(e);break}}}finally{flushing=false;gpRefresh()}
-  return n}
-async function gpRefresh(){const q=(await queueAll().catch(()=>[])).length;
-  $('gpState').textContent=!GOOGLE_CLIENT_ID?'Not set up yet 尚未設定':(ls.get('gp.connected')?'Connected ✓ 已連結':'Not connected 未連結')+(q?` · ${q} waiting to upload 等待上傳`:'')}
-// parent gate: 3-digit × 2-digit
-let gateAns=0;
-function newGate(){const a=100+Math.floor(Math.random()*900),b=10+Math.floor(Math.random()*90);gateAns=a*b;$('gateQ').textContent=`${a} × ${b} = ?`;$('gateA').value=''}
-$('gpBtn').onclick=()=>{if(!GOOGLE_CLIENT_ID){toast('Google Photos key not added yet');return}newGate();$('gate').style.display='flex'};
-$('gateNo').onclick=()=>$('gate').style.display='none';
-$('gateOk').onclick=()=>{if(+$('gateA').value!==gateAns){toast('Try again 再試一次');newGate();return}
-  $('gate').style.display='none';askToken('consent').then(()=>flushQueue()).then(n=>toast('Connected! 已連結'+(n?` · ${n} uploaded`:''))).catch(()=>toast('Not connected 沒有連結'))};
+/* ---------- Google Photos: shared uploader (../../../gphotos.js), one album per kid ---------- */
+const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+KAPhotos.onChange(st=>{$('gpState').textContent=(st.connected?'Connected ✓ 已連結':'Not connected 未連結')+(st.waiting?` · ${st.waiting} waiting to upload 等待上傳`:'')});
+$('gpBtn').onclick=()=>KAPhotos.connect();
 
 /* ---------- Save: to the kid's Google Photos album (queued if offline / signed out) ---------- */
 const CHIPS={nora:['🦄 Unicorn 獨角獸','🌸 Flowers 花','⚽ Soccer 足球','👨‍👩‍👧‍👦 Family 家人','🌈 Rainbow 彩虹','🐱 Cat 貓'],
@@ -260,27 +211,21 @@ $('nameOk').onclick=async()=>{$('nameBox').style.display='none';
   const title=($('nameIn').value.trim()||'My drawing 我的畫').replace(/[\\/:*?"<>|]/g,'').slice(0,40);
   const label=`${title} – ${day}`;
   const name=`${KIDS[kid].name} - ${title} - ${day} ${new Date().toTimeString().slice(0,5).replace(':','')}.png`;
-  // ask for a fresh token right away, while we're still inside the tap
-  const tokP=GOOGLE_CLIENT_ID&&ls.get('gp.connected')&&!tokenValid()&&tokenClient?askToken(''):null;
-  const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+  const blobP=new Promise(r=>cv.toBlob(r,'image/png'));
+  const job=KAPhotos.upload(kid,blobP.then(blob=>[{blob,name,label}]),'Doodle Studio 塗鴉工作室');
   await putDraft(kid,{png:cv.toDataURL('image/png'),time:Date.now(),unsaved:false});dirty=false;
-  if(!GOOGLE_CLIENT_ID){ // fallback: share sheet / download
-    const file=new File([blob],name,{type:'image/png'});
-    try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});setStatus('Saved ✓ 已存');return}}catch(e){if(e.name==='AbortError')return}
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setStatus('Saved ✓ 已存');return}
-  await queueAdd({kid,blob,name,label,time:Date.now()});
   setStatus('Uploading… 上傳中');$('saveBtn').disabled=true;
-  try{if(tokP)await tokP.catch(()=>{});const before=(await queueAll()).length;await flushQueue();const left=(await queueAll()).length;
-    if(left<before&&left===0){setStatus('In Google Photos ✓ 已存到相簿');toast(`“${title}” saved to ${KIDS[kid].name}'s album 🎉`)}
+  try{const r=await job;
+    if(r.uploaded){setStatus('In Google Photos ✓ 已存到相簿');toast(`“${title}” saved to ${KIDS[kid].name}'s album 🎉`)}
     else{setStatus('Saved here, will upload later 稍後上傳');toast('Saved on this device — it will upload when Google is connected')}}
+  catch(e){console.warn(e);setStatus('Saved here, will upload later 稍後上傳')}
   finally{$('saveBtn').disabled=false}};
-addEventListener('online',()=>flushQueue());
-initGIS();gpRefresh();
+
 
 window.__test={state:()=>({screen:kid?'studio':'home',kid,tool,dirty}),solve:()=>{}};
 </script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.0" data-d="2026-11-24" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.0 · 2026-11-24</div>
+<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>

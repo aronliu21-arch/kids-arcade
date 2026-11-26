@@ -132,6 +132,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
   <button id="istart"><span>▶</span>Tap to start 點一下開始</button>
   <div id="iskip">Tap to skip 點一下跳過</div></div>
 <!-- HOME -->
+<div id="gpBusy" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(20,16,12,.92);color:#fff;align-items:center;justify-content:center;flex-direction:column;font-size:clamp(18px,4.5vw,26px);font-weight:800;text-align:center;gap:10px;padding:20px"><div style="font-size:64px">📸</div>Making your story pages… 製作故事頁面中…<small style="font-size:16px;font-weight:600">Keep this screen open 請不要離開</small></div>
 <section id="home" class="screen on"><div class="wrap center">
   <h1>📖 Story Maker<br><span style="font-size:.55em">故事工坊</span></h1>
   <p>Tap, watch it happen, make your own story! 點一點,看故事動起來!</p>
@@ -140,8 +141,8 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
     <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
     <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
   </div>
-  <p><button class="btn" id="voiceBtn">🗣 聲音 Voice</button></p>
-  <p class="ver">Test sample · 測試版 · v1.10</p>
+  <p><button class="btn" id="voiceBtn">🗣 聲音 Voice</button> <button class="btn" id="gpBtn">🔗 Google 相簿 (家長 parents)</button></p><p id="gpState" style="font-size:13px;color:#666;margin:-4px 0 0"></p>
+  <p class="ver">Test sample · 測試版 · v1.11</p>
 </div></section>
 <!-- SHELF -->
 <section id="shelf" class="screen">
@@ -174,6 +175,7 @@ canvas.living{display:block;border-radius:12px;background:#eef7ff;touch-action:m
   <div class="stage"><canvas id="dc" width="800" height="600"></canvas></div>
 </div>
 <div class="toast" id="toast"></div>
+<script src="../../../gphotos.js"></script>
 <script>
 {
 /* ---------- living pictures (Family Zoo style: hop, flip, squash, wander, tap to jump) ---------- */
@@ -189,7 +191,7 @@ function sticker(src){if(stickers[src])return stickers[src];const o={ready:false
 let AC=null;function boing(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;
   o.type='sine';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(660,t+.12);o.frequency.exponentialRampToValueAtTime(330,t+.3);
   g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}}
-const VERSION='v1.9';
+const VERSION='v1.11';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2400)};
@@ -230,7 +232,7 @@ function cloud(x,cx,cy,s,c='#fff'){[[0,0,1],[-.9,.15,.7],[.9,.15,.75],[-.4,-.4,.
 function tree(x,tx,ty,s,c='#2f9e44'){x.fillStyle='#8d5524';x.fillRect(tx-s*.12,ty-s*.9,s*.24,s*.9);circ(x,tx,ty-s*1.1,s*.55,c);circ(x,tx-s*.35,ty-s*.85,s*.4,c);circ(x,tx+s*.35,ty-s*.85,s*.4,c)}
 function pine(x,tx,ty,s,c='#2b8a3e'){x.fillStyle='#8d5524';x.fillRect(tx-s*.08,ty-s*.3,s*.16,s*.3);for(let i=0;i<3;i++)poly(x,[[tx,ty-s*1.3+i*s*.3],[tx-s*.5+i*.05*s,ty-s*.3-i*0+i*s*.05-s*.15*(2-i)],[tx+s*.5-i*.05*s,ty-s*.3+i*s*.05-s*.15*(2-i)]],c)}
 function palm(x,tx,ty,s){x.strokeStyle='#8d5524';x.lineWidth=s*.12;x.beginPath();x.moveTo(tx,ty);x.quadraticCurveTo(tx+s*.2,ty-s*.6,tx+s*.1,ty-s*1.2);x.stroke();
-  x.fillStyle='#2f9e44';for(let a=0;a<5;a++){x.save();x.translate(tx+s*.1,ty-s*1.2);x.rotate(-2.6+a*.65);x.beginPath();x.ellipse(s*.4,0,s*.45,s*.12,0,0,7);x.fill();x.restore()}}
+  x.fillStyle='#2f9e44';for(let a=0;a<5;a++){x.save();x.translate(tx+s*.1,ty-s*1.2);x.rotate(-2.6+a*.65);x.beginPath();x.ellipse(s*.4,0,Math.abs(s*.45),Math.abs(s*.12),0,0,7);x.fill();x.restore()}}
 function stars(x,n,maxY,seed=3){let r=seed;const rn=()=>(r=(r*9301+49297)%233280)/233280;for(let i=0;i<n;i++)circ(x,rn()*W,rn()*maxY,rn()*2+.6,'rgba(255,255,255,'+(.5+rn()*.5)+')')}
 const BG={
  meadow:x=>{x.fillStyle=grad(x,'#8fd3ff','#e3f6ff');x.fillRect(0,0,W,H);circ(x,680,110,55,'#ffd43b');cloud(x,200,110,40);cloud(x,470,80,30);hills(x,420,'#8ce99a',30);hills(x,470,'#51cf66',25,2);for(let i=0;i<30;i++)circ(x,(i*137)%W,500+(i*53)%90,5,['#ff8787','#ffd43b','#fff'][i%3])},
@@ -243,7 +245,7 @@ const BG={
  jungle:x=>{x.fillStyle=grad(x,'#96f2d7','#2b8a3e');x.fillRect(0,0,W,H);for(let i=0;i<9;i++){x.save();x.translate((i*97)%W,i%2?40:520);x.rotate(i);x.fillStyle=i%2?'#2b8a3e':'#37b24d';x.beginPath();x.ellipse(0,0,140,45,0,0,7);x.fill();x.restore()}
    x.strokeStyle='#2b8a3e';x.lineWidth=6;for(let i=0;i<6;i++){x.beginPath();x.moveTo(60+i*140,0);x.quadraticCurveTo(80+i*140,120,50+i*140,200+i%3*40);x.stroke()}hills(x,480,'#5c940d',20);[[150,470],[600,500],[420,520]].forEach(([a,b])=>circ(x,a,b,12,'#ff6b6b'))},
  moon:x=>{x.fillStyle=grad(x,'#0b1026','#2b2f77');x.fillRect(0,0,W,H);stars(x,90,380);circ(x,640,130,55,'#4dabf7');circ(x,625,115,22,'#69db7c');circ(x,660,150,16,'#69db7c');
-   x.fillStyle='#adb5bd';x.beginPath();x.moveTo(0,H);x.lineTo(0,440);x.quadraticCurveTo(400,380,800,450);x.lineTo(W,H);x.fill();[[150,500,40],[420,470,28],[620,530,50],[300,560,22]].forEach(([a,b,r])=>{x.fillStyle='#868e96';x.beginPath();x.ellipse(a,b,r,r*.35,0,0,7);x.fill()})},
+   x.fillStyle='#adb5bd';x.beginPath();x.moveTo(0,H);x.lineTo(0,440);x.quadraticCurveTo(400,380,800,450);x.lineTo(W,H);x.fill();[[150,500,40],[420,470,28],[620,530,50],[300,560,22]].forEach(([a,b,r])=>{x.fillStyle='#868e96';x.beginPath();x.ellipse(a,b,Math.abs(r),Math.abs(r*.35),0,0,7);x.fill()})},
  sea:x=>{x.fillStyle=grad(x,'#74c0fc','#1864ab');x.fillRect(0,0,W,H);x.fillStyle='rgba(255,255,255,.12)';for(let i=0;i<4;i++)poly(x,[[100+i*180,0],[160+i*180,0],[60+i*200,H],[i*200,H]],'rgba(255,255,255,.1)');
    x.fillStyle='#ffe8a1';x.beginPath();x.moveTo(0,H);for(let i=0;i<=W;i+=20)x.lineTo(i,520+Math.sin(i/60)*12);x.lineTo(W,H);x.fill();
    x.strokeStyle='#2f9e44';x.lineWidth=10;x.lineCap='round';[[80,530],[140,540],[690,525],[740,535]].forEach(([a,b])=>{x.beginPath();x.moveTo(a,b);for(let k=1;k<6;k++)x.lineTo(a+(k%2?14:-14),b-k*28);x.stroke()});
@@ -536,7 +538,7 @@ function mountStage(el,getScene,opts={}){stopStage();const box=document.createEl
     if(ty==='stars'){for(const s of starsA){g.globalAlpha=.5+.5*Math.sin(t*2.5+s.p);circ(g,s.x,s.y,s.r,'#fff')}g.globalAlpha=1;if(shoot){const q=shoot.t/.9;g.strokeStyle=`rgba(255,255,255,${1-q})`;g.lineWidth=3;g.beginPath();g.moveTo(shoot.x-q*300,shoot.y+q*120);g.lineTo(shoot.x-q*300+70,shoot.y+q*120-28);g.stroke()}}
     const order=[...sc.actors].sort((p,q)=>stOf(p).y-stOf(q).y);
     for(const a of order){const s=stOf(a),sp=spriteOf(a);if(!sp||!sp.ready)continue;const hh=a.s*H*(.3+.7*easeBack(s.pop))*(s.k||1),ww=hh*sp.c.width/sp.c.height;const al=s.alpha??1;if(al<.02)continue;g.globalAlpha=al;
-      if(a.m!=='fly'&&a.m!=='float'&&!(s.lift>0)){const ss=1-clamp(s.h/160,0,.6);g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(s.x,s.y,ww*.38*ss,ww*.09*ss,0,0,7);g.fill()}
+      if(a.m!=='fly'&&a.m!=='float'&&!(s.lift>0)){const ss=1-clamp(s.h/160,0,.6);g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(s.x,s.y,Math.max(.5,ww*.38*ss),Math.max(.5,ww*.09*ss),0,0,7);g.fill()}
       g.save();g.translate(s.x,s.y-s.h-(s.lift||0));g.rotate((reduced?0:Math.sin(t*.8+s.phase)*(a.m==='fly'?.12:.05))+(s.rot||0));const br=a.m==='stay'&&!reduced?Math.sin(t*2.2+s.phase)*.025:0;
       g.scale((1-s.sq*.5-br*.5)*s.face*(a.e&&!a.img?-1:1),1+s.sq+br);g.drawImage(sp.c,-ww/2,-hh,ww,hh);g.restore();g.globalAlpha=1;
       if(S.director&&S.sel===a.id){g.setLineDash([10,8]);g.lineWidth=4;g.strokeStyle='#e8590c';g.strokeRect(s.x-ww/2-6,s.y-s.h-(s.lift||0)-hh-6,ww+12,hh+12);g.setLineDash([])}
@@ -585,14 +587,42 @@ setInterval(saveNow,60000);document.addEventListener('visibilitychange',()=>{if(
 /* ================= home & shelf ================= */
 document.querySelectorAll('.kid').forEach(b=>b.onclick=()=>{kid=b.dataset.kid;try{window.KA&&KA.setKid(kid)}catch(e){}openShelf()});
 $('shelfHome').onclick=()=>show('home');$('voiceBtn').onclick=voicePanel;
+$('gpBtn').onclick=()=>KAPhotos.connect();
+KAPhotos.onChange(st=>{$('gpState').textContent='Google Photos: '+(st.connected?'connected ✓ 已連結':'not connected 未連結')+(st.waiting?` · ${st.waiting} waiting 等待上傳`:'')});
+/* ---- Google Photos: one picture page per scene, into the kid's album ---- */
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function storyPages(st){const z=st.lang==='zh',host=document.createElement('div');host.style.cssText='position:fixed;left:-4000px;top:0;width:1200px;height:900px;pointer-events:none';document.body.appendChild(host);
+  const _d=new Date(),day=`${_d.getFullYear()}-${String(_d.getMonth()+1).padStart(2,'0')}-${String(_d.getDate()).padStart(2,'0')}`;
+  const title=(st.title||(z?'我的故事':'My story')).replace(/[\\/:*?"<>|]/g,'').slice(0,50),n=st.scenes.length,out=[];
+  try{for(let i=0;i<n;i++){const sc=st.scenes[i];const S=mountStage(host,()=>st.scenes[i],{quiet:true});
+    for(let k=0;k<30;k++){await wait(100);if(sc.actors.every(a=>{const sp=spriteOf(a);return !sp||sp.ready}))break}await wait(900);
+    const src=host.querySelector('canvas'),txt=mix(sc.lines.join(z?'':' '));
+    const P=document.createElement('canvas'),PW=1200;const g=P.getContext('2d');g.font='600 40px -apple-system,system-ui,"PingFang TC",sans-serif';
+    const lines=[];{let cur='';const tk=/[一-鿿]/.test(txt)?[...txt]:txt.split(' '),sep=/[一-鿿]/.test(txt)?'':' ';for(const t of tk){const tt=cur?cur+sep+t:t;if(g.measureText(tt).width>PW-120&&cur){lines.push(cur);cur=t}else cur=tt}if(cur)lines.push(cur)}
+    P.width=PW;P.height=900+110+lines.length*54+40;g.fillStyle='#fffaf0';g.fillRect(0,0,P.width,P.height);
+    g.filter=sc.gray?'grayscale(1)':'none';g.drawImage(src,0,0,PW,900);g.filter='none';
+    g.fillStyle='#e8590c';g.font='800 34px -apple-system,system-ui,"PingFang TC",sans-serif';g.textAlign='left';g.fillText(`${title} · ${sceneName(i)}  (${i+1}/${n})`,60,965);
+    g.fillStyle='#2b2118';g.font='600 40px -apple-system,system-ui,"PingFang TC",sans-serif';lines.forEach((l,k)=>g.fillText(l,60,1035+k*54));
+    const blob=await new Promise(r=>P.toBlob(r,'image/jpeg',.9));
+    out.push({blob,name:`${KIDS[st.kid].name} - ${title} - p${String(i+1).padStart(2,'0')} - ${day}.jpg`,label:`${title} – ${sceneName(i)} (${i+1}/${n}) – ${day}${txt?'\n'+txt:''}`})}}
+  finally{stopStage();host.remove()}return out}
+let gpBusy=false;
+function sendStory(st,after){if(gpBusy)return;gpBusy=true;const z=st.lang==='zh',prev=story;story=st;
+  $('gpBusy').style.display='flex';
+  KAPhotos.upload(st.kid,storyPages(st),'Story Maker 故事工坊').then(r=>{
+      toast(r.uploaded?(z?`📸 存到${KIDS[st.kid].name}的 Google 相簿了!共 ${r.uploaded} 頁`:`📸 Saved ${r.uploaded} pages to ${KIDS[st.kid].name}'s Google Photos album!`)
+        :(z?'先存在這台裝置,爸媽連結 Google 後會自動上傳':'Saved on this device — it will upload when a parent connects Google Photos'))})
+    .catch(e=>{console.warn(e);toast(z?'上傳沒成功,稍後再試':'Upload didn’t work — try again later')})
+    .finally(()=>{gpBusy=false;$('gpBusy').style.display='none';story=prev;after&&after()})}
 async function openShelf(){await saveNow();const K=KIDS[kid];$('shelfWho').textContent=K.name;$('shelfWho').style.background=K.color;
   const mine=(await dbAll()).filter(s=>s.kid===kid).sort((a,b)=>b.updated-a.updated);
   $('books').innerHTML=`<button class="book new" id="newBook"><span style="font-size:52px">➕</span><b>New story 新故事</b></button>`+mine.map(s=>`<div class="book" data-id="${esc(s.id)}"><div class="cv" data-cover="${esc(s.id)}"></div>
     <b>${esc(s.title||'Untitled 未命名')}</b><small>${s.scenes.length} scenes 場景 · ${s.done?'✅ finished 完成':'✏️ in progress 進行中'}</small>
-    <div class="row"><button class="btn green" data-w="${esc(s.id)}">▶ Watch 看</button><button class="btn" data-e="${esc(s.id)}">✏️ ${s.done?'Change 改':'Continue 繼續'}</button></div></div>`).join('');
+    <div class="row"><button class="btn green" data-w="${esc(s.id)}">▶ Watch 看</button><button class="btn" data-e="${esc(s.id)}">✏️ ${s.done?'Change 改':'Continue 繼續'}</button>${s.done?`<button class="btn" data-u="${esc(s.id)}" aria-label="Save to Google Photos">📸</button>`:''}</div></div>`).join('');
   $('newBook').onclick=()=>{story={id:'s'+Date.now(),kid,lang:DEFLANG[kid],title:'',created:Date.now(),updated:Date.now(),imgs:{},hero:null,want:null,scenes:[],done:false};newScene('begin');hist=[];touch();openBuild()};
   const get=id=>mine.find(s=>s.id===id);
   document.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{story=get(b.dataset.w);watch(0)});
+  document.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>sendStory(get(b.dataset.u)));
   document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{story=get(b.dataset.e);hist=[];if(story.done){story.done=false;const sc=curScene();if(sc.kind==='end'){story.scenes.pop()}}touch();openBuild()});
   // tiny cover: first scene background + hero
   document.querySelectorAll('[data-cover]').forEach(el=>{const s=get(el.dataset.cover),sc=s.scenes[0];if(!sc)return;const c=document.createElement('canvas');c.width=400;c.height=300;const x=c.getContext('2d');{const old0=story;story=s;x.drawImage(bgCanvas(sc.bg),0,0,400,300);story=old0}
@@ -673,9 +703,9 @@ ${story.hero?`<button class="btn sm" id="rename">🏷️ ${z?'改名字':'Rename
     P.innerHTML=`<div class="q"><span>🎉 ${z?'故事完成了!已經存好了。':'Your story is finished and saved!'}</span></div>
       <div class="readbox"><div class="rbhead"><b>📖 ${esc(story.title||'')}</b><button class="btn sm go" id="readAll">🔊 ${z?'唸整個故事':'Read the whole story'}</button></div>
         <div class="rbtext whole">${story.scenes.map((x,i)=>`<p><b>${esc(sceneName(i))}</b><br>${esc(mix(x.lines.join(z?'':' ')))}</p>`).join('')}</div></div>
-      <div class="big2"><button class="opt big go2" id="watchAll"><span class="e">🎬</span><span class="t">${z?'播放我的故事':'Watch my story'}</span></button></div>
+      <div class="big2"><button class="opt big go2" id="watchAll"><span class="e">🎬</span><span class="t">${z?'播放我的故事':'Watch my story'}</span></button><button class="opt big" id="toAlbum"><span class="e">📸</span><span class="t">${z?'存到 Google 相簿':'Save to Google Photos'}</span></button></div>
       <div class="tools"><button class="btn sm dirbtn" id="dirBtn">🎬 ${z?'導演這一幕':'Direct this scene'}</button><button class="btn sm" id="undo">↩️ ${z?'上一步':'Undo'}</button><button class="btn sm" id="retitle">🏷️ ${z?'故事名字':'Story name'}</button></div>`;
-    $('watchAll').onclick=()=>watch(0);$('retitle').onclick=()=>{const t=prompt(z?'故事的名字:':'Story name:',story.title);if(t){story.title=t.trim();touch();renderBuild()}};
+    $('watchAll').onclick=()=>watch(0);$('toAlbum').onclick=()=>sendStory(story,()=>renderBuild());$('retitle').onclick=()=>{const t=prompt(z?'故事的名字:':'Story name:',story.title);if(t){story.title=t.trim();touch();renderBuild()}};
     $('readAll').onclick=()=>speak(whole);if(anim===true)setTimeout(()=>speak(whole),500)}
   if($('mixBtn'))$('mixBtn').onclick=mixPanel;
   if($('dirBtn'))$('dirBtn').onclick=()=>{if(!curScene().actors.length){toast(z?'先選一個主角':'Pick a hero first');return}director=true;renderDirector()};
@@ -834,7 +864,7 @@ function frameI(now){iraf=requestAnimationFrame(frameI);const t=(now-it0)/1000;c
   else if(baked){[baked.d,baked.r].forEach((b,i)=>{if(!b.s.ready)return;const tt=t-5.4,hop=Math.abs(Math.sin(tt*3.2+i*1.3))*55*Math.min(1,tt*2),
       x=b.cx+Math.sin(tt*.7+i*2)*(150),face=Math.cos(tt*.7+i*2)>0?1:-1,sq=Math.max(0,.18-hop/300)*(Math.sin(tt*3.2+i*1.3)<.15?1:0),pop=Math.min(1,tt/.35);
       const h=b.h*1.0*(.6+.4*pop),w=h*b.s.c.width/b.s.c.height;
-      ix.fillStyle='rgba(0,0,0,.25)';ix.beginPath();ix.ellipse(x,b.by+20,w*.35*(1-hop/150),12,0,0,7);ix.fill();
+      ix.fillStyle='rgba(0,0,0,.25)';ix.beginPath();ix.ellipse(x,b.by+20,Math.max(1,w*.35*(1-hop/150)),12,0,0,7);ix.fill();
       ix.save();ix.translate(x,b.by+20-hop);ix.rotate(Math.sin(tt*1.6+i)*.07);ix.scale(face*(1+sq*.6),1-sq);ix.drawImage(b.s.c,-w/2,-h,w,h);ix.restore()});
     for(let i=0;i<14;i++){const a=t*.6+i,x=(Math.sin(a*1.7+i)*.5+.5)*IW,y=(Math.cos(a*1.3+i*2)*.5+.5)*IH*.8,r=6+8*Math.abs(Math.sin(t*3+i));ix.fillStyle='#ffd43b';ix.globalAlpha=.8;
       ix.beginPath();for(let j=0;j<8;j++){const aa=j*Math.PI/4,rr=j%2?r*.35:r;ix.lineTo(x+Math.cos(aa)*rr,y+Math.sin(aa)*rr)}ix.fill()}ix.globalAlpha=1;
@@ -856,6 +886,6 @@ window.__test={state:()=>({screen:[...document.querySelectorAll('.screen.on')].m
 }
 </script>
 <script src="../../../tracker.js" data-game="story-maker"></script>
-<div id="kaVer" data-v="1.10" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.10 · 2026-11-25</div>
+<div id="kaVer" data-v="1.11" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.11 · 2026-11-25</div>
 </body>
 </html>
