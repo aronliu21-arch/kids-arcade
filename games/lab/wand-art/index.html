@@ -1017,7 +1017,8 @@ function stepStory(){
  $('#stWho').textContent=L.who?(NAMES[L.who]||L.who)+':':''; if(L.who) meet(L.who); (L.meet||[]).forEach(meet); $('#stTxt').textContent=L.text;
  const ch=$('#stChoices'); ch.innerHTML='';
  $('#stNext').style.display=L.choices?'none':'';
- if(L.choices) L.choices.forEach(c=>{ const b=document.createElement('button'); b.textContent=c.t; b.onclick=()=>{ Snd.sfx('tap'); if(!c.ok){ FX.smoke([FX.center(b)]); } if(c.ok){ FX.hearts(...FX.center(b)); Snd.sfx('light'); storyIdx++; if(c.reply){ storyLines.splice(storyIdx,0,...c.reply);} stepStory(); } else { $('#stTxt').textContent=c.why; Voice.say(c.why); b.disabled=true; b.style.opacity=.5; } }; ch.appendChild(b); });
+ if(L.choices){ if(!L._ord) L._ord=shuffle(L.choices.slice()); } // mixed order, so the kind answer isn't always last
+ if(L.choices) L._ord.forEach(c=>{ const b=document.createElement('button'); b.textContent=c.t; b.onclick=()=>{ Snd.sfx('tap'); if(!c.ok){ FX.smoke([FX.center(b)]); } if(c.ok){ FX.hearts(...FX.center(b)); Snd.sfx('light'); storyIdx++; if(c.reply){ storyLines.splice(storyIdx,0,...c.reply);} stepStory(); } else { $('#stTxt').textContent=c.why; Voice.say(c.why); b.disabled=true; b.style.opacity=.5; } }; ch.appendChild(b); });
  Voice.stop(); Voice.say(L.text,L.who);
  if(L.sfx){ Snd.sfx(L.sfx); const c=FX.center($('#stStage')); FX.burst(c[0],c[1]-40,{n:L.sfx==='gold'?70:40,speed:8,size:6}); if(L.sfx==='gold') FX.flash('#fff3bf',.4); }
 }
@@ -1986,7 +1987,7 @@ window.__test={
  state:()=>({screen:current, mission:M&&M.m&&M.m.id, item:M&&M.items&&M.items[M.i], trial:T&&T.i, word:M&&M.word, hp:M&&M.mon&&M.mon.hp, phase:M&&M.phase, story:current==='story'?storyIdx:null, done:Object.assign({},S.done), stars:S.stars, level:S.level, ch:S.ch, view:S.view, allDone:S.allDone}),
  solve:()=>{
   if(current==='title') return $('#startBtn').click();
-  if(current==='story'){ const L=storyLines[storyIdx]; if(L&&L.choices){ const i=L.choices.findIndex(c=>c.ok); $('#stChoices').children[i].click(); } else $('#stNext').click(); return; }
+  if(current==='story'){ const L=storyLines[storyIdx]; if(L&&L.choices){ const c=L.choices.find(c=>c.ok); [...$('#stChoices').children].find(b=>b.textContent===c.t).click(); } else $('#stNext').click(); return; }
   if(current==='play'&&M&&M.battle&&!M.word){ const bs=[...$('#cards').children]; const w=bs.find(b=>b.classList.contains('weak'))||bs[0]; w&&w.click(); return; }
   if(current==='play'){ pad.strokes=pad.L.strokes.map(s=>s.pts.slice()); pad.draw(); $('#padCast').click(); return; }
   if(current==='map'){ const m=nextMain(S.view); if(m) return openSpot(m); const mini=CH(S.view).missions.find(x=>x.kind==='mini'&&!isDone(S.view,x.id)&&isOpen(S.view,x)); if(mini) return openSpot(mini); if(!S.chDone[S.view]) return chapterEnd(S.view); if(S.view<S.ch&&S.view<CHAPTERS.length){ S.view++; spotsKey=''; } return; }
@@ -1997,7 +1998,7 @@ window.__test={
  resetSession:()=>{ sessionMissions=0; }
 };
 </script>
-<div id="kaVer" data-v="1.5" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.5 · 2026-11-26</div>
+<div id="kaVer" data-v="1.6" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.6 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
