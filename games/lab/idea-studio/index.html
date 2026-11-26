@@ -67,7 +67,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:8;padding:12px}
 .modal>div{background:#fff;border-radius:20px;padding:18px;max-width:440px;width:100%;text-align:center;max-height:100%;overflow:auto}
 #nameIn{display:block;margin:12px auto;font-size:20px;width:100%;padding:10px;border-radius:12px;border:2px solid #ccc}
-#trBox>div{max-width:760px;height:min(92vh,760px);display:flex;flex-direction:column}
+#trBox>div{position:relative;max-width:760px;height:min(92vh,760px);display:flex;flex-direction:column}
 #trCats{display:flex;gap:6px;overflow-x:auto;padding:8px 0;flex:none}#trCats button{background:#f1f3f5;font-size:15px;padding:0 12px;white-space:nowrap;flex:none}#trCats button.sel{background:#ffd43b}
 #trGrid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;padding:4px;align-content:start}
 #trGrid button{background:#fff;border:2px solid #f1d9a8;border-radius:14px;padding:4px;display:flex;flex-direction:column;align-items:center;font-size:13px;font-weight:700;min-height:110px}
@@ -79,9 +79,27 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 #viewBox>div{max-width:900px}
 @media (max-height:440px){#viewImg{max-height:48vh!important}#viewBox .btn{min-height:44px}}
 #viewImg{width:100%;max-height:62vh;object-fit:contain;border-radius:14px;border:1px solid #eee;background:#fff}
-#stepBar{display:none;align-items:center;gap:6px;justify-content:center;padding:6px 0 0;flex:none}
-#stepBar .lbl{font-weight:800;font-size:17px;min-width:150px;text-align:center}
-#stepBar button{background:#fff;font-size:20px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.gbar{flex:1;min-width:0;display:none;align-items:center;gap:6px;background:#e7f5ff;border-radius:14px;padding:0 4px 0 10px;height:52px}
+.gbar .gname{font-weight:800;white-space:nowrap}
+.gbar .lbl{flex:1;min-width:0;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1c7ed6}
+.gbar button{background:#fff;font-size:18px;flex:none}
+.gbar .next{background:#1c7ed6;color:#fff;font-weight:800;padding:0 14px;font-size:17px}
+.done{background:#2f9e44;color:#fff;font-weight:800;padding:0 16px;font-size:18px;flex:none;box-shadow:0 3px 0 #237032}
+#trPrev{display:none;position:absolute;inset:0;background:#fff;border-radius:20px;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px}
+#trPrev svg{width:min(240px,40vh);height:min(240px,40vh)}
+#doneBox img{width:100%;max-height:42vh;object-fit:contain;border-radius:14px;border:1px solid #eee}
+.bigopt{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.bigopt button{min-height:64px;font-size:20px;font-weight:800;border-radius:18px}
+#lifeScr{height:100%}
+.lfstage{flex:1;position:relative;min-height:0}
+#lifeCv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+#lfTip{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:#212529;color:#fff;padding:8px 14px;border-radius:12px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}
+.lfbar{display:flex;gap:8px;padding:8px;background:#fff;overflow-x:auto;justify-content:center;flex:none}
+.lfbar button{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f1f3f5;min-width:64px;min-height:60px;font-size:26px;line-height:1;padding:4px 8px}
+.lfbar button small{font-size:12px;font-weight:700;margin-top:3px}
+.lfbar button.sel{background:#ffd43b}
+@media (max-width:500px),(max-height:440px){.gbar .gname{display:none}.gbar .next{padding:0 10px;font-size:15px}.gbar{gap:4px}}
+@media (max-height:440px){.lfbar button{min-height:48px;min-width:54px;font-size:22px}.lfbar button small{display:none}.gbar{height:44px}.bigopt button{min-height:50px}}
 #trIn{flex:1;min-width:0;font-size:20px;padding:10px;border-radius:12px;border:2px solid #ccc}
 .seg button{background:#f1f3f5;font-size:16px;padding:0 14px}.seg button.sel{background:#ffd43b}
 #chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
@@ -92,7 +110,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
  .wrap{flex-direction:column-reverse}
  .tools{flex-direction:column}
  .group{flex-direction:row;overflow-x:auto;overflow-y:hidden}
- .bar{flex-wrap:wrap}.banner{order:5;flex-basis:100%}
+ .bar{flex-wrap:wrap}.banner,.gbar{order:5;flex-basis:100%}.who{display:none}
 }
 @media (max-height:440px){.emo{font-size:44px}.ideaZh{font-size:24px;line-height:1.9}.ideaEn{font-size:16px}.card{padding:10px}.center{gap:8px;padding:10px}.bar{padding:3px 6px}.status{display:none}.tool,.sw{width:44px;height:44px;min-width:44px;min-height:44px}.save{min-height:44px}.banner,.who{height:44px}}
 @media (max-width:560px) and (max-aspect-ratio:1/1){.status{display:none}.who{padding:0 8px}}
@@ -111,7 +129,7 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   </div>
   <div class="row"><button class="btn" id="voiceBtn">🗣 聲音 Voice</button></div>
   <p class="small">Saved pictures go to the Photos app 畫好的畫存在「照片」裡</p>
-  <p class="small">Test sample · 測試版 · v1.5</p>
+  <p class="small">Test sample · 測試版 · v1.6</p>
 </section>
 
 <!-- choose -->
@@ -133,6 +151,15 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   <div class="row" style="margin:0;width:100%;justify-content:space-between;max-width:980px"><button class="tool" id="galBack">⬅️</button><h2 id="galTitle"></h2><div class="who" id="galWho"></div></div>
   <p class="small" id="galEmpty" style="display:none;font-size:18px;margin-top:30px">No drawings yet — go draw something! 還沒有畫,快去畫一張吧!</p>
   <div id="galGrid"></div>
+</section>
+
+<section id="lifeScr" class="screen">
+  <div class="bar"><button class="tool" id="lfBack" aria-label="Back">⬅️</button><b style="flex:1;font-size:19px">✨ 活起來了! It's alive!</b><button class="btn" id="lfFriend">👫 朋友 Friends</button></div>
+  <div class="lfstage"><canvas id="lifeCv"></canvas><div id="lfTip"></div></div>
+  <div class="lfbar">
+    <button data-lf="jump">🦘<small>跳 Jump</small></button><button data-lf="dance">💃<small>跳舞 Dance</small></button><button data-lf="spin">🌀<small>轉圈 Spin</small></button>
+    <button data-lf="feed" id="lfFeed">🍎<small>餵食 Feed</small></button><button data-lf="love">❤️<small>抱抱 Hug</small></button><button data-lf="sleep">😴<small>睡覺 Sleep</small></button><button data-lf="scene">🌄<small>換地方 Place</small></button>
+  </div>
 </section>
 
 <section id="ideaScr" class="screen center">
@@ -158,10 +185,10 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
     <button class="tool" id="homeBtn" title="Home">🏠</button>
     <div class="who" id="who"></div>
     <div class="banner" id="banner"><span id="bannerTxt"></span><button id="bannerHear" aria-label="Read the idea">🔊</button></div>
+    <div class="gbar" id="gbar"><span class="gname" id="gName"></span><button id="stPrev" aria-label="Previous step">◀</button><span class="lbl" id="stLbl"></span><button id="stSay" aria-label="Read step">🔊</button><button class="next" id="stNext"></button><button id="stClose" aria-label="Stop tracing">✖</button></div>
     <div class="status" id="status"></div>
     <button class="tool" id="undo" title="Undo">↩️</button>
-    <button class="tool" id="clear" title="Clear">🗑️</button>
-    <button class="save" id="saveBtn">📲 Save 存</button>
+    <button class="done" id="doneBtn">✅ 畫好了 Done</button>
   </div>
   <div class="wrap">
     <div class="tools">
@@ -174,11 +201,11 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
         <button class="tool" id="traceBtn" title="Trace" style="background:#d0ebff">🖍️</button>
         <button class="tool" id="guideBtn" title="Show or hide the tracing picture" style="display:none">👁️</button>
         <button class="tool" id="sizeBtn" title="Size">●</button>
+        <button class="tool" id="clear" title="Clear">🗑️</button>
       </div>
       <div class="group" id="colors"></div>
     </div>
-    <div class="stage" id="stage"><div id="paper"><canvas id="cv" width="1000" height="750"></canvas><canvas id="guide" width="1000" height="750"></canvas></div>
-      <div id="stepBar"><button id="stPrev" aria-label="Previous step">◀</button><div class="lbl" id="stLbl"></div><button id="stNext" aria-label="Next step">▶</button><button id="stSay" aria-label="Read step">🔊</button><button id="stMode" style="font-size:15px;padding:0 10px"></button></div></div>
+    <div class="stage" id="stage"><div id="paper"><canvas id="cv" width="1000" height="750"></canvas><canvas id="guide" width="1000" height="750"></canvas></div></div>
   </div>
 </section>
 
@@ -198,11 +225,23 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
   <div id="trCats"></div>
   <p id="trMsg" class="small" style="min-height:0;margin:0"></p>
   <div id="trGrid"></div>
+  <div id="trPrev"><div id="tpArt"></div><b id="tpName" style="font-size:22px"></b><span class="small" id="tpSteps"></span>
+    <div class="row"><button class="btn go" id="tpSteps1" style="font-size:19px;min-height:60px">👣 一步一步畫 Step by step</button><button class="btn blue" id="tpAll" style="font-size:19px;min-height:60px">🖼️ 整張一起描 Trace it all</button></div>
+    <button class="btn" id="tpBack">⬅️ 換一張 Pick another</button></div>
 </div></div>
 <div class="modal" id="viewBox"><div>
   <img id="viewImg" alt="">
   <p id="viewInfo" style="margin:8px 0;font-weight:700"></p>
-  <div class="row" style="margin-top:4px"><button class="btn" id="vPrev">◀</button><button class="btn go" id="vKeep">✏️ Keep drawing 繼續畫</button><button class="btn blue" id="vSave">📲 Save 存到照片</button><button class="btn" id="vDel">🗑️</button><button class="btn" id="vNext">▶</button><button class="btn" id="vClose">✖</button></div>
+  <div class="row" style="margin-top:4px"><button class="btn" id="vPrev">◀</button><button class="btn" id="vLife" style="background:#ffd43b">✨ 活起來 Alive</button><button class="btn go" id="vKeep">✏️ Keep drawing 繼續畫</button><button class="btn blue" id="vSave">📲 Save 存到照片</button><button class="btn" id="vDel">🗑️</button><button class="btn" id="vNext">▶</button><button class="btn" id="vClose">✖</button></div>
+</div></div>
+<div class="modal" id="doneBox"><div>
+  <b style="font-size:22px">🎉 Great drawing! 畫得真棒!</b>
+  <img id="doneImg" alt="" style="margin-top:10px">
+  <div class="bigopt">
+    <button class="btn" id="dLife" style="background:linear-gradient(90deg,#ffd43b,#ff922b);color:#2b2118">✨ 讓它活起來! Bring it to life</button>
+    <button class="btn blue" id="dSave">📲 存到照片 Save to Photos</button>
+    <button class="btn" id="dKeep">✏️ 繼續畫 Keep drawing</button>
+  </div>
 </div></div>
 <div class="modal" id="leaveBox"><div>
   <div style="font-size:48px">🖼️</div><b style="font-size:21px">Save your picture first? 要先把畫存起來嗎?</b>
@@ -213,8 +252,9 @@ h2{margin:0;font-size:clamp(22px,5vw,32px)}
 <script src="../../../voice.js"></script>
 <script src="../../../savepic.js"></script>
 <script src="trace-art.js"></script>
+<script src="life.js"></script>
 <script>
-const VERSION='v1.5';
+const VERSION='v1.6';
 const $=id=>document.getElementById(id);
 const KIDS={nora:{name:'Nora',color:'#7048e8',size:1,stamps:['⭐','💜','🌸','⚽','🦄','🌈','🎀','🦋']},
             lucas:{name:'Lucas',color:'#f76707',size:1,stamps:['⚡','🔥','⚽','🐉','⭐','🚀','🃏','🤖']},
@@ -273,7 +313,7 @@ function renderIdea(read){$('ideaEmo').textContent=[idea.who,idea.where,idea.do,
 const cv=$('cv'),g=cv.getContext('2d',{willReadFrequently:true}),CW=1000,CH=750;
 let kid=null,tool='pen',color=COLORS[0],sizeI=1,stamp='⭐',hue=0,dirty=false,undoSt=[],drawingIdea=null,stashKey=null,lastAuto=0;
 function blank(){g.fillStyle='#fff';g.fillRect(0,0,CW,CH)}
-function fit(){const st=$('stage').getBoundingClientRect();const sb=$('stepBar').style.display==='flex'?$('stepBar').offsetHeight||58:0;const w=Math.max(100,st.width-16),h=Math.max(80,st.height-16-sb);const s=Math.min(w/CW,h/CH);cv.style.width=gcv.style.width=Math.floor(CW*s)+'px';cv.style.height=gcv.style.height=Math.floor(CH*s)+'px'}
+function fit(){const st=$('stage').getBoundingClientRect();const sb=0;const w=Math.max(100,st.width-16),h=Math.max(80,st.height-16-sb);const s=Math.min(w/CW,h/CH);cv.style.width=gcv.style.width=Math.floor(CW*s)+'px';cv.style.height=gcv.style.height=Math.floor(CH*s)+'px'}
 addEventListener('resize',()=>{if($('studio').classList.contains('on'))fit();hint()});
 function pt(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*CW/r.width,y:(e.clientY-r.top)*CH/r.height}}
 function pushUndo(){undoSt.push(g.getImageData(0,0,CW,CH));if(undoSt.length>10)undoSt.shift()}
@@ -322,23 +362,23 @@ function artSVG(key,upto,mode,px){const a=ART[key],n=a.steps.length;let g='';
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="${px||200}" height="${px||200}"><style>.f{fill:currentColor}</style>${g}</svg>`}
 const gcv=$('guide'),gg=gcv.getContext('2d');let guide=null,guideOn=true,guideTok=0;
 function drawGuide(){const tok=++guideTok;gg.clearRect(0,0,CW,CH);$('guideBtn').style.display=guide?'':'none';
-  $('stepBar').style.display=guide?'flex':'none';if(guide)stepUI();if(!guide||!guideOn)return;
+  $('gbar').style.display=guide?'flex':'none';$('banner').style.display=guide?'none':'';if(guide)stepUI();if(!guide||!guideOn)return;
   const S=Math.round(CH*.9),img=new Image();img.onload=()=>{if(tok!==guideTok)return;gg.clearRect(0,0,CW,CH);gg.drawImage(img,(CW-S)/2,(CH-S)/2,S,S)};
   img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(artSVG(guide.key,guide.step,guide.mode,S))}
-function stepUI(){const a=ART[guide.key],n=a.steps.length,st=a.steps[guide.step];
-  $('stLbl').textContent=guide.mode==='all'?`${a.zh} ${a.en}`:`${guide.step+1}/${n} ${st[0]} ${st[1]}`;
-  $('stPrev').style.visibility=$('stNext').style.visibility=guide.mode==='all'?'hidden':'visible';
-  $('stPrev').disabled=guide.step===0;$('stNext').textContent=guide.step===n-1?'🎉':'▶';
-  $('stMode').textContent=guide.mode==='all'?'👣 Steps 一步步':'🖼️ Whole 整張'}
+function stepUI(){const a=ART[guide.key],n=a.steps.length,st=a.steps[guide.step],all=guide.mode==='all';
+  $('gName').textContent='🖍️ '+a.zh;
+  $('stLbl').textContent=all?'整張描 Trace it all':`${guide.step+1}/${n} ${st[0]} ${st[1]}`;
+  $('stPrev').style.display=all||guide.step===0?'none':'';
+  $('stNext').style.display=all?'none':'';$('stNext').textContent=guide.step===n-1?'🎉 完成 Finish':'下一步 Next ▶'}
 function sayStep(){if(!guide)return;const a=ART[guide.key],st=a.steps[guide.step];
   if(guide.mode==='all')sayBoth(`描描看,${a.zh}`,`Trace the ${a.en.toLowerCase()}`);else sayBoth(`第${guide.step+1}步,畫${st[0]}`,`Step ${guide.step+1}: the ${st[1].toLowerCase()}`)}
 function setGuide(key,mode,step){guide=key&&ART[key]?{key,mode:mode||'steps',step:step||0}:null;guideOn=true;$('guideBtn').textContent='👁️';drawGuide();fit()}
 $('guideBtn').onclick=()=>{guideOn=!guideOn;$('guideBtn').textContent=guideOn?'👁️':'🙈';drawGuide()};
 $('stPrev').onclick=()=>{if(guide.step>0){guide.step--;drawGuide();sayStep()}};
 $('stNext').onclick=()=>{const n=ART[guide.key].steps.length;if(guide.step<n-1){guide.step++;pop();drawGuide();sayStep()}
-  else{toast('🎉 You drew it! Now add colors 畫好了!來塗顏色吧');sayBoth('畫好了!來塗顏色吧','You drew it! Now add colors!');guide.mode='all';drawGuide()}};
+  else{toast('🎉 You drew it! Add colors, then tap ✅ 畫好了!塗上顏色,再點「畫好了」');sayBoth('畫好了!塗上顏色,再點畫好了','You drew it! Add colors, then tap Done!');guide.mode='all';drawGuide()}};
 $('stSay').onclick=sayStep;
-$('stMode').onclick=()=>{guide.mode=guide.mode==='all'?'steps':'all';if(guide.mode==='steps')guide.step=0;drawGuide();sayStep()};
+$('stClose').onclick=()=>{setGuide(null)};
 let trCat='all';
 const FAV={nora:['unicorn','cat','butterfly','flower','soccer','bunny','castle','cupcake'],lucas:['dragon','trex','robot','soccer','rocket','shark','car','lion'],milo:['trex','dinosaur','car','dog','firetruck','apple','cat','train']};
 function trList(){const q=$('trIn').value.trim().toLowerCase();let keys=Object.keys(ART);
@@ -346,11 +386,16 @@ function trList(){const q=$('trIn').value.trim().toLowerCase();let keys=Object.k
     $('trMsg').textContent=keys.length?'':`🤔 “${q}” isn't in the library yet — pick one below 還沒有這個,選下面的吧`;if(!keys.length)keys=Object.keys(ART)}
   else{$('trMsg').textContent='';if(trCat==='fav')keys=FAV[kid];else if(trCat!=='all')keys=keys.filter(k=>ART[k].cat===trCat)}
   $('trGrid').innerHTML=keys.map(k=>`<button data-k="${k}">${artSVG(k,0,'thumb',72)}<span>${ART[k].zh}</span><span style="font-weight:600;color:#7a6a58">${ART[k].en}</span></button>`).join('');
-  $('trGrid').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{$('trBox').style.display='none';setGuide(b.dataset.k,'steps',0);pop();sayStep()})}
+  $('trGrid').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>trPreview(b.dataset.k))}
+let tpKey=null;
+function trPreview(k){tpKey=k;const a=ART[k];$('tpArt').innerHTML=artSVG(k,0,'thumb',240);$('tpName').textContent=`${a.zh} ${a.en}`;$('tpSteps').textContent=`${a.steps.length} steps 步驟: `+a.steps.map(x=>x[0]).join(' → ');
+  $('trPrev').style.display='flex';pop();sayBoth(a.zh,a.en)}
+function trPick(mode){$('trPrev').style.display='none';$('trBox').style.display='none';setGuide(tpKey,mode,0);sayStep()}
+$('tpSteps1').onclick=()=>trPick('steps');$('tpAll').onclick=()=>trPick('all');$('tpBack').onclick=()=>$('trPrev').style.display='none';
 function trCatsUI(){const cats=[['fav','⭐ 推薦','For you']].concat(ART_CATS);
   $('trCats').innerHTML=cats.map(c=>`<button data-c="${c[0]}" class="${c[0]===trCat?'sel':''}">${c[1]} ${c[2]}</button>`).join('');
   $('trCats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{trCat=b.dataset.c;$('trIn').value='';trCatsUI();trList()})}
-function openTrace(){closeStamps();trCat='fav';$('trIn').value='';trCatsUI();trList();$('trBox').style.display='flex';if(kid==='milo')say('你想描什麼?點一個')}
+function openTrace(){closeStamps();$('trPrev').style.display='none';trCat='fav';$('trIn').value='';trCatsUI();trList();$('trBox').style.display='flex';if(kid==='milo')say('你想描什麼?點一個')}
 $('trIn').addEventListener('input',trList);
 $('trNone').onclick=()=>{setGuide(null);$('trBox').style.display='none'};$('trClose').onclick=()=>$('trBox').style.display='none';
 $('traceBtn').onclick=openTrace;
@@ -384,10 +429,24 @@ function saveToDevice(title,after){const file=KASave.fromCanvas(cv,fileName(titl
   return KASave.share([file],title).then(res=>{
     if(res==='shared'||res==='downloaded'){if(kid===who){dirty=false;saveGal({saved:true,title})}putDraft(who,{png,idea:theIdea,time:Date.now(),unsaved:false,id:curId});setStatus('Saved ✓ 已存');toast(res==='shared'?'🖼️ Saved! Look in Photos 存好了!在「照片」裡':'🖼️ Saved to Downloads 存到下載')}
     else toast('Not saved yet 還沒存');after&&after(res);return res})}
-$('saveBtn').onclick=()=>{closeStamps();const c=$('chips');c.innerHTML='';
+function openSave(){closeStamps();const c=$('chips');c.innerHTML='';
   const chips=(drawingIdea?[(idea=drawingIdea,ideaTitle())]:[]).concat({nora:['🦄 獨角獸','⚽ 足球','👨‍👩‍👧‍👦 我的家人','🌈 彩虹'],lucas:['🐉 龍','⚽ 足球','🃏 我的卡片','🤖 機器人'],milo:['🦖 暴龍','🦕 恐龍','🚗 車子','🌋 火山']}[kid]);
   chips.forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$('nameIn').value=t.replace(/^\S+\s/,'').trim()||t};c.appendChild(b)});
-  $('nameIn').value=drawingIdea?ideaTitle():'';$('nameBox').style.display='flex';if(kid!=='milo')setTimeout(()=>$('nameIn').focus(),60)};
+  $('nameIn').value=drawingIdea?ideaTitle():'';$('nameBox').style.display='flex';if(kid!=='milo')setTimeout(()=>$('nameIn').focus(),60)}
+$('doneBtn').onclick=()=>{closeStamps();if(!inked){toast('先畫點東西吧! Draw something first ✏️');return}
+  $('doneImg').src=cv.toDataURL('image/png');$('doneBox').style.display='flex';autosave();sayBoth('畫得真棒!要讓它活起來嗎?','Great drawing! Want to bring it to life?')};
+$('dSave').onclick=()=>{$('doneBox').style.display='none';openSave()};
+$('dKeep').onclick=()=>$('doneBox').style.display='none';
+/* ---- bring it to life ---- */
+let lifeFrom='studio',lifeId=null;
+function goLife(src,from,id){window._lifeFriends=[];const st=Life.cutout(src);if(!st){toast('先畫點東西吧! Draw something first ✏️');return}
+  lifeFrom=from;lifeId=id;try{KAVoice.stop()}catch(e){}show('lifeScr');requestAnimationFrame(()=>{Life.start([st],{kid});sayBoth('哇!你的畫活起來了!點點它!','Wow, your drawing came to life! Tap it!')})}
+$('dLife').onclick=()=>{$('doneBox').style.display='none';goLife(cv,'studio',curId)};
+$('lfBack').onclick=()=>{Life.stop();if(lifeFrom==='gallery')openGallery();else show('studio')};
+$('lfFriend').onclick=async()=>{const all=(await listGal(kid)).filter(g=>g.id!==lifeId&&!(window._lifeFriends||[]).includes(g.id));
+  if(!all.length){toast('Draw more pictures to make friends! 多畫幾張就有朋友了');return}
+  if(Life.count()>=5){toast('The party is full! 朋友太多了 🎉');return}
+  const g=all[Math.floor(Math.random()*all.length)],im=new Image();im.onload=()=>{const st=Life.cutout(im);if(st&&Life.addFriend(st)){(window._lifeFriends=window._lifeFriends||[]).push(g.id);toast(`👋 ${g.title||'朋友'} joined! 來玩了!`)}};im.src=g.png};
 $('nameNo').onclick=()=>$('nameBox').style.display='none';
 $('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('nameOk').click()});
 $('nameOk').onclick=()=>{$('nameBox').style.display='none';saveToDevice($('nameIn').value.trim()||'我的畫')};
@@ -436,6 +495,7 @@ function openView(i){viewI=(i+galItems.length)%galItems.length;const g=galItems[
   $('vPrev').style.visibility=$('vNext').style.visibility=galItems.length>1?'visible':'hidden';$('viewBox').style.display='flex'}
 $('galBtn').onclick=openGallery;$('galBack').onclick=()=>{show('choose');openChoose()};
 $('vPrev').onclick=()=>openView(viewI-1);$('vNext').onclick=()=>openView(viewI+1);$('vClose').onclick=()=>$('viewBox').style.display='none';
+$('vLife').onclick=()=>{const g=galItems[viewI],im=new Image();im.onload=()=>{$('viewBox').style.display='none';goLife(im,'gallery',g.id)};im.src=g.png};
 $('vKeep').onclick=()=>{const g=galItems[viewI];$('viewBox').style.display='none';startStudio(g.idea,g.png,false,g.guide,g.id)};
 $('vSave').onclick=()=>{const g=galItems[viewI],t=g.title||'我的畫';KASave.share([{dataURL:g.png,name:`${KIDS[kid].name} - ${t} - ${today()}.png`}],t).then(r=>{
   if(r==='shared'||r==='downloaded'){g.saved=true;putGal(g);toast('🖼️ Saved! 存好了!');openView(viewI);openGallery().then(()=>openView(viewI))}else toast('Not saved yet 還沒存')})};
@@ -461,7 +521,7 @@ window.__test={state:()=>({screen:[...document.querySelectorAll('.screen.on')].m
 </script>
 <script src="../../../tracker.js" data-game="idea-studio"></script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.5" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.5 · 2026-11-26</div>
+<div id="kaVer" data-v="1.6" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.6 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
