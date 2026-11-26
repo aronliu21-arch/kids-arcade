@@ -1,0 +1,6 @@
+
+.zh{font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Fredoka",sans-serif;letter-spacing:.04em}
+.zh ruby{ruby-position:over;margin:0 .16em}
+.zh rt{font-size:.62em;font-weight:600;letter-spacing:0;line-height:1.05}
+h1.zh rt{font-size:.5em;font-weight:700}
+.brand .zh{display:inline-block;padding-top:.5em;line-height:1}

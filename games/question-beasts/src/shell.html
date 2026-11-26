@@ -1,0 +1,119 @@
+<!doctype html><html><head>
+<script src="../../voice.js"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>/*@inc css/01.css*/</style></head><body>
+<title>Question Beasts</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>/*@inc css/02.css*/</style>
+
+<div class="app">
+  <!-- HOME -->
+  <section id="home" class="screen">
+    <header class="brand"><h1><span class="zht">問答神獸</span><span class="ent">QUESTION BEASTS</span></h1><p><span class="tagz">答對了，就出招！</span>Answer right. Hit hard.</p></header>
+    <div class="kids" id="kidList"></div>
+    <div class="how"><b>How to play:</b> pick an attack card. Harder cards hit harder. Answer right to attack, answer fast for a critical hit, and get 3 in a row to unlock a SUPER move. When the enemy attacks, answer to raise your shield.</div>
+    <div class="foot"><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="chip" id="sndBtn" type="button">SOUND: ON</button><button class="chip fsBtn" type="button">⛶ FULL SCREEN</button><button class="chip" id="introBtn" type="button">▶ INTRO</button></span><span class="tag" id="syncLabel">Progress saves on this device</span></div>
+  </section>
+
+  <!-- STARTER PICK -->
+  <section id="pick" class="screen" hidden>
+    <div class="topbar"><button class="chip" id="pickBack" type="button">◀ BACK</button><span class="tag" id="pickTitle"></span></div>
+    <div class="detail" id="pickDetail" hidden>
+      <div class="evos" id="evos"></div>
+      <div class="moves" id="pMoves"></div>
+      <button class="chip go big" id="pickGo" type="button"></button>
+    </div>
+    <div class="pickgrid" id="pickGrid"></div>
+  </section>
+
+  <!-- WORLD -->
+  <section id="world" class="screen" hidden>
+    <div class="topbar"><button class="chip" id="backHome" type="button">◀ BEASTS</button><span class="tag" id="wTitle"></span><button class="chip" id="changeBeast" type="button">CHANGE BEAST</button></div>
+    <div class="hero">
+      <canvas id="wSprite" width="110" height="110"></canvas>
+      <div><h2 id="wBeast"></h2><p id="wLv"></p><div class="xp"><i id="wXp"></i></div><p class="tag" id="wNote"></p><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="chip" id="replayEvo" type="button" hidden>▶ WATCH EVOLUTION</button><button class="chip" id="bookBtn" type="button" hidden>📖 STORY BOOK</button><button class="chip" id="eqBtn" type="button">🎒 裝備 EQUIP</button></span></div>
+    </div>
+    <div class="setpick" id="setPick" hidden></div>
+    <div class="mapwrap"><canvas id="map" width="240" height="150" aria-label="World map. Use the arrow buttons to choose a stage."></canvas></div>
+    <div class="mapbar"><button class="chip" id="mPrev" type="button" aria-label="Previous stage">◀</button><button class="chip go" id="mFight" type="button"></button><button class="chip" id="mNext" type="button" aria-label="Next stage">▶</button></div>
+    <p class="tag" id="mInfo"></p>
+  </section>
+
+  <!-- BATTLE -->
+  <section id="battle" class="screen" hidden>
+    <div class="topbar"><button class="chip" id="flee" type="button">◀ RUN</button><span class="tag" id="bTitle"></span><span style="display:flex;gap:8px"><button class="chip fsBtn" type="button" aria-label="Full screen">⛶</button><button class="chip" id="musicBtn" type="button">♪ ON</button></span></div>
+    <div class="bmain">
+    <div class="stage" id="stage">
+      <canvas id="cv" width="192" height="108"></canvas>
+      <div class="hp l"><span id="pName"></span> <span class="hpn" id="pHpN"></span><div class="track"><i id="pHp"></i></div></div>
+      <div class="hp r"><span id="eName"></span> <span class="hpn" id="eHpN"></span><div class="track"><i id="eHp" class="e"></i></div><span class="armor" id="armor" hidden>ARMOR ½ DMG</span></div>
+      <div class="flash" id="flash"></div>
+    </div>
+    <div class="status"><div class="combo" id="combo">COMBO <b></b><b></b><b></b></div><div class="eturn" id="eturn"></div></div>
+    </div>
+    <div class="bside">
+    <div class="cards" id="cards"></div>
+    <div class="qbox" id="qbox" hidden>
+      <div class="qtop"><span class="tag" id="qTier"></span><button class="chip" id="sayBtn" type="button" hidden>🔊 HEAR IT</button></div>
+      <div class="qtext" id="qText"></div>
+      <div class="qpic" id="qPic"></div>
+      <div class="opts" id="opts"></div>
+    </div>
+    <div class="msg" id="msg"></div>
+    </div>
+  </section>
+</div>
+
+<div id="qbHint">直拿手機更好玩 Best with your phone upright ↻</div>
+<div class="result" id="result" hidden><div class="rbox">
+  <h3 id="rTitle"></h3><canvas id="rSprite" width="110" height="110"></canvas>
+  <p id="rLine1"></p><p class="tag" id="rLine2"></p>
+  <div class="rbtns"><button class="chip" id="rMap" type="button">MAP</button><button class="chip go" id="rGo" type="button"></button></div>
+</div></div>
+
+<div class="solve" id="solve" hidden><div class="sbox" role="dialog" aria-label="How to solve it">
+  <h3>LET'S SOLVE IT!</h3>
+  <div class="sq" id="sQ"></div><div class="qpic" id="sPic"></div>
+  <div class="srow"><div class="pk bad"><span class="tag">YOU PICKED</span><div id="sMine"></div></div><div class="pk good"><span class="tag">RIGHT ANSWER</span><div id="sAns"></div></div></div>
+  <ol class="steps" id="sSteps"></ol>
+  <button class="chip go big" id="sGo" type="button">GOT IT! ▶</button>
+</div></div>
+<div class="intro" id="intro" hidden>
+  <canvas id="introCv" width="320" height="180" aria-label="Opening animation. Tap to skip."></canvas>
+  <div class="ibar"><button class="chip" id="introSound" type="button">🔊 PLAY WITH SOUND</button><button class="chip" id="introSkip" type="button">SKIP ▶</button></div>
+</div>
+<div class="shop" id="shop" hidden><div class="shbox" role="dialog" aria-label="Beast shop">
+  <div class="mtop"><h3 id="shopTitle"></h3><span class="stars" id="shopStars"></span></div>
+  <div class="shmain"><div class="shprev"><canvas id="shopCv" width="132" height="132"></canvas><p class="tag" id="shopNote"></p><button class="chip go big" id="shopBuy" type="button"></button></div>
+  <div class="shgrid" id="shopGrid"></div></div>
+  <button class="chip" id="shopLeave" type="button">LEAVE SHOP ▶</button>
+</div></div>
+<div class="shop" id="equip" hidden><div class="shbox" role="dialog" aria-label="Equipment">
+  <div class="mtop"><h3><span class="zht">裝備</span> · EQUIPMENT</h3><span class="stars" id="eqStars"></span></div>
+  <div class="shmain"><div class="shprev"><canvas id="eqCv" width="132" height="132"></canvas></div><div class="eqslots" id="eqSlots"></div></div>
+  <button class="chip go" id="eqClose" type="button">DONE ✓</button>
+</div></div>
+<div class="story" id="story" hidden><div class="stbox" role="dialog" aria-label="Story">
+  <div class="mtop"><h3 id="stTitle"></h3><button class="chip" id="stSkip" type="button">SKIP ▶</button></div>
+  <canvas id="stCv" width="200" height="70"></canvas>
+  <div class="stpage" id="stText"></div>
+  <div class="stwords" id="stWords" hidden></div>
+  <div class="stnav"><button class="chip" id="stBack" type="button">◀ BACK</button><button class="chip" id="stRead" type="button">🔊 READ TO ME</button><span class="tag" id="stPg"></span><button class="chip go" id="stNext" type="button">NEXT PAGE ▶</button></div>
+</div></div>
+<div class="mini" id="mini" hidden><div class="mbox" role="dialog" aria-label="Mini game">
+  <div class="mtop"><h3 id="mTitle"></h3><button class="chip" id="miniSkip" type="button">SKIP ▶</button></div>
+  <canvas id="miniCv" width="240" height="180"></canvas>
+  <p class="mhow" id="mHow"></p>
+  <button class="chip go big" id="miniGo" type="button">START!</button>
+</div></div>
+<div class="evolve" id="evolve" hidden><div class="ebox"><p class="etext" id="eText"></p><canvas id="evoCv" width="220" height="220"></canvas><button class="chip go big" id="eGo" type="button" hidden>AWESOME! ▶</button></div></div>
+
+<script src="../../tracker.js" data-game="question-beasts"></script>
+<script>/*@inc js/01-part.js js/02-enemyFor.js js/03-howMul.js js/04-ZY.js js/05-LUCAS-READ1.js js/06-TONE.js js/07-NORA-HIS3.js js/08-LUCAS-SCI.js js/09-NORA-KANG2.js js/10-MS.js js/11-curKid.js js/12-enemyTurn.js js/13-STORY-ART.js js/14-Intro.js js/15-Shop.js js/16-part.js*/</script>
+
+<!-- version badge: bump data-v on every update -->
+<div id="kaVer" data-v="1.4" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.4 · 2026-11-26</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+<script src="../../house.js"></script><script>KAH.init({wrap:[["result",function(a){return /VICTORY|BOSS DEFEATED|EVOLUTION/.test(a[0])}]]})</script>
+</body></html>

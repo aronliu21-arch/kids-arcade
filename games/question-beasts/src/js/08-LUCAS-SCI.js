@@ -1,0 +1,75 @@
+/* ---------- LUCAS ---------- */
+const LUCAS_SCI=[
+ ['lsc1','What do plants need to grow?','Sun and water','Candy','Toys','Plants need sunlight, water, air and soil.'],['lsc2','Which baby animal hatches from an egg?','Chick','Puppy','Kitten','Chicks hatch from eggs.'],
+ ['lsc3','What do we call frozen water?','Ice','Steam','Milk','Water freezes into ice.'],['lsc4','Which sense do you use with your nose?','Smell','Taste','Touch','Your nose smells.'],
+ ['lsc5','What do bees make?','Honey','Milk','Bread','Bees make honey from flower nectar.'],['lsc6','Which season is the coldest?','Winter','Summer','Spring','Winter is the coldest season.'],
+ ['lsc7','What do caterpillars turn into?','Butterflies','Spiders','Birds','Caterpillar → chrysalis → butterfly.'],['lsc8','What does a fish use to breathe?','Gills','Nose','Ears','Fish use gills to get oxygen from water.'],
+ ['lsc9','What makes a shadow?','Something blocking light','Water','Wind','A shadow forms when something blocks light.'],['lsc10','Which one is a living thing?','Tree','Rock','Car','Trees grow, need water, and make seeds.'],
+ ['lsc11','What is a baby frog called?','Tadpole','Puppy','Cub','Frogs start as tadpoles in water.'],['lsc12','What pulls a ball back down when you throw it up?','Gravity','Wind','Magnets','Gravity pulls things toward the Earth.'],
+ ['lsc13','Which planet do we live on?','Earth','Mars','Jupiter','We live on planet Earth.'],['lsc14','What does a magnet stick to?','Iron','Wood','Paper','Magnets pull iron and steel.'],
+ ['lsc15','What happens to ice in the hot sun?','It melts','It grows','It gets colder','Heat melts ice into water.'],['lsc16','Which animal sleeps all winter (hibernates)?','Bear','Dog','Chicken','Bears hibernate in winter.'],
+ ['lsc17','Which part of a plant is under the ground?','Roots','Flower','Leaves','Roots grow underground.'],
+ ['lsc18','What is the closest star to Earth?','The Sun','The Moon','Mars','The Sun is a star! The Moon is not a star.'],['lsc19','Which one is NOT a mammal?','Shark','Whale','Dog','Sharks are fish. Whales and dogs are mammals.'],
+ ['lsc20','What do we call animals that eat only plants?','Herbivores','Carnivores','Insects','Herbivores eat plants, like cows and rabbits.'],['lsc21','Why does the Moon look bright at night?','It reflects sunlight','It is on fire','It has lamps','The Moon bounces sunlight to us.'],
+ ['lsc22','Water turning into steam is called…','Evaporation','Freezing','Melting','Heat turns water into vapor: evaporation.'],['lsc23','How many legs does an insect have?','6','8','4','Insects have 6 legs.'],
+ ['lsc24','Which gas do we breathe in to live?','Oxygen','Smoke','Steam','Our bodies need oxygen.'],['lsc25','What do solar panels make from sunlight?','Electricity','Water','Food','Solar panels turn sunlight into electricity.']];
+const LUCAS_STORIES=[
+ ['lst1','“Kim saw dark clouds. She ran home fast and got inside just as the rain began.” Why did Kim run home?','She saw rain coming','She was late for lunch','She lost her shoe','Dark clouds were the clue that rain was coming.'],
+ ['lst2','“Sam fed his goldfish, Bubbles, every morning before school.” What is Bubbles?','A goldfish','A dog','A friend','The sentence says “his goldfish, Bubbles”.'],
+ ['lst3','“The baker made 12 muffins. He sold 5 in the morning.” How many muffins were left?','7','5','17','12 − 5 = 7.'],
+ ['lst4','“Mia’s ice cream melted because she sat in the hot sun.” What made the ice cream melt?','The hot sun','The cold wind','The rain','Heat from the sun melts ice cream.'],
+ ['lst5','“Ollie the owl stayed awake all night and slept all day.” When did Ollie sleep?','During the day','At night','Never','He slept all day.'],
+ ['lst6','“Ava packed a towel, a swimsuit and sunscreen.” Where is Ava probably going?','To the beach','To the snow','To bed','Towel, swimsuit and sunscreen are for the beach.'],
+ ['lst7','“Jack planted seeds in spring. In summer, he picked red tomatoes.” What did the seeds grow into?','Tomatoes','Apples','Flowers','He picked tomatoes.'],
+ ['lst8','“The puppy barked and wagged its tail when Leo came home.” How did the puppy feel?','Happy','Scared','Sleepy','A wagging tail shows a happy dog.'],
+ ['lst9','“Nina read two books on Monday and three books on Tuesday.” How many books did she read?','5','3','6','2 + 3 = 5.'],
+ ['lst10','“The tall giraffe ate leaves from the top of the tree.” Why could the giraffe reach the leaves?','It is very tall','It can fly','It climbed the tree','Giraffes have long necks and legs.'],
+ ['lst11','“Ben forgot his lunch. His friend Max shared half of his sandwich.” What kind of friend is Max?','Kind','Mean','Lazy','Sharing food is kind.'],
+ ['lst12','“The snowman got smaller and smaller as the sun came out.” What was happening?','It was melting','It was growing','It was sleeping','The sun warms the snow and it melts.'],
+ ['lst13','“Lena studied her spelling words every night. On Friday, she got all of them right.” Why did Lena do well?','She practiced','She was lucky','The test was easy','Practicing every night helped her.'],
+ ['lst14','“The library was quiet. Everyone was reading.” Which word tells you about the sound?','quiet','library','reading','Quiet means there was very little sound.'],
+ ['lst15','“Tom’s shoes were muddy, and his pants were wet.” Where was Tom probably playing?','In puddles outside','In his bed','At the library','Mud and wet pants are clues for puddles.'],
+ ['lst16','“Grandma knitted a warm, red scarf for Lily’s birthday.” What did Lily get?','A scarf','A cake','A hat','Grandma knitted a scarf.'],
+ ['lst17','“The race was close, but the turtle kept going and won.” What lesson does this teach?','Keep trying','Always run fast','Sleep a lot','Not giving up helps you win.'],
+ ['lst18','“First the egg cracked. Then a tiny chick peeked out. Last, it stood up.” What happened second?','A chick peeked out','The egg cracked','It stood up','“Then” tells us what happened second.'],
+ ['lst19','“Sara whispered so she would not wake the baby.” Why did Sara whisper?','The baby was sleeping','She was sick','She was sad','She did not want to wake the baby.'],
+ ['lst20','“The stars twinkled and the crickets chirped.” What time of day is it?','Night','Morning','Noon','Stars and crickets come out at night.']];
+const LUCAS_KANG2=[
+ ['lk27','A cat has 4 legs. How many legs do 3 cats have?','12','7','15','4 + 4 + 4 = 12.'],['lk28','Which number is 10 less than 53?','43','63','52','Take 1 away from the tens: 53 → 43.'],
+ ['lk29','There are 7 days in a week. How many days are in 2 weeks?','14','9','12','7 + 7 = 14.'],['lk30','Mom bakes 3 trays with 5 cookies each. How many cookies?','15','8','10','5 + 5 + 5 = 15.'],
+ ['lk31','A ladder has 10 steps. Lucas is on step 4. How many more steps to the top?','6','4','5','10 − 4 = 6.'],['lk32','What is half of 16?','8','6','4','8 + 8 = 16, so half is 8.'],
+ ['lk33','Which number is odd?','15','12','20','Odd numbers end in 1, 3, 5, 7 or 9.'],['lk34','You have 20¢. You buy a pencil for 12¢. How much is left?','8¢','12¢','32¢','20 − 12 = 8.'],
+ ['lk35','What comes next? 30, 25, 20, 15, ?','10','5','12','It goes down by 5 each time.'],['lk36','A table has 4 legs. How many legs do 4 tables have?','16','8','12','4 + 4 + 4 + 4 = 16.'],
+ ['lk37','I am more than 20 and less than 30. My two digits are the same. What number am I?','22','33','20','The only number in the 20s with matching digits is 22.'],
+ ['lk38','Ten kids stand in a line. Ana is 3rd from the front. What place is she from the back?','8th','7th','3rd','10 − 3 + 1 = 8.'],
+ ['lk39','Some birds sit on a fence. 4 fly away and 6 are left. How many were there at first?','10','2','6','Put them back: 6 + 4 = 10.'],
+ ['lk40','A frog starts at 0 and jumps 3 stones at a time. Which stone does it NOT land on?','10','9','12','It lands on 3, 6, 9, 12… so it skips 10.'],
+ ['lk41','Milo is 3. Lucas is 3 years older than Milo. Nora is 3 years older than Lucas. How old is Nora?','9','6','12','Lucas: 3 + 3 = 6. Nora: 6 + 3 = 9.'],
+ ['lk42','A square is cut by one line from corner to corner. How many triangles does that make?','2','1','4','One corner-to-corner line makes 2 triangles.'],
+ ['lk43','Each box holds 6 eggs. How many boxes do you need for 18 eggs?','3','2','4','6 + 6 + 6 = 18, so 3 boxes.'],
+ ['lk44','Today is Friday. What day was it 2 days ago?','Wednesday','Thursday','Sunday','Friday → Thursday (1) → Wednesday (2).'],
+ ['lk45','A pencil is 15 cm long. A crayon is 8 cm long. How much longer is the pencil?','7 cm','23 cm','8 cm','15 − 8 = 7.'],
+ ['lk46','A spider has 8 legs and a beetle has 6. How many legs do they have together?','14','12','16','8 + 6 = 14.']];
+const LUCAS_MEAS=[
+ ['lme1','How many sides does a square have?','4','3','5','A square has 4 equal sides.'],['lme2','Which shape has no corners?','Circle','Square','Triangle','A circle is round all the way around.'],
+ ['lme3','Which is longer: a bus or a pencil?','A bus','A pencil','They are the same','A bus is much longer.'],['lme4','Which holds more water: a bathtub or a cup?','A bathtub','A cup','They are the same','A bathtub is much bigger.'],
+ ['lme5','Which is heavier: a car or a feather?','A car','A feather','They are the same','Cars are very heavy.'],
+ ['lme6','What shape is a ball?','Sphere','Cube','Cone','A ball is round all over: a sphere.'],['lme7','What shape is a dice?','Cube','Sphere','Cylinder','A dice has 6 square faces: a cube.'],
+ ['lme8','What shape is an ice cream cone?','Cone','Cube','Sphere','It is round at the top and pointy at the bottom: a cone.'],['lme9','What shape is a soup can?','Cylinder','Cone','Cube','A can has 2 circle ends: a cylinder.'],
+ ['lme10','How many centimeters are in 1 meter?','100','10','1000','1 meter = 100 centimeters.'],
+ ['lme11','How many faces does a cube have?','6','4','8','Top, bottom, front, back, left and right: 6.'],['lme12','How many minutes are in 1 hour?','60','100','30','1 hour = 60 minutes.'],
+ ['lme13','A rectangle has sides of 5 cm and 3 cm. How far is it all the way around?','16 cm','15 cm','8 cm','5 + 3 + 5 + 3 = 16.'],['lme14','How many corners does a cube have?','8','6','4','4 on top and 4 on the bottom: 8.'],
+ ['lme15','Which is the longest: 1 meter, 1 centimeter, or 1 kilometer?','1 kilometer','1 meter','1 centimeter','1 kilometer is 1,000 meters!']];
+const LUCAS_WORLD=[
+ ['lw1','Which is the biggest ocean?','Pacific','Atlantic','Indian','The Pacific Ocean is the biggest.'],['lw2','Which animal lives in icy Antarctica?','Penguin','Lion','Camel','Penguins live in Antarctica.'],
+ ['lw3','Where do camels live?','In deserts','In oceans','In icy places','Camels live in hot, dry deserts.'],['lw4','Which country has the Great Wall?','China','France','Brazil','The Great Wall is in China.'],
+ ['lw5','How many continents are there?','7','5','10','There are 7 continents.'],['lw6','What is the tallest animal?','Giraffe','Elephant','Horse','Giraffes are the tallest animals.'],
+ ['lw7','What do pandas mostly eat?','Bamboo','Fish','Meat','Pandas eat bamboo.'],['lw8','Which is the hottest?','The Sun','The Moon','Ice','The Sun is a giant ball of hot gas.'],
+ ['lw9','What do we call a round map of the whole Earth?','A globe','A clock','A ruler','A globe is a round map.'],['lw10','Kangaroos come from which country?','Australia','Canada','Japan','Kangaroos live in Australia.']];
+const LUCAS_ZYR=[
+ ['lzr1','Which 注音 spells “mā” (媽, mom)?','ㄇㄚ','ㄅㄚ','ㄇㄛ','ㄇ (m) + ㄚ (a) = ma.'],['lzr2','Which 注音 spells “bā” (八, eight)?','ㄅㄚ','ㄆㄚ','ㄅㄛ','ㄅ (b) + ㄚ (a) = ba.'],
+ ['lzr3','Which 注音 spells “shū” (書, book)?','ㄕㄨ','ㄙㄨ','ㄕㄚ','ㄕ (sh) + ㄨ (u) = shu.'],['lzr4','Which 注音 spells “huā” (花, flower)?','ㄏㄨㄚ','ㄈㄨㄚ','ㄏㄚ','ㄏ (h) + ㄨ (u) + ㄚ (a) = hua.'],
+ ['lzr5','Which 注音 spells “māo” (貓, cat)?','ㄇㄠ','ㄇㄡ','ㄋㄠ','ㄇ (m) + ㄠ (ao) = mao.'],['lzr6','Which 注音 spells “fēi” (飛, fly)?','ㄈㄟ','ㄈㄞ','ㄏㄟ','ㄈ (f) + ㄟ (ei) = fei.'],
+ ['lzr7','Which 注音 spells “shān” (山, mountain)?','ㄕㄢ','ㄕㄣ','ㄙㄢ','ㄕ (sh) + ㄢ (an) = shan.'],['lzr8','Which 注音 spells “gāo” (高, tall)?','ㄍㄠ','ㄎㄠ','ㄍㄡ','ㄍ (g) + ㄠ (ao) = gao.'],
+ ['lzr9','Which 注音 spells “tiān” (天, sky)?','ㄊㄧㄢ','ㄉㄧㄢ','ㄊㄧㄣ','ㄊ (t) + ㄧ (i) + ㄢ (an) = tian.'],['lzr10','Which 注音 spells “jī” (雞, chicken)?','ㄐㄧ','ㄑㄧ','ㄒㄧ','ㄐ (j) + ㄧ (i) = ji.']];
+

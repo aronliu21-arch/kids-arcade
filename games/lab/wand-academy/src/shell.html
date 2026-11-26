@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Nora's Wand-Writing Academy</title>
+<style>/*@inc css/01.css*/</style>
+</head>
+<body>
+<div id="app">
+
+<section class="screen paper on" id="title">
+  <div class="art" id="titleArt"></div>
+  <h1>Nora's <span class="cur" style="color:var(--gold)">Wand-Writing</span> Academy</h1>
+  <div class="sub">諾拉的魔法草寫學院 · Write cursive to cast magic</div>
+  <div class="stats"><div class="stat"><span id="stStars">0</span> ✨<small>magic stars</small></div><div class="stat"><span id="stCh">0/4</span><small id="stChL">Chapter 1</small></div></div>
+  <div class="row"><button class="btn gold" id="startBtn">▶ Tap to start</button></div>
+  <div class="row"><button class="btn ghost sm" id="friendsBtn">📖 Friends</button><button class="btn ghost sm" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost sm" id="muteBtn1">🔊</button></div>
+  <button id="resetBtn">🔒 Reset records</button>
+</section>
+
+<section class="screen paper" id="story">
+  <div class="stage" id="stStage"></div>
+  <button class="btn ghost sm skip" id="skipBtn">Skip ⏭</button>
+  <div class="caption"><div class="txt"><span class="who" id="stWho"></span> <span id="stTxt"></span></div><button class="btn sm" id="stNext">Next ▶</button></div>
+  <div class="choices" id="stChoices"></div>
+</section>
+
+<section class="screen" id="map">
+  <div class="bar paper"><button class="btn ghost sm" id="mapHome">🏠</button><button class="btn ghost sm" id="chPrev">◀</button><div class="ttl" id="mapTtl">Chapter 1</div><button class="btn ghost sm" id="chNext">▶</button><div class="pill"><span id="mapStars">0</span> ✨</div><button class="btn ghost sm" id="mapFriends">📖</button><button class="btn ghost sm" id="muteBtn2">🔊</button></div>
+  <div class="wrap"><div id="mapBox"><canvas id="mapCv" width="480" height="270"></canvas><div id="spots"></div><div class="mapmsg" id="mapMsg"></div></div></div>
+</section>
+
+<section class="screen paper" id="play">
+  <div class="bar"><button class="btn ghost sm" id="playBack">🗺️</button><div class="ttl" id="playTtl"></div><div class="dots" id="playDots"></div><div class="pill"><span id="playStars">0</span> ✨</div></div>
+  <div class="body">
+    <div class="side"><div id="playArt"></div><div id="hp" class="hp"></div><div id="cards" class="cards"></div><div class="prompt" id="playPrompt"></div><div class="target cur" id="playTarget"></div><div class="penb" id="penBadge"></div></div>
+    <div class="main">
+      <div class="padwrap" id="padHost"><div class="fb" id="fb"></div></div>
+      <div class="tools"><button class="btn ghost sm" id="padClear">↺ Clear</button><button class="btn ghost sm" id="padShow">👁 Show me</button><button class="btn gold" id="padCast">✨ Cast!</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="mini">
+  <div class="bar paper"><button class="btn ghost sm" id="miniBack">🗺️</button><div class="ttl" id="miniTtl">✨ Firefly Garden</div><div class="pill">Best <span id="miniBest">0</span></div></div>
+  <div class="wrap"><canvas id="miniCv"></canvas><div class="hud"><span>🫙 <b id="miniN">0</b></span><span>⏱ <b id="miniT">25</b></span></div></div>
+</section>
+
+<section class="screen paper" id="friends">
+  <div class="bar"><button class="btn ghost sm" id="frBack">◀</button><div class="ttl">📖 Book of Friends</div><div class="pill" id="frCount"></div></div>
+  <div id="frList"></div>
+</section>
+
+<section class="screen paper" id="result">
+  <div id="resArt"></div>
+  <div class="big" id="resBig"></div>
+  <div class="stars" id="resStars"></div>
+  <div id="resTxt" style="font-size:18px;font-weight:600"></div>
+  <div class="tip" id="resTip"></div>
+  <div class="row"><button class="btn ghost" id="resMap">🗺️ Map</button><button class="btn gold" id="resNext">Next ▶</button></div>
+</section>
+
+<section class="screen paper" id="brk">
+  <div style="font-size:64px">🌙</div>
+  <div class="big" style="font-size:clamp(24px,4vw,40px);font-weight:800">Great practice! Time for a break</div>
+  <div style="font-size:18px">Your wand needs to rest. Come back later for more magic.</div>
+  <button class="btn" id="brkDone">Finish for now</button>
+</section>
+
+</div>
+
+<div class="modal" id="gate"><div class="card">
+  <h3>Grown-ups only</h3><div id="gateQ" style="font-size:24px;font-weight:700"></div>
+  <input id="gateIn" inputmode="numeric" autocomplete="off">
+  <div id="gateKids" style="display:none;text-align:left"><label style="font-size:20px;display:flex;gap:10px;align-items:center"><input type="checkbox" id="gateNora" style="width:28px;height:28px"> Nora — clear stars, chapter and seen letters</label></div>
+  <div class="row"><button class="btn ghost sm" id="gateCancel">Cancel</button><button class="btn sm" id="gateOk">OK</button></div>
+</div></div>
+<div class="hint port" id="rotHint">Turn your phone sideways ↻</div>
+
+<script src="../../../voice.js"></script>
+<script>/*@inc js/01-C.js js/02-cursiveSVG.js js/03-CAST.js js/04-HAIR.js js/05-D.js js/06-pad.js js/07-nextMain.js js/08-nextItem.js js/09-trialCast.js js/10-STORY-RESULT.js js/11-miniXY.js*/</script>
+<div id="kaVer" data-v="3.1" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v3.1 · 2026-11-26</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+</body>
+</html>

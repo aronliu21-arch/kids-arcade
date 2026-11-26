@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head>
+<script src="../../../voice.js"></script><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<title>Milo's Dino World · 洛明的恐龍世界</title>
+<style>/*@inc css/01.css*/</style></head><body data-pref="port">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hat" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><path d="M0 0V6" stroke="#000" stroke-width="1.5" opacity=".14"/></pattern><pattern id="skyh" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-25)"><path d="M0 0V9" stroke="#74c0fc" stroke-width="1.6" opacity=".55"/></pattern></defs></svg>
+<div class="app">
+  <div class="top"><a id="back" href="../../../#tester" aria-label="Back to arcade">←</a>
+    <div class="ttl">🦕 <span class="en" lang="en">Milo's Dino World</span></div>
+    <span class="pill" id="bricks" title="Bricks">🧱 0</span><span class="pill snack" id="snacks" title="Snacks">🍎 0</span>
+    <button class="ico txt" id="lang" aria-label="Voice language">EN+中</button>
+    <button class="ico" id="snd" aria-label="Sound">🔊</button></div>
+  <div class="main" id="main">
+    <section class="scr on" id="intro">
+      <div class="rays"></div>
+      <svg id="introSvg" viewBox="-8 -14 116 100"></svg>
+      <h1><span class="en">Milo's Dino World</span><span class="zh" id="introZh"></span></h1>
+      <button class="btn green" id="start" style="margin-top:12px;font-size:1.4rem;min-height:64px">▶ Tap to start · <span id="startZh"></span></button>
+      <button class="reset" id="resetBtn">Grown-ups: reset &amp; levels</button>
+      <div class="voicenote" id="voiceNote"></div>
+    </section>
+    <section class="scr" id="map">
+      <div class="mapbox" id="mapBox"><svg id="mapSvg" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <div class="bar"><button class="big b4" id="mapZoo"><span class="em">🏞</span><span><span class="en">My Zoo</span><small class="zh" id="zZoo"></small></span></button>
+        <button class="big b1" id="mapBuild"><span class="em">🧱</span><span><span class="en">Build</span><small class="zh" id="zBuild"></small></span></button>
+        <button class="big b2" id="mapGames"><span class="em">🎲</span><span><span class="en">Practice</span><small class="zh" id="zGames"></small></span></button></div>
+    </section>
+    <section class="scr" id="page">
+      <div class="spread" id="pgSpread"><div class="pg-art" id="pgArt"></div>
+        <div class="pg-txt"><div class="pg-head" id="pgHead"></div><div class="pg-who" id="pgWho"></div><div class="pg-line" id="pgLine"></div>
+          <div class="pg-nav"><button class="pgbtn" id="pgPrev" aria-label="Previous page">◀</button><span class="pg-mid"><button id="pgAuto" class="pgauto">🔊 Read to me ✓</button><span id="pgNum" class="pg-num"></span></span><button class="pgbtn" id="pgNext" aria-label="Next page">▶</button></div></div></div>
+    </section>
+    <section class="scr" id="station">
+      <div class="pbar"><button class="rep" data-rep>🔊</button><div class="txt" id="sTxt"></div><button class="btn ghost" data-map style="min-height:48px">🚂</button></div>
+      <div class="stScene" id="sScene"></div>
+      <div class="stCards" id="sCards"></div>
+    </section>
+    <section class="scr" id="zoo">
+      <div class="tabs" id="zTabs"></div>
+      <div class="field" id="field"><svg id="fieldSvg" preserveAspectRatio="xMidYMid slice"></svg><div class="ztoys" id="zToys"><button data-m="ball" aria-label="Ball">⚽</button><button data-m="bath" aria-label="Bath">🛁</button><button data-m="dance" aria-label="Dance">🎵</button><button data-m="night" aria-label="Night">🌙</button><button data-m="hide" aria-label="Hide and seek">🙈</button><button id="zSong" aria-label="Next song" style="display:none">🔀</button></div></div>
+      <div class="bar">
+        <button class="big b3" id="zFeed"><span class="em">🍎</span><span><span class="en">Feed babies</span><small class="zh" id="zFeedZh"></small></span></button>
+        <button class="big b1" id="zBuildB"><span class="em">🧱</span><span><span class="en">Build</span><small class="zh" id="zBuild2"></small></span></button>
+        <button class="big b2" data-map><span class="em">📚</span><span><span class="en">Books</span><small class="zh" id="zTrain"></small></span></button>
+      </div>
+    </section>
+    <section class="scr" id="pick">
+      <div class="pbar"><button class="rep" data-rep>🔊</button><div class="txt" id="pickTxt"></div><button class="btn ghost" data-back style="min-height:48px">↩</button></div>
+      <div class="binrow" id="pickBin"></div>
+      <div class="pickgrid" id="pickGrid"></div>
+    </section>
+    <section class="scr" id="build">
+      <div class="pbar"><button class="rep" data-rep>🔊</button><div class="txt" id="bTxt"></div><button class="btn ghost" data-back style="min-height:48px">↩</button></div>
+      <div class="bwrap"><div class="bp"><svg id="bpSvg" viewBox="-6 -14 112 98"></svg></div>
+        <div class="tray"><div class="opts" id="bOpts"></div></div></div>
+    </section>
+    <section class="scr" id="name">
+      <div class="pbar"><button class="rep" data-rep>🔊</button><div class="txt" id="nTxt"></div></div>
+      <div class="stage" id="nStage"></div>
+    </section>
+    <section class="scr" id="game">
+      <div class="pghead" id="gHead"></div>
+      <div class="pbar"><button class="rep" data-rep>🔊</button><div class="txt" id="gTxt"></div><div class="dots" id="gDots"></div><button class="btn ghost" data-back style="min-height:48px">↩</button></div>
+      <div class="stage" id="gStage"></div>
+    </section>
+    <section class="scr result" id="result"></section>
+  </div>
+</div>
+<div class="rot p">Best with your phone upright ↻</div>
+<div class="toast hide" id="toast"></div>
+<div id="modalRoot"></div>
+<script>/*@inc js/01-part.js js/02-MEL.js js/03-pieces.js js/04-OPENING.js js/05-turnAnim.js js/06-propSVG.js js/07-trainAt.js js/08-mapDraw.js js/09-place.js js/10-SONGS.js js/11-seek.js js/12-A.js js/13-RHYME.js js/14-part.js*/</script>
+<script src="../../../tracker.js" data-game="dino-world"></script>
+<!-- version badge: bump data-v on every update -->
+<div id="kaVer" data-v="2.3" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.3 · 2026-11-26</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+</body></html>

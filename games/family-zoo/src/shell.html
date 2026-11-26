@@ -1,0 +1,113 @@
+<!doctype html><html><head>
+<script src="../../voice.js"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>/*@inc css/01.css*/</style></head><body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family Zoo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800;900&display=swap">
+<style>/*@inc css/02.css*/</style>
+
+<div id="app">
+  <canvas id="scene" aria-label="Your family zoo"></canvas>
+
+  <div class="hud" id="top">
+    <div class="zooSign enamel"><span class="level" aria-label="Zoo level"><svg viewBox="0 0 54 54"><path d="M27 3l7 14 15 2-11 11 3 15-14-7-14 7 3-15L5 19l15-2z" fill="#f4c542" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg><b id="lvl">1</b></span>Family Zoo</div>
+    <div class="counters">
+      <div class="pill" title="Animals"><span class="ic" style="background:var(--lucas)" data-i="paw"></span><span id="nAnimals">0</span></div>
+      <div class="pill" title="Zoo coins"><span class="ic" style="background:var(--gold);color:var(--navy)" data-i="coin"></span><span id="nCoins">0</span></div>
+      <button class="pill" id="tkBtn" title="Zoo tickets" aria-label="Zoo tickets"><span class="ic" style="background:var(--gold);color:var(--navy)" data-i="ticket"></span><span id="nTickets">0</span></button>
+    </div>
+    <div class="right">
+      <button class="who" id="whoBtn" aria-label="Change player"><span class="dot" id="whoDot">N</span><span id="whoName">Nora</span></button>
+      <a class="who hubLink" id="hubLink" href="index.html" hidden>遊戲間</a>
+      <button class="roundBtn enamel" id="soundBtn" aria-label="Sound on or off" data-i="sound"></button>
+      <button class="roundBtn enamel" id="gearBtn" aria-label="Grown-up settings" data-i="gear"></button>
+    </div>
+  </div>
+
+  <div class="hud" id="bottom"></div>
+  <div id="banner" class="banner" hidden></div>
+  <div id="toast"></div>
+  <div id="sign" class="enamel" hidden></div>
+  <div id="slam"><div class="ring"><span id="slamPic"></span><b>New animal!</b></div></div>
+
+  <div class="overlay" id="intro">
+    <div class="arch"><h1>Family Zoo</h1></div>
+    <button class="start" id="startBtn"><span data-i="play" style="font-size:34px"></span>Tap to start</button>
+    <div class="kids" id="kids" hidden></div>
+  </div>
+
+  <div class="overlay" id="draw" hidden>
+    <div class="sheet">
+      <div class="sheetHead"><h2 id="drawTitle">Draw an animal</h2><div class="headBtns"><button class="headGo" id="makeTop"><span data-i="sparkle"></span>Make it real</button><button class="headGo" id="zooTop"><span data-i="arrow"></span>To the zoo</button><button class="x" id="drawClose" aria-label="Close" data-i="x"></button></div></div>
+      <div class="drawBody" id="drawStep">
+        <div class="paperWrap"><canvas id="paper" width="640" height="640" aria-label="Drawing paper"></canvas></div>
+        <div class="side">
+          <div class="swatches" id="swatches"></div>
+          <div class="szact"><div class="sizes" id="sizes"></div>
+          <div class="acts">
+            <button class="act" id="fill" aria-label="Fill with color" data-i="bucket"></button>
+            <button class="act" id="eraser" aria-label="Eraser" data-i="eraser"></button>
+            <button class="act" id="undo" aria-label="Undo" data-i="undo"></button>
+            <button class="act" id="clear" aria-label="Start over" data-i="trash"></button>
+          </div></div>
+          <p class="hint">Draw a big animal and join up the edges. Use the bucket to fill it with color. It puffs up into 3D!</p>
+          <button class="go" id="makeBtn"><span data-i="sparkle" style="font-size:30px"></span>Make it real</button>
+        </div>
+      </div>
+      <div class="reveal" id="revealStep" hidden>
+        <div class="stage"><canvas id="preview"></canvas><div class="before"><span id="beforePic"></span><span>Before</span></div><div class="sparks" id="sparks"></div></div>
+        <div class="namePane">
+          <h3>What's its name?</h3>
+          <input id="nameIn" maxlength="16" enterkeyhint="done" placeholder="Bubbles" autocomplete="off" aria-label="Animal name">
+          <div class="chips" id="nameChips"></div>
+          <h3>A fun fact</h3>
+          <div class="chips" id="factChips"></div>
+          <h3>What does it say?</h3>
+          <div id="sndPane"></div>
+          <button class="go" id="toZooBtn" style="margin-top:6px"><span data-i="arrow" style="font-size:30px"></span><span id="toZooTxt">Take it to the zoo</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="passport" hidden>
+    <div class="sheet">
+      <div class="sheetHead"><h2>Zoo passport</h2><button class="x" id="ppClose" aria-label="Close" data-i="x"></button></div>
+      <div class="book"><div class="pg"><h3>Stamps</h3><div class="stamps" id="stampGrid"></div></div><div class="pg"><h3>Our animals</h3><div class="tickets" id="ticketList"></div></div></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="settings" hidden>
+    <div class="sheet">
+      <div class="sheetHead"><h2 id="setTitle">Settings</h2><button class="x" id="setClose" aria-label="Close" data-i="x"></button></div>
+      <div class="setBody" id="setBody"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="booth" hidden>
+    <div class="sheet">
+      <div class="sheetHead"><h2 id="boothTitle">Ticket booth</h2><button class="x" id="boothClose" aria-label="Close" data-i="x"></button></div>
+      <div class="boothBody" id="boothBody"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="soundSheet" hidden>
+    <div class="sheet">
+      <div class="sheetHead"><h2 id="sndSheetTitle">Sound</h2><button class="x" id="sndClose" aria-label="Close" data-i="x"></button></div>
+      <div class="setBody"><div id="sndSheetBody"></div><button class="go" id="sndSave">Save sound</button></div>
+    </div>
+  </div>
+
+  <div id="turn"><span data-i="rotate"></span>Turn your phone sideways</div>
+</div>
+
+<script src="../../tracker.js" data-game="family-zoo"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>/*@inc js/01-ICONS.js js/02-part.js js/03-lamp.js js/04-critters.js js/05-gateCell.js js/06-ray.js js/07-NAMES.js js/08-QB.js js/09-storyMake.js js/10-cardMake.js js/11-drillMake.js js/12-openBooth.js js/13-stopRec.js*/</script>
+
+<!-- version badge: bump data-v on every update -->
+<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+</body></html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Story Maker 故事工坊</title>
+<style>/*@inc css/01.css*/</style>
+</head>
+<body>
+<!-- INTRO -->
+<div id="intro"><canvas id="ic"></canvas>
+  <button id="istart"><span>▶</span>Tap to start 點一下開始</button>
+  <div id="iskip">Tap to skip 點一下跳過</div></div>
+<!-- HOME -->
+<div id="gpBusy" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(20,16,12,.92);color:#fff;align-items:center;justify-content:center;flex-direction:column;font-size:clamp(18px,4.5vw,26px);font-weight:800;text-align:center;gap:14px;padding:20px"><div style="font-size:48px">🖼️</div><canvas id="gpPrev" style="display:none;width:min(80vw,60vh*1.333);aspect-ratio:4/3;border-radius:14px;background:#000"></canvas><div id="gpBar" style="display:none;width:min(80vw,420px);height:12px;background:#ffffff33;border-radius:9px;overflow:hidden"><div id="gpBarIn" style="height:100%;width:0;background:#ffd43b"></div></div><div id="gpMsg"></div><div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center"><button class="btn go" id="gpGo" style="font-size:22px;min-height:60px;display:none"></button><button class="btn go" id="gpVid" style="font-size:22px;min-height:60px;display:none">🎬 影片 Video</button><button class="btn" id="gpX" style="display:none;color:#2b2118">Later 等一下</button></div></div>
+<section id="home" class="screen on"><div class="wrap center">
+  <h1>📖 Story Maker<br><span style="font-size:.55em">故事工坊</span></h1>
+  <p>Tap, watch it happen, make your own story! 點一點,看故事動起來!</p>
+  <div class="kids">
+    <button class="kid nora" data-kid="nora"><span>🦄</span>Nora</button>
+    <button class="kid lucas" data-kid="lucas"><span>⚡</span>Lucas</button>
+    <button class="kid milo" data-kid="milo"><span>🦖</span>Milo</button>
+  </div>
+  <p><button class="btn" id="voiceBtn">🗣 聲音 Voice</button></p>
+  <p class="ver">Test sample · 測試版 · v1.13</p>
+</div></section>
+<!-- SHELF -->
+<section id="shelf" class="screen">
+  <div class="top"><button class="btn" id="shelfHome">🏠</button><div class="badge" id="shelfWho"></div><div class="t">My stories 我的故事</div></div>
+  <div class="wrap"><div class="shelf" id="books"></div></div>
+</section>
+<!-- BUILD -->
+<section id="build" class="screen">
+  <div class="top"><button class="btn" id="bBack">📚</button><div class="t" id="bTitle"></div></div>
+  <div class="split"><div class="pic"><div id="bStage"></div></div>
+    <div class="panel"><div class="prog" id="bProg"></div><div id="bPanel"></div><div id="mixBox" style="display:none"></div></div></div>
+</section>
+<!-- WATCH -->
+<section id="watch" class="screen">
+  <div class="top"><button class="btn" id="wBack">◀</button><div class="t" id="wTitle"></div><span class="ver" id="wCount"></span></div>
+  <div class="split"><div class="pic"><div id="wStage"></div></div>
+    <div class="panel"><div class="wtext" id="wText"></div>
+      <div class="wctl"><button class="btn" id="wPrev">⏮</button><button class="btn" id="wPlay">⏸</button><button class="btn" id="wNext">⏭</button></div>
+      <div id="wEnd" style="display:none"></div></div></div>
+</section>
+<!-- DRAW -->
+<div id="draw">
+  <div class="bar" id="dbar1">
+    <span class="what" id="dWhat"></span><span style="flex:1"></span>
+    <button class="tool" id="dUndo">↩️</button><button class="tool" id="dClear">🗑️</button>
+    <button class="btn" id="dCancel">Cancel 取消</button><button class="btn go" id="dDone">✓ Done 完成</button>
+  </div>
+  <div class="bar" id="dbar2"></div>
+  <div class="bar emo" id="dbar3"></div>
+  <div class="stage"><canvas id="dc" width="800" height="600"></canvas></div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="../../../savepic.js"></script>
+<script>/*@inc js/01-FX.js js/02-bgCanvas.js js/03-LESSONS.js js/04-restoreSnap.js js/05-easeBack.js js/06-CODE.js js/07-wi.js js/08-ic.js*/</script>
+<script src="../../../tracker.js" data-game="story-maker"></script>
+<div id="kaVer" data-v="1.13" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.13 · 2026-11-25</div>
+</body>
+</html>

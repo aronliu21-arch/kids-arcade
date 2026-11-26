@@ -3,9 +3,11 @@
 Run on every push by the GitHub Action, so new games are included automatically."""
 import json, pathlib, re
 root = pathlib.Path(__file__).resolve().parent.parent
-files = ["./", "index.html", "tracker.js", "voice.js", "bilingual.js", "house.js", "sw.js", "updated.json"]
+files = ["./", "index.html", "tracker.js", "voice.js", "bilingual.js", "house.js", "kit.js", "sw.js", "updated.json"]
 ext = set()
 for p in sorted((root / "games").rglob("*.html")):
+    if "src" in p.relative_to(root).parts:
+        continue  # source pieces; build.py joins them into index.html
     rel = p.relative_to(root).as_posix()
     files.append(rel)
     if p.name == "index.html":

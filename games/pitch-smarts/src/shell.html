@@ -1,0 +1,100 @@
+<!doctype html><html><head>
+<script src="../../voice.js"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>/*@inc css/01.css*/</style></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>足球高手</title>
+<style>/*@inc css/02.css*/</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>/*@inc css/03.css*/</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <button class="ico" id="back" aria-label="Back" hidden>←</button>
+    <div class="brand" id="brand">⚽ <span class="zh"><ruby>足<rt>ㄗㄨˊ</rt></ruby><ruby>球<rt>ㄑㄧㄡˊ</rt></ruby><ruby>高<rt>ㄍㄠ</rt></ruby><ruby>手<rt>ㄕㄡˇ</rt></ruby></span></div>
+    <span class="pill" id="roundInfo" hidden></span><span class="pill" id="ptsInfo" hidden></span>
+    <button class="ico" id="voiceBtn" aria-label="Read aloud" aria-pressed="false" hidden>🗣️</button>
+    <button class="ico" id="soundBtn" aria-label="Sound" aria-pressed="true">🔊</button>
+  </div>
+
+  <section id="home">
+    <div class="hero" id="hero">
+      <canvas id="intro" aria-label="Nora and Lucas run to the ball and get ready to kick it. Tap to kick."></canvas>
+      <h1 class="zh"><ruby>足<rt>ㄗㄨˊ</rt></ruby><ruby>球<rt>ㄑㄧㄡˊ</rt></ruby><ruby>高<rt>ㄍㄠ</rt></ruby><ruby>手<rt>ㄕㄡˇ</rt></ruby></h1>
+      <p>Train your soccer brain: team play, scoring, defending and the rules.</p>
+      <div class="kits" id="kits"></div>
+    </div>
+    <div class="homefoot"><button class="btn ghost small" id="resetBtn">Reset records</button></div>
+    <div class="modal" id="resetBox" hidden>
+     <div class="tipcard">
+      <div id="resetStep1">
+        <b>Grown-ups only</b><span id="gateQ"></span>
+        <div class="gate"><input id="gateA" type="text" inputmode="numeric" autocomplete="off" aria-label="Answer"><button class="btn" id="gateGo">Check</button><button class="btn ghost" id="gateCancel">Cancel</button></div>
+        <div class="err" id="gateErr"></div>
+      </div>
+      <div id="resetStep2" hidden>
+        <b>Whose records should be cleared?</b>
+        <div class="gate"><label class="pick"><input type="checkbox" id="rsNora"> Nora</label><label class="pick"><input type="checkbox" id="rsLucas"> Lucas</label></div>
+        <p class="note">Clears stars, the list of quiz questions already seen, and read-aloud settings on this device. This can’t be undone.</p>
+        <div class="gate"><button class="btn danger" id="rsGo">Reset</button><button class="btn ghost" id="rsCancel">Cancel</button></div>
+        <div class="err" id="rsErr"></div>
+      </div>
+     </div>
+    </div>
+  </section>
+
+  <section id="map" hidden>
+    <div class="maphead"><div class="tabs" id="tabs" role="tablist"></div><span class="pill" id="mapStars"></span></div>
+    <div class="grid" id="missions"></div>
+    <button class="mday" id="mday"></button>
+  </section>
+
+  <section id="play" hidden>
+    <div class="promptrow">
+      <div id="prompt"></div>
+      <button class="ico" id="again" aria-label="Read the question again">🔈</button>
+    </div>
+    <div id="stage">
+      <canvas id="pitch" aria-label="Soccer pitch"></canvas>
+      <div id="quiz" hidden></div>
+    </div>
+    <div id="foot">
+      <div id="coach" hidden><div class="face" id="face">🧑‍🏫</div><div class="tx" id="coachText"></div><button class="btn" id="next">Next ▶</button></div>
+      <div class="controls" id="controls">
+        <button class="btn big" id="done" hidden>Done ✓</button>
+        <button class="btn big" id="here" hidden>🙋 HERE!</button>
+        <button class="btn big" id="go" hidden>⚡ GO!</button>
+        <div class="controls" id="choices" hidden></div>
+      </div>
+    </div>
+    <div id="rot">Turn your phone sideways ↻ for a bigger pitch</div>
+  </section>
+
+  <section id="result" hidden>
+    <div class="result">
+      <div class="big-stars" id="rStars"></div>
+      <h2 id="rTitle"></h2>
+      <p class="sub" id="rSub"></p>
+      <div class="tipcard"><b>Try it at your next game</b><span id="rTip"></span></div>
+      <div class="tipcard" id="breakCard" hidden><b>Great practice! Time for a break 🧃</b><span>That’s three missions in a row. Go kick a real ball, then come back later.</span></div>
+      <div class="row" id="goRow"><button class="btn big" id="nextMission">Next mission ▶</button></div>
+      <div class="row" id="moreRow"><button class="btn ghost" id="replay">Play again</button><button class="btn ghost" id="toMap">All missions</button></div>
+      <div class="row" id="breakRow" hidden><button class="btn big" id="endBreak">Finish for now</button></div>
+    </div>
+  </section>
+</div>
+
+<script src="../../tracker.js" data-game="pitch-smarts"></script>
+<script>/*@inc js/01-W.js js/02-OUR-GOAL.js js/03-restartAnswer.js js/04-part.js js/05-cur.js js/06-drawPlayer.js js/07-drawYou.js js/08-ptr.js js/09-newTap.js js/10-markTap.js js/11-finishMission.js js/12-introFrame.js*/</script>
+</body>
+</html>
+
+<!-- version badge: bump data-v on every update -->
+<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+</body></html>

@@ -1,0 +1,94 @@
+<!doctype html><html><head>
+<script src="../../voice.js"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>/*@inc css/01.css*/</style></head><body>
+<title>Calendar Quest</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>/*@inc css/02.css*/</style>
+
+<div class="wrap">
+  <div class="top">
+    <button class="ico" id="back" aria-label="Back" hidden>←</button>
+    <div class="brand" id="brand"><span class="be">🕰️</span> <span class="bt">Calendar Quest</span></div>
+    <span class="pill" id="roundInfo" hidden></span><span class="pill" id="ptsInfo" hidden></span>
+    <button class="ico" id="voiceBtn" aria-label="Read aloud" aria-pressed="false" hidden>🗣️</button>
+    <button class="ico" id="soundBtn" aria-label="Sound" aria-pressed="true">🔊</button>
+  </div>
+
+  <section id="home">
+    <div class="hero">
+      <canvas id="intro" aria-label="Nora and Lucas race to a giant clock. Milo the dinosaur pops up. Tap to start."></canvas>
+      <h1>Calendar Quest</h1>
+      <p>Clocks, days, months and holidays from the US, Taiwan and around the world.</p>
+      <div class="kits" id="kits"></div>
+    </div>
+    <div class="homefoot"><button class="btn ghost small" id="calBtn">📅 Holiday calendar</button><button class="btn ghost small" id="resetBtn">Reset records</button></div>
+    <div class="modal" id="resetBox" hidden>
+     <div class="tipcard">
+      <div id="resetStep1">
+        <b>Grown-ups only</b><span id="gateQ"></span>
+        <div class="gate"><input id="gateA" type="text" inputmode="numeric" autocomplete="off" aria-label="Answer"><button class="btn" id="gateGo">Check</button><button class="btn ghost" id="gateCancel">Cancel</button></div>
+        <div class="err" id="gateErr"></div>
+      </div>
+      <div id="resetStep2" hidden>
+        <b>Whose records should be cleared?</b>
+        <div class="gate"><label class="pickk"><input type="checkbox" id="rs-nora"> Nora</label><label class="pickk"><input type="checkbox" id="rs-lucas"> Lucas</label><label class="pickk"><input type="checkbox" id="rs-milo"> Milo</label></div>
+        <p class="note">Clears stars, the list of questions already seen, and read-aloud settings on this device. This can’t be undone.</p>
+        <div class="gate"><button class="btn danger" id="rsGo">Reset</button><button class="btn ghost" id="rsCancel">Cancel</button></div>
+        <div class="err" id="rsErr"></div>
+      </div>
+     </div>
+    </div>
+  </section>
+
+  <section id="map" hidden>
+    <div class="maphead"><div class="who" id="who"></div><button class="btn ghost small" id="calBtn2">📅 Holiday calendar</button><span class="pill" id="mapStars"></span></div>
+    <div class="grid" id="missions"></div>
+    <button class="mix" id="mix"></button>
+  </section>
+
+  <section id="play" hidden>
+    <div class="promptrow"><div id="prompt"></div><button class="ico" id="again" aria-label="Read the question again">🔈</button></div>
+    <div id="stage">
+      <canvas id="buddy" aria-hidden="true"></canvas>
+      <div id="visual"></div>
+      <div id="opts"></div>
+    </div>
+    <div id="foot">
+      <div id="coach" hidden><div class="face" id="face">🦉</div><div class="tx" id="coachText"></div><button class="btn" id="next">Next ▶</button></div>
+    </div>
+    <div id="rot">Turn your phone sideways ↻ for a bigger view</div>
+  </section>
+
+  <section id="result" hidden>
+    <div class="result">
+      <div class="big-stars" id="rStars"></div>
+      <h2 id="rTitle"></h2>
+      <p class="sub" id="rSub"></p>
+      <div class="tipcard"><b>Try it today</b><span id="rTip"></span></div>
+      <div class="tipcard" id="breakCard" hidden><b>Great practice! Time for a break 🧃</b><span>That’s three missions in a row. Go look at a real clock or calendar, then come back later.</span></div>
+      <div class="row" id="goRow"><button class="btn big" id="nextMission">Next ▶</button></div>
+      <div class="row" id="moreRow"><button class="btn ghost" id="replay">Play again</button><button class="btn ghost" id="toMap">All missions</button></div>
+      <div class="row" id="breakRow" hidden><button class="btn big" id="endBreak">Finish for now</button></div>
+    </div>
+  </section>
+
+  <section id="cal" hidden>
+    <div class="calhead"><div class="today" id="todayTx"></div><div class="chips" id="calChips"></div></div>
+    <div class="soon" id="soon"></div>
+    <div id="detail"></div>
+    <div class="months" id="months"></div>
+  </section>
+</div>
+<script src="../../tracker.js" data-game="calendar-quest"></script>
+<script>/*@inc js/01-rnd.js js/02-HID.js*/</script>
+<script>/*@inc js/03-O.js js/04-holBank.js*/</script>
+<script>/*@inc js/05-TODAY.js js/06-renderVis.js*/</script>
+<script>/*@inc js/07-rrect.js js/08-calFilter.js*/</script>
+<script>/*@inc js/09-ic.js js/10-MUS.js*/</script>
+
+<!-- version badge: bump data-v on every update -->
+<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+</body></html>
