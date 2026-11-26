@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+<script>try{if(localStorage.getItem("dhq-lang")==="en"&&!/[?&]zh/.test(location.search))location.replace("en.html")}catch(e){}</script>
 <script src="../../voice.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -100,7 +101,7 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
 }
 #fsBtn svg{width:22px;height:22px;vertical-align:middle}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--hud);color:var(--hudink);border:3px solid var(--edge);padding:10px 14px;font-size:1rem;z-index:20;max-width:90vw;text-align:center}
-</style>
+#rst,#clr{display:none!important}</style>
 </head>
 <body>
 <div id="app">
@@ -848,7 +849,12 @@ showIntro();
 requestAnimationFrame(frame);
 </script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+<button id="dhLang" type="button" aria-label="Switch language" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 62px);left:50%;transform:translateX(-50%);z-index:2147483001;min-height:44px;min-width:96px;padding:6px 14px;border-radius:999px;border:3px solid #2a2140;background:#fff8e6;color:#2a2140;font:800 15px system-ui,sans-serif;box-shadow:0 3px 0 #2a2140">🌐 English</button>
+<script>(function(){var b=document.getElementById("dhLang");try{localStorage.setItem("dhq-lang","zh")}catch(e){}
+b.addEventListener("click",function(e){e.stopPropagation();try{localStorage.setItem("dhq-lang","en")}catch(x){}location.href="en.html"});
+function hide(e){if(e.target===b)return;b.remove();document.removeEventListener("pointerdown",hide,true)}document.addEventListener("pointerdown",hide,true)})();</script>
+<script src="../../house.js"></script><script>KAH.init({kids:["nora","lucas"],keys:["^dhqzh:.*{kid}"],wrap:["runBattle"]})</script>
 </body>
 </html>

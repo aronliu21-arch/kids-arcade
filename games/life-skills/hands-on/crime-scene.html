@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en"><head>
+<script src="../../../voice.js"></script><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<title>Crime Scene Explorer</title>
+<style>
+:root{--ink:#1b1f3b;--bg:#eef5ff;--card:#fff;--muted:#5b6782;--ok:#2b8a3e;--bad:#e03131;--gold:#ffd43b;--nora:#7048e8;--lucas:#f76707;--milo:#2f9e44;--blue:#1c7ed6;color-scheme:light;
+--font:"Arial Rounded MT Bold",ui-rounded,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-tap-highlight-color:transparent;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+.app{height:100%;display:flex;flex-direction:column;padding:8px max(10px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin-bottom:6px}
+.top a,.ico{width:48px;height:48px;border-radius:14px;border:3px solid var(--ink);background:#fff;display:grid;place-items:center;text-decoration:none;color:var(--ink);font-size:1.3rem;flex:0 0 48px}
+.ttl{flex:1;min-width:0;font-weight:800;font-size:1.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{background:#ffe8cc;border:2px solid var(--ink);border-radius:999px;padding:1px 10px;font-size:.8rem;font-weight:700;margin-left:6px;vertical-align:middle}
+.pill{background:#fff;border:3px solid var(--ink);border-radius:999px;padding:4px 12px;font-weight:800;white-space:nowrap}
+.main{flex:1;min-height:0;position:relative}
+.btn{border:3px solid var(--ink);border-radius:16px;background:var(--blue);color:#fff;font-weight:800;font-size:1.15rem;padding:8px 18px;min-height:52px;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.ghost{background:#fff;color:var(--ink)}.btn[disabled]{opacity:.45}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#fff;border:3px solid var(--ink);border-radius:18px;padding:10px 18px;font-weight:800;font-size:1.2rem;z-index:50;box-shadow:0 6px 0 var(--ink);text-align:center;max-width:92vw;pointer-events:none;transition:opacity .3s}
+.toast.hide{opacity:0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:grid;place-items:center;z-index:40;padding:16px}
+.modal>div{background:#fff;border:4px solid var(--ink);border-radius:22px;padding:16px 20px;max-width:560px;width:100%;text-align:center}
+.modal h2{margin:4px 0}
+.rot{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:max(8px,env(safe-area-inset-bottom));pointer-events:none;background:var(--gold);border:3px solid var(--ink);border-radius:999px;padding:4px 14px;font-weight:800;font-size:.85rem;z-index:45;white-space:nowrap}
+body[data-pref="land"] .rot.l{display:none}
+@media (orientation:portrait) and (max-width:600px){body[data-pref="land"] .rot.l{display:block}}
+@media (orientation:landscape) and (max-height:450px){body[data-pref="port"] .rot.p{display:block}}
+/* phones: never cut things off; scroll instead, and keep the top bar small */
+@media (max-width:600px),(max-height:450px){.main{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}.tag{display:none}.ttl{font-size:1.05rem}.top a,.ico{width:44px;height:44px;flex-basis:44px}.pill{padding:2px 8px;font-size:.9rem}.app{padding-top:4px}}
+.drag{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.m{position:absolute;inset:0;display:grid;grid-template-columns:1.35fr 1fr;gap:10px}
+.room{position:relative;border:4px solid var(--ink);border-radius:20px;overflow:hidden;background:linear-gradient(#f3e8ff 0 60%,#c9a27e 60%)}
+.spot{position:absolute;font-size:clamp(2.2rem,9vh,4.2rem);line-height:1;background:none;border:0;padding:4px;border-radius:16px;transition:transform .2s}
+.spot:active{transform:scale(.92)}
+.spot.searched{opacity:.45}
+.mag{position:absolute;pointer-events:none;font-size:2.4rem;animation:mg .7s forwards}@keyframes mg{0%{transform:scale(.4) rotate(-30deg);opacity:0}50%{opacity:1}100%{transform:scale(1.2) rotate(20deg);opacity:0}}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0}
+.box{background:#fff;border:4px solid var(--ink);border-radius:18px;padding:8px 10px}
+.box h3{margin:0 0 4px;font-size:1rem}
+#ev{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:clamp(.85rem,2.2vh,1.05rem)}
+#ev .none{color:var(--muted);font-weight:500}
+.sus{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;min-height:0;overflow:auto}
+@media (max-height:500px){.s{font-size:.68rem;padding:2px 5px}.s .f{display:none}.box{padding:4px 8px}.box h3{font-size:.85rem}#ev{font-size:.8rem}.side .btn{min-height:44px;padding:4px}}
+.s{border:3px solid var(--ink);border-radius:14px;background:#fff;padding:4px 6px;text-align:left;font-size:clamp(.75rem,2vh,.95rem);position:relative;line-height:1.25}
+.s b{font-size:1.1em}.s .f{font-size:1.6em}
+.s.x{opacity:.45}.s.x::after{content:"✕";position:absolute;inset:0;display:grid;place-items:center;font-size:3.5rem;color:var(--bad);font-weight:900}
+.row{display:flex;gap:8px}
+@media (max-width:600px){.m{position:relative;inset:auto;display:flex;flex-direction:column}.room{height:46vh;flex:0 0 auto}.spot{font-size:2.3rem}
+ .sus{grid-template-columns:1fr 1fr}.s{font-size:.8rem}.box{padding:6px 8px}}
+@media (max-height:450px) and (orientation:landscape){.m{position:relative;inset:auto;min-height:520px}}
+</style></head><body data-pref="port">
+<div class="app">
+  <div class="top"><a href="../" aria-label="Back to arcade">←</a><div class="ttl">🔍 Crime Scene Explorer<span class="tag">sample</span></div><span class="pill" id="found">🔎 0 / 3 clues</span><button class="ico" id="snd" aria-label="Sound">🔊</button></div>
+  <div class="main" id="main"><div class="m"><div class="room" id="room"></div>
+<div class="side"><div class="box"><h3>🗂️ Evidence</h3><div id="ev"><span class="none">Tap things in the room to search!</span></div></div>
+<div class="box" style="flex:1;display:flex;flex-direction:column;min-height:0"><h3>👧 Suspects · tap to cross out</h3><div class="sus" id="sus"></div></div>
+<div class="row"><button class="btn" id="acc" disabled style="flex:1">Accuse! 👉</button></div></div></div></div>
+</div>
+<div class="toast hide" id="toast"></div>
+<div class="rot l">Turn your phone sideways ↻</div><div class="rot p">Best with your phone upright ↻</div>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rnd(a,b+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true;try{SOUND=localStorage.getItem('lab.sound')!=='0';}catch(e){}
+let ac=null;function audio(){if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(ac&&ac.state==='suspended')ac.resume();return ac;}
+function tone(f,d,type,vol,dl){if(!SOUND)return;const c=audio();if(!c)return;try{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+(dl||0);o.type=type||'sine';o.frequency.setValueAtTime(f,t);o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(vol||.15,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d+.05);}catch(e){}}
+const sfx={good(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.16,i*.07));},bad(){tone(200,.25,'sawtooth',.08);},pop(){tone(880,.08,'triangle',.14);},
+  boing(){if(!SOUND)return;const c=audio();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(300,c.currentTime);o.frequency.exponentialRampToValueAtTime(90,c.currentTime+.3);o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.15,c.currentTime);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.35);o.start();o.stop(c.currentTime+.4);},
+  coin(){tone(1320,.08,'square',.06);tone(1760,.12,'square',.05,.06);},honk(){tone(330,.35,'square',.09);tone(415,.35,'square',.07);},
+  win(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.3,'triangle',.15,i*.1));}};
+function say(t,rate){if(!SOUND||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=rate||.95;u.pitch=1.1;speechSynthesis.speak(u);}catch(e){}}
+let tt=0;function toast(h,ms){const t=$('toast');t.innerHTML=h;t.classList.remove('hide');clearTimeout(tt);tt=setTimeout(()=>t.classList.add('hide'),ms||1600);}
+function modal(html,btns){const m=document.createElement('div');m.className='modal';m.innerHTML='<div>'+html+'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px"></div></div>';
+  const row=m.querySelector('div>div:last-child');(btns||[]).forEach(([l,f,ghost])=>{const b=document.createElement('button');b.className='btn'+(ghost?' ghost':'');b.textContent=l;b.onclick=()=>{m.remove();f&&f();};row.appendChild(b);});document.body.appendChild(m);return m;}
+$('snd').textContent=SOUND?'🔊':'🔇';$('snd').onclick=()=>{SOUND=!SOUND;$('snd').textContent=SOUND?'🔊':'🔇';try{localStorage.setItem('lab.sound',SOUND?'1':'0');}catch(e){}if(!SOUND&&'speechSynthesis' in window)speechSynthesis.cancel();};
+/* Drag helper: makeDrag(el,{onDrop(el,x,y)->bool keep}) — pointer events, works with touch + mouse */
+function makeDrag(el,o){el.classList.add('drag');el.addEventListener('pointerdown',e=>{if(o.can&&!o.can(el))return;e.preventDefault();audio();el.setPointerCapture(e.pointerId);
+  const r=el.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,ph=document.createElement('div');
+  const st={pos:el.style.position,l:el.style.left,t:el.style.top,z:el.style.zIndex,w:el.style.width};
+  el.style.width=r.width+'px';el.style.position='fixed';el.style.left=r.left+'px';el.style.top=r.top+'px';el.style.zIndex=30;el.style.transform='scale(1.08)';
+  o.start&&o.start(el);
+  const mv=ev=>{el.style.left=(ev.clientX-dx)+'px';el.style.top=(ev.clientY-dy)+'px';o.move&&o.move(el,ev.clientX,ev.clientY);};
+  const up=ev=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);el.style.transform='';
+    const keep=o.drop?o.drop(el,ev.clientX,ev.clientY):false;
+    if(!keep){el.style.position=st.pos;el.style.left=st.l;el.style.top=st.t;el.style.zIndex=st.z;el.style.width=st.w;}};
+  el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);});}
+const hit=(el,x,y)=>{const r=el.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;};
+function confetti(){const c=document.createElement('canvas');c.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:60';c.width=innerWidth;c.height=innerHeight;document.body.appendChild(c);
+  const x=c.getContext('2d'),P=Array.from({length:120},()=>({x:innerWidth/2,y:innerHeight/3,vx:rnd(-7,7),vy:rnd(-9,1),c:pick(['#ffd43b','#ff6b6b','#74c0fc','#b197fc','#69db7c'])}));let n=0;
+  (function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.25;x.fillStyle=p.c;x.fillRect(p.x,p.y,7,7);});if(++n<120)requestAnimationFrame(f);else c.remove();})();}
+const GIRLS=['Ava','Bea','Cleo','Dina','Elle','Fay','Gia','Hana','Iris','June','Kiki','Lola','Mia','Opal','Pia','Ruby','Sara','Tess','Vera','Wren','Zoe'];
+const A={hair:['black','brown','red','blond'],shoes:['boots','sneakers','sandals'],bag:['pink','green','yellow'],glasses:[true,false]};
+const EV={hair:v=>['🧶','A '+v+' hair on the cushion'],shoes:v=>['👣',({boots:'Boot',sneakers:'Sneaker',sandals:'Sandal'})[v]+' prints in the mud'],bag:v=>['🧵','A '+v+' thread from a bag'],glasses:v=>v?['👓','A glasses case under the table']:['📝','Note: “the thief had no glasses”']};
+const FURN=[['🛋️','sofa',8,42],['🪴','plant',30,30],['📚','bookshelf',58,22],['🖼️','painting',36,6],['🧺','basket',70,56],['🚪','door',84,26],['🪟','window',10,6],['🗄️','cabinet',46,52],['🧸','toy',22,66],['🛏️','bed',62,68],['🪑','chair',4,70]];
+let people,thief,clues,found,searched,crossed,accuseMode=false;
+function makeCase(){for(let k=0;k<500;k++){
+  people=shuffle(GIRLS).slice(0,4).map(n=>({n:n,hair:pick(A.hair),shoes:pick(A.shoes),bag:pick(A.bag),glasses:Math.random()<.5}));
+  thief=pick(people);const keys=shuffle(Object.keys(A)).slice(0,3);clues=keys.map(a=>({a:a,v:thief[a]}));
+  const match=p=>clues.every(c=>p[c.a]===c.v),fits=people.filter(match);
+  const each=clues.every(c=>people.filter(p=>p[c.a]===c.v).length>=2); // no single clue solves it
+  const two=[[0,1],[0,2],[1,2]].every(([i,j])=>people.filter(p=>p[clues[i].a]===clues[i].v&&p[clues[j].a]===clues[j].v).length>=2); // need all 3
+  if(fits.length===1&&each&&two)return true;}return false;}
+function start(){makeCase();found=[];searched=0;crossed=new Set();accuseMode=false;$('acc').textContent='Accuse! 👉';
+  const spots=shuffle(FURN).slice(0,8),hide=shuffle(spots.map((_,i)=>i)).slice(0,3);
+  $('room').innerHTML='';spots.forEach((f,i)=>{const b=document.createElement('button');b.className='spot';b.textContent=f[0];b.style.left=f[2]+'%';b.style.top=f[3]+'%';b.setAttribute('aria-label','Search the '+f[1]);
+    const ci=hide.indexOf(i);b.onclick=e=>search(b,f,ci>=0?clues[ci]:null,e);$('room').appendChild(b);});
+  renderEv();renderSus();say('Something is missing! Search the room for clues.');}
+function search(b,f,c,e){if(b.classList.contains('searched'))return;audio();b.classList.add('searched');const m=document.createElement('div');m.className='mag';m.textContent='🔍';
+  const r=$('room').getBoundingClientRect();m.style.left=(e.clientX-r.left-20)+'px';m.style.top=(e.clientY-r.top-20)+'px';$('room').appendChild(m);setTimeout(()=>m.remove(),700);
+  if(c){found.push(c);sfx.good();const t=EV[c.a](c.v);toast(t[0]+' Clue! '+t[1]);say('A clue! '+t[1]+'.');renderEv();}
+  else{sfx.pop();toast('Nothing behind the '+f[1]+'…',1000);}}
+function renderEv(){$('found').textContent='🔎 '+found.length+' / 3 clues';$('ev').innerHTML=found.length?found.map(c=>{const t=EV[c.a](c.v);return '<div>'+t[0]+' '+t[1]+'</div>';}).join(''):'<span class="none">Tap things in the room to search!</span>';}
+function renderSus(){$('sus').innerHTML='';people.forEach(p=>{const b=document.createElement('button');b.className='s'+(crossed.has(p.n)?' x':'');
+  b.innerHTML='<span class="f">👧</span> <b>'+p.n+'</b><br>'+p.hair+' hair<br>'+p.shoes+'<br>'+p.bag+' bag'+(p.glasses?' · 👓':' · no glasses');
+  b.onclick=()=>{audio();if(accuseMode){accuse(p);return;}crossed.has(p.n)?crossed.delete(p.n):crossed.add(p.n);sfx.pop();renderSus();};$('sus').appendChild(b);});
+  $('acc').disabled=false;}
+$('acc').onclick=()=>{accuseMode=!accuseMode;$('acc').textContent=accuseMode?'Tap the thief! (cancel)':'Accuse! 👉';if(accuseMode)say('Who did it? Tap the thief.');};
+function accuse(p){accuseMode=false;$('acc').textContent='Accuse! 👉';
+  if(p===thief){sfx.win();confetti();say('Case closed! It was '+p.n+'.');modal('<h2>Case closed! 🕵️‍♀️</h2><p>It was <b>'+p.n+'</b>. She matches every clue: '+clues.map(c=>EV[c.a](c.v)[1].toLowerCase()).join('; ')+'.</p><p>You found the clues by searching '+document.querySelectorAll('.spot.searched').length+' places.</p>',[['New case',start]]);}
+  else{sfx.bad();say('Oh no! '+p.n+' was innocent, and the thief got away!');const miss=clues.find(c=>p[c.a]!==c.v);
+    modal('<h2>The thief got away! 💨</h2><p>'+p.n+' didn’t match: '+(found.includes(miss)?EV[miss.a](miss.v)[1].toLowerCase():'a clue you hadn’t found yet')+'. It was <b>'+thief.n+'</b>.</p><p>Tip: find all 3 clues before you accuse.</p>',[['New case',start]]);}}
+start();
+window.__test={state:()=>({thief:thief.n,clues:clues,found:found.length})};
+
+</script><!-- version badge: bump data-v on every update -->
+<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+</body></html>

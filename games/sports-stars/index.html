@@ -28,7 +28,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
 h1,h2,h3{margin:0;line-height:1.15}
 .name{font-size:30px;font-weight:800;margin:6px 0 0;line-height:1.9}
 .name rt{font-size:13px;font-weight:600;opacity:.8}
-.spk{display:inline-grid;place-items:center;width:34px;height:34px;margin-left:8px;border-radius:50%;background:rgba(127,127,127,.2);font-size:16px;line-height:1;vertical-align:middle;text-indent:0;letter-spacing:0}
+.spk{display:inline-grid;place-items:center;width:44px;height:44px;margin-left:8px;border-radius:50%;background:rgba(127,127,127,.2);font-size:16px;line-height:1;vertical-align:middle;text-indent:0;letter-spacing:0}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55;
 background-image:radial-gradient(2px 2px at 12% 18%,var(--sun),transparent),radial-gradient(2px 2px at 82% 12%,#fff,transparent),radial-gradient(1.5px 1.5px at 40% 70%,#fff,transparent),radial-gradient(2px 2px at 66% 46%,var(--sun),transparent),radial-gradient(1.5px 1.5px at 24% 88%,#fff,transparent),radial-gradient(2px 2px at 90% 80%,var(--leaf),transparent),radial-gradient(1.5px 1.5px at 55% 25%,#fff,transparent);
 animation:tw 3s ease-in-out infinite alternate}
@@ -797,7 +797,8 @@ cloudInit();
 voiceLoad();
 </script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+<script src="../../house.js"></script><script>KAH.init({kids:["lucas"],keys:["^lucas-(sports|monsters)-v1$"],resultText:/Welcome to the team!/})</script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 <!doctype html><html><head>
-<script src="../../voice.js"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<script src="../../voice.js"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.handsOn{margin:10px auto 0;max-width:640px;text-align:center}.hoT{font-weight:800;font-size:15px;margin-bottom:6px}.hoRow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.hoBtn{display:flex;align-items:center;gap:8px;min-height:52px;padding:6px 12px;border-radius:14px;border:3px solid;background:#fff;color:#1b1f3b;text-decoration:none;font-weight:800;font-size:16px}.hoBtn small{display:block;font-size:12px;font-weight:600;opacity:.75}.hoI{font-size:24px}.hoBtn rt{font-size:.5em;font-weight:500}
+</style></head><body>
 <title>Life Skills Club</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -252,6 +253,7 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
       <p>Nora solves detective cases, Lucas makes fair card trades, and Milo does dino helper jobs.</p>
       <div class="kits" id="kits"></div>
     </div>
+    <div class="handsOn"><div class="hoT"><ruby>動<rt>ㄉㄨㄥˋ</rt></ruby><ruby>手<rt>ㄕㄡˇ</rt></ruby><ruby>玩<rt>ㄨㄢˊ</rt></ruby> · Hands-on play</div><div class="hoRow"><a class="hoBtn" href="hands-on/crime-scene.html" style="border-color:#7048e8"><span class="hoI">🔍</span><span><ruby>犯<rt>ㄈㄢˋ</rt></ruby><ruby>罪<rt>ㄗㄨㄟˋ</rt></ruby><ruby>現<rt>ㄒㄧㄢˋ</rt></ruby><ruby>場<rt>ㄔㄤˇ</rt></ruby><small>Crime Scene</small></span></a><a class="hoBtn" href="hands-on/lemonade.html" style="border-color:#f76707"><span class="hoI">🍋</span><span><ruby>檸<rt>ㄋㄧㄥˊ</rt></ruby><ruby>檬<rt>ㄇㄥˊ</rt></ruby><ruby>汁<rt>ㄓ</rt></ruby><ruby>小<rt>ㄒㄧㄠˇ</rt></ruby><ruby>攤<rt>ㄊㄢ</rt></ruby><small>Lemonade Stand</small></span></a><a class="hoBtn" href="hands-on/messy-house.html" style="border-color:#2f9e44"><span class="hoI">🦕</span><span><ruby>亂<rt>ㄌㄨㄢˋ</rt></ruby><ruby>七<rt>ㄑㄧ</rt></ruby><ruby>八<rt>ㄅㄚ</rt></ruby><ruby>糟<rt>ㄗㄠ</rt></ruby><ruby>的<rt>˙ㄉㄜ</rt></ruby><ruby>家<rt>ㄐㄧㄚ</rt></ruby><small>Messy House</small></span></a></div></div>
     <div class="homefoot"><button class="btn ghost small" id="resetBtn">Reset records</button></div>
     <div class="modal" id="resetBox" hidden>
      <div class="tipcard">
@@ -1049,5 +1051,5 @@ $('h1zh').innerHTML=RB('生活小高手','ㄕㄥ ㄏㄨㄛˊ ㄒㄧㄠˇ ㄍㄠ 
 $('soundBtn').setAttribute('aria-pressed',String(DB.sound));$('soundBtn').textContent=DB.sound?'🔊':'🔇';
 fitIntro();renderHome();show('home');requestAnimationFrame(introFrame);cloudInit();
 </script>
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>

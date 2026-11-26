@@ -190,7 +190,7 @@ footer{text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;padd
     <div class="grid" id="grid"></div>
   </section>
 </main>
-<footer>Stars and progress save inside each game, on this device.</footer>
+<footer>Stars and progress save inside each game, on this device.<br><span id="offline" aria-live="polite"></span></footer>
 
 <script>
 // To add a game: add one line to the END of this list (newest last). The menu shows newest first,
@@ -202,30 +202,16 @@ const GAMES = [
   {zh:[["九","ㄐㄧㄡˇ"],["九","ㄐㄧㄡˇ"],["乘","ㄔㄥˊ"],["法","ㄈㄚˇ"],["表","ㄅㄧㄠˇ"],["像","ㄒㄧㄤˋ"],["素","ㄙㄨˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Times Table Pixel Quest", url:"games/times-tables/", kids:["nora"], color:"#0c8599", icon:"grid"},
   {zh:[["陸","ㄌㄨˋ"],["晨","ㄔㄣˊ"],["的","˙ㄉㄜ"],["運","ㄩㄣˋ"],["動","ㄉㄨㄥˋ"],["明","ㄇㄧㄥˊ"],["星","ㄒㄧㄥ"]], en:"Lucas’s Sports Stars", url:"games/sports-stars/", kids:["lucas"], color:"#f76707", icon:"star"},
   {zh:[["幼","ㄧㄡˋ"],["晴","ㄑㄧㄥˊ"],["的","˙ㄉㄜ"],["魔","ㄇㄛˊ"],["法","ㄈㄚˇ"],["學","ㄒㄩㄝˊ"],["院","ㄩㄢˋ"]], en:"Nora’s Magic Academy", url:"games/magic-academy/", kids:["nora"], color:"#7048e8", icon:"hat"},
-  {zh:[["龍","ㄌㄨㄥˊ"],["心","ㄒㄧㄣ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Dragon Heart Quest", url:"games/dragon-heart/", kids:["nora","lucas"], color:"#e03131", icon:"dragon"},
-  {zh:[["洛","ㄌㄨㄛˋ"],["明","ㄇㄧㄥˊ"],["的","˙ㄉㄜ"],["恐","ㄎㄨㄥˇ"],["龍","ㄌㄨㄥˊ"],["之","ㄓ"],["旅","ㄌㄩˇ"]], en:"Milo’s Dino Journey", url:"games/dino-journey/", kids:["milo"], color:"#e8890c", icon:"dino"},
-  {zh:[["月","ㄩㄝˋ"],["曆","ㄌㄧˋ"],["大","ㄉㄚˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Calendar Quest", url:"games/calendar-quest/", kids:["nora","lucas","milo"], color:"#d6336c", icon:"cal"},
-  {zh:[["遊","ㄧㄡˊ"],["戲","ㄒㄧˋ"],["間","ㄐㄧㄢ"]], en:"Game Room", url:"games/game-room/", kids:["tester"], color:"#3b5bdb", icon:"pad"},
+  {zh:[["龍","ㄌㄨㄥˊ"],["心","ㄒㄧㄣ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Dragon Heart Quest", url:"games/dragon-heart/", kids:["nora","lucas","milo"], color:"#e03131", icon:"dragon"}, 
+  {zh:[["月","ㄩㄝˋ"],["曆","ㄌㄧˋ"],["大","ㄉㄚˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Calendar Quest", url:"games/calendar-quest/", kids:["nora","lucas","milo"], color:"#d6336c", icon:"cal"}, 
   {zh:[["家","ㄐㄧㄚ"],["庭","ㄊㄧㄥˊ"],["動","ㄉㄨㄥˋ"],["物","ㄨˋ"],["園","ㄩㄢˊ"]], en:"Family Zoo", url:"games/family-zoo/", kids:["nora","lucas","milo"], color:"#9c6644", icon:"lion"},
   {zh:[["注","ㄓㄨˋ"],["音","ㄧㄣ"],["拼","ㄆㄧㄣ"],["拼","ㄆㄧㄣ"],["看","ㄎㄢˋ"]], en:"Zhuyin Spell-It", url:"games/zhuyin/", kids:["nora","lucas","milo"], color:"#be4bdb", icon:"zhuyin"},
   {zh:[["光","ㄍㄨㄤ"],["靈","ㄌㄧㄥˊ"],["大","ㄉㄚˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Lumi Quest", url:"games/lumi-quest/", kids:["nora","lucas"], color:"#f59f00", icon:"lumi"},
   {zh:[["數","ㄕㄨˋ"],["學","ㄒㄩㄝˊ"],["大","ㄉㄚˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Math Quest", url:"https://aronliu21-arch.github.io/math-quest/", kids:["nora","lucas","milo"], color:"#4c6ef5", icon:"pie"},
-  {zh:[["塗","ㄊㄨˊ"],["鴉","ㄧㄚ"],["衝","ㄔㄨㄥ"],["衝","ㄔㄨㄥ"],["衝","ㄔㄨㄥ"]], en:"Doodle Dash", url:"https://aronliu21-arch.github.io/drawing-game-/", kids:["nora","lucas"], color:"#0ca678", icon:"doodle"},
-  {zh:[["小","ㄒㄧㄠˇ"],["精","ㄐㄧㄥ"],["靈","ㄌㄧㄥˊ"],["森","ㄙㄣ"],["林","ㄌㄧㄣˊ"]], en:"Critter Grove", url:"games/critter-grove/", kids:["tester"], color:"#2b8a3e", icon:"critter"},
-  {zh:[["龍","ㄌㄨㄥˊ"],["心","ㄒㄧㄣ"],["英","ㄧㄥ"],["文","ㄨㄣˊ"],["版","ㄅㄢˇ"]], en:"Dragon Heart Quest · English", url:"games/dragon-heart-en/", kids:["nora","lucas","milo"], color:"#a61e4d", icon:"dragon"},
-  {zh:[["袋","ㄉㄞˋ"],["鼠","ㄕㄨˇ"],["跳","ㄊㄧㄠˋ"],["跳","ㄊㄧㄠˋ"],["樂","ㄌㄜˋ"]], en:"Kanga Hop", url:"games/kanga-hop/", kids:["nora","lucas"], color:"#d9480f", icon:"kanga"},
-  {zh:[["九","ㄐㄧㄡˇ"],["九","ㄐㄧㄡˇ"],["大","ㄉㄚˋ"],["闖","ㄔㄨㄤˇ"],["關","ㄍㄨㄢ"]], en:"Times Table Challenge", url:"games/times-challenge/", kids:["nora"], color:"#1f8a70", icon:"jj"},
+  {zh:[["塗","ㄊㄨˊ"],["鴉","ㄧㄚ"],["衝","ㄔㄨㄥ"],["衝","ㄔㄨㄥ"],["衝","ㄔㄨㄥ"]], en:"Doodle Dash", url:"https://aronliu21-arch.github.io/drawing-game-/", kids:["nora","lucas"], color:"#0ca678", icon:"doodle"},  
+  {zh:[["袋","ㄉㄞˋ"],["鼠","ㄕㄨˇ"],["跳","ㄊㄧㄠˋ"],["跳","ㄊㄧㄠˋ"],["樂","ㄌㄜˋ"]], en:"Kanga Hop", url:"games/kanga-hop/", kids:["nora","lucas"], color:"#d9480f", icon:"kanga"}, 
   {zh:[["草","ㄘㄠˇ"],["寫","ㄒㄧㄝˇ"],["字","ㄗˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Nora’s Cursive Quest", url:"games/cursive-quest/", kids:["nora"], color:"#5f3dc4", icon:"cursive"},
   {zh:[["生","ㄕㄥ"],["活","ㄏㄨㄛˊ"],["小","ㄒㄧㄠˇ"],["高","ㄍㄠ"],["手","ㄕㄡˇ"]], en:"Life Skills Club", url:"games/life-skills/", kids:["tester"], color:"#0b7285", icon:"skills"},
-  {zh:[["犯","ㄈㄢˋ"],["罪","ㄗㄨㄟˋ"],["現","ㄒㄧㄢˋ"],["場","ㄔㄤˇ"]], en:"Crime Scene Explorer", url:"games/lab/crime-scene/", kids:["tester"], color:"#7048e8", icon:"skills"},
-  {zh:[["檸","ㄋㄧㄥˊ"],["檬","ㄇㄥˊ"],["汁","ㄓ"],["小","ㄒㄧㄠˇ"],["攤","ㄊㄢ"]], en:"Lemonade Stand", url:"games/lab/lemonade/", kids:["tester"], color:"#f59f00", icon:"lab"},
-  {zh:[["造","ㄗㄠˋ"],["橋","ㄑㄧㄠˊ"],["高","ㄍㄠ"],["手","ㄕㄡˇ"]], en:"Bridge Builder", url:"games/lab/bridge/", kids:["tester"], color:"#1c7ed6", icon:"lab"},
-  {zh:[["卡","ㄎㄚˇ"],["片","ㄆㄧㄢˋ"],["交","ㄐㄧㄠ"],["換","ㄏㄨㄢˋ"],["市","ㄕˋ"],["集","ㄐㄧˊ"]], en:"Card Trading Market", url:"games/lab/trading-market/", kids:["tester"], color:"#f76707", icon:"lab"},
-  {zh:[["卡","ㄎㄚˇ"],["片","ㄆㄧㄢˋ"],["商","ㄕㄤ"],["店","ㄉㄧㄢˋ"]], en:"Card Shop", url:"games/lab/card-shop/", kids:["tester"], color:"#e8590c", icon:"lab"},
-  {zh:[["亂","ㄌㄨㄢˋ"],["七","ㄑㄧ"],["八","ㄅㄚ"],["糟","ㄗㄠ"],["的","˙ㄉㄜ"],["家","ㄐㄧㄚ"]], en:"Dino’s Messy House", url:"games/lab/messy-house/", kids:["tester"], color:"#2f9e44", icon:"lab"},
-  {zh:[["過","ㄍㄨㄛˋ"],["馬","ㄇㄚˇ"],["路","ㄌㄨˋ"]], en:"Cross the Street", url:"games/lab/cross-street/", kids:["tester"], color:"#e03131", icon:"lab"},
-  {zh:[["恐","ㄎㄨㄥˇ"],["龍","ㄌㄨㄥˊ"],["廚","ㄔㄨˊ"],["房","ㄈㄤˊ"]], en:"Dino Kitchen", url:"games/lab/dino-kitchen/", kids:["tester"], color:"#d9480f", icon:"lab"},
-  {zh:[["寶","ㄅㄠˇ"],["藏","ㄗㄤˋ"],["門","ㄇㄣˊ"]], en:"Treasure Door · Team Play", url:"games/lab/team-door/", kids:["tester"], color:"#5f3dc4", icon:"lab"},
   {zh:[["時","ㄕˊ"],["尚","ㄕㄤˋ"],["素","ㄙㄨˋ"],["描","ㄇㄧㄠˊ"],["本","ㄅㄣˇ"]], en:"Runway Sketchbook", url:"games/runway-sketch/", kids:["nora","tester"], color:"#d6336c", icon:"lab"},
   {zh:[["陸","ㄌㄨˋ"],["晨","ㄔㄣˊ"],["的","˙ㄉㄜ"],["卡","ㄎㄚˇ"],["片","ㄆㄧㄢˋ"],["大","ㄉㄚˋ"],["冒","ㄇㄠˋ"],["險","ㄒㄧㄢˇ"]], en:"Lucas’s Card Quest", url:"games/card-quest/", kids:["lucas"], color:"#f76707", icon:"cards"},
   {zh:[["洛","ㄌㄨㄛˋ"],["明","ㄇㄧㄥˊ"],["的","˙ㄉㄜ"],["恐","ㄎㄨㄥˇ"],["龍","ㄌㄨㄥˊ"],["世","ㄕˋ"],["界","ㄐㄧㄝˋ"]], en:"Milo’s Dino World", url:"games/lab/dino-world/", kids:["milo"], color:"#f08c00", icon:"dinobook"},
@@ -333,12 +319,12 @@ const CATS = [
 ];
 // which shelf each game sits on (anything not listed goes to Testing Lab)
 const GCAT = {
-  "games/lab/dino-world/":"story","games/dino-journey/":"story","games/dragon-heart/":"story","games/dragon-heart-en/":"story","games/lumi-quest/":"story","games/magic-academy/":"story","games/question-beasts/":"story",
-  "https://aronliu21-arch.github.io/math-quest/":"math","games/kanga-hop/":"math","games/times-tables/":"math","games/times-challenge/":"math","games/calendar-quest/":"math","games/card-quest/":"math",
+  "games/lab/dino-world/":"story","games/dragon-heart/":"story","games/lumi-quest/":"story","games/magic-academy/":"story","games/question-beasts/":"story",
+  "https://aronliu21-arch.github.io/math-quest/":"math","games/kanga-hop/":"math","games/times-tables/":"math","games/calendar-quest/":"math","games/card-quest/":"math",
   "games/spelling-bees/":"read","games/zhuyin/":"read","games/cursive-quest/":"read",
   "games/pitch-smarts/":"sport","games/sports-stars/":"sport",
   "games/family-zoo/":"art","https://aronliu21-arch.github.io/drawing-game-/":"art","games/runway-sketch/":"art",
-  "games/life-skills/":"life","games/critter-grove/":"life","games/game-room/":"life"
+  "games/life-skills/":"life"
 };
 // when each game was last changed (written by tools/stamp-updated.py on every push); newest first in the Tester list
 let UPD = {}; try { UPD = JSON.parse(localStorage.getItem("ka.updated") || "{}"); } catch (e) {}
@@ -394,11 +380,23 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNames);
 window.addEventListener("hashchange", show);
 show();
 </script>
+<script>
+// Offline play: save every game on this device the first time the arcade opens on Wi-Fi.
+(function(){var el=document.getElementById("offline");
+function show(t){if(el)el.textContent=t;}
+if(!("serviceWorker" in navigator)||!window.caches){return;}
+navigator.serviceWorker.register("sw.js").catch(function(){});
+async function check(){try{var list=await (await fetch("offline-files.json")).json();var c=await caches.open("ka-offline-v1");var keys=await c.keys();
+var n=keys.length,need=list.length;
+if(n>=need-2)show("✈️ 可以離線玩 · Ready to play offline");else show("⬇️ 正在存遊戲給離線玩 · Saving games for offline… "+Math.round(100*n/need)+"%");
+if(n<need-2)setTimeout(check,2500);}catch(e){show(navigator.onLine?"":"✈️ 離線模式 · Offline mode");}}
+setTimeout(check,1500);})();
+</script>
 </body>
 </html>
 
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.9" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.8 · 2026-11-25</div>
+<div id="kaVer" data-v="1.10" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.10 · 2026-11-25</div>
 <!-- update check: the Home Screen app has no reload button, so look for a newer menu and offer it -->
 <button id="kaRefresh" type="button" aria-label="Check for updates" style="position:fixed;right:10px;bottom:8px;z-index:2147483000;width:44px;height:44px;border-radius:50%;border:2px solid #1b1f3b;background:#fff;font-size:22px;line-height:1;box-shadow:0 2px 0 #1b1f3b;cursor:pointer">↻</button>
 <div id="kaNew" hidden style="position:fixed;left:50%;transform:translateX(-50%);bottom:12px;z-index:2147483001;background:#2b8a3e;color:#fff;font:800 15px/1.3 system-ui,sans-serif;padding:12px 18px;border-radius:999px;box-shadow:0 4px 0 #1b1f3b;cursor:pointer">新版本!點這裡更新 · New version — tap to update</div>

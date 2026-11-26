@@ -17,6 +17,8 @@
   function sstore(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; } }
 
   var scriptTag = document.currentScript;
+  // offline play: make sure the arcade's service worker is installed even if a game is opened directly
+  safe(function () { if (scriptTag && "serviceWorker" in navigator) { var root = new URL(".", scriptTag.src).href; navigator.serviceWorker.register(root + "sw.js", { scope: root }).catch(function () {}); } })();
   var game = (scriptTag && scriptTag.getAttribute("data-game")) ||
     (location.pathname.replace(/\/index\.html?$/, "").replace(/\/$/, "").split("/").pop() || "unknown");
 

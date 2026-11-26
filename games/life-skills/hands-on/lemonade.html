@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en"><head>
+<script src="../../../voice.js"></script><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<title>Lemonade Stand · 7 Days</title>
+<style>
+:root{--ink:#1b1f3b;--bg:#eef5ff;--card:#fff;--muted:#5b6782;--ok:#2b8a3e;--bad:#e03131;--gold:#ffd43b;--nora:#7048e8;--lucas:#f76707;--milo:#2f9e44;--blue:#1c7ed6;color-scheme:light;
+--font:"Arial Rounded MT Bold",ui-rounded,"PingFang TC","Noto Sans TC",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-tap-highlight-color:transparent;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+.app{height:100%;display:flex;flex-direction:column;padding:8px max(10px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin-bottom:6px}
+.top a,.ico{width:48px;height:48px;border-radius:14px;border:3px solid var(--ink);background:#fff;display:grid;place-items:center;text-decoration:none;color:var(--ink);font-size:1.3rem;flex:0 0 48px}
+.ttl{flex:1;min-width:0;font-weight:800;font-size:1.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{background:#ffe8cc;border:2px solid var(--ink);border-radius:999px;padding:1px 10px;font-size:.8rem;font-weight:700;margin-left:6px;vertical-align:middle}
+.pill{background:#fff;border:3px solid var(--ink);border-radius:999px;padding:4px 12px;font-weight:800;white-space:nowrap}
+.main{flex:1;min-height:0;position:relative}
+.btn{border:3px solid var(--ink);border-radius:16px;background:var(--blue);color:#fff;font-weight:800;font-size:1.15rem;padding:8px 18px;min-height:52px;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.ghost{background:#fff;color:var(--ink)}.btn[disabled]{opacity:.45}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#fff;border:3px solid var(--ink);border-radius:18px;padding:10px 18px;font-weight:800;font-size:1.2rem;z-index:50;box-shadow:0 6px 0 var(--ink);text-align:center;max-width:92vw;pointer-events:none;transition:opacity .3s}
+.toast.hide{opacity:0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:grid;place-items:center;z-index:40;padding:16px}
+.modal>div{background:#fff;border:4px solid var(--ink);border-radius:22px;padding:16px 20px;max-width:560px;width:100%;text-align:center}
+.modal h2{margin:4px 0}
+.rot{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:max(8px,env(safe-area-inset-bottom));pointer-events:none;background:var(--gold);border:3px solid var(--ink);border-radius:999px;padding:4px 14px;font-weight:800;font-size:.85rem;z-index:45;white-space:nowrap}
+body[data-pref="land"] .rot.l{display:none}
+@media (orientation:portrait) and (max-width:600px){body[data-pref="land"] .rot.l{display:block}}
+@media (orientation:landscape) and (max-height:450px){body[data-pref="port"] .rot.p{display:block}}
+/* phones: never cut things off; scroll instead, and keep the top bar small */
+@media (max-width:600px),(max-height:450px){.main{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}.tag{display:none}.ttl{font-size:1.05rem}.top a,.ico{width:44px;height:44px;flex-basis:44px}.pill{padding:2px 8px;font-size:.9rem}.app{padding-top:4px}}
+.drag{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.m{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1.2fr;gap:10px}
+.panel{background:#fff;border:4px solid var(--ink);border-radius:18px;padding:10px 14px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.fc{display:flex;align-items:center;gap:12px;background:#e7f5ff;border:3px solid var(--ink);border-radius:14px;padding:6px 10px}
+.fc .w{font-size:clamp(2.4rem,9vh,3.6rem)}
+.ctl label{font-weight:800;display:flex;justify-content:space-between}
+.ctl input[type=range]{width:100%;height:40px;accent-color:var(--nora)}
+.step{display:flex;align-items:center;gap:8px}.step button{width:52px;height:52px;border-radius:14px;border:3px solid var(--ink);background:#fff;font-size:1.5rem;font-weight:800}
+.step span{font-size:1.4rem;font-weight:800;min-width:3ch;text-align:center}
+.cost{color:var(--muted);font-size:.95rem}
+.street{position:relative;border:4px solid var(--ink);border-radius:18px;overflow:hidden;background:linear-gradient(#a5d8ff 0 55%,#ced4da 55%)}
+.stand{position:absolute;left:50%;bottom:10%;transform:translateX(-50%);text-align:center;font-size:clamp(2.6rem,11vh,4.6rem);line-height:1}
+.stand .sign{display:block;font-size:clamp(.9rem,2.5vh,1.2rem);font-weight:800;background:#ffec99;border:3px solid var(--ink);border-radius:10px;padding:2px 8px;margin-bottom:4px}
+.walker{position:absolute;bottom:12%;font-size:clamp(2rem,8vh,3.4rem);transition:left 2.6s linear}
+.walker .say{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:.5em;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:1px 6px;white-space:nowrap}
+.cups{position:absolute;right:8px;top:8px;background:#fff;border:3px solid var(--ink);border-radius:12px;padding:2px 10px;font-weight:800}
+.chart{display:flex;align-items:flex-end;gap:8px;height:150px;border-bottom:3px solid var(--ink);margin:10px 0}
+.chart div{flex:1;background:var(--ok);border:2px solid var(--ink);border-radius:6px 6px 0 0;position:relative;min-height:3px}
+.chart div.neg{background:var(--bad)}
+.chart span{position:absolute;bottom:100%;left:0;right:0;font-size:.75rem;font-weight:800;text-align:center}
+@media (max-width:600px){.m{position:relative;inset:auto;display:flex;flex-direction:column}.street{order:-1;height:34vh;flex:0 0 auto}.stand{font-size:2.4rem;bottom:6%}.panel{overflow:visible}}
+@media (max-height:450px) and (orientation:landscape){.m{position:relative;inset:auto;min-height:480px}}
+</style></head><body data-pref="port">
+<div class="app">
+  <div class="top"><a href="../" aria-label="Back to arcade">←</a><div class="ttl">🍋 Lemonade Stand · 7 Days<span class="tag">sample</span></div><span class="pill" id="day">Day 1 / 7</span><span class="pill" id="cash">💵 $3.00</span><button class="ico" id="snd" aria-label="Sound">🔊</button></div>
+  <div class="main" id="main"><div class="m"><div class="panel" id="panel">
+<div class="fc"><span class="w" id="wx"></span><div><b id="wxT"></b><div class="cost" id="wxS"></div></div></div>
+<div class="ctl"><label>Price per cup <span id="pv"></span></label><input type="range" id="price" min="25" max="150" step="5" value="50"></div>
+<div class="ctl"><label>Cups to make</label><div class="step"><button id="m">−</button><span id="cv">10</span><button id="p">+</button><span class="cost" id="cc"></span></div></div>
+<button class="btn" id="open">Open the stand! 🍋</button></div>
+<div class="street" id="street"><div class="cups" id="left">🥤 0</div><div class="stand"><span class="sign" id="sign"></span>🍋<br>🏠</div></div></div></div>
+</div>
+<div class="toast hide" id="toast"></div>
+<div class="rot l">Turn your phone sideways ↻</div><div class="rot p">Best with your phone upright ↻</div>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rnd(a,b+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true;try{SOUND=localStorage.getItem('lab.sound')!=='0';}catch(e){}
+let ac=null;function audio(){if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(ac&&ac.state==='suspended')ac.resume();return ac;}
+function tone(f,d,type,vol,dl){if(!SOUND)return;const c=audio();if(!c)return;try{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+(dl||0);o.type=type||'sine';o.frequency.setValueAtTime(f,t);o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(vol||.15,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d+.05);}catch(e){}}
+const sfx={good(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.16,i*.07));},bad(){tone(200,.25,'sawtooth',.08);},pop(){tone(880,.08,'triangle',.14);},
+  boing(){if(!SOUND)return;const c=audio();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(300,c.currentTime);o.frequency.exponentialRampToValueAtTime(90,c.currentTime+.3);o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.15,c.currentTime);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.35);o.start();o.stop(c.currentTime+.4);},
+  coin(){tone(1320,.08,'square',.06);tone(1760,.12,'square',.05,.06);},honk(){tone(330,.35,'square',.09);tone(415,.35,'square',.07);},
+  win(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.3,'triangle',.15,i*.1));}};
+function say(t,rate){if(!SOUND||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=rate||.95;u.pitch=1.1;speechSynthesis.speak(u);}catch(e){}}
+let tt=0;function toast(h,ms){const t=$('toast');t.innerHTML=h;t.classList.remove('hide');clearTimeout(tt);tt=setTimeout(()=>t.classList.add('hide'),ms||1600);}
+function modal(html,btns){const m=document.createElement('div');m.className='modal';m.innerHTML='<div>'+html+'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px"></div></div>';
+  const row=m.querySelector('div>div:last-child');(btns||[]).forEach(([l,f,ghost])=>{const b=document.createElement('button');b.className='btn'+(ghost?' ghost':'');b.textContent=l;b.onclick=()=>{m.remove();f&&f();};row.appendChild(b);});document.body.appendChild(m);return m;}
+$('snd').textContent=SOUND?'🔊':'🔇';$('snd').onclick=()=>{SOUND=!SOUND;$('snd').textContent=SOUND?'🔊':'🔇';try{localStorage.setItem('lab.sound',SOUND?'1':'0');}catch(e){}if(!SOUND&&'speechSynthesis' in window)speechSynthesis.cancel();};
+/* Drag helper: makeDrag(el,{onDrop(el,x,y)->bool keep}) — pointer events, works with touch + mouse */
+function makeDrag(el,o){el.classList.add('drag');el.addEventListener('pointerdown',e=>{if(o.can&&!o.can(el))return;e.preventDefault();audio();el.setPointerCapture(e.pointerId);
+  const r=el.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,ph=document.createElement('div');
+  const st={pos:el.style.position,l:el.style.left,t:el.style.top,z:el.style.zIndex,w:el.style.width};
+  el.style.width=r.width+'px';el.style.position='fixed';el.style.left=r.left+'px';el.style.top=r.top+'px';el.style.zIndex=30;el.style.transform='scale(1.08)';
+  o.start&&o.start(el);
+  const mv=ev=>{el.style.left=(ev.clientX-dx)+'px';el.style.top=(ev.clientY-dy)+'px';o.move&&o.move(el,ev.clientX,ev.clientY);};
+  const up=ev=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);el.style.transform='';
+    const keep=o.drop?o.drop(el,ev.clientX,ev.clientY):false;
+    if(!keep){el.style.position=st.pos;el.style.left=st.l;el.style.top=st.t;el.style.zIndex=st.z;el.style.width=st.w;}};
+  el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);});}
+const hit=(el,x,y)=>{const r=el.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;};
+function confetti(){const c=document.createElement('canvas');c.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:60';c.width=innerWidth;c.height=innerHeight;document.body.appendChild(c);
+  const x=c.getContext('2d'),P=Array.from({length:120},()=>({x:innerWidth/2,y:innerHeight/3,vx:rnd(-7,7),vy:rnd(-9,1),c:pick(['#ffd43b','#ff6b6b','#74c0fc','#b197fc','#69db7c'])}));let n=0;
+  (function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.25;x.fillStyle=p.c;x.fillRect(p.x,p.y,7,7);});if(++n<120)requestAnimationFrame(f);else c.remove();})();}
+const WX=[['☀️','Sunny and hot','Lots of thirsty people!',34,1.25],['🌤️','Warm','A good day.',26,1.0],['⛅','Cloudy','Fewer people outside.',18,.8],['🌧️','Rainy','Almost nobody wants lemonade.',8,.55]];
+const CUP=12; // cents per cup (lemons + sugar + cup)
+let day=1,cash=300,cups=10,w=null,log=[],running=false;
+const $$=c=>'$'+(c/100).toFixed(2);
+function newDay(){w=day===1?WX[1]:pick(WX);$('wx').textContent=w[0];$('wxT').textContent='Forecast: '+w[1];$('wxS').textContent=w[2];upd();say('Day '+day+'. The forecast is '+w[1]+'.');}
+function upd(){const p=+$('price').value;$('pv').textContent=$$(p);$('cv').textContent=cups;$('cc').textContent='costs '+$$(cups*CUP)+' ('+CUP+'¢ each)';$('sign').textContent='Lemonade '+$$(p);
+  $('open').disabled=cups*CUP>cash||running;$('day').textContent='Day '+day+' / 7';$('cash').textContent='💵 '+$$(cash);}
+$('price').oninput=upd;$('m').onclick=()=>{cups=Math.max(0,cups-5);upd();};$('p').onclick=()=>{cups=Math.min(60,cups+5);upd();};
+$('open').onclick=()=>{audio();running=true;upd();const p=+$('price').value;cash-=cups*CUP;
+  // customers walk by; each buys if the price feels OK for the weather
+  const people=Math.round(w[3]*rnd(.85,1.15)),maxOk=60*w[4];let left=cups,sold=0,tooPricey=0,soldOut=0,i=0;$('left').textContent='🥤 '+left;
+  const iv=setInterval(()=>{if(i>=Math.min(people,14)){clearInterval(iv);end();return;}i++;
+    const n=Math.round(people/Math.min(people,14))||1;let said='';for(let k=0;k<n;k++){const ok=Math.random()<Math.max(0,Math.min(1,1.3-p/maxOk));if(ok&&left>0){left--;sold++;said='Yum! 😋';}else if(ok){soldOut++;said=said||'Sold out? 😢';}else{tooPricey++;said=said||'Too pricey 😐';}}
+    $('left').textContent='🥤 '+left;walker(pick(['👩','👵','👧']),said);if(said[0]==='Y')sfx.coin();},420);
+  function end(){const rev=sold*p,cost=cups*CUP;cash+=rev;const profit=rev-cost;log.push(profit);running=false;
+    say('You sold '+sold+' cups.'+(profit>=0?' You made a profit of '+(profit/100).toFixed(2)+' dollars.':' You lost '+(-profit/100).toFixed(2)+' dollars.'));
+    const why=(soldOut>0||sold===cups)?'You sold out! More people wanted lemonade. Make more cups on a day like this.':tooPricey>sold?'Lots of people said “too pricey.” Try a lower price.':cups-sold>4?'You had '+(cups-sold)+' cups left over. Make fewer next time.':'Nice balance of price and cups!';
+    modal('<h2>Day '+day+' results</h2><p>Sold <b>'+sold+'</b> of '+cups+' cups at '+$$(p)+'<br>Money in: '+$$(rev)+' · Cost: '+$$(cost)+'<br><b style="color:'+(profit>=0?'var(--ok)':'var(--bad)')+'">'+(profit>=0?'Profit +':'Loss −')+$$(Math.abs(profit))+'</b></p><p>💡 '+why+'</p>',
+      [[day<7?'Next day ▶':'See my week 📊',()=>{day++;if(day>7)week();else newDay();}]]);}};
+function walker(e,t){const d=document.createElement('div');d.className='walker';d.innerHTML=e+'<span class="say">'+t+'</span>';d.style.left='-10%';$('street').appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>d.style.left='110%'));setTimeout(()=>d.remove(),2800);}
+function week(){const mx=Math.max(...log.map(Math.abs),1),tot=log.reduce((a,b)=>a+b,0);confetti();sfx.win();
+  modal('<h2>Your week 📊</h2><div class="chart">'+log.map((v,i)=>'<div class="'+(v<0?'neg':'')+'" style="height:'+Math.abs(v)/mx*100+'%"><span>'+(v<0?'−':'')+$$(Math.abs(v))+'</span></div>').join('')+'</div><p>Days 1–7 · Start $3.00 → now <b>'+$$(cash)+'</b> ('+(tot>=0?'+':'−')+$$(Math.abs(tot))+')</p>',[['Play another week',()=>{day=1;cash=300;log=[];cups=10;newDay();}]]);}
+newDay();
+window.__test={state:()=>({day:day,cash:cash,running:running})};
+
+</script><!-- version badge: bump data-v on every update -->
+<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+</body></html>

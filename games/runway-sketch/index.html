@@ -47,7 +47,7 @@ body[data-pref="land"] .rot.l{display:none}
 .paint{border-top:2px dashed #e3d6c7;padding-top:6px}
 .paint .lab{font-size:.85rem;font-weight:700;color:#4a3426;margin-bottom:4px}
 .sw{display:flex;flex-wrap:wrap;gap:6px}
-.sw button{width:36px;height:36px;border-radius:50%;border:2px solid #4a3426;padding:0}
+.sw button{width:44px;height:44px;border-radius:50%;border:2px solid #4a3426;padding:0}
 .sw button.on{box-shadow:0 0 0 3px #fff,0 0 0 5px #d6336c}
 .pats{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .pats button{min-height:40px;min-width:48px;border:2px solid #c9b8a6;border-radius:10px;background:#fff;font-size:1.1rem}
@@ -2265,6 +2265,6 @@ window.__test=Object.assign(window.__test||{},{career:()=>({money:C&&C.money,sta
   learn:k=>learnJob(k),hint:()=>LQ&&LQ.hint&&LQ.hint(),allHints:()=>LKEYS.map(k=>LBANK[k].map(q=>{const h=hintFor(k,q);return h?null:k+':'+q[0];})).flat().filter(Boolean),lq:()=>LQ&&{k:LQ.k,id:LQ.q&&LQ.q[0],done:!!LQ.done},solve:()=>LQ&&LQ.solve&&LQ.solve(),banks:()=>Object.fromEntries(LKEYS.map(k=>[k,LBANK[k].length]))});
 
 </script><!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>

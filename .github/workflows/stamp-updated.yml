@@ -2,7 +2,7 @@ name: Stamp game update times
 on:
   push:
     branches: [main]
-    paths-ignore: ['updated.json']
+    paths-ignore: ['updated.json', 'offline-files.json']
 permissions:
   contents: write
 jobs:
@@ -13,8 +13,9 @@ jobs:
         with:
           fetch-depth: 0
       - run: python3 tools/stamp-updated.py
+      - run: python3 tools/build-offline-list.py
       - run: |
           git config user.name "arcade-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add updated.json
+          git add updated.json offline-files.json
           git diff --cached --quiet || (git commit -m "Update game times [skip ci]" && git pull --rebase -q && git push)

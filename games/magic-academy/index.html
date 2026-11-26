@@ -1047,7 +1047,7 @@ function home(){
   ${(()=>{const w=weakSkills();return w.length?`<button class="primary practice" id="prac">🎯 弱點特訓：${SKILLS[w[0].k]}</button>`:'';})()}
   <button class="quiet" id="calm">🫧 魔法冥想室</button>
   <details class="parent"><summary>給爸爸媽媽</summary><button class="quiet" id="rpt" style="width:100%;margin:6px 0">📊 學習報告</button>
-  <p>每一輪5個任務，大約15–20分鐘，沒有計時。開始時和第3題後會問她的心情。</p>
+  <p>每一輪3個任務，大約10–12分鐘，沒有計時。開始時和第2題後會問她的心情。</p>
   <p>答錯兩次會先做30秒呼吸，再給提示；答錯三次會一起看解法，不扣分。</p>
   <p>完成任務後請聽她說自己的解法，再讓她按「我說完了」拿星星。生字的注音請您核對一次。</p></details>
   ${cloudNote()}
@@ -1152,8 +1152,8 @@ function solved(self){
     if(PR.on){PR.i++;if(PR.i>=PR.items.length)practiceDone();else openPractice();return;}
     session++;
     if(CASES.every(c=>seenT().includes(c.title))){home();return;}
-    if(session>=5)rest();
-    else if(session===3)mood(()=>openCase(nextCase()));
+    if(session>=3)rest();
+    else if(session===2)mood(()=>openCase(nextCase()));
     else openCase(nextCase());
   };
   $('#next').onclick=()=>{const b=PR.on?PRB:S.battle;if(b&&b.hp<=0&&!b.shown)victory(goNext);else goNext();};
@@ -1162,7 +1162,7 @@ function solved(self){
 function rest(){
   bg(true);
   app.innerHTML=`<section class="center"><div class="hero-art">${MASCOT}</div>
-  <h2 data-say="zh">今天完成了5個任務，魔力用了好多！</h2>
+  <h2 data-say="zh">今天完成了3個任務，魔力用了好多！</h2>
   <p class="big" data-say="zh">去喝口水、伸伸懶腰，或到外面走一走吧。</p>
   <button class="primary" id="h">回到首頁</button>
   <button class="quiet" id="more" style="width:100%;margin-top:12px">休息好了，再辦一個</button></section>`;
@@ -1196,7 +1196,8 @@ home();
 cloudInit();
 </script>
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
+<script src="../../house.js"></script><script>KAH.init({kids:["nora"],keys:["^nora-detective-v1$"]})</script>
 </body>
 </html>
