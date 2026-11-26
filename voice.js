@@ -4,6 +4,7 @@
    - Reading: English rate .88, Chinese rate .8, pitch 1.15 (a character can pass its own pitch).
    - A sentence with any Chinese is read by the Chinese voice in one go (it reads English words too); quotes/symbols are not read aloud.
 
+   Loading this file is enough for older games: every speechSynthesis.speak() then uses these voices.
    Use in a game (games/<name>/index.html, or games/lab/<name>/index.html → adjust the ../):
      <script src="../../voice.js"></script>
      KAVoice.say('Hello!')                       // auto-picks the language
@@ -71,4 +72,22 @@
     draw(); document.body.appendChild(m);
   }
   window.KAVoice = { say, sayParts, stop, picker, voiceFor, zhVoices, langOf };
+  // Older games call speechSynthesis.speak() themselves: give every utterance the shared voice too
+  // (their own speed and character pitch stay as they are; quotes/symbols are not read aloud).
+  if (hasTTS() && !speechSynthesis.__ka) {
+    try {
+      const orig = speechSynthesis.speak.bind(speechSynthesis);
+      speechSynthesis.speak = function (u) {
+        try {
+          if (u && typeof u.text === 'string') {
+            const c = clean(u.text); if (c && /[\p{L}\p{N}]/u.test(c)) u.text = c;
+            const l = (/^(zh|yue)/i.test(u.lang || '') || /[一-鿿]/.test(u.text)) ? 'zh-TW' : (/^en/i.test(u.lang || '') || !u.lang ? 'en-US' : '');
+            if (l) { const v = voiceFor(l); if (v) { u.voice = v; if (v.lang) u.lang = v.lang; } }
+          }
+        } catch (e) {}
+        return orig(u);
+      };
+      speechSynthesis.__ka = true;
+    } catch (e) {}
+  }
 })();
