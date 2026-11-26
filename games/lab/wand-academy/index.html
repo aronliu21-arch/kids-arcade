@@ -125,7 +125,7 @@ h1,h2,h3{margin:0}
 .cards button.weak{border-color:#ffd43b;box-shadow:0 0 12px #ffd43b}
 .proj{position:fixed;z-index:30;font-size:72px;pointer-events:none;filter:drop-shadow(0 0 16px var(--pc,#ffd43b)) drop-shadow(0 0 30px var(--pc,#ffd43b))}
 .shake{animation:shk .5s}@keyframes shk{20%{transform:translateX(-12px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(6px)}}
-@media (orientation:portrait) and (max-width:600px){.cards{flex-direction:row;flex-wrap:wrap;justify-content:center}.cards button{font-size:20px}}
+@media (orientation:portrait) and (max-width:600px){.cards{flex-direction:row;flex-wrap:nowrap;justify-content:center;gap:6px}.cards button{flex:1 1 0;min-width:0;justify-content:center;gap:4px;padding:4px 6px;font-size:19px}.cards button .el{display:none}#play .prompt{width:100%}}
 @media (max-height:430px){.cards button{min-height:48px;padding:2px 10px;font-size:20px}}
 .stage>div{animation:sceneIn .7s cubic-bezier(.2,.8,.2,1) both}
 .stage svg{animation:kenburns 14s ease-in-out infinite alternate;transform-origin:50% 60%}
@@ -135,6 +135,7 @@ h1,h2,h3{margin:0}
 @keyframes mfloat{50%{transform:translateY(-8px) scale(1.02)}}
 #playArt.hit svg{animation:hitflash .45s steps(2) 1,mfloat 2.6s ease-in-out infinite}
 @keyframes hitflash{0%,100%{filter:none}50%{filter:brightness(3) saturate(0)}}
+#playArt.frozen svg{filter:hue-rotate(170deg) saturate(.5) brightness(1.4) drop-shadow(0 0 14px #a5d8ff)}
 #playArt.gone svg{animation:dissolve 1s ease forwards}
 @keyframes dissolve{to{opacity:0;transform:scale(.2) rotate(25deg);filter:blur(8px)}}
 #title .art svg{animation:mfloat 4s ease-in-out infinite}
@@ -168,7 +169,7 @@ h1,h2,h3{margin:0}
   <div class="art" id="titleArt"></div>
   <h1>Nora's <span class="cur" style="color:var(--gold)">Wand-Writing</span> Academy</h1>
   <div class="sub">諾拉的魔法草寫學院 · Write cursive to cast magic</div>
-  <div class="stats"><div class="stat"><span id="stStars">0</span> ✨<small>magic stars</small></div><div class="stat"><span id="stCh">0/4</span><small>Chapter 1</small></div></div>
+  <div class="stats"><div class="stat"><span id="stStars">0</span> ✨<small>magic stars</small></div><div class="stat"><span id="stCh">0/4</span><small id="stChL">Chapter 1</small></div></div>
   <div class="row"><button class="btn gold" id="startBtn">▶ Tap to start</button></div>
   <div class="row"><button class="btn ghost sm" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost sm" id="muteBtn1">🔊</button></div>
   <button id="resetBtn">🔒 Reset records</button>
@@ -182,7 +183,7 @@ h1,h2,h3{margin:0}
 </section>
 
 <section class="screen" id="map">
-  <div class="bar paper"><button class="btn ghost sm" id="mapHome">🏠</button><div class="ttl">Chapter 1 · The Lamps Go Dark</div><div class="pill"><span id="mapStars">0</span> ✨</div><button class="btn ghost sm" id="muteBtn2">🔊</button></div>
+  <div class="bar paper"><button class="btn ghost sm" id="mapHome">🏠</button><button class="btn ghost sm" id="chPrev">◀</button><div class="ttl" id="mapTtl">Chapter 1</div><button class="btn ghost sm" id="chNext">▶</button><div class="pill"><span id="mapStars">0</span> ✨</div><button class="btn ghost sm" id="muteBtn2">🔊</button></div>
   <div class="wrap"><div id="mapBox"><canvas id="mapCv" width="480" height="270"></canvas><div id="spots"></div><div class="mapmsg" id="mapMsg"></div></div></div>
 </section>
 
@@ -198,7 +199,7 @@ h1,h2,h3{margin:0}
 </section>
 
 <section class="screen" id="mini">
-  <div class="bar paper"><button class="btn ghost sm" id="miniBack">🗺️</button><div class="ttl">✨ Firefly Garden</div><div class="pill">Best <span id="miniBest">0</span></div></div>
+  <div class="bar paper"><button class="btn ghost sm" id="miniBack">🗺️</button><div class="ttl" id="miniTtl">✨ Firefly Garden</div><div class="pill">Best <span id="miniBest">0</span></div></div>
   <div class="wrap"><canvas id="miniCv"></canvas><div class="hud"><span>🫙 <b id="miniN">0</b></span><span>⏱ <b id="miniT">25</b></span></div></div>
 </section>
 
@@ -623,9 +624,11 @@ const rnd = n => Math.floor(Math.random()*n);
 const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];} return a; };
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 const KEY='wandAcademy.v1';
-const fresh=()=>({stars:0,level:null,seen:[],done:{},best:0,sound:true,trial:false,introSeen:false,chapterDone:false});
+const fresh=()=>({stars:0,level:null,seen:[],done:{},bests:{},sound:true,trial:false,introSeen:false,ch:1,view:1,chDone:{},allDone:false});
 let S=fresh();
 try{const o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o) S=Object.assign(fresh(),o);}catch(e){}
+// upgrade saves from v1.x (Chapter 1 only)
+(function(){ const old=['rune','mei','chain','duel','fly']; let moved=false; old.forEach(k=>{ if(S.done[k]){ S.done['c1:'+k]=true; delete S.done[k]; moved=true; } }); if(S.best&&!S.bests.fireflies){ S.bests.fireflies=S.best; } if(S.chapterDone){ S.chDone[1]=true; S.ch=Math.max(S.ch,2); delete S.chapterDone; moved=true; } if(moved) try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} })();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
 let sessionMissions=0;
 
@@ -637,6 +640,7 @@ const Snd={ctx:null,master:null,music:null,musicTimer:null,
   const s=c.createBufferSource(); s.buffer=this.nb; s.loop=true; const fl=c.createBiquadFilter(); fl.type=type; fl.Q.value=1.2; fl.frequency.setValueAtTime(f0,t0); fl.frequency.exponentialRampToValueAtTime(f1,t0+d); const gn=c.createGain(); gn.gain.setValueAtTime(0,t0); gn.gain.linearRampToValueAtTime(v,t0+.04); gn.gain.exponentialRampToValueAtTime(.0001,t0+d); s.connect(fl); fl.connect(gn); gn.connect(this.master); s.start(t0); s.stop(t0+d+.05); },
  sfx(k){ if(!this.ctx) return; const t=this.ctx.currentTime;
   if(k==='whoosh') this.noise(t,.7,300,2400,.3);
+  if(k==='charge'){ const c=this.ctx,o=c.createOscillator(),gn=c.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(160,t); o.frequency.exponentialRampToValueAtTime(1400,t+1.2); gn.gain.setValueAtTime(0,t); gn.gain.linearRampToValueAtTime(.07,t+.9); gn.gain.linearRampToValueAtTime(0,t+1.3); o.connect(gn); gn.connect(this.master); o.start(t); o.stop(t+1.35); this.noise(t,1.2,400,3000,.12); [523,659,784,1047].forEach((f,i)=>this.tone(f,t+.3+i*.18,.4,'triangle',.06)); }
   if(k==='boom'){ this.noise(t,.6,900,80,.5,'lowpass'); this.tone(110,t,.5,'sine',.35); this.tone(55,t,.7,'sine',.3); }
   if(k==='fire') this.noise(t,.8,2000,500,.25,'highpass');
   if(k==='ice') [2093,2637,3136,2349].forEach((f,i)=>this.tone(f,t+i*.06,.4,'sine',.08));
@@ -672,8 +676,9 @@ const CAST={
  prof:{cast:['Serena','Kate','Moira','Karen','Samantha'],pitch:1.0,rate:.88},
  mei:{cast:['Nicky','Susan','Samantha'],pitch:1.3,rate:.9},
  iris:{cast:['Tessa','Fiona','Samantha'],pitch:1.2,rate:1.0},
+ wren:{cast:['Karen','Moira','Samantha'],pitch:1.25,rate:.86},
 };
-const NAMES={nora:'Nora',gran:'Grandma',prof:'Professor Quill',mei:'Mei',iris:'Iris'};
+const NAMES={nora:'Nora',gran:'Grandma',prof:'Professor Quill',mei:'Mei',iris:'Iris',wren:'Wren'};
 const Voice={ say(t,who,opts){ opts=Object.assign({},CAST[who||'narr']||CAST.narr,opts||{}); if(!S.sound){ opts.onEnd&&setTimeout(opts.onEnd,1200); return; } try{ window.KAVoice ? KAVoice.say(t,opts) : (opts.onEnd&&setTimeout(opts.onEnd,1500)); }catch(e){} }, stop(){ try{window.KAVoice&&KAVoice.stop();}catch(e){} } };
 
 // ============ FX: particles, flashes, shake, projectiles (one full-screen canvas) ============
@@ -682,7 +687,7 @@ const FX=(()=>{
  const cv=document.createElement('canvas'); cv.id='fx'; cv.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:35';
  document.body.appendChild(cv); const g=cv.getContext('2d'); let W=0,H=0,dpr=1;
  const fit=()=>{ dpr=Math.min(2,devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=W*dpr; cv.height=H*dpr; g.setTransform(dpr,0,0,dpr,0,0); }; fit(); addEventListener('resize',fit);
- const P=[], TX=[], RINGS=[], PROJ=[]; let flash=null, amb=null, raf=0, last=performance.now();
+ const P=[], TX=[], RINGS=[], PROJ=[], CIRC=[], ORBS=[], BEAMS=[]; let flash=null, amb=null, vig=null, raf=0, last=performance.now();
  const MAX=RM?60:320, R=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
  function add(p){ if(P.length>=MAX) P.shift(); P.push(p); kick(); }
  function burst(x,y,o={}){ const n=RM?Math.ceil((o.n||30)/4):(o.n||30); for(let i=0;i<n;i++){ const a=o.dir!=null?o.dir+R(-(o.spread||.6),(o.spread||.6)):R(0,Math.PI*2), sp=R(.3,1)*(o.speed||6);
@@ -706,7 +711,7 @@ const FX=(()=>{
  function impact(elk,x,y,big){ const e=EL[elk]||EL.light; burst(x,y,{n:big?90:55,colors:e.c,shape:e.shape,speed:big?11:8,grav:e.g,life:1000,size:big?9:7});
   burst(x,y,{n:24,colors:['#ffffff',e.c[0]],shape:'circle',speed:3,grav:0,life:500,size:12}); ring(x,y,e.c[0],big?260:180); ring(x,y,'#ffffff',big?160:110);
   if(elk==='bolt') for(let i=0;i<4;i++) add({x,y,bolt:true,ang:R(0,6.28),len:R(60,140),t:0,life:260,c:'#fff3bf',size:3});
-  flashScreen(e.c[0],big?.55:.35,big?320:220); }
+  flashScreen(e.c[0],big?.3:.18,big?300:200); }
  // Each shape+colour is drawn once (with its glow) into a small sprite, then stamped: fast on iPad.
  const SPR={}, EMO={};
  function emojiImg(e){ if(EMO[e]) return EMO[e]; const c=document.createElement('canvas'); c.width=c.height=128; const x=c.getContext('2d'); x.font='100px "Apple Color Emoji","Noto Color Emoji",sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(e,64,70); let ink=0; try{ const d=x.getImageData(0,0,128,128).data; for(let i=3;i<d.length;i+=64) ink+=d[i]; }catch(_){ ink=1; } if(!ink){ x.font='100px sans-serif'; x.fillText(e,64,70); return c; } return EMO[e]=c; }
@@ -740,15 +745,33 @@ const FX=(()=>{
   // particles
   for(let i=P.length-1;i>=0;i--){ const p=P[i]; p.t+=dt; if(p.t>=p.life){ P.splice(i,1); continue; } const k=1-p.t/p.life;
    if(p.bolt){ g.save(); g.strokeStyle=p.c; g.lineWidth=p.size; g.globalAlpha=k; g.beginPath(); let bx=p.x,by=p.y; g.moveTo(bx,by); for(let s=1;s<=5;s++){ bx=p.x+Math.cos(p.ang)*p.len*s/5+R(-14,14); by=p.y+Math.sin(p.ang)*p.len*s/5+R(-14,14); g.lineTo(bx,by);} g.stroke(); g.restore(); continue; }
+   if(p.home){ const q=Math.min(1,p.t/p.life); p.x+=(p.home.x-p.x)*Math.min(1,.06+q*.25)*f+p.vx*(1-q); p.y+=(p.home.y-p.y)*Math.min(1,.06+q*.25)*f+p.vy*(1-q); p.vx*=.9; p.vy*=.9; p.rot+=p.vr*f; drawShape(p,Math.max(.3,k)); continue; }
+   if(p.orbit){ const o=p.orbit; o.a+=o.va*f; o.r=Math.max(4,o.r+o.vr*f); p.x=o.cx+Math.cos(o.a)*o.r; p.y=o.cy+Math.sin(o.a)*o.r*.6-(1-k)*40; p.rot+=p.vr*f; drawShape(p,k); continue; }
    p.vx*=Math.pow(p.drag,f); p.vy=p.vy*Math.pow(p.drag,f)+p.g*f; p.x+=p.vx*f; p.y+=p.vy*f; p.rot+=p.vr*f; drawShape(p,k); }
   // rings
   for(let i=RINGS.length-1;i>=0;i--){ const r=RINGS[i], k=(now-r.t0)/r.life; if(k>=1){ RINGS.splice(i,1); continue; } g.save(); g.strokeStyle=r.c; g.globalAlpha=1-k; g.lineWidth=10*(1-k)+1; g.beginPath(); g.arc(r.x,r.y,r.max*Math.sqrt(k),0,7); g.stroke(); g.restore(); }
   // floating text
   for(let i=TX.length-1;i>=0;i--){ const t=TX[i], k=(now-t.t0)/t.life; if(k>=1){ TX.splice(i,1); continue; } const pop=k<.15?k/.15*1.3:1.3-Math.min(.3,(k-.15)*1.2);
    g.save(); g.font=`900 ${t.sz}px Poppins,system-ui,sans-serif`; const hw=g.measureText(t.t).width*.68+10, tx=Math.max(hw,Math.min(W-hw,t.x)); g.translate(tx,t.y-k*70); g.scale(pop,pop); g.globalAlpha=k>.7?(1-k)/.3:1; g.textAlign='center'; g.textBaseline='middle'; g.lineWidth=7; g.strokeStyle='#2b1d4a'; g.strokeText(t.t,0,0); g.fillStyle=t.c; g.fillText(t.t,0,0); g.restore(); }
+  // vignette (darkens the edges while a spell charges)
+  if(vig){ const k=(now-vig.t0)/vig.ms; if(k>=1) vig=null; else { const a=vig.a*Math.min(1,k*5,(1-k)*4); const gr=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.25,W/2,H/2,Math.max(W,H)*.75); gr.addColorStop(0,'rgba(20,10,40,0)'); gr.addColorStop(1,`rgba(20,10,40,${a})`); g.fillStyle=gr; g.fillRect(0,0,W,H); } }
+  // magic circles
+  for(let i=CIRC.length-1;i>=0;i--){ const c=CIRC[i], k=(now-c.t0)/c.ms; if(k>=1){ CIRC.splice(i,1); continue; } const sc=k<.15?(.3+k/.15*.7):1, al=Math.min(1,(1-k)*3,k*8);
+   g.save(); g.translate(c.x,c.y); g.globalAlpha=al; g.strokeStyle=c.c; g.fillStyle=c.c; const r=c.r*sc;
+   g.lineWidth=4; g.beginPath(); g.arc(0,0,r,0,7); g.stroke(); g.lineWidth=2; g.beginPath(); g.arc(0,0,r*.82,0,7); g.stroke(); g.beginPath(); g.arc(0,0,r*.45,0,7); g.stroke();
+   g.save(); g.rotate(now/900); g.beginPath(); for(let j=0;j<6;j++){ const a=j/6*Math.PI*2; g.lineTo(Math.cos(a)*r*.82,Math.sin(a)*r*.82); const b=(j+2)/6*Math.PI*2; g.lineTo(Math.cos(b)*r*.82,Math.sin(b)*r*.82); } g.stroke();
+   g.font=`${Math.round(r*.13)}px "TeX Gyre Chorus","Snell Roundhand",cursive`; g.textAlign='center'; g.textBaseline='middle'; c.runes.forEach((ch,j)=>{ const a=j/c.runes.length*Math.PI*2; g.save(); g.translate(Math.cos(a)*r*.91,Math.sin(a)*r*.91); g.rotate(a+Math.PI/2); g.fillText(ch,0,0); g.restore(); }); g.restore();
+   g.save(); g.rotate(-now/600); for(let j=0;j<12;j++){ const a=j/12*Math.PI*2; g.fillRect(Math.cos(a)*r-3,Math.sin(a)*r-3,6,6); } g.restore(); g.restore(); }
+  // charging orbs
+  for(let i=ORBS.length-1;i>=0;i--){ const o=ORBS[i], k=(now-o.t0)/o.ms; if(k>=1){ ORBS.splice(i,1); continue; } const s2=(20+80*Math.min(1,k*1.4))*(1+Math.sin(now/40)*.06), gl=sprite('circle',o.c,true), core=sprite('circle','#ffffff',true);
+   g.globalAlpha=Math.min(1,(1-k)*6); g.drawImage(gl,o.x-s2*1.5,o.y-s2*1.5,s2*3,s2*3); g.drawImage(core,o.x-s2*.6,o.y-s2*.6,s2*1.2,s2*1.2); g.globalAlpha=1; }
+  // light beams + lightning from the sky
+  for(let i=BEAMS.length-1;i>=0;i--){ const b=BEAMS[i], k=(now-b.t0)/b.ms; if(k>=1){ BEAMS.splice(i,1); continue; }
+   if(b.type==='beam'){ const w=b.w*(1-k*.7); g.save(); g.globalAlpha=Math.min(1,(1-k)*2); const gr=g.createLinearGradient(b.x-w/2,0,b.x+w/2,0); gr.addColorStop(0,'rgba(255,243,191,0)'); gr.addColorStop(.5,'rgba(255,255,255,.95)'); gr.addColorStop(1,'rgba(255,243,191,0)'); g.fillStyle=gr; g.fillRect(b.x-w/2,0,w,b.y+40); g.restore(); }
+   else { g.save(); g.strokeStyle='#fff'; g.lineWidth=6*(1-k)+2; g.globalAlpha=1-k; g.beginPath(); g.moveTo(b.x0,0); const segs=7; for(let s3=1;s3<=segs;s3++){ const q=s3/segs; g.lineTo(b.x0+(b.x-b.x0)*q+(s3<segs?R(-26,26):0),b.y*q); } g.stroke(); g.strokeStyle='#fab005'; g.lineWidth=2; g.stroke(); g.restore(); if(k<.2&&!b.hit){ b.hit=true; burst(b.x,b.y,{n:16,colors:['#fff3bf','#fab005','#fff'],shape:'spark',speed:7,grav:0,life:400,size:6}); } } }
   // flash
   if(flash){ const k=(now-flash.t0)/flash.ms; if(k>=1) flash=null; else { g.save(); g.globalAlpha=flash.a*(1-k); g.fillStyle=flash.c; g.fillRect(0,0,W,H); g.restore(); } }
-  raf=(P.length||TX.length||RINGS.length||PROJ.length||flash||amb)?requestAnimationFrame(loop):0; }
+  raf=(P.length||TX.length||RINGS.length||PROJ.length||CIRC.length||ORBS.length||BEAMS.length||vig||flash||amb)?requestAnimationFrame(loop):0; }
  function kick(){ if(!raf){ last=performance.now(); raf=requestAnimationFrame(loop); } }
  // sparkles along an ink path given in screen coords
  function inkSparkle(pts,colors){ const step=Math.max(1,Math.floor(pts.length/70)); pts.forEach((p,i)=>{ if(i%step) return; setTimeout(()=>burst(p[0],p[1],{n:3,colors:colors||['#ffd43b','#fff3bf','#ffffff'],speed:3,grav:-.04,life:700,size:4}), i/step*8); }); }
@@ -756,13 +779,31 @@ const FX=(()=>{
  function confetti(){ for(let i=0;i<(RM?20:110);i++) add({x:R(0,W),y:R(-60,-10),vx:R(-1.5,1.5),vy:R(1,4),g:.06,drag:.99,life:R(2200,3400),t:0,size:R(5,9),c:pick(['#7048e8','#ffd43b','#ff6fa8','#40c057','#4dabf7','#fff']),shape:Math.random()<.3?'star':'confetti',rot:R(0,6),vr:R(-.2,.2),glow:false}); }
  function hearts(x,y){ burst(x,y,{n:18,colors:['#ff6fa8','#f783ac','#b197fc'],shape:'heart',speed:4,grav:-.05,life:1400,size:9}); }
  const center=el=>{ const r=el.getBoundingClientRect(); return [r.left+r.width/2,r.top+r.height/2]; };
- return {burst,text,ring,flash:flashScreen,shake,ambient,projectile,impact,inkSparkle,smoke,confetti,hearts,center,EL,RM};
+ // ---- epic spell effects
+ const RUNES='abcdefghklmnopqrstuvwxyz';
+ function magicCircle(x,y,r,c,ms=2000){ CIRC.push({x,y,r,c,ms,t0:performance.now(),runes:[...Array(12)].map(()=>RUNES[Math.floor(Math.random()*RUNES.length)])}); kick(); }
+ function vignette(ms=2500,a=.55){ vig={t0:performance.now(),ms,a}; kick(); }
+ function traceRun(pts,c,ms=550){ if(!pts.length) return; const step=Math.max(1,Math.floor(pts.length/90)), n=Math.ceil(pts.length/step); pts.forEach((p,i)=>{ if(i%step) return; setTimeout(()=>{ add({x:p[0],y:p[1],vx:0,vy:0,g:0,drag:1,life:700,t:0,size:13,c,shape:'circle',rot:0,vr:0,glow:true}); add({x:p[0],y:p[1],vx:R(-.6,.6),vy:R(-.6,.6),g:0,drag:.95,life:500,t:0,size:5,c:'#ffffff',shape:'star',rot:0,vr:.1,glow:true}); },(i/step)/n*ms); }); }
+ function converge(pts,x,y,colors,ms=550){ const step=Math.max(1,Math.floor(pts.length/70)); pts.forEach((p,i)=>{ if(i%step) return; add({x:p[0],y:p[1],vx:R(-3,3),vy:R(-3,3),g:0,drag:.9,life:ms+R(0,120),t:0,size:R(5,9),c:pick(colors),shape:'star',rot:0,vr:.3,glow:true,home:{x,y}}); }); }
+ function orb(x,y,c,ms=900){ ORBS.push({x,y,c,ms,t0:performance.now()}); kick(); }
+ function beam(x,y,c,ms=700,w=110){ BEAMS.push({type:'beam',x,y,c,ms,w,t0:performance.now()}); kick(); }
+ function skyBolt(x,y,delay=0){ setTimeout(()=>{ BEAMS.push({type:'bolt',x0:x+R(-120,120),x,y,ms:260,t0:performance.now()}); kick(); },delay); }
+ function signature(elk,x,y,big){ const e=EL[elk]||EL.light;
+  if(elk==='fire'){ for(let i=0;i<(RM?15:110);i++) add({x:x+R(-60,60),y:y+R(20,90),vx:R(-.8,.8),vy:R(-15,-5),g:-.06,drag:.97,life:R(700,1300),t:0,size:R(6,13),c:pick(e.c),shape:'circle',rot:0,vr:0,glow:true}); }
+  if(elk==='ice'){ for(let i=0;i<14;i++){ const a=i/14*6.28; add({x:x+Math.cos(a)*30,y:y+Math.sin(a)*30,vx:Math.cos(a)*9,vy:Math.sin(a)*9,g:0,drag:.88,life:1100,t:0,size:R(16,24),c:pick(['#e7f5ff','#a5d8ff','#ffffff']),shape:'shard',rot:a+1.57,vr:0,glow:true}); } }
+  if(elk==='water'){ [0,140,280].forEach(d=>setTimeout(()=>ring(x,y,'#74c0fc',220),d)); burst(x,y,{n:70,colors:e.c,shape:'drop',speed:12,dir:-1.57,spread:1.1,grav:.45,life:1300,size:8}); }
+  if(elk==='wind'){ for(let i=0;i<(RM?15:90);i++) add({x,y,vx:0,vy:0,g:0,drag:1,life:R(900,1400),t:0,size:R(5,10),c:pick(e.c),shape:'swirl',rot:R(0,6),vr:.3,glow:true,orbit:{cx:x,cy:y,r:R(30,150),a:R(0,6.28),va:R(.15,.3),vr:-1.4}}); }
+  if(elk==='light'){ beam(x,y,'#fff3bf',800,big?150:110); for(let i=0;i<(RM?10:60);i++) setTimeout(()=>add({x:x+R(-140,140),y:-10,vx:0,vy:R(8,14),g:.1,drag:1,life:900,t:0,size:R(5,9),c:pick(e.c),shape:'star',rot:0,vr:.2,glow:true}),i*12); }
+  if(elk==='earth'){ for(let i=0;i<(RM?4:12);i++) setTimeout(()=>add({x:x+R(-90,90),y:y-R(260,380),vx:R(-.5,.5),vy:R(4,8),g:.7,drag:1,life:650,t:0,size:R(16,26),c:pick(e.c),shape:'chunk',rot:R(0,6),vr:R(-.2,.2),glow:false}),i*50); setTimeout(()=>burst(x,y+40,{n:50,colors:e.c,shape:'chunk',speed:9,dir:-1.57,spread:1.3,grav:.5,life:900,size:7}),450); }
+  if(elk==='bolt'){ [0,90,200,320].forEach(d=>skyBolt(x,y,d)); }
+  impact(elk,x,y,big); }
+ return {burst,text,ring,flash:flashScreen,shake,ambient,projectile,impact,inkSparkle,smoke,confetti,hearts,center,EL,RM,magicCircle,vignette,traceRun,converge,orb,signature};
 })();
 
 // ============ watercolor art (SVG) ============
-const HAIR={nora:'#24232c',mei:'#6b3d1f',gran:'#c9c9d4',prof:'#8a8fa8',iris:'#e8b64a'};
-const ROBE={nora:'#7048e8',mei:'#2f9e44',gran:'#364fc7',prof:'#5c3d8f',iris:'#e03131'};
-const TRIM={nora:'#ffd43b',mei:'#d3f9d8',gran:'#ced4da',prof:'#ffd43b',iris:'#ffe066'};
+const HAIR={nora:'#24232c',mei:'#6b3d1f',gran:'#c9c9d4',prof:'#8a8fa8',iris:'#e8b64a',wren:'#dee2e6'};
+const ROBE={nora:'#7048e8',mei:'#2f9e44',gran:'#364fc7',prof:'#5c3d8f',iris:'#e03131',wren:'#495057'};
+const TRIM={nora:'#ffd43b',mei:'#d3f9d8',gran:'#ced4da',prof:'#ffd43b',iris:'#ffe066',wren:'#b197fc'};
 const DEFS=`<defs>
 <filter id="soft"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter>
 <filter id="wash" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".015" numOctaves="3" seed="5"/><feDisplacementMap in="SourceGraphic" scale="26"/><feGaussianBlur stdDeviation="3"/></filter>
@@ -808,6 +849,9 @@ const BGS={
  gate:()=>`<rect width="1024" height="640" fill="#e9dcc2"/><g filter="url(#wash)" opacity=".85"><rect x="-30" y="-30" width="1100" height="420" fill="#8b9bd0"/><path d="M380 420V160l40-60 40 60V420ZM560 420V140l40-70 40 70V420ZM460 420V230h120V420Z" fill="#4d5b8f"/><path d="M-30 400C200 360 500 420 1060 380V680H-30Z" fill="#a9b98a"/><circle cx="880" cy="90" r="44" fill="#fff6d8"/></g><path d="M480 420V320q40-50 80 0V420Z" fill="#3b2a50" filter="url(#soft)"/><circle cx="520" cy="300" r="170" fill="url(#warm)" opacity=".6"/>`,
  library:()=>`<rect width="1024" height="640" fill="#efe2c8"/><g filter="url(#wash)" opacity=".85"><rect x="-30" y="-30" width="1100" height="480" fill="#b99c78"/>${[40,240,780].map(x=>`<rect x="${x}" y="60" width="180" height="360" fill="#7a5a40"/>`).join('')}${[40,240,780].flatMap(x=>[100,190,280,370].map(y=>`<rect x="${x+10}" y="${y-24}" width="160" height="22" fill="${['#c0392b','#2f6f9e','#3f8f4f','#8e44ad'][(x+y)%4]}"/>`)).join('')}<rect x="-30" y="440" width="1100" height="240" fill="#a88a6a"/></g><circle cx="540" cy="300" r="240" fill="url(#warm)" opacity=".55"/>`,
  hall:()=>`<rect width="1024" height="640" fill="#efe2c8"/><g filter="url(#wash)" opacity=".85"><rect x="-30" y="-30" width="1100" height="480" fill="#c7b79a"/><path d="M120 420V140q90-120 180 0V420ZM420 420V120q90-120 180 0V420ZM720 420V140q90-120 180 0V420Z" fill="#8fa0cf"/><rect x="-30" y="420" width="1100" height="260" fill="#a88a6a"/></g>`,
+ courtyard:()=>`<rect width="1024" height="640" fill="#f3e3c8"/><g filter="url(#wash)" opacity=".85"><rect x="-30" y="-30" width="1100" height="420" fill="#f2a76b"/><circle cx="820" cy="140" r="70" fill="#ffd43b"/><path d="M60 400V160l50-70 50 70V400ZM820 400V200l40-60 40 60V400Z" fill="#8a6fb0"/><path d="M-30 380C200 350 600 400 1060 370V680H-30Z" fill="#a9b98a"/><ellipse cx="512" cy="470" rx="160" ry="40" fill="#8fa0cf"/></g>`,
+ stairs:()=>`<rect width="1024" height="640" fill="#e7f5ff"/><g filter="url(#wash)" opacity=".85"><rect x="-30" y="-30" width="1100" height="700" fill="#a5d8ff"/>${[0,1,2,3,4,5].map(i=>`<rect x="${80+i*150}" y="${460-i*60}" width="190" height="40" fill="#d0ebff"/>`).join('')}<path d="M0 0L60 80L120 0L180 90L240 0L300 70L360 0" fill="#e7f5ff"/></g>`,
+ tower:()=>`<rect width="1024" height="640" fill="#ced4da"/><g filter="url(#wash)" opacity=".9"><rect x="-30" y="-30" width="1100" height="700" fill="#495057"/><path d="M380 640V160l132-120 132 120V640Z" fill="#343a40"/><rect x="470" y="220" width="84" height="120" fill="#5f3dc4"/><path d="M-30 500C200 470 600 520 1060 490V680H-30Z" fill="#2b3a33"/></g><path d="M150 40l-30 80 40 0-40 90" stroke="#ffe066" stroke-width="6" fill="none" opacity=".7"/>`,
 };
 function sceneSVG(bg,chars,extra=''){ return svg(BGS[bg]()+chars.map(c=>girl(...c)).join('')+extra); }
 
@@ -904,120 +948,185 @@ const fbEl=$('#fb'); function showFb(t){ fbEl.textContent=t; fbEl.classList.add(
 // ============ content ============
 const LOWER_P='abcdefghijklmnopqrstuvwxyz'.split('');
 const UPPER_P='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-const WORDS1=['it','up','in','at','on','is','me','we','go','us','an','am','to','so','my'];
-const WORDS2=['lit','sun','owl','map','cat','hat','fly','wand','glow','star','moon','book','ink','cap','web','fox','jam','lamp'];
-const WORDS3=['spell','magic','light','brave','quill','castle','friend','honest','kind','sparkle','lantern','wizard','potion','broom'];
+const WORDS1=['it','up','in','at','on','is','me','we','go','us','an','am','to','so','my','no','he','do','be','by'];
+const WORDS2=['lit','sun','owl','map','cat','hat','fly','wand','glow','star','moon','book','ink','cap','web','fox','jam','lamp','cup','pen','bell','gem','key','nest','bat','frog','cake','rope','sock','hill','pond','door'];
+const WORDS3=['spell','magic','brave','quill','castle','friend','honest','kind','sparkle','lantern','wizard','potion','broom','dragon','secret','garden','candle','school','window','hidden','puzzle','gentle','helper','window','rainbow','journey','promise','courage','treasure','whisper'];
+const FAMILY=['love','home','hug','smile','thank','miss','dear','hello','family','sister','cousin','write','soon','proud','cozy','laugh','share','care','visit','heart'];
+const COURAGE=['be brave','try again','I can','keep going','be kind','we can','hold on','dream big','stand tall','never quit','I will','go on','be true','help out'];
+const FINAL=['you are','not alone']; // only ever used in the final battle
 // No repeats, ever: anything Nora has written (letters, words, spells) goes into S.seen and is never served again.
 // When an easier list runs out, the next harder list is used instead.
-function pickUnseen(pools,n){ const out=[]; for(const pool of pools){ const un=shuffle(pool.filter(t=>!S.seen.includes(t)&&!out.includes(t))); while(out.length<n&&un.length) out.push(un.pop()); if(out.length>=n) break; } return out; }
-function runeItems(){ const lv=S.level||1; if(lv===1) return pickUnseen([LOWER_P,UPPER_P,WORDS1],3); if(lv===2) return [...pickUnseen([LOWER_P,UPPER_P],1),...pickUnseen([UPPER_P,WORDS1],2)].slice(0,3); return pickUnseen([UPPER_P,WORDS1,WORDS2],3); }
-function chainItems(){ const lv=S.level||1; if(lv===1) return pickUnseen([WORDS1,WORDS2,WORDS3],3); if(lv===2) return pickUnseen([WORDS2,WORDS3],3); return pickUnseen([WORDS3,WORDS2],3); }
+function pickUnseen(pools,n,ex=[]){ const out=[]; for(const pool of pools){ const un=shuffle([...new Set(pool)].filter(t=>!S.seen.includes(t)&&!out.includes(t)&&!ex.includes(t))); while(out.length<n&&un.length) out.push(un.pop()); if(out.length>=n) break; } return out; }
+const POOLS={
+ rune:()=>{ const lv=S.level||1; if(lv===1) return pickUnseen([LOWER_P,UPPER_P,WORDS1],3); if(lv===2){ const a=pickUnseen([LOWER_P,UPPER_P],1); return [...a,...pickUnseen([UPPER_P,WORDS1],2,a)]; } return pickUnseen([UPPER_P,WORDS1,WORDS2],3); },
+ chain:()=>{ const lv=S.level||1; if(lv===1) return pickUnseen([WORDS1,WORDS2,WORDS3],3); if(lv===2) return pickUnseen([WORDS2,WORDS3],3); return pickUnseen([WORDS3,WORDS2],3); },
+ caps:()=>{ const q=S.seen.includes('Q')?[]:['Q']; return [...q,...pickUnseen([UPPER_P,WORDS2],3-q.length,q)]; },
+ family:()=>pickUnseen([FAMILY,WORDS3],3),
+ restore:()=>{ const lv=S.level||1; return lv===1?pickUnseen([WORDS2,WORDS1,WORDS3],3):pickUnseen([WORDS3,WORDS2],3); },
+ courage:()=>pickUnseen([COURAGE,WORDS3],3),
+};
 
-// ---- battle spells: write the word to cast that element
+// ---- battle spells: write the word to cast that element (each word used once, ever)
 const ELEM={fire:{e:'🔥',c:'#fa5252',n:'Fire'},ice:{e:'❄️',c:'#74c0fc',n:'Ice'},water:{e:'💧',c:'#339af0',n:'Water'},wind:{e:'🌪️',c:'#96f2d7',n:'Wind'},light:{e:'☀️',c:'#ffd43b',n:'Light'},earth:{e:'🪨',c:'#a9876b',n:'Earth'},bolt:{e:'⚡',c:'#fab005',n:'Thunder'}};
-const SPELLS={ // short words first (level 1), longer ones for higher levels
- fire:[['heat','fire','hot'],['flame','blaze','ember','spark']], ice:[['ice','snow','cold'],['frost','chill','freeze','icicle']],
- water:[['rain','wet','sea'],['wave','splash','river','puddle']], wind:[['wind','gust','air'],['breeze','storm','whirl','tornado']],
- light:[['sun','glow','star','ray'],['shine','beam','light','dawn','bright','sunny']], earth:[['rock','mud','leaf'],['stone','vine','pebble','boulder']],
- bolt:[['zap','bolt'],['thunder','flash','static']] };
+const SPELLS={ // [short words for beginners, longer words]
+ fire:[['heat','fire','hot','lava','burn','warm'],['flame','blaze','ember','spark','torch','sizzle','magma','bonfire']],
+ ice:[['ice','snow','cold','hail','cool'],['frost','chill','freeze','icicle','frozen','sleet','glacier','blizzard']],
+ water:[['rain','wet','sea','drip','mist','lake','tide'],['wave','splash','river','puddle','ocean','stream','shower','fountain']],
+ wind:[['wind','gust','air','puff','blow'],['breeze','storm','whirl','tornado','cloud','swirl','flutter','whoosh']],
+ light:[['sun','glow','ray','halo','dawn'],['shine','beam','light','bright','sunny','gleam','glimmer','twinkle','beacon','radiant']],
+ earth:[['rock','mud','leaf','sand','clay','root','moss','tree'],['stone','vine','pebble','boulder','mountain','forest','acorn','meadow']],
+ bolt:[['zap','bolt','jolt','buzz','volt'],['thunder','flash','static','shock','crackle','lightning']] };
 const ELEM_OF={}; for(const k in SPELLS) SPELLS[k].flat().forEach(w=>ELEM_OF[w]=k);
 function spellCards(weak){ const lv=S.level||1; const tier=w=>SPELLS[w][lv===1?0:1].concat(SPELLS[w][lv===1?1:0]);
  const want=[weak,...shuffle(Object.keys(SPELLS).filter(k=>k!==weak))]; const out=[];
  for(const el of want){ const w=tier(el).find(x=>!S.seen.includes(x)); if(w) out.push(w); if(out.length>=3) break; } return shuffle(out); }
-const MONSTERS={wisp:{name:'Shadow Wisp',hp:4,weak:'light',body:'#2b2540',eye:'#ffd43b'}};
 
-const MISSIONS=[
- {id:'rune',icon:'🕯️',name:'Rune Hall',x:22,y:40,title:'Rune Casting',goal:'Light the candles',
-  intro:'The castle lamps are going dark! Trace each rune to light a candle.',tip:'Try it today: write your name in cursive on something you made.'},
- {id:'mei',icon:'📚',name:'Library',x:50,y:28,story:true,title:'A Friend in the Library'},
- {id:'chain',icon:'🌉',name:'Light Bridge',x:76,y:62,title:'Spell Chain',goal:'Build the bridge of light',
-  intro:'Join the letters without lifting your wand. Each joined word adds a plank of light!',tip:'Try it today: write a short note to someone in your family in cursive.'},
- {id:'duel',icon:'⚔️',name:'Shadow Gate',x:88,y:34,battle:'wisp',title:'Spell Battle',goal:'Stop the Shadow Wisp',
-  tip:'Try it today: write a secret "spell word" in cursive and hide it for someone to find.'},
- {id:'fly',icon:'✨',name:'Firefly Garden',x:32,y:72,mini:true,title:'Firefly Garden'},
+// ---- foes
+const FOES={
+ wisp:{name:'Shadow Wisp',hp:4,weak:'light',kind:'blob',body:'#2b2540',eye:'#ffd43b',bg:'hall'},
+ iris:{name:'Iris (friendly duel)',hp:4,weak:'water',kind:'girl',who:'iris',shield:'#ff8787',bg:'courtyard',duel:true},
+ imps:{name:'Ink Imps',hp:5,weak:'wind',kind:'imps',body:'#1b1b2f',eye:'#69db7c',bg:'library'},
+ sprite:{name:'Frost Sprite',hp:5,weak:'fire',kind:'crystal',body:'#a5d8ff',eye:'#1864ab',bg:'stairs'},
+ golem:{name:'Storm Golem',hp:6,weak:'earth',kind:'golem',body:'#495057',eye:'#fab005',bg:'tower'},
+ wren:{name:'The Hollow Quill',hp:6,weak:'light',kind:'girl',who:'wren',shield:'#5f3dc4',bg:'tower',final:true},
+};
+
+// ---- chapters
+const sc=(bg,chars,extra)=>sceneSVG(bg,chars,extra||'');
+const CHAPTERS=[
+ {n:1,title:'The Lamps Go Dark',theme:'night',missions:[
+  {id:'rune',icon:'🕯️',name:'Rune Hall',x:22,y:40,kind:'write',pool:'rune',title:'Rune Casting',goal:'Light the candles',done:'The candles are glowing!',
+   intro:'The castle lamps are going dark! Trace each rune to light a candle.',tip:'Try it today: write your name in cursive on something you made.'},
+  {id:'mei',icon:'📚',name:'Library',x:50,y:28,kind:'story',story:'mei',title:'A Friend in the Library'},
+  {id:'chain',icon:'🌉',name:'Light Bridge',x:76,y:62,kind:'write',pool:'chain',title:'Spell Chain',goal:'Build the bridge of light',done:'The bridge of light is built!',
+   intro:'Join the letters without lifting your wand. Each joined word adds a plank of light!',tip:'Try it today: write a short note to someone in your family in cursive.'},
+  {id:'duel',icon:'⚔️',name:'Shadow Gate',x:88,y:34,kind:'battle',foe:'wisp',pre:'wispPre',post:'wispPost',title:'Spell Battle',
+   tip:'Try it today: write a secret "spell word" in cursive and hide it for someone to find.'},
+  {id:'fly',icon:'✨',name:'Firefly Garden',x:32,y:72,kind:'mini',game:'fireflies',after:'rune'},
+ ]},
+ {n:2,title:'The Wand Duel',theme:'dusk',missions:[
+  {id:'caps',icon:'🏛️',name:'Capital Hall',x:20,y:42,kind:'write',pool:'caps',title:'Capital Casting',goal:'Master the capitals',done:'Capital letters mastered!',
+   intro:'Capitals are the strongest runes. Even the tricky Q!',tip:'Try it today: write the first letter of everyone in your family as a cursive capital.'},
+  {id:'midnight',icon:'🌙',name:'Night Tower',x:46,y:24,kind:'story',story:'midnight',title:'Midnight Practice'},
+  {id:'broom',icon:'🧹',name:'Broom Field',x:30,y:74,kind:'mini',game:'broom',after:'caps'},
+  {id:'irisDuel',icon:'⚔️',name:'Duel Ring',x:66,y:40,kind:'battle',foe:'iris',pre:'irisPre',post:'irisPost',title:'Wand Duel',
+   tip:'Try it today: after a game, tell the other player "good game!" whether you win or lose.'},
+  {id:'quill',icon:'🪶',name:'Courtyard',x:82,y:66,kind:'story',story:'quill',title:'The Missing Quill'},
+  {id:'imps',icon:'👾',name:'Ink Cellar',x:90,y:30,kind:'battle',foe:'imps',pre:'impsPre',post:'impsPost',title:'Spell Battle',
+   tip:'Try it today: help someone find something they lost.'},
+ ]},
+ {n:3,title:'The Fading Letters',theme:'violet',missions:[
+  {id:'home',icon:'💌',name:'Owl Post',x:18,y:44,kind:'write',pool:'family',title:'Letters Home',goal:'Write words for Grandma',done:'Your letter flew home!',
+   intro:'Grandma\'s letter is fading. Write words full of love to send home and keep the magic strong.',tip:'Try it today: write a real letter or card to a grandparent.'},
+  {id:'restore',icon:'📜',name:'Deep Library',x:44,y:26,kind:'write',pool:'restore',title:'Restore the Pages',goal:'Bring back the lost words',done:'The pages are whole again!',
+   intro:'Words are vanishing from the old books. Rewrite them in cursive to bring them back.',tip:'Try it today: copy a favorite sentence from a book in cursive.'},
+  {id:'potion',icon:'🧪',name:'Potion Room',x:28,y:74,kind:'mini',game:'potion',after:'home'},
+  {id:'truth',icon:'🫖',name:'Quill\'s Office',x:66,y:52,kind:'story',story:'truth',title:'The Broken Inkwell'},
+  {id:'sprite',icon:'❄️',name:'Frozen Stairs',x:88,y:30,kind:'battle',foe:'sprite',pre:'spritePre',post:'spritePost',title:'Spell Battle',
+   tip:'Try it today: when you make a mistake, say "I did it, I\'m sorry." It takes real courage.'},
+ ]},
+ {n:4,title:'The Heart of Ink',theme:'storm',missions:[
+  {id:'grandma',icon:'👵',name:'Academy Gate',x:20,y:44,kind:'story',story:'grandma',title:'Grandma\'s Secret'},
+  {id:'courage',icon:'🛡️',name:'Courage Hall',x:44,y:28,kind:'write',pool:'courage',title:'Courage Words',goal:'Charge the shields',done:'Your courage shield is glowing!',
+   intro:'Courage words make the strongest shields. Write each one, joined together.',tip:'Try it today: when something is hard, say "try again" out loud. It really helps.'},
+  {id:'lanterns',icon:'🏮',name:'Sky Garden',x:28,y:76,kind:'mini',game:'lanterns',after:'courage'},
+  {id:'golem',icon:'🌩️',name:'Storm Bridge',x:68,y:56,kind:'battle',foe:'golem',pre:'golemPre',post:'golemPost',title:'Spell Battle',
+   tip:'Try it today: count to five and breathe when you feel stormy inside.'},
+  {id:'wren',icon:'🕯️',name:'Hollow Tower',x:88,y:24,kind:'battle',foe:'wren',pre:'wrenPre',post:'wrenPost',title:'Final Battle',
+   tip:'Try it today: write a note to someone who might feel lonely.'},
+ ]},
 ];
-const MAIN=MISSIONS.filter(m=>!m.mini);
-const isOpen=i=>{ const m=MISSIONS[i]; if(m.mini) return !!S.done.rune; const k=MAIN.indexOf(m); return k===0||!!S.done[MAIN[k-1].id]; };
-const nextMain=()=>MAIN.find(m=>!S.done[m.id]);
+const CH=n=>CHAPTERS[n-1];
+const key=(n,id)=>`c${n}:${id}`;
+const isDone=(n,id)=>!!S.done[key(n,id)];
+const mainOf=n=>CH(n).missions.filter(m=>m.kind!=='mini');
+const nextMain=(n=S.view)=>mainOf(n).find(m=>!isDone(n,m.id));
+function isOpen(n,m){ if(n>S.ch) return false; if(m.kind==='mini') return isDone(n,m.after); const L=mainOf(n),k=L.indexOf(m); return k===0||isDone(n,L[k-1].id); }
 
 // ============ screens ============
 function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id)); current=id; FX.ambient(id==='title'||id==='story'||id==='result'?'light':null); updateHint(); if(id==='map'){ drawMap(); } }
 let current='title';
 let hintShown=false; function updateHint(){ const port=innerHeight>innerWidth&&innerWidth<600; const on=port&&current!=='title'&&!hintShown; $('#rotHint').style.display=on?'block':'none'; if(on){ hintShown=true; setTimeout(()=>{ $('#rotHint').style.display='none'; },4000); } }
 addEventListener('resize',()=>{ updateHint(); if(current==='map') drawMap(); if(current==='mini') miniResize(); });
-function refreshStars(){ ['#stStars','#mapStars','#playStars'].forEach(s=>$(s).textContent=S.stars); const d=MAIN.filter(m=>S.done[m.id]).length; $('#stCh').textContent=d+'/'+MAIN.length; }
+function refreshStars(){ ['#stStars','#mapStars','#playStars'].forEach(s=>$(s).textContent=S.stars); const n=Math.min(S.ch,CHAPTERS.length), d=mainOf(n).filter(m=>isDone(n,m.id)).length; $('#stCh').textContent=d+'/'+mainOf(n).length; $('#stChL').textContent=S.allDone?'All chapters ✓':'Chapter '+n; }
 
 $('#titleArt').innerHTML=svg(BGS.gate()+girl('nora',512,260,1.05,{arm:'wand',glow:true})+`<text x="660" y="180" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="74" fill="#e9a91c" filter="url(#glow)">magic</text>`);
-$('#startBtn').onclick=()=>{ FX.burst(...FX.center($('#startBtn')),{n:60,speed:9}); Snd.init(); try{Snd.ctx.resume();}catch(e){} Snd.sfx('chime'); if(!S.introSeen){ playStory(INTRO(),()=>{ S.introSeen=true; save(); startTrial(); },{skippable:true}); } else if(!S.trial) startTrial(); else goMap(); };
+$('#startBtn').onclick=()=>{ FX.burst(...FX.center($('#startBtn')),{n:60,speed:9}); Snd.init(); try{Snd.ctx.resume();}catch(e){} Snd.sfx('chime'); if(!S.introSeen){ playStory(INTRO(),()=>{ S.introSeen=true; save(); startTrial(); },{skippable:true}); } else if(!S.trial) startTrial(); else { S.view=Math.min(S.ch,CHAPTERS.length); goMap(); } };
 $('#voiceBtn').onclick=()=>{ try{KAVoice.picker();}catch(e){} };
 ['#muteBtn1','#muteBtn2'].forEach(s=>$(s).onclick=()=>{ Snd.init(); Snd.setOn(!S.sound); if(S.sound&&(current==='map')) Snd.startMusic(); });
 Snd.setOn(S.sound);
 
-// ============ map (pixel) ============
+// ============ map (pixel, one look per chapter) ============
 const mapCv=$('#mapCv'),mg=mapCv.getContext('2d'); mg.imageSmoothingEnabled=false;
 let noraPos={x:50,y:60};
 const SPR=["......KKK.......",".....KKKKK.PP...","...KKKKKKKKKPK..","..KKKKKKKKKKKK..","..KKKYKKKKKKKK..","..KKSSKKKKSSKK..","..KSSSSSSSSSSK..","..KSBWSSSSBWSK..","..KSBBSSSSBBSK..","..KSRSSSSSSRSK..","..KSSSSMMSSSSK..","...SSSSSSSSSS...","....VVVVVVVV....","...VVVLLLLVVV...","..VVVVVLLVVVVV..","..VVVVVVVVVVVV..","..VVVVVVVVVVVV..","...VVVVVVVVVV...","....SS....SS....","....NN....NN...."];
 const PAL={K:'#1d1d24',P:'#ff6fa8',Y:'#ffd43b',S:'#ffd8be',B:'#7a4520',W:'#fff',R:'#f59fb5',M:'#c2255c',V:'#7048e8',L:'#ffd43b',N:'#3b2f2f'};
 function sprite(g,ox,oy,p,map=SPR,pal=PAL){ map.forEach((r,j)=>[...r].forEach((c,i)=>{ if(pal[c]){ g.fillStyle=pal[c]; g.fillRect(ox+i*p,oy+j*p,p,p);} })); }
+const THEMES={
+ night:{sky:['#1b1f4a','#262b63'],castle:'#3a3f86',top:'#2b2f6e',ground:'#2f6f3e',g2:'#37844a',moon:true},
+ dusk:{sky:['#5f3dc4','#e8590c'],castle:'#4c3b7a',top:'#3b2d63',ground:'#5c7f3a',g2:'#6f9544',sun:true},
+ violet:{sky:['#2b1747','#5f3dc4'],castle:'#3b2a6b',top:'#2a1f52',ground:'#3b3f6b',g2:'#4a4f82',pages:true,moon:true},
+ storm:{sky:['#212529','#495057'],castle:'#343a40',top:'#212529',ground:'#2b3a33',g2:'#34463d',rain:true},
+};
 function drawMap(t=performance.now()){
- const g=mg,W=480,H=270,P=2; const lit=MAIN.filter(m=>S.done[m.id]).length;
- g.fillStyle='#1b1f4a'; g.fillRect(0,0,W,H);
- g.fillStyle='#fff'; for(let i=0;i<30;i++){ const x=(i*97)%W,y=(i*53)%90; if((i+Math.floor(t/700))%7) g.fillRect(x,y,P,P); }
- g.fillStyle='#fff6d8'; for(let j=0;j<20;j+=2){ const w=Math.round(Math.sqrt(100-(j-10)*(j-10))); g.fillRect(440-w,14+j,w*2,2);} g.fillStyle='#1b1f4a'; for(let j=0;j<20;j+=2){ const w=Math.round(Math.sqrt(100-(j-10)*(j-10))); g.fillRect(446-w,12+j,w*2,2);}
- // castle silhouette
- g.fillStyle='#3a3f86'; g.fillRect(60,70,360,140); g.fillStyle='#2b2f6e'; for(let x=60;x<420;x+=20) g.fillRect(x,62,10,8);
+ const g=mg,W=480,H=270,P=2, n=S.view, th=THEMES[CH(n).theme], L=mainOf(n), lit=L.filter(m=>isDone(n,m.id)).length; const wr=mapCv.parentNode.parentNode; if(wr.dataset.th!==CH(n).theme){ wr.dataset.th=CH(n).theme; wr.style.background=th.sky[0]; }
+ for(let y=0;y<200;y+=6){ g.fillStyle=y<100?th.sky[0]:th.sky[1]; if(y>=90&&y<110&&(y/6)%2) g.fillStyle=th.sky[0]; g.fillRect(0,y,W,6); }
+ g.fillStyle='#fff'; for(let i=0;i<30;i++){ const x=(i*97)%W,y=(i*53)%90; if(!th.sun&&(i+Math.floor(t/700))%7) g.fillRect(x,y,P,P); }
+ if(th.moon){ g.fillStyle='#fff6d8'; for(let j=0;j<20;j+=2){ const w=Math.round(Math.sqrt(100-(j-10)*(j-10))); g.fillRect(440-w,14+j,w*2,2);} g.fillStyle=th.sky[0]; for(let j=0;j<20;j+=2){ const w=Math.round(Math.sqrt(100-(j-10)*(j-10))); g.fillRect(446-w,12+j,w*2,2);} }
+ if(th.sun){ g.fillStyle='#ffd43b'; for(let j=0;j<24;j+=2){ const w=Math.round(Math.sqrt(144-(j-12)*(j-12))); g.fillRect(420-w,150+j,w*2,2);} }
+ g.fillStyle=th.castle; g.fillRect(60,70,360,140); g.fillStyle=th.top; for(let x=60;x<420;x+=20) g.fillRect(x,62,10,8);
  g.fillRect(200,24,80,50); for(let x=200;x<280;x+=16) g.fillRect(x,18,8,8); g.fillRect(70,40,40,40); g.fillRect(370,40,40,40);
- // windows: lit by progress
- const wins=[[90,60],[385,60],[225,40],[250,40],[100,110],[160,110],[300,110],[360,110]];
+ const wins=[[90,60],[385,60],[225,40],[250,40],[100,110],[160,110],[300,110],[360,110],[130,150],[330,150]];
  wins.forEach(([x,y],i)=>{ const on=i<2+lit*2; g.fillStyle=on?(Math.sin(t/180+i*2)>.85?'#ffe8a3':'#ffd43b'):'#151838'; g.fillRect(x,y,8,12); if(on){ g.fillStyle='#ffd43b22'; g.fillRect(x-4,y-4,16,20); } });
- // shadow gate (dark swirl on the right)
- if(!S.done.duel){ for(let i=0;i<14;i++){ const a=t/500+i; g.fillStyle=i%2?'#5f3dc4':'#141838'; g.fillRect(420+Math.round(Math.cos(a)*14),110+Math.round(Math.sin(a)*14),4,4);} }
- // ground + paths
- g.fillStyle='#2f6f3e'; g.fillRect(0,200,W,70); for(let x=0;x<W;x+=6) for(let y=200;y<H;y+=6) if(((x+y)/6)%5===0){ g.fillStyle='#37844a'; g.fillRect(x,y,6,6);}
+ if(th.pages) for(let i=0;i<10;i++){ const x=(i*53+t/40)%W, y=40+((i*37+t/25)%140); g.fillStyle='#f8f0e3'; g.fillRect(Math.round(x),Math.round(y),6,4); }
+ if(th.rain){ g.fillStyle='#a5d8ff88'; for(let i=0;i<60;i++){ const x=(i*41+t/4)%W, y=(i*67+t/2)%270; g.fillRect(Math.round(x),Math.round(y),1,5); } if(Math.sin(t/900)>.985){ g.fillStyle='#fff8'; g.fillRect(0,0,W,H); } }
+ g.fillStyle=th.ground; g.fillRect(0,200,W,70); for(let x=0;x<W;x+=6) for(let y=200;y<H;y+=6) if(((x+y)/6)%5===0){ g.fillStyle=th.g2; g.fillRect(x,y,6,6);}
  g.fillStyle='#c9a26b'; for(let x=40;x<440;x+=4) g.fillRect(x,226+Math.round(Math.sin(x/40)*3)*2,4,6);
- // bridge (gap with planks)
- g.fillStyle='#141838'; g.fillRect(330,205,70,40); const planks=S.done.chain?6:0; g.fillStyle='#ffe066'; for(let i=0;i<planks;i++) g.fillRect(334+i*11,222,8,6);
- // fireflies in garden
- if(S.done.rune) for(let i=0;i<8;i++){ const a=t/600+i; g.fillStyle=(i+Math.floor(t/300))%3?'#fff59d':'#94d82d'; g.fillRect(150+Math.round(Math.cos(a)*30+i*6),230+Math.round(Math.sin(a*1.3)*10),P,P); }
- // nora
+ // dark swirl over the next battle spot
+ const nb=L.find(m=>m.kind==='battle'&&!isDone(n,m.id)); if(nb){ const cx=nb.x/100*W, cy=nb.y/100*H; for(let i=0;i<14;i++){ const a=t/500+i; g.fillStyle=i%2?'#5f3dc4':'#141838'; g.fillRect(Math.round(cx+Math.cos(a)*16),Math.round(cy+Math.sin(a)*16),4,4);} }
  const bob=walking?Math.round(Math.abs(Math.sin(t/60))*-6):Math.round(Math.sin(t/400)*1.5); g.fillStyle='#0005'; g.fillRect(Math.round(noraPos.x/100*W)-12,Math.round(noraPos.y/100*H),24,4); sprite(g,Math.round(noraPos.x/100*W)-16,Math.round(noraPos.y/100*H)-40+bob,2);
  if(current==='map') requestAnimationFrame(drawMap);
  renderSpots();
 }
 let spotsKey='';
-function renderSpots(){ const k=JSON.stringify(S.done); if(k===spotsKey&&$('#spots').children.length) return; spotsKey=k; const box=$('#spots'); box.innerHTML='';
- const nextI=MISSIONS.indexOf(nextMain());
- MISSIONS.forEach((m,i)=>{ const b=document.createElement('button'); const open=isOpen(i); b.className='spot'+(open?'':' lock')+(S.done[m.id]?' done':'')+(i===nextI?' next':''); b.style.left=m.x+'%'; b.style.top=m.y+'%'; b.innerHTML=`<span class="ic">${open?m.icon:'🔒'}</span><span>${m.name}</span>`; b.dataset.id=m.id; b.onclick=()=>openSpot(i); box.appendChild(b); });
- $('#mapMsg').textContent= nextI<0 ? 'Chapter 1 complete! Chapter 2 coming soon...' : `Go to the ${MISSIONS[nextI].name}! ${MISSIONS[nextI].icon}`;
+function renderSpots(){ const n=S.view, k=JSON.stringify(S.done)+n+S.ch; if(k===spotsKey&&$('#spots').children.length) return; spotsKey=k; const box=$('#spots'); box.innerHTML='';
+ const nm=nextMain(n);
+ CH(n).missions.forEach(m=>{ const b=document.createElement('button'); const open=isOpen(n,m); b.className='spot'+(open?'':' lock')+(isDone(n,m.id)?' done':'')+(m===nm?' next':''); b.style.left=m.x+'%'; b.style.top=m.y+'%'; b.innerHTML=`<span class="ic">${open?m.icon:'🔒'}</span><span>${m.name}</span>`; b.dataset.id=m.id; b.onclick=()=>openSpot(m); box.appendChild(b); });
+ $('#mapTtl').textContent=`Chapter ${n} · ${CH(n).title}`;
+ $('#chPrev').style.visibility=n>1?'visible':'hidden'; $('#chNext').style.visibility=n<Math.min(S.ch,CHAPTERS.length)?'visible':'hidden';
+ $('#mapMsg').textContent= nm ? `Go to the ${nm.name}! ${nm.icon}` : (n<CHAPTERS.length?`Chapter ${n} complete! ▶ Chapter ${n+1}`:'You saved Inkwell Academy! ✨');
 }
+$('#chPrev').onclick=()=>{ if(S.view>1){ S.view--; save(); spotsKey=''; Snd.sfx('tap'); } };
+$('#chNext').onclick=()=>{ if(S.view<Math.min(S.ch,CHAPTERS.length)){ S.view++; save(); spotsKey=''; Snd.sfx('tap'); } };
 let walking=false; async function walkTo(x,y){ walking=true; const sx=noraPos.x,sy=noraPos.y; for(let k=1;k<=18;k++){ noraPos={x:sx+(x-sx)*k/18,y:sy+(y-sy)*k/18}; await sleep(28); } walking=false; }
-async function openSpot(i){ const m=MISSIONS[i]; if(!isOpen(i)){ Snd.sfx('fizz'); $('#mapMsg').textContent='Locked! Finish the glowing place first.'; spotsKey=''; setTimeout(()=>{spotsKey='';renderSpots();},1600); return; }
- Snd.sfx('tap'); await walkTo(m.x,m.y+22); const sp=document.querySelector(`.spot[data-id="${m.id}"]`); if(sp){ FX.burst(...FX.center(sp),{n:45,speed:7}); Snd.sfx('spark'); } await sleep(350); startMission(m); }
-function goMap(){ show('map'); refreshStars(); Snd.startMusic(); spotsKey=''; }
+async function openSpot(m){ const n=S.view; if(!isOpen(n,m)){ Snd.sfx('fizz'); $('#mapMsg').textContent='Locked! Finish the glowing place first.'; setTimeout(()=>{spotsKey='';renderSpots();},1600); return; }
+ Snd.sfx('tap'); await walkTo(m.x,m.y+22); const sp=document.querySelector(`.spot[data-id="${m.id}"]`); if(sp){ FX.burst(...FX.center(sp),{n:45,speed:7}); Snd.sfx('spark'); } await sleep(350); startMission(m,n); }
+function goMap(){ if(S.trial&&!nextMain(S.view)&&!S.chDone[S.view]) return chapterEnd(S.view); show('map'); refreshStars(); Snd.startMusic(); spotsKey=''; }
 $('#mapHome').onclick=()=>{ Snd.stopMusic(); show('title'); refreshStars(); };
 
 // ============ missions ============
 let M=null; // current mission run
-function startMission(m){
+function markDone(n,m,pts){ S.stars+=pts; S.done[key(n,m.id)]=true; sessionMissions++; save(); refreshStars(); }
+function startMission(m,n=S.view){
  if(sessionMissions>=3){ show('brk'); Snd.stopMusic(); return; }
  Snd.stopMusic();
- if(m.story) return meiStory();
- if(m.mini) return startMini();
- if(m.battle) return battleIntro(m);
- const items=m.id==='rune'?runeItems():chainItems();
- if(!items.length){ resultScreen('You have written every spell here!','🌟','New spells are coming in the next chapter.',null); return; }
- M={m,items,i:0,tries:0,pts:0,max:items.length*2,quality:[],penBonus:false}; sideMode(false);
+ if(m.kind==='story') return STORIES[m.story](()=>{ markDone(n,m,2); const r=STORY_RESULT[m.story]; resultScreen(r[0],r[1],'+2 magic stars',r[2],n); });
+ if(m.kind==='mini') return startMini(m,n);
+ if(m.kind==='battle') return STORIES[m.pre](()=>startBattle(m,n));
+ const items=POOLS[m.pool]();
+ if(!items.length){ resultScreen('You have written every spell here!','🌟','New spells are waiting in other places.',null,n); return; }
+ M={m,n,items,i:0,tries:0,pts:0,quality:[],penBonus:false}; sideMode(false);
  $('#playTtl').textContent=`${m.icon} ${m.title} — ${m.goal}`;
  show('play'); showFb(m.intro); Voice.say(m.intro); loadItem();
 }
 function loadItem(){ const t=M.items[M.i]; M.tries=0; pad.pen=false; pad.set(t);
  const isWord=t.length>1, cap=t.length===1&&t===t.toUpperCase();
- $('#playPrompt').textContent=isWord?'Trace the joined word':'Trace the rune';
+ $('#playPrompt').textContent=t.includes(' ')?'Write the courage words':isWord?'Trace the joined word':'Trace the rune';
  $('#playTarget').textContent=t;
  $('#playArt').innerHTML=svg(BGS.hall()+girl('nora',480,300,1.3,{arm:'wand'}),'232 100 520 520');
  $('#penBadge').textContent='✏️ Use the Pencil for a bonus star!';
  $('#playDots').innerHTML=M.items.map((_,k)=>`<i class="${k<M.i?'ok':k===M.i?'cur':''}"></i>`).join('');
- setTimeout(()=>Voice.say(isWord?`Write the word ${t}, all joined together.`:`Trace ${cap?'capital':'lowercase'} ${t}.`),M.i===0?2600:200);
+ setTimeout(()=>Voice.say(isWord?`Write ${t}, all joined together.`:`Trace ${cap?'capital':'lowercase'} ${t}.`),M.i===0?2600:200);
 }
 $('#padClear').onclick=()=>{ Snd.sfx('tap'); pad.clear(); hideFb(); };
 $('#padShow').onclick=async()=>{ if(pad.demo) return; pad.clear(); hideFb(); await pad.playDemo(); };
@@ -1028,94 +1137,96 @@ async function cast(){
  const r=pad.score(); M.tries++;
  if(r.stars>=1){
   pad.locked=true; const p=M.tries===1?2:1; M.pts+=p; M.quality.push(r.stars); if(pad.pen&&!M.penBonus){ M.penBonus=true; M.pts+=1; }
-  S.seen.push(pad.text); save();
+  if(!S.seen.includes(pad.text)) S.seen.push(pad.text); save();
+  if(M.battle){ showFb(r.stars===3?'PERFECT writing: CRITICAL spell! ✨✨✨':'The words are turning into magic…'); return battleHit(r.stars); }
   { const pts=padScreenPts(); FX.inkSparkle(pts); const e=pts[pts.length-1]||FX.center($('#padHost')); FX.burst(e[0],e[1],{n:40+r.stars*15,speed:7,size:6}); padFlash('glowok'); Snd.sfx('rise');
-    const c=FX.center($('#padHost')); FX.text(c[0],c[1]-40,r.stars===3?'PERFECT!':r.stars===2?'GREAT!':'NICE!',r.stars===3?'#ffd43b':'#fff3bf',r.stars===3?64:52); if(r.stars===3&&!M.battle){ FX.flash('#fff3bf',.35); FX.ring(c[0],c[1],'#ffd43b',260); } }
+    const c=FX.center($('#padHost')); FX.text(c[0],c[1]-40,r.stars===3?'PERFECT!':r.stars===2?'GREAT!':'NICE!',r.stars===3?'#ffd43b':'#fff3bf',r.stars===3?64:52); if(r.stars===3){ FX.flash('#fff3bf',.35); FX.ring(c[0],c[1],'#ffd43b',260); } }
   const msg=(r.stars===3?'Perfect spell! ':r.stars===2?'Strong spell! ':'The spell worked! ')+'✨'.repeat(r.stars)+(p===2?'  +2':'  +1')+(pad.pen&&M.penBonus?'  ✏️+1':'');
   showFb(msg); Voice.say(r.stars===3?'Perfect spell!':r.stars===2?'Strong spell!':'The spell worked!');
-  if(M.battle){ await sleep(500); return battleHit(r.stars); }
   await sleep(1400); nextItem();
  } else if(M.tries<2){
-  FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); const tip=r.tips[0]||'Follow the glowing path.'; showFb('Fizzle! '+tip+' Try once more.'); Voice.say('Fizzle! '+tip+' Try once more.'); pad.clear(); fbKeep();
+  FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); const tip=r.tips[0]||'Follow the glowing path.'; showFb('Fizzle! '+tip+' Try once more.'); Voice.say('Fizzle! '+tip+' Try once more.'); pad.clear();
  } else {
   FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); pad.locked=true; showFb('Watch how this one is written, then we move on.'); Voice.say('Watch how this one is written.'); pad.clear(); pad.locked=false; await pad.playDemo(); M.quality.push(0); S.seen.push(pad.text); save(); await sleep(400); if(M.battle) return battleMiss(); nextItem();
  }
 }
-function fbKeep(){ /* feedback stays until next ink */ }
 function nextItem(){ M.i++; hideFb(); if(M.i<M.items.length) loadItem(); else finishMission(); }
-function finishMission(){
- const m=M.m; S.stars+=M.pts; S.done[m.id]=true; sessionMissions++; save(); refreshStars();
- const starsShown=Math.max(1,Math.round(M.quality.reduce((a,b)=>a+b,0)/M.quality.length));
- resultScreen(m.id==='rune'?'The candles are glowing!':'The bridge of light is built!', '⭐'.repeat(starsShown)+'☆'.repeat(3-starsShown), `+${M.pts} magic stars`, m.tip, m.id==='rune'?'light':'bridge');
+function finishMission(){ const m=M.m,n=M.n; markDone(n,m,M.pts);
+ const st=Math.max(1,Math.round(M.quality.reduce((a,b)=>a+b,0)/M.quality.length));
+ resultScreen(m.done,'⭐'.repeat(st)+'☆'.repeat(3-st),`+${M.pts} magic stars`,m.tip,n);
 }
-function resultScreen(big,stars,txt,tip,art){
+function resultScreen(big,stars,txt,tip,n=S.view){
  show('result'); $('#resBig').textContent=big; $('#resStars').innerHTML=[...stars].map((ch,i)=>`<span style="animation-delay:${.3+i*.25}s">${ch}</span>`).join(''); FX.confetti(); Snd.sfx('fanfare'); setTimeout(()=>{ const c=FX.center($('#resStars')); FX.burst(c[0],c[1],{n:70,speed:10,size:7}); },500); $('#resTxt').textContent=txt; $('#resTip').textContent=tip?'💡 '+tip:''; $('#resTip').style.display=tip?'':'none';
  $('#resArt').innerHTML=`<div style="width:min(320px,60vw)">${svg(BGS.hall()+girl('nora',512,280,1.2,{arm:'wand',glow:true}),'0 0 1024 640')}</div>`;
  Voice.say(big);
- const nm=nextMain();
- const nb=$('#resNext'); if(!nm){ nb.textContent=S.chapterDone?'Map ▶':'Chapter end ▶'; nb.onclick=S.chapterDone?goMap:chapterEnd; } else { nb.textContent=`Next: ${nm.name} ▶`; nb.onclick=()=>{ Snd.sfx('tap'); startMission(nm); }; }
+ const nm=nextMain(n), nb=$('#resNext');
+ if(nm){ nb.textContent=`Next: ${nm.name} ▶`; nb.onclick=()=>{ Snd.sfx('tap'); startMission(nm,n); }; }
+ else if(!S.chDone[n]){ nb.textContent=n<CHAPTERS.length?'Chapter end ▶':'The finale ▶'; nb.onclick=()=>chapterEnd(n); }
+ else { nb.textContent='Map ▶'; nb.onclick=goMap; }
 }
 $('#resMap').onclick=()=>goMap();
 $('#playBack').onclick=()=>{ Voice.stop(); goMap(); };
 $('#brkDone').onclick=()=>{ Voice.stop(); show('title'); refreshStars(); };
 
 // ============ Spell battles ============
-function monsterSVG(mon,state=''){ return svg(BGS.hall()+monsterBody(mon,state,512,330,1),'272 130 480 400'); }
-function monsterBody(mon,state,x,y,k){ const hurt=state==='hurt'; return `<g transform="translate(${x},${y}) scale(${k})" filter="url(#soft)" opacity="${state==='gone'?.0:1}">
- <ellipse cx="0" cy="40" rx="190" ry="170" fill="${mon.body}" opacity=".35" filter="url(#wash)"/>
- <path d="M-150 120C-170 -40 -90 -170 0 -170S170 -40 150 120C120 90 100 140 70 110C40 140 20 100 0 130C-20 100 -40 140 -70 110C-100 140 -120 90 -150 120Z" fill="${mon.body}"/>
- <ellipse cx="-50" cy="-30" rx="${hurt?30:26}" ry="${hurt?8:34}" fill="${mon.eye}" filter="url(#glow)"/><ellipse cx="50" cy="-30" rx="${hurt?30:26}" ry="${hurt?8:34}" fill="${mon.eye}" filter="url(#glow)"/>
- <path d="M-40 50q40 ${hurt?-20:25} 80 0" stroke="${mon.eye}" stroke-width="8" fill="none" stroke-linecap="round"/></g>`; }
-function drawHP(){ const mon=M.mon; $('#hp').textContent='🖤'.repeat(mon.hp)+'🤍'.repeat(mon.max-mon.hp); }
+function foeBody(f,state,x,y,k){ const hurt=state==='hurt'; const eyes=(ex,ey,r)=>`<ellipse cx="${-ex}" cy="${ey}" rx="${hurt?r+4:r}" ry="${hurt?6:r*1.3}" fill="${f.eye}" filter="url(#glow)"/><ellipse cx="${ex}" cy="${ey}" rx="${hurt?r+4:r}" ry="${hurt?6:r*1.3}" fill="${f.eye}" filter="url(#glow)"/>`;
+ let b='';
+ if(f.kind==='blob') b=`<ellipse cx="0" cy="40" rx="190" ry="170" fill="${f.body}" opacity=".35" filter="url(#wash)"/><path d="M-150 120C-170 -40 -90 -170 0 -170S170 -40 150 120C120 90 100 140 70 110C40 140 20 100 0 130C-20 100 -40 140 -70 110C-100 140 -120 90 -150 120Z" fill="${f.body}"/>${eyes(50,-30,26)}<path d="M-40 50q40 ${hurt?-20:25} 80 0" stroke="${f.eye}" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+ if(f.kind==='imps') b=[[-120,40,.8],[0,-20,1],[120,40,.8]].map(([dx,dy,s])=>`<g transform="translate(${dx},${dy}) scale(${s})"><path d="M-60 -60L-40 -110L-20 -70ZM60 -60L40 -110L20 -70Z" fill="${f.body}"/><ellipse cx="0" cy="0" rx="75" ry="80" fill="${f.body}"/><path d="M-70 60q20 40 0 60M70 60q-20 40 0 60M0 70q10 40-10 60" stroke="${f.body}" stroke-width="16" fill="none" stroke-linecap="round"/>${eyes(26,-10,14)}<path d="M-22 30q22 ${hurt?-10:16} 44 0" stroke="${f.eye}" stroke-width="6" fill="none" stroke-linecap="round"/></g>`).join('');
+ if(f.kind==='crystal') b=`<ellipse cx="0" cy="20" rx="200" ry="190" fill="#d0ebff" opacity=".5" filter="url(#wash)"/><path d="M0 -190L60 -60L190 -40L80 40L120 170L0 100L-120 170L-80 40L-190 -40L-60 -60Z" fill="${f.body}" stroke="#e7f5ff" stroke-width="6"/><path d="M0 -190L0 100M-190 -40L80 40M190 -40L-80 40" stroke="#e7f5ff" stroke-width="3" opacity=".7"/>${eyes(40,-10,18)}<path d="M-30 50q30 ${hurt?-14:18} 60 0" stroke="${f.eye}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+ if(f.kind==='golem') b=`<ellipse cx="0" cy="40" rx="220" ry="190" fill="#868e96" opacity=".35" filter="url(#wash)"/><rect x="-130" y="-90" width="260" height="230" rx="30" fill="${f.body}"/><rect x="-90" y="-180" width="180" height="110" rx="24" fill="${f.body}"/><rect x="-210" y="-60" width="70" height="170" rx="26" fill="${f.body}"/><rect x="140" y="-60" width="70" height="170" rx="26" fill="${f.body}"/><path d="M-40 -60L-10 0L-40 40L0 100M60 -20L30 30L60 70" stroke="${f.eye}" stroke-width="6" fill="none" filter="url(#glow)"/>${eyes(36,-130,14)}`;
+ if(f.kind==='girl'){ const aura=f.who==='wren'?`<ellipse cx="0" cy="40" rx="230" ry="260" fill="#2b2540" opacity=".55" filter="url(#wash)"/>`:''; b=`${aura}<g transform="translate(0,-110)">${girl(f.who,0,0,1.25,{arm:'wand',expr:hurt?'sad':(f.who==='wren'?'sad':'smirk'),flip:true})}</g><ellipse cx="0" cy="10" rx="215" ry="250" fill="${f.shield}" opacity="${hurt?.45:.22}" stroke="${f.shield}" stroke-width="6"/>`; }
+ return `<g transform="translate(${x},${y}) scale(${k})" filter="url(#soft)">${b}</g>`; }
+function foeSVG(f,state=''){ return svg(BGS[f.bg]()+foeBody(f,state,512,330,1),'272 130 480 400'); }
+function drawHP(){ const f=M.mon, a=f.kind==='girl'?'🛡️':'🖤'; $('#hp').textContent=a.repeat(f.hp)+'▫️'.repeat(f.max-f.hp); }
 function sideMode(battle){ $('#hp').style.display=battle?'block':'none'; $('#cards').style.display=battle?'flex':'none'; $('#playTarget').style.display=battle?'none':''; }
-function battleIntro(m){ const mon=MONSTERS[m.battle];
- const sc=(e,me)=>sceneSVG('hall',[['mei',200,280,.9,{expr:me}],['nora',430,260,1,{arm:'wand',expr:e}]],monsterBody(mon,'',790,300,.6));
- playStory([
-  {scene:sc('happy','shy'),text:'At the Shadow Gate, the air turns cold. Something is drifting between the dark lamps.'},
-  {scene:sc('wow','wow'),who:'mei',text:'Nora, look out! It\'s a Shadow Wisp!'},
-  {scene:sc('sad','sad'),who:'nora',text:'It\'s swallowing the light!'},
-  {scene:sc('happy','happy'),who:'mei',text:'Shadow Wisps can\'t stand sunshine. Pick a light spell, write it, and send it flying!'},
- ],()=>startBattle(m));
+function startBattle(m,n){ const f=Object.assign({},FOES[m.foe]); f.max=f.hp;
+ M={m,n,battle:true,mon:f,pts:0,quality:[],penBonus:false,word:null,tries:0,casts:0,phase:1};
+ $('#playTtl').textContent=`⚔️ ${m.title} — ${f.name}`; $('#playPrompt').textContent=`Weak to ${ELEM[f.weak].e} ${ELEM[f.weak].n}`; $('#penBadge').textContent='✨ Perfect writing = CRITICAL hit!'; $('#playDots').innerHTML='';
+ show('play'); sideMode(true); $('#playArt').innerHTML=foeSVG(f); drawHP(); dealCards(true);
 }
-function startBattle(m){ const mon=Object.assign({},MONSTERS[m.battle]); mon.max=mon.hp;
- M={m,battle:true,mon,pts:0,quality:[],penBonus:false,word:null,tries:0,casts:0};
- $('#playTtl').textContent=`⚔️ ${m.title} — ${mon.name}`; $('#playPrompt').textContent=`Weak to ${ELEM[mon.weak].e} ${ELEM[mon.weak].n}`; $('#penBadge').textContent='✏️ Use the Pencil for a bonus star!'; $('#playDots').innerHTML='';
- show('play'); sideMode(true); $('#playArt').innerHTML=monsterSVG(mon); drawHP(); dealCards(true);
-}
-function dealCards(first){ const mon=M.mon, words=spellCards(mon.weak); M.word=null; pad.set(' '); pad.locked=true; M.tries=0; pad.pen=false;
+function dealCards(first){ const f=M.mon; M.word=null; pad.set(' '); pad.locked=true; M.tries=0; pad.pen=false;
  const box=$('#cards'); box.innerHTML='';
- if(!words.length){ return battleWin(); }
- words.forEach(w=>{ const el=ELEM[ELEM_OF[w]]; const b=document.createElement('button'); b.innerHTML=`<span>${el.e}</span><span class="cur">${w}</span><span class="el">${el.n}</span>`; if(ELEM_OF[w]===mon.weak&&(S.level||1)===1) b.classList.add('weak'); b.onclick=()=>pickCard(w,b); box.appendChild(b); });
- const t=first?`Pick a spell card, then write it to cast! The ${mon.name} is weak to ${ELEM[mon.weak].n.toLowerCase()}.`:'Pick your next spell!';
+ if(M.phase===2){ const w=FINAL.find(x=>!S.seen.includes(x)); if(!w) return battleWin(); const b=document.createElement('button'); b.innerHTML=`<span>💌</span><span class="cur">${w}</span><span class="el">Kindness</span>`; b.classList.add('weak'); b.onclick=()=>pickCard(w,b); box.appendChild(b); showFb('Write the kind words for Wren 💌'); return; }
+ const words=spellCards(f.weak);
+ if(!words.length) return battleWin();
+ words.forEach(w=>{ const el=ELEM[ELEM_OF[w]]; const b=document.createElement('button'); b.innerHTML=`<span>${el.e}</span><span class="cur">${w}</span><span class="el">${el.n}</span>`; if(ELEM_OF[w]===f.weak&&(S.level||1)===1) b.classList.add('weak'); b.onclick=()=>pickCard(w,b); box.appendChild(b); });
+ const t=first?`Pick a spell card, then write it to cast! ${f.name} is weak to ${ELEM[f.weak].n.toLowerCase()}.`:'Pick your next spell!';
  showFb(t); Voice.say(t);
 }
 function pickCard(w,b){ Snd.sfx('tap'); [...$('#cards').children].forEach(x=>x.style.opacity=x===b?1:.45); M.word=w; M.tries=0; pad.set(w); hideFb(); Voice.say(`Write ${w}.`); }
-async function flyProjectile(elk,el){ const pts=padScreenPts(); const c=FX.center($('#padHost')); const st=pts.length?pts[Math.floor(pts.length/2)]:c; const t=FX.center($('#playArt'));
- FX.burst(st[0],st[1],{n:30,colors:FX.EL[elk].c,shape:FX.EL[elk].shape,speed:6,size:6}); Snd.sfx('whoosh'); Snd.sfx(elk);
- await FX.projectile(elk,el.e,st[0],st[1],t[0],t[1],720); }
-async function battleHit(stars){ const mon=M.mon, elk=ELEM_OF[M.word], el=ELEM[elk], weak=elk===mon.weak; M.casts++;
- await flyProjectile(elk,el); const t=FX.center($('#playArt'));
- const dmg=weak?2:1; mon.hp=Math.max(0,mon.hp-dmg); FX.impact(elk,t[0],t[1],weak); Snd.sfx('boom'); if(weak) setTimeout(()=>Snd.sfx('light'),120);
- const art=$('#playArt'); art.innerHTML=monsterSVG(mon,'hurt'); art.classList.remove('hit'); void art.offsetWidth; art.classList.add('hit');
- FX.shake(art,weak?22:12,500); if(weak) FX.shake($('#play'),10,420); drawHP();
- FX.text(t[0],t[1]-30,'-'+dmg,weak?'#ffd43b':'#fff',weak?72:56); if(weak) setTimeout(()=>FX.text(t[0],t[1]+50,'SUPER EFFECTIVE!','#ff6fa8',34),180);
- const msg=weak?`Super effective! ${el.e} ${el.n} hits for 2!`:`${el.e} Hit! ${el.n} does 1. Try ${ELEM[mon.weak].n.toLowerCase()} for more!`; showFb(msg); Voice.say(weak?'Super effective!':'Hit!');
- await sleep(1300); art.classList.remove('hit'); art.innerHTML=monsterSVG(mon);
- if(mon.hp<=0) return battleWin(); dealCards(false);
+// The epic part: the handwriting itself becomes the spell.
+async function spellSequence(elk,emoji,crit){ const host=$('#padHost'), c=FX.center(host), r=host.getBoundingClientRect(), pts=padScreenPts(), E=FX.EL[elk], col={fire:'#ff6b6b',ice:'#4dabf7',water:'#228be6',wind:'#20c997',light:'#f59f00',earth:'#37b24d',bolt:'#f59f00'}[elk]||E.c[0];
+ FX.vignette(3000,.6); FX.magicCircle(c[0],c[1],Math.min(r.width,r.height)*.44,col,2300); Snd.sfx('charge');
+ FX.traceRun(pts,col,560); await sleep(620);            // 1. her letters light up, stroke by stroke
+ FX.converge(pts,c[0],c[1],E.c,560); FX.orb(c[0],c[1],col,900); await sleep(650); // 2. the ink lifts off and swirls into an orb
+ FX.burst(c[0],c[1],{n:50,colors:E.c,shape:E.shape,speed:9}); FX.ring(c[0],c[1],col,220); FX.shake(host,8,300); Snd.sfx('whoosh'); Snd.sfx(elk);
+ const t=FX.center($('#playArt')); await FX.projectile(elk,emoji,c[0],c[1],t[0],t[1],crit?560:680); // 3. launch!
+ return t; }
+async function battleHit(stars){ const f=M.mon; const kind=M.phase===2; const elk=kind?'light':ELEM_OF[M.word], el=kind?{e:'💌',n:'Kindness'}:ELEM[elk];
+ const weak=kind||elk===f.weak, crit=stars===3; M.casts++;
+ const t=await spellSequence(elk,el.e,crit);
+ let dmg=(weak?2:1)+(crit?1:0); if(kind) dmg=f.hp; f.hp=Math.max(0,f.hp-dmg);
+ FX.signature(elk,t[0],t[1],weak||crit); Snd.sfx('boom'); if(weak) setTimeout(()=>Snd.sfx('light'),120);
+ const art=$('#playArt'); art.innerHTML=foeSVG(f,'hurt'); art.classList.remove('hit'); void art.offsetWidth; art.classList.add('hit'); if(elk==='ice'){ art.classList.add('frozen'); setTimeout(()=>art.classList.remove('frozen'),1100); }
+ FX.shake(art,weak?22:12,500); if(weak||crit) FX.shake($('#play'),10,420); drawHP();
+ if(!kind){ FX.text(t[0],t[1]-30,'-'+dmg,weak?'#ffd43b':'#fff',weak?72:56); if(crit) setTimeout(()=>FX.text(t[0],t[1]-100,'CRITICAL!','#ff922b',44),120); if(weak) setTimeout(()=>FX.text(t[0],t[1]+50,'SUPER EFFECTIVE!','#ff6fa8',34),240); }
+ const msg=kind?'Your kind words reach her…':weak?`Super effective! ${el.e} ${el.n} hits for ${dmg}!`:`${el.e} Hit for ${dmg}! Try ${ELEM[f.weak].n.toLowerCase()} for more!`; showFb(msg); Voice.say(kind?'Your kind words reach her.':crit?'Critical hit!':weak?'Super effective!':'Hit!');
+ await sleep(1400); art.classList.remove('hit'); art.innerHTML=foeSVG(f);
+ if(f.hp<=0){ if(f.final&&M.phase===1){ return wrenPhase2(); } if(f.final&&M.phase===2&&FINAL.some(x=>!S.seen.includes(x))){ f.hp=1; drawHP(); return dealCards(false); } return battleWin(); }
+ dealCards(false);
 }
-async function battleMiss(){ const art=$('#playArt'); { const t=FX.center(art), c=FX.center($('#padHost')); await FX.projectile('wind','💨',t[0],t[1],c[0],c[1],600); FX.burst(c[0],c[1],{n:40,colors:['#4dabf7','#a5d8ff','#ffffff'],shape:'circle',speed:7}); FX.ring(c[0],c[1],'#74c0fc',200); FX.text(c[0],c[1],'🛡️ BLOCKED!','#a5d8ff',44); Snd.sfx('boom'); FX.shake($('#padHost'),10); } showFb('The wisp swoops… but Mei\'s shield blocks it! 🛡️ Try another spell.'); Voice.say('Mei\'s shield blocks it! Try another spell.'); art.classList.remove('shake'); void art.offsetWidth; art.classList.add('shake'); await sleep(1500); dealCards(false); }
-async function battleWin(){ const mon=M.mon; const art=$('#playArt'), t=FX.center(art); art.classList.add('gone'); Snd.sfx('dissolve');
- for(let i=0;i<4;i++){ setTimeout(()=>FX.burst(t[0],t[1],{n:40,colors:['#2b2540','#5f3dc4','#fff3bf','#ffd43b'],shape:i%2?'star':'circle',speed:5+i*2,grav:-.05,life:1400,size:6}),i*160); }
- setTimeout(()=>{ FX.flash('#fff3bf',.6,500); FX.ring(t[0],t[1],'#ffd43b',320); FX.text(t[0],t[1],'VICTORY!','#ffd43b',70); Snd.sfx('fanfare'); },700);
+async function wrenPhase2(){ const f=M.mon; f.hp=1; f.max=1; drawHP(); M.phase=2;
+ await new Promise(res=>STORIES.wrenMid(res)); show('play'); sideMode(true); $('#playArt').innerHTML=foeSVG(f); dealCards(false); }
+async function battleMiss(){ const art=$('#playArt'); { const t=FX.center(art), c=FX.center($('#padHost')); await FX.projectile('wind','💨',t[0],t[1],c[0],c[1],600); FX.burst(c[0],c[1],{n:40,colors:['#4dabf7','#a5d8ff','#ffffff'],shape:'circle',speed:7}); FX.ring(c[0],c[1],'#74c0fc',200); FX.text(c[0],c[1],'🛡️ BLOCKED!','#a5d8ff',44); Snd.sfx('boom'); FX.shake($('#padHost'),10); }
+ showFb('A counter-attack… but your friends\' shield blocks it! 🛡️ Try another spell.'); Voice.say('Your friends\' shield blocks it! Try another spell.'); await sleep(1500); dealCards(false); }
+async function battleWin(){ const f=M.mon; const art=$('#playArt'), t=FX.center(art); art.classList.add('gone'); Snd.sfx('dissolve');
+ for(let i=0;i<4;i++){ setTimeout(()=>FX.burst(t[0],t[1],{n:40,colors:[f.body||f.shield,'#5f3dc4','#fff3bf','#ffd43b'],shape:i%2?'star':'circle',speed:5+i*2,grav:-.05,life:1400,size:6}),i*160); }
+ setTimeout(()=>{ FX.flash('#fff3bf',.6,500); FX.ring(t[0],t[1],'#ffd43b',320); FX.text(t[0],t[1],f.duel?'YOU WIN!':'VICTORY!','#ffd43b',70); Snd.sfx('fanfare'); },700);
  await sleep(1800); art.classList.remove('gone');
- const m=M.m, pts=M.pts, q=M.quality;
- playStory([
-  {scene:sceneSVG('hall',[['mei',230,280,.9,{expr:'wow'}],['nora',480,260,1,{arm:'wand',expr:'wow'}]],`<circle cx="790" cy="330" r="22" fill="#fff59d" filter="url(#glow)"/>`),text:'The wisp shrinks… and shrinks… until it\'s just a tiny, shivering spark.',sfx:'chime'},
-  {scene:sceneSVG('hall',[['mei',230,280,.9,{expr:'shy'}],['nora',480,260,1,{arm:'hold',expr:'sad'}]],`<circle cx="620" cy="370" r="16" fill="#fff59d" filter="url(#glow)"/>`),who:'nora',text:'Oh… it wasn\'t mean. I think it was just scared of the dark, too.'},
-  {scene:sceneSVG('hall',[['mei',230,280,.9,{expr:'happy',arm:'wave'}],['nora',480,260,1,{arm:'hold'}]],`<circle cx="620" cy="370" r="16" fill="#fff59d" filter="url(#glow)"/>`),who:'mei',text:'Let\'s give it a lamp to live in. Then it\'ll never be scared again.'},
- ],()=>{ S.stars+=pts; S.done[m.id]=true; sessionMissions++; save(); refreshStars();
-   const st=q.length?Math.max(1,Math.round(q.reduce((a,b)=>a+b,0)/q.length)):1;
-   resultScreen('You saved the Shadow Wisp!','⭐'.repeat(st)+'☆'.repeat(3-st),`+${pts} magic stars`,m.tip); });
+ const m=M.m,n=M.n,pts=M.pts,q=M.quality;
+ STORIES[m.post](()=>{ markDone(n,m,pts); const st=q.length?Math.max(1,Math.round(q.reduce((a,b)=>a+b,0)/q.length)):1;
+   resultScreen(STORY_RESULT[m.post][0],'⭐'.repeat(st)+'☆'.repeat(3-st),`+${pts} magic stars`,m.tip,n); });
 }
 
 // ============ Wand Trial (placement) ============
@@ -1141,57 +1252,232 @@ async function trialCast(){ if(!pad.hasInk()){ showFb('Write with your finger or
   {scene:sceneSVG('hall',[['prof',760,250,1,{}],['nora',300,260,1,{arm:'wand'}]]),who:'nora',text:'Okay. I\'ll try my very best!'},
  ],()=>goMap()); }
 
-// ============ Mei story (empathy) ============
-function meiStory(){
- const sc=(a,b)=>sceneSVG('library',[['mei',700,280,1,a],['nora',300,260,1,b]]);
- playStory([
-  {scene:sc({expr:'sad'},{}),text:'The library is so quiet you can hear the candles flicker. Then… a sniffle.'},
-  {scene:sc({expr:'wow'},{}),who:'mei',text:'Oh! Um… sorry. I didn\'t think anyone was here.'},
-  {scene:sc({expr:'sad'},{}),who:'mei',text:'My first spell in class today went pop… and then fizzle. Everyone laughed at me.'},
-  {scene:sc({expr:'sad'},{}),text:'What should Nora do?',choices:[
+// ============ stories ============
+const say=(who,text,scene,x={})=>Object.assign({who,text,scene},x);
+const STORIES={
+ // ----- Chapter 1
+ mei:done=>{ const s=(a,b)=>sc('library',[['mei',700,280,1,a],['nora',300,260,1,b]]); playStory([
+  say(null,'The library is so quiet you can hear the candles flicker. Then… a sniffle.',s({expr:'sad'},{})),
+  say('mei','Oh! Um… sorry. I didn\'t think anyone was here.',s({expr:'wow'},{})),
+  say('mei','My first spell in class today went pop… and then fizzle. Everyone laughed at me.',s({expr:'sad'},{})),
+  say(null,'What should Nora do?',s({expr:'sad'},{}),{choices:[
     {t:'😂 Laugh. It does sound kind of funny!',ok:false,why:'Mei pulls her hood over her face. Laughing would make her feel worse. Try something else.'},
     {t:'🚶 Say nothing and walk away',ok:false,why:'Mei looks down at her book. Being left alone feels lonely. What else could Nora do?'},
     {t:'💜 Sit next to her: "Mine fizzle too, you know."',ok:true,reply:[
-      {scene:sc({expr:'shy'},{}),who:'nora',text:'Hey… mine fizzle too, you know. Yesterday my spell turned into a puff of smoke!'},
-      {scene:sc({expr:'shy'},{}),who:'mei',text:'Really? You\'re not just saying that?'},
-      {scene:sc({expr:'shy'},{arm:'wave'}),who:'nora',text:'Really! Want to practice together? We can be fizzle buddies.'},
-      {scene:sc({expr:'happy',arm:'wave'},{arm:'wave'}),who:'mei',text:'Fizzle buddies… I like that! Oh, and I know a secret. The Light Bridge only listens to joined-up words.',sfx:'chime'},
-    ]},
-  ]},
- ],()=>{ S.done.mei=true; S.stars+=2; sessionMissions++; save(); refreshStars(); resultScreen('You made a new friend: Mei!','💜','+2 magic stars for kindness','Try it today: if a friend makes a mistake, tell them about a time you made one too.'); });
-}
+      say('nora','Hey… mine fizzle too, you know. Yesterday my spell turned into a puff of smoke!',s({expr:'shy'},{})),
+      say('mei','Really? You\'re not just saying that?',s({expr:'shy'},{})),
+      say('nora','Really! Want to practice together? We can be fizzle buddies.',s({expr:'shy'},{arm:'wave'})),
+      say('mei','Fizzle buddies… I like that! Oh, and I know a secret. The Light Bridge only listens to joined-up words.',s({expr:'happy',arm:'wave'},{arm:'wave'}),{sfx:'chime'}),
+    ]}]}),
+ ],done); },
+ wispPre:done=>{ const f=FOES.wisp, s=(e,me)=>sc('hall',[['mei',200,280,.9,{expr:me}],['nora',430,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.6)); playStory([
+  say(null,'At the Shadow Gate, the air turns cold. Something is drifting between the dark lamps.',s('happy','shy')),
+  say('mei','Nora, look out! It\'s a Shadow Wisp!',s('wow','wow')),
+  say('nora','It\'s swallowing the light!',s('sad','sad')),
+  say('mei','Shadow Wisps can\'t stand sunshine. Pick a light spell, write it, and send it flying!',s('happy','happy')),
+ ],done); },
+ wispPost:done=>playStory([
+  say(null,'The wisp shrinks… and shrinks… until it\'s just a tiny, shivering spark.',sc('hall',[['mei',230,280,.9,{expr:'wow'}],['nora',480,260,1,{arm:'wand',expr:'wow'}]],`<circle cx="790" cy="330" r="22" fill="#fff59d" filter="url(#glow)"/>`),{sfx:'chime'}),
+  say('nora','Oh… it wasn\'t mean. I think it was just scared of the dark, too.',sc('hall',[['mei',230,280,.9,{expr:'shy'}],['nora',480,260,1,{arm:'hold',expr:'sad'}]],`<circle cx="620" cy="370" r="16" fill="#fff59d" filter="url(#glow)"/>`)),
+  say('mei','Let\'s give it a lamp to live in. Then it\'ll never be scared again.',sc('hall',[['mei',230,280,.9,{expr:'happy',arm:'wave'}],['nora',480,260,1,{arm:'hold'}]],`<circle cx="620" cy="370" r="16" fill="#fff59d" filter="url(#glow)"/>`)),
+ ],done),
+ // ----- Chapter 2
+ midnight:done=>{ const s=(n,m)=>sc('room',[['nora',330,250,1,n],['mei',700,270,.95,m]]); playStory([
+  say(null,'It\'s past midnight. Nora has written the capital Q forty times. Every single one fizzled.',s({expr:'sad',arm:'hold'},{expr:'closed'})),
+  say('nora','It\'s no use. Iris is right. I\'ll never get it.',s({expr:'sad'},{expr:'closed'})),
+  say('mei','Nora? You\'re still up? …Can I see?',s({expr:'sad'},{expr:'wow'})),
+  say(null,'What should Nora do?',s({expr:'sad'},{expr:'shy'}),{choices:[
+   {t:'📕 Close the book. "I quit. Magic isn\'t for me."',ok:false,why:'Nora\'s wand flickers sadly. Giving up feels safe, but it means never finding out. Try another way.'},
+   {t:'😠 "Leave me alone, Mei!"',ok:false,why:'Mei steps back, hurt. She only wanted to help. Maybe there\'s a kinder way.'},
+   {t:'💪 Show Mei: "Can you help me find what\'s wrong?"',ok:true,reply:[
+    say('mei','Look… your tail starts too early. Professor Quill says every hard letter is just two easy letters holding hands.',s({},{arm:'wave'})),
+    say('nora','Two easy letters… holding hands. Let me try again.',s({arm:'wand'},{expr:'shy'})),
+    say(null,'Swish… loop… tail. The Q glows gold for the very first time.',s({arm:'wand',expr:'wow'},{expr:'wow'}),{sfx:'gold'}),
+    say('nora','Mei, I did it! Thank you for not letting me quit.',s({arm:'wave'},{expr:'happy',arm:'wave'})),
+   ]}]}),
+ ],done); },
+ irisPre:done=>{ const s=(n,i)=>sc('courtyard',[['nora',300,250,1,n],['iris',730,260,1,i]]); playStory([
+  say(null,'The whole academy gathers in the courtyard for the Wand Duel. The air crackles.',s({arm:'wand'},{expr:'smirk',flip:true})),
+  say('iris','Ready to lose, new girl? My fire shield has never been broken.',s({arm:'wand'},{expr:'smirk',arm:'wand',flip:true})),
+  say('prof','Remember, this is a friendly duel. Spells hit the shield, never the student. Begin!',sc('courtyard',[['prof',512,240,1,{arm:'wave'}]])),
+  say('mei','Psst! Fire shields hate water spells!',sc('courtyard',[['mei',512,260,1,{expr:'wow',arm:'wave'}]])),
+ ],done); },
+ irisPost:done=>{ const s=(n,i)=>sc('courtyard',[['nora',300,250,1,n],['iris',730,260,1,i]]); playStory([
+  say(null,'Iris\'s shield shatters into a hundred sparkles. The courtyard goes silent… then cheers!',s({arm:'wand',expr:'wow'},{expr:'wow',flip:true}),{sfx:'gold'}),
+  say('nora','Good duel, Iris. Your fire shield was really strong.',s({arm:'wave'},{expr:'sad',flip:true})),
+  say('iris','…Whatever. You just got lucky.',s({},{expr:'sad',flip:true})),
+  say(null,'Iris storms off. But Nora notices something: her eyes were wet.',s({expr:'sad'},{expr:'sad',flip:true})),
+ ],done); },
+ quill:done=>{ const s=(n,i)=>sc('courtyard',[['nora',300,250,1,n],['iris',720,270,1,i]]); playStory([
+  say(null,'Behind the fountain, Iris is searching the grass, again and again.',s({},{expr:'sad',flip:true})),
+  say('iris','It\'s gone. My mom\'s silver quill. Ink Imps took it while I was dueling.',s({expr:'wow'},{expr:'sad',flip:true})),
+  say('iris','Mom works far away. She gave it to me so I\'d have a piece of her here. It\'s the only thing I…',s({expr:'sad'},{expr:'sad',flip:true})),
+  say(null,'What should Nora do?',s({expr:'sad'},{expr:'sad',flip:true}),{choices:[
+   {t:'🙄 "Well, you were mean to me."',ok:false,why:'That\'s true… but Iris looks so small right now. Being kind doesn\'t mean what she did was okay. Try again.'},
+   {t:'🤷 "Ask a teacher, not me."',ok:false,why:'Iris turns away. Sometimes people just need someone to stand next to them. What else could Nora do?'},
+   {t:'🤝 "I miss my family too. Let\'s get it back together."',ok:true,reply:[
+    say('nora','I miss my family too, you know. Let\'s get your mom\'s quill back. Together.',s({arm:'wave'},{expr:'wow',flip:true})),
+    say('iris','You\'d help me? Even after… everything I said?',s({},{expr:'shy',flip:true})),
+    say('iris','I\'m sorry, Nora. I wasn\'t really mad at you. I was just lonely.',s({},{expr:'sad',flip:true})),
+    say('nora','Apology accepted. Now, where do Ink Imps hide?',s({arm:'wand'},{expr:'happy',flip:true}),{sfx:'chime'}),
+   ]}]}),
+ ],done); },
+ impsPre:done=>{ const f=FOES.imps, s=(e)=>sc('library',[['iris',180,290,.85,{arm:'wand'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.5)); playStory([
+  say(null,'Down in the Ink Cellar, three giggling Ink Imps are juggling a shiny silver quill.',s('wow')),
+  say('iris','Ink Imps hate wind. It blows their ink everywhere!',s('happy')),
+  say('nora','Then let\'s make a storm!',s('happy')),
+ ],done); },
+ impsPost:done=>playStory([
+  say(null,'The imps tumble away in a puff of ink. The silver quill spins in the air… and lands in Iris\'s hands.',sc('library',[['iris',330,270,1,{arm:'hold',expr:'wow'}],['nora',700,260,1,{expr:'happy'}]]),{sfx:'gold'}),
+  say('iris','Thank you, Nora. Will you… be my friend? A real one?',sc('library',[['iris',330,270,1,{arm:'hold',expr:'shy'}],['nora',700,260,1,{expr:'happy'}]])),
+  say('nora','I already am.',sc('library',[['mei',150,280,.85,{arm:'wave'}],['iris',420,270,1,{arm:'wave'}],['nora',720,260,1,{arm:'wave'}]]),{sfx:'chime'}),
+ ],done),
+ // ----- Chapter 3
+ truth:done=>{ const s=(n,m)=>sc('library',[['nora',330,250,1,n],['mei',720,270,.95,m]]); playStory([
+  say(null,'While looking for clues in Professor Quill\'s office, Nora bumps the desk. CRASH! The ancient inkwell breaks.',s({expr:'wow'},{expr:'wow'})),
+  say('mei','Oh no. That\'s her great-great-grandmother\'s inkwell. Quick, nobody saw. Let\'s just go.',s({expr:'sad'},{expr:'sad'})),
+  say(null,'What should Nora do?',s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:'🏃 Sneak out before anyone comes',ok:false,why:'Nora\'s tummy twists. A secret like this gets heavier every day. Try another way.'},
+   {t:'🐈 Say the castle cat did it',ok:false,why:'Then the cat gets in trouble for something it didn\'t do. That isn\'t fair. What else could Nora do?'},
+   {t:'🫶 Wait and tell Professor Quill the truth',ok:true,reply:[
+    say('nora','Professor… I broke your inkwell. It was an accident. I\'m really sorry.',sc('library',[['nora',330,250,1,{expr:'sad'}],['prof',720,250,1,{expr:'sad'}]])),
+    say('prof','Thank you for telling me, Nora. That took more courage than any duel.',sc('library',[['nora',330,250,1,{expr:'shy'}],['prof',720,250,1,{expr:'happy'}]])),
+    say('prof','Look, a hidden note was inside the inkwell all these years. It says: "Wren is waiting in the Hollow Tower."',sc('library',[['nora',330,250,1,{expr:'wow'}],['prof',720,250,1,{arm:'hold',expr:'wow'}]]),{sfx:'chime'}),
+   ]}]}),
+ ],done); },
+ spritePre:done=>{ const f=FOES.sprite, s=(e)=>sc('stairs',[['mei',180,290,.85,{expr:'wow'}],['iris',330,290,.85,{arm:'wand'}],['nora',540,260,1,{arm:'wand',expr:e}]],foeBody(f,'',840,290,.5)); playStory([
+  say(null,'The stairs to the Hollow Tower are covered in ice. A Frost Sprite blocks the way.',s('wow')),
+  say('iris','My mom says Frost Sprites melt from fire. I\'ll keep us warm. You cast!',s('happy')),
+ ],done); },
+ spritePost:done=>playStory([
+  say(null,'The sprite melts into a puddle… and the puddle giggles and runs away. The stairs are open.',sc('stairs',[['nora',512,260,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
+  say(null,'At the top, carved on the door, are two names: WREN and ROSE. Best friends, forever.',sc('stairs',[['nora',512,260,1,{expr:'wow'}]],`<g font-family="'TeX Gyre Chorus',cursive" font-size="46" fill="#e9a91c" filter="url(#glow)"><text x="700" y="200">Wren &amp; Rose</text></g>`)),
+  say('nora','Rose… that\'s Grandma\'s name.',sc('stairs',[['nora',512,260,1,{expr:'sad',arm:'hold'}]])),
+ ],done),
+ // ----- Chapter 4
+ grandma:done=>{ const s=(n,gx)=>sc('gate',[['gran',300,270,1,gx],['nora',700,250,1,n]]); playStory([
+  say(null,'Nora writes Grandma a letter. The very next morning, Grandma is standing at the academy gate.',s({expr:'wow'},{arm:'wave'}),{sfx:'chime'}),
+  say('gran','You found Wren\'s name. Then it\'s time I told you the truth.',s({expr:'sad'},{expr:'closed'})),
+  say('gran','Wren was my best friend. When we graduated, I promised to write to her every week.',s({expr:'sad'},{expr:'sad'})),
+  say('gran','I wrote twice… then I got busy. And I stopped. She waited and waited in that tower.',s({expr:'sad'},{expr:'sad'})),
+  say('gran','Her loneliness grew so big it started eating the words of the whole world. The Fading is my fault.',s({expr:'sad'},{expr:'closed'})),
+  say(null,'What should Nora say?',s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:'😤 "Grandma! How could you?"',ok:false,why:'Grandma\'s eyes fill with tears. She already feels terrible. Maybe there\'s a gentler way.'},
+   {t:'🤐 Pretend she didn\'t hear',ok:false,why:'Grandma looks even sadder. Hard truths are easier when someone listens. Try again.'},
+   {t:'🤗 Hug her: "Thank you for telling me. Let\'s fix it together."',ok:true,reply:[
+    say('nora','Thank you for telling me the truth, Grandma. Everyone makes mistakes. Let\'s fix it, together.',s({arm:'wave'},{expr:'wow'})),
+    say('gran','You\'re braver than I ever was, sweetheart. Together, then.',s({expr:'happy'},{expr:'happy',arm:'wave'}),{sfx:'gold'}),
+   ]}]}),
+ ],done); },
+ golemPre:done=>{ const f=FOES.golem, s=(e)=>sc('tower',[['gran',170,280,.85,{arm:'wand'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.5)); playStory([
+  say(null,'A storm howls around the tower bridge. A giant Storm Golem rises out of the clouds!',s('wow')),
+  say('gran','Storms can\'t stand against solid ground. Earth spells, Nora!',s('happy')),
+ ],done); },
+ golemPost:done=>playStory([
+  say(null,'The golem crumbles into little pebbles… and the storm clouds part. Moonlight floods the bridge.',sc('tower',[['gran',300,270,.95,{expr:'wow'}],['nora',650,250,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
+  say('gran','Just one door left. She\'s in there.',sc('tower',[['gran',300,270,.95,{expr:'sad'}],['nora',650,250,1,{}]])),
+ ],done),
+ wrenPre:done=>{ const f=FOES.wren, s=(e)=>sc('tower',[['gran',170,280,.85,{expr:'sad'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',800,300,.5)); playStory([
+  say(null,'Inside the Hollow Tower, a girl floats in a whirl of dark ink. Wren.',s('wow')),
+  say('wren','Go away! Nobody ever comes. Nobody ever writes. I\'ll make ALL the words disappear!',s('sad')),
+  say('gran','Wren… it\'s me. Rose.',s('sad')),
+  say('wren','You\'re too late!',s('wow')),
+  say('nora','Her shadow shield is too strong to talk through. Light spells, first!',s('happy')),
+ ],done); },
+ wrenMid:done=>{ const s=(e)=>sc('tower',[['gran',200,280,.9,{expr:'sad'}],['nora',480,260,1,{arm:'hold',expr:e}],['wren',800,270,.95,{expr:'sad',flip:true}]]); playStory([
+  say(null,'The shadow shield shatters. Wren drops to the floor, small and shaking.',s('wow'),{sfx:'dissolve'}),
+  say('nora','Spells won\'t fix this part. Only words will.',s('sad')),
+  say('nora','Grandma, let\'s write her the letter she\'s been waiting for. Together.',s('happy')),
+ ],done); },
+ wrenPost:done=>{ const s=(w)=>sc('tower',[['gran',230,270,.95,{expr:'happy',arm:'wave'}],['nora',500,250,1,{arm:'wave'}],['wren',790,270,.95,w]],`<circle cx="512" cy="120" r="80" fill="url(#warm)"/>`); playStory([
+  say(null,'The letter glows… and floats gently into Wren\'s hands. She reads it. Then she reads it again.',s({arm:'hold',expr:'wow',flip:true}),{sfx:'chime'}),
+  say('wren','You… came back. You really came back.',s({expr:'shy',flip:true})),
+  say('gran','I\'m so sorry I stopped writing, Wren. I\'ll never stop again. I promise.',s({expr:'sad',flip:true})),
+  say(null,'All across the world, the faded words come flying home. Every lamp in the academy bursts into light.',sc('hall',[['mei',150,280,.85,{arm:'wave'}],['iris',330,280,.85,{arm:'wave'}],['nora',512,250,1.05,{arm:'wand',glow:true}],['wren',700,280,.85,{arm:'wave'}],['gran',870,280,.85,{arm:'wave'}]]),{sfx:'gold'}),
+  say('wren','Nora… would you write to me sometimes?',s({expr:'shy',flip:true})),
+  say('nora','Every week. In my very best cursive.',s({expr:'happy',arm:'wave',flip:true}),{sfx:'chime'}),
+ ],done); },
+};
+const STORY_RESULT={ mei:['You made a new friend: Mei!','💜','Try it today: if a friend makes a mistake, tell them about a time you made one too.'],
+ wispPost:['You saved the Shadow Wisp!'], midnight:['You didn\'t give up!','💪','Try it today: practice the hardest letter you know five times. It gets easier!'],
+ irisPost:['You won the Wand Duel!'], quill:['You chose kindness!','🤝','Try it today: if someone seems grumpy, ask if they\'re okay.'], impsPost:['You got the silver quill back!'],
+ truth:['You told the truth!','🫶','Try it today: honesty is a superpower. Use it even when it\'s hard.'], spritePost:['You melted the Frost Sprite!'],
+ grandma:['You and Grandma are a team!','👵💜','Try it today: ask a grandparent about their best friend when they were little.'], golemPost:['You calmed the Storm Golem!'], wrenPost:['You saved Wren, and the whole world\'s words!'] };
 
-// ============ Chapter end ============
-function chapterEnd(){ S.chapterDone=true; save();
- const hall=(n,i)=>sceneSVG('hall',[['mei',230,270,.95,{expr:'shy'}],['nora',512,250,1.1,{expr:n}],['iris',800,270,.95,{expr:i,flip:true}]]);
- playStory([
-  {scene:hall('happy','smirk'),who:'iris',text:'So you\'re the new girl everyone keeps talking about.'},
-  {scene:hall('happy','smirk'),who:'iris',text:'You lit a few candles. Cute. I bet you can\'t even write a capital Q.'},
-  {scene:hall('sad','smirk'),who:'nora',text:'I… I\'ve never tried a Q. But I\'m not giving up.'},
-  {scene:hall('happy','happy'),who:'iris',text:'We\'ll see. Wand Duel. Next week.'},
-  {scene:sceneSVG('room',[['nora',512,250,1.1,{arm:'hold',expr:'sad'}]],`<g opacity=".7">${['o','u','d','f','y'].map((c,i)=>`<text x="${700+i*40}" y="${380-i*40}" font-family="'TeX Gyre Chorus',cursive" font-size="40" fill="#e9a91c" filter="url(#glow)">${c}</text>`).join('')}</g>`),text:'That night, Nora opened Grandma\'s letter again. Some of the words… were fading away. To be continued in Chapter 2!'},
- ],()=>{ show('title'); refreshStars(); });
-}
+// ----- chapter openings and endings
+const CH_TEXT={
+ 1:{end:()=>{ const hall=(n,i)=>sc('hall',[['mei',230,270,.95,{expr:'shy'}],['nora',512,250,1.1,{expr:n}],['iris',800,270,.95,{expr:i,flip:true}]]); return [
+  say('iris','So you\'re the new girl everyone keeps talking about.',hall('happy','smirk')),
+  say('iris','You lit a few candles. Cute. I bet you can\'t even write a capital Q.',hall('happy','smirk')),
+  say('nora','I… I\'ve never tried a Q. But I\'m not giving up.',hall('sad','smirk')),
+  say('iris','We\'ll see. Wand Duel. Next week.',hall('happy','happy')),
+  say(null,'That night, Nora opened Grandma\'s letter again. Some of the words… were fading away.',sc('room',[['nora',512,250,1.1,{arm:'hold',expr:'sad'}]],fadeLetters())),
+ ]; }},
+ 2:{start:()=>[ say(null,'A week later, the whole academy is buzzing about one thing: the Wand Duel.',sc('courtyard',[['nora',512,250,1.05,{arm:'wand'}]])) ],
+    end:()=>[ say(null,'That night, three friends share hot cocoa by the fire. But outside, more lamps are going dark…',sc('room',[['mei',230,270,.95,{expr:'happy'}],['nora',512,250,1.05,{arm:'hold'}],['iris',800,270,.95,{expr:'happy',flip:true}]])),
+     say('nora','Grandma\'s letter… it\'s almost blank now. We have to find out why.',sc('room',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],fadeLetters())) ]},
+ 3:{start:()=>[ say(null,'Words are vanishing everywhere: from books, from signs, even from Grandma\'s letter.',sc('library',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],fadeLetters())) ],
+    end:()=>[ say('nora','Wren and Rose… I need to ask Grandma. Right now.',sc('room',[['nora',512,250,1.05,{arm:'wand'}]])) ]},
+ 4:{start:()=>[ say(null,'The sky over the academy turns dark and stormy. The Fading is growing stronger.',sc('tower',[['nora',512,250,1.05,{arm:'wand',expr:'wow'}]])) ],
+    end:()=>[ say('prof','Nora, you came here to learn cursive. Instead, you taught all of us what words are really for.',sc('hall',[['prof',300,250,1,{arm:'wave'}],['nora',700,250,1.05,{glow:true}]])),
+     say('nora','For telling the truth. For saying sorry. For telling people they\'re not alone.',sc('hall',[['prof',300,250,1,{expr:'happy'}],['nora',700,250,1.05,{arm:'wand',glow:true}]]),{sfx:'gold'}),
+     say(null,'The End… for now. Wren has started writing back.',sc('room',[['nora',512,250,1.1,{arm:'hold',glow:true}]],`<text x="640" y="200" font-family="'TeX Gyre Chorus',cursive" font-size="54" fill="#e9a91c" filter="url(#glow)">Dear Nora,</text>`)) ]},
+};
+function fadeLetters(){ return `<g opacity=".7">${['o','u','d','f','y','e','r'].map((c,i)=>`<text x="${700+i*36}" y="${380-i*38}" font-family="'TeX Gyre Chorus',cursive" font-size="40" fill="#e9a91c" filter="url(#glow)">${c}</text>`).join('')}</g>`; }
+function titleCard(n){ return svg(`<rect width="1024" height="640" fill="#2b2440"/><circle cx="512" cy="320" r="300" fill="url(#warm)" opacity=".5"/><text x="512" y="250" text-anchor="middle" font-family="Poppins,system-ui" font-weight="800" font-size="44" fill="#ffd43b" letter-spacing="8">CHAPTER ${n}</text><text x="512" y="360" text-anchor="middle" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="96" fill="#fff3bf" filter="url(#glow)">${CH(n).title}</text>`); }
+function chapterEnd(n){ const last=n===CHAPTERS.length;
+ playStory(CH_TEXT[n].end(),()=>{ S.chDone[n]=true; if(last){ S.allDone=true; save(); FX.confetti(); setTimeout(()=>FX.confetti(),800); show('title'); refreshStars(); return; }
+  S.ch=Math.max(S.ch,n+1); S.view=n+1; save(); FX.flash('#fff3bf',.5,600);
+  playStory([say(null,`Chapter ${n+1}: ${CH(n+1).title}`,titleCard(n+1),{sfx:'gold'}),...CH_TEXT[n+1].start()],()=>goMap()); }); }
 
-// ============ Firefly Garden mini game (just for fun) ============
+// ============ mini games (just for fun) ============
 const miniCv=$('#miniCv'), xg=miniCv.getContext('2d'); let MG=null;
-function miniResize(){ const r=miniCv.getBoundingClientRect(); miniCv.width=Math.round(r.width/3); miniCv.height=Math.round(r.height/3); xg.imageSmoothingEnabled=false; }
-function startMini(){ show('mini'); miniResize(); $('#miniBest').textContent=S.best; MG={n:0,t0:performance.now(),dur:25000,flies:[],pops:[],over:false};
- for(let i=0;i<9;i++) MG.flies.push(newFly()); Voice.say('Catch the fireflies! Golden ones are worth three.'); requestAnimationFrame(miniLoop); }
-function newFly(){ const gold=Math.random()<.12; return {x:Math.random()*miniCv.width,y:20+Math.random()*(miniCv.height-40),a:Math.random()*6,s:(gold?.9:.5)+Math.random()*.6,gold,ph:Math.random()*6}; }
-function miniLoop(t){ if(current!=='mini'||!MG) return; const W=miniCv.width,H=miniCv.height,g=xg; const left=Math.max(0,MG.dur-(t-MG.t0));
- g.fillStyle='#141838'; g.fillRect(0,0,W,H); g.fillStyle='#1f6d3a'; g.fillRect(0,H-18,W,18); g.fillStyle='#2b8a3e'; for(let x=0;x<W;x+=4) g.fillRect(x,H-18-(x*7%5),2,4+(x*3%4));
- // jar
- g.fillStyle='#a5d8ff55'; g.fillRect(W-30,H-44,20,26); g.fillStyle='#8d5a2b'; g.fillRect(W-32,H-48,24,4); g.fillStyle='#fff59d'; for(let i=0;i<Math.min(MG.n,20);i++) g.fillRect(W-28+(i*5)%16,H-22-Math.floor(i/4)*4,2,2);
- for(const f of MG.flies){ f.a+=(Math.random()-.5)*.3; f.x+=Math.cos(f.a)*f.s; f.y+=Math.sin(f.a)*f.s*.7; if(f.x<0||f.x>W) f.a=Math.PI-f.a; if(f.y<10||f.y>H-24) f.a=-f.a; f.x=Math.max(0,Math.min(W,f.x)); f.y=Math.max(10,Math.min(H-24,f.y)); f.ph+=.15;
-  const on=Math.sin(f.ph)>-.3; g.fillStyle=f.gold?'#ffd43b':'#c0eb75'; if(on){ g.globalAlpha=.3; g.fillRect(f.x-3,f.y-3,7,7); g.globalAlpha=1; } g.fillRect(Math.round(f.x),Math.round(f.y),f.gold?3:2,f.gold?3:2); }
+const MINI={ fireflies:{title:'✨ Firefly Garden',say:'Catch the fireflies! Golden ones are worth three.',unit:'fireflies'},
+ lanterns:{title:'🏮 Sky Lanterns',say:'Tap the floating lanterns to light them! Golden ones are worth three.',unit:'lanterns'},
+ broom:{title:'🧹 Broom Race',say:'Tap above or below your broom to fly up and down. Grab stars, dodge the rain clouds!',unit:'stars'},
+ potion:{title:'🧪 Potion Mix',say:'Slide the cauldron to catch the sparkly ingredients. Watch out for stinky socks!',unit:'points'} };
+function miniResize(){ const r=miniCv.getBoundingClientRect(); miniCv.width=Math.max(120,Math.round(r.width/3)); miniCv.height=Math.max(80,Math.round(r.height/3)); xg.imageSmoothingEnabled=false; }
+function startMini(m,n){ const def=MINI[m.game]; show('mini'); miniResize(); $('#miniTtl').textContent=def.title; $('#miniBest').textContent=(S.bests[m.game]||0);
+ MG={m,n,game:m.game,n2:0,t0:performance.now(),dur:m.game==='broom'?30000:25000,things:[],pops:[],over:false,lane:1,cx:.5};
+ if(m.game==='fireflies'||m.game==='lanterns') for(let i=0;i<9;i++) MG.things.push(newThing());
+ Voice.say(def.say); requestAnimationFrame(miniLoop); }
+function newThing(){ const W=miniCv.width,H=miniCv.height,gm=MG.game,gold=Math.random()<.12;
+ if(gm==='fireflies') return {x:Math.random()*W,y:20+Math.random()*(H-40),a:Math.random()*6,s:(gold?.9:.5)+Math.random()*.6,gold,ph:Math.random()*6};
+ if(gm==='lanterns') return {x:10+Math.random()*(W-20),y:H+10+Math.random()*40,s:.25+Math.random()*.35,gold,lit:false,ph:Math.random()*6};
+ if(gm==='broom') return {x:W+10,lane:rnd(3),kind:Math.random()<.65?'star':'cloud',s:.9+Math.random()*.5};
+ if(gm==='potion'){ const r=Math.random(); return {x:10+Math.random()*(W-20),y:-10,s:.45+Math.random()*.4,kind:r<.12?'gold':r<.3?'sock':'good',c:['#ff6fa8','#69db7c','#74c0fc','#ffd43b','#b197fc'][rnd(5)]}; } }
+function miniLoop(t){ if(current!=='mini'||!MG) return; const W=miniCv.width,H=miniCv.height,g=xg,gm=MG.game; const left=Math.max(0,MG.dur-(t-MG.t0));
+ const bg={fireflies:'#141838',lanterns:'#1f1640',broom:'#4dabf7',potion:'#2b2140'}[gm]; g.fillStyle=bg; g.fillRect(0,0,W,H);
+ if(gm==='fireflies'||gm==='lanterns'){ g.fillStyle='#1f6d3a'; g.fillRect(0,H-18,W,18); }
+ if(gm==='fireflies'){ g.fillStyle='#a5d8ff55'; g.fillRect(W-30,H-44,20,26); g.fillStyle='#8d5a2b'; g.fillRect(W-32,H-48,24,4); g.fillStyle='#fff59d'; for(let i=0;i<Math.min(MG.n2,20);i++) g.fillRect(W-28+(i*5)%16,H-22-Math.floor(i/4)*4,2,2);
+  for(const f of MG.things){ f.a+=(Math.random()-.5)*.3; f.x+=Math.cos(f.a)*f.s; f.y+=Math.sin(f.a)*f.s*.7; if(f.x<0||f.x>W) f.a=Math.PI-f.a; if(f.y<10||f.y>H-24) f.a=-f.a; f.x=Math.max(0,Math.min(W,f.x)); f.y=Math.max(10,Math.min(H-24,f.y)); f.ph+=.15;
+   const on=Math.sin(f.ph)>-.3; g.fillStyle=f.gold?'#ffd43b':'#c0eb75'; if(on){ g.globalAlpha=.3; g.fillRect(f.x-3,f.y-3,7,7); g.globalAlpha=1; } g.fillRect(Math.round(f.x),Math.round(f.y),f.gold?3:2,f.gold?3:2); } }
+ if(gm==='lanterns'){ g.fillStyle='#fff'; for(let i=0;i<20;i++) g.fillRect((i*37)%W,(i*23)%(H-30),1,1);
+  MG.things.forEach((l,i)=>{ l.y-=l.s; l.ph+=.05; const x=Math.round(l.x+Math.sin(l.ph)*3),y=Math.round(l.y); if(l.lit){ g.fillStyle=l.gold?'#ffd43b55':'#ff922b44'; g.fillRect(x-6,y-7,13,16); } g.fillStyle=l.lit?(l.gold?'#ffd43b':'#ff922b'):'#5c4b3a'; g.fillRect(x-3,y-4,7,9); g.fillStyle='#3b2f2f'; g.fillRect(x-2,y+5,5,1); if(y<-15) MG.things[i]=newThing(); }); }
+ if(gm==='broom'){ const laneY=k=>Math.round(H*(.25+k*.25)); g.fillStyle='#e7f5ff'; for(let i=0;i<6;i++){ const x=((i*71)-(t/30))%(W+40); g.fillRect((x+W+40)%(W+40)-20,(i*29)%H,16,5); }
+  if(Math.random()<.04) MG.things.push(newThing());
+  MG.things.forEach(o=>{ o.x-=o.s*1.4; const y=laneY(o.lane); if(o.kind==='star'){ g.fillStyle='#ffd43b'; g.fillRect(Math.round(o.x)-2,y-2,5,5); g.fillRect(Math.round(o.x),y-4,1,9); g.fillRect(Math.round(o.x)-4,y,9,1); } else { g.fillStyle='#495057'; g.fillRect(Math.round(o.x)-7,y-4,15,7); g.fillStyle='#74c0fc'; g.fillRect(Math.round(o.x)-5,y+4,1,3); g.fillRect(Math.round(o.x),y+4,1,3); } });
+  const ny=laneY(MG.lane), bx=Math.round(W*.18); g.fillStyle='#8d5a2b'; g.fillRect(bx-10,ny+4,22,2); g.fillStyle='#c9a26b'; g.fillRect(bx-14,ny+2,5,6); g.fillStyle='#7048e8'; g.fillRect(bx-3,ny-4,7,8); g.fillStyle='#ffd8be'; g.fillRect(bx-2,ny-9,5,5); g.fillStyle='#1d1d24'; g.fillRect(bx-3,ny-10,7,2); g.fillRect(bx+3,ny-9,2,3);
+  MG.things=MG.things.filter(o=>{ if(o.x<-10) return false; if(o.lane===MG.lane&&Math.abs(o.x-bx)<6){ const sx=miniCv.getBoundingClientRect(); const px=sx.left+o.x/W*sx.width, py=sx.top+laneY(o.lane)/H*sx.height;
+    if(o.kind==='star'){ MG.n2++; Snd.sfx('catch'); FX.burst(px,py,{n:14,speed:5,size:4}); } else { MG.n2=Math.max(0,MG.n2-2); Snd.sfx('poof'); FX.smoke([[px,py]]); FX.text(px,py-10,'-2','#a5d8ff',30); } return false; } return true; }); }
+ if(gm==='potion'){ const cx=Math.round(MG.cx*W), cy=H-14; if(Math.random()<.05) MG.things.push(newThing());
+  MG.things.forEach(o=>{ o.y+=o.s; const x=Math.round(o.x),y=Math.round(o.y); if(o.kind==='sock'){ g.fillStyle='#ced4da'; g.fillRect(x-3,y-6,5,9); g.fillRect(x-3,y+2,9,4); g.fillStyle='#868e96'; g.fillRect(x-3,y-6,5,2); g.fillStyle='#94d82d'; g.fillRect(x+4,y-8,1,2); g.fillRect(x+6,y-6,1,2); } else { const c=o.kind==='gold'?'#ffd43b':o.c; g.fillStyle=c+'55'; g.fillRect(x-5,y-5,11,11); g.fillStyle=c; g.fillRect(x-3,y-4,7,8); g.fillRect(x-4,y-2,9,4); g.fillStyle='#fff'; g.fillRect(x-2,y-3,2,2); } });
+  g.fillStyle='#212529'; g.fillRect(cx-13,cy-7,26,13); g.fillRect(cx-15,cy-8,30,3); g.fillStyle='#69db7c'; g.fillRect(cx-11,cy-6,22,3); g.fillStyle='#ffd43b'; g.fillRect(cx-1,cy+6,2,2); if(Math.random()<.3){ g.fillStyle='#b2f2bb'; g.fillRect(cx-6+rnd(12),cy-10-rnd(4),2,2); }
+  MG.things=MG.things.filter(o=>{ if(o.y>H+6) return false; if(o.y>cy-8&&o.y<cy+4&&Math.abs(o.x-cx)<13){ const r=miniCv.getBoundingClientRect(), px=r.left+o.x/W*r.width, py=r.top+cy/H*r.height;
+    if(o.kind==='sock'){ MG.n2=Math.max(0,MG.n2-2); Snd.sfx('poof'); FX.smoke([[px,py]]); FX.text(px,py-20,'P-U!','#94d82d',34); } else { const v=o.kind==='gold'?3:1; MG.n2+=v; Snd.sfx(v>1?'gold':'catch'); FX.burst(px,py,{n:v>1?30:12,colors:[o.kind==='gold'?'#ffd43b':o.c,'#fff'],speed:5,size:4}); } return false; } return true; }); }
  MG.pops=MG.pops.filter(p=>t-p.t<500); for(const p of MG.pops){ g.fillStyle='#fff'; g.font='8px Unifont,monospace'; g.fillText(p.txt,p.x,p.y-(t-p.t)/40); }
- $('#miniN').textContent=MG.n; $('#miniT').textContent=Math.ceil(left/1000);
- if(left<=0&&!MG.over){ MG.over=true; const n=MG.n, nb=n>S.best; if(nb){S.best=n;} S.done.fly=true; S.stars+=1; sessionMissions++; save(); refreshStars();
-  setTimeout(()=>resultScreen(nb?`New record: ${n} fireflies!`:`You caught ${n} fireflies!`,'🫙✨','+1 magic star · the garden glows',null),400); return; }
+ $('#miniN').textContent=MG.n2; $('#miniT').textContent=Math.ceil(left/1000);
+ if(left<=0&&!MG.over){ MG.over=true; const sc2=MG.n2, nb=sc2>(S.bests[gm]||0); if(nb) S.bests[gm]=sc2; markDone(MG.n,MG.m,1);
+  setTimeout(()=>resultScreen(nb?`New record: ${sc2} ${MINI[gm].unit}!`:`You got ${sc2} ${MINI[gm].unit}!`,'🎉✨','+1 magic star',null,MG.n),400); return; }
  requestAnimationFrame(miniLoop); }
-miniCv.addEventListener('pointerdown',e=>{ if(!MG||MG.over) return; e.preventDefault(); const r=miniCv.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*miniCv.width,y=(e.clientY-r.top)/r.height*miniCv.height; const rad=innerWidth<800?16:11;
- let hit=false; MG.flies.forEach((f,i)=>{ if(!hit&&Math.hypot(f.x-x,f.y-y)<rad){ hit=true; MG.n+=f.gold?3:1; MG.pops.push({x:f.x,y:f.y,t:performance.now(),txt:f.gold?'+3':'+1'}); Snd.sfx(f.gold?'gold':'catch'); FX.burst(e.clientX,e.clientY,{n:f.gold?40:16,colors:f.gold?['#ffd43b','#fff3bf']:['#c0eb75','#fff59d'],speed:f.gold?8:5,size:f.gold?6:4}); if(f.gold) FX.text(e.clientX,e.clientY-20,'+3','#ffd43b',40); MG.flies[i]=newFly(); } }); });
+function miniXY(e){ const r=miniCv.getBoundingClientRect(); return [(e.clientX-r.left)/r.width*miniCv.width,(e.clientY-r.top)/r.height*miniCv.height,r]; }
+miniCv.addEventListener('pointerdown',e=>{ if(!MG||MG.over) return; e.preventDefault(); const [x,y]=miniXY(e); const gm=MG.game, rad=innerWidth<800?16:11;
+ if(gm==='broom'){ const ny=miniCv.height*(.25+MG.lane*.25); MG.lane=Math.max(0,Math.min(2,MG.lane+(y<ny?-1:1))); Snd.sfx('tap'); return; }
+ if(gm==='potion'){ MG.drag=true; MG.cx=Math.max(.05,Math.min(.95,x/miniCv.width)); try{miniCv.setPointerCapture(e.pointerId);}catch(_){} return; }
+ let hit=false; MG.things.forEach((f,i)=>{ if(hit||(gm==='lanterns'&&f.lit)) return; if(Math.hypot(f.x-x,f.y-y)<rad){ hit=true; MG.n2+=f.gold?3:1; Snd.sfx(f.gold?'gold':'catch'); FX.burst(e.clientX,e.clientY,{n:f.gold?40:16,colors:f.gold?['#ffd43b','#fff3bf']:(gm==='lanterns'?['#ff922b','#ffd43b']:['#c0eb75','#fff59d']),speed:f.gold?8:5,size:f.gold?6:4}); if(f.gold) FX.text(e.clientX,e.clientY-20,'+3','#ffd43b',40);
+   if(gm==='lanterns') f.lit=true; else MG.things[i]=newThing(); } }); });
+miniCv.addEventListener('pointermove',e=>{ if(MG&&MG.game==='potion'&&MG.drag){ const [x]=miniXY(e); MG.cx=Math.max(.05,Math.min(.95,x/miniCv.width)); } });
+['pointerup','pointercancel'].forEach(k=>miniCv.addEventListener(k,()=>{ if(MG) MG.drag=false; }));
 $('#miniBack').onclick=()=>{ MG=null; goMap(); };
 
 // ============ parent gate / reset ============
@@ -1208,13 +1494,13 @@ addEventListener('error',()=>{ try{ pad.demo=null; if(current==='play'&&!(M&&M.b
 
 // ============ test hook ============
 window.__test={
- state:()=>({screen:current, mission:M&&M.m&&M.m.id, item:M&&M.items&&M.items[M.i], trial:T&&T.i, word:M&&M.word, hp:M&&M.mon&&M.mon.hp, story:current==='story'?storyIdx:null, done:Object.assign({},S.done), stars:S.stars, level:S.level}),
+ state:()=>({screen:current, mission:M&&M.m&&M.m.id, item:M&&M.items&&M.items[M.i], trial:T&&T.i, word:M&&M.word, hp:M&&M.mon&&M.mon.hp, phase:M&&M.phase, story:current==='story'?storyIdx:null, done:Object.assign({},S.done), stars:S.stars, level:S.level, ch:S.ch, view:S.view, allDone:S.allDone}),
  solve:()=>{
   if(current==='title') return $('#startBtn').click();
   if(current==='story'){ const L=storyLines[storyIdx]; if(L&&L.choices){ const i=L.choices.findIndex(c=>c.ok); $('#stChoices').children[i].click(); } else $('#stNext').click(); return; }
   if(current==='play'&&M&&M.battle&&!M.word){ const bs=[...$('#cards').children]; const w=bs.find(b=>b.classList.contains('weak'))||bs[0]; w&&w.click(); return; }
   if(current==='play'){ pad.strokes=pad.L.strokes.map(s=>s.pts.slice()); pad.draw(); $('#padCast').click(); return; }
-  if(current==='map'){ const m=nextMain(); if(m) openSpot(MISSIONS.indexOf(m)); return; }
+  if(current==='map'){ const m=nextMain(S.view); if(m) return openSpot(m); const mini=CH(S.view).missions.find(x=>x.kind==='mini'&&!isDone(S.view,x.id)&&isOpen(S.view,x)); if(mini) return openSpot(mini); if(!S.chDone[S.view]) return chapterEnd(S.view); if(S.view<S.ch&&S.view<CHAPTERS.length){ S.view++; spotsKey=''; } return; }
   if(current==='mini'){ if(MG) MG.dur=0; return; }
   if(current==='result') return $('#resNext').click();
   if(current==='brk') return $('#brkDone').click();
@@ -1222,7 +1508,7 @@ window.__test={
  resetSession:()=>{ sessionMissions=0; }
 };
 </script>
-<div id="kaVer" data-v="1.2" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-26</div>
+<div id="kaVer" data-v="2.0" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.0 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
