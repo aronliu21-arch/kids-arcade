@@ -127,7 +127,7 @@ body.hinted .screen{padding-bottom:44px!important}
  <div class="sub">Nora's Wand-Writing<span>幼晴的魔杖草寫課</span></div>
  <h1>Inkwell Academy</h1>
  <button class="btn" id="tap">▶ Tap to start<small>點一下開始</small></button>
- <div class="row"><button class="btn ghost" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost" id="sndBtn">🔊 Sound</button></div>
+ <div class="row"><button class="btn ghost" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost" id="castBtn2">🎭 Voices</button><button class="btn ghost" id="sndBtn">🔊 Sound</button></div>
 </section>
 
 <section class="screen" id="story">
@@ -168,7 +168,7 @@ body.hinted .screen{padding-bottom:44px!important}
 <script src="../../../house.js"></script>
 <script>
 "use strict";
-const VERSION="1.2";
+const VERSION="1.3";
 // Cursive letter centerlines. Units: x-height = 1. Baseline y=0, midline y=-1, ascender y≈-2.1, descender y≈+1.1 (y points down).
 // Every joining letter starts at (0,0) and ends at (w,0), so letters chain into one stroke.
 // extras = separate strokes (i dot, t cross). join:false = letter does not connect to the next (capital O).
@@ -242,7 +242,7 @@ function sfx(k){audio();if(!AC||muted)return;const t=AC.currentTime;
  if(k==="gate")[40,43,47].forEach((n,i)=>tone(N(n),t+i*.2,1.4,"sawtooth",.05));}
 function setMute(m){muted=m;try{localStorage.setItem("wandwrite-mute",m?"1":"0");}catch(e){}if(master)master.gain.value=m?0:1;if(m)voiceStop();
  ["sndBtn","sndBtn2"].forEach(id=>{const b=document.getElementById(id);b.textContent=(m?"🔇":"🔊")+(id==="sndBtn"?" Sound":"");});}
-const voiceSay=(t,o)=>{if(muted)return;try{KAVoice.say(t,o);}catch(e){}};
+const voiceSay=(t,o)=>{if(muted)return;try{KAVoice.say(t,Object.assign({cast:["Samantha","Allison","Evan","Nathan","Susan","Ava"],rate:.97,pitch:1},o||{}));}catch(e){}};
 const voiceStop=()=>{try{KAVoice.stop();}catch(e){}};
 
 // ================= painted scene =================
@@ -413,12 +413,17 @@ function orientHint(){const h=document.getElementById("hint");const phone=Math.m
 
 // ================= JRPG dialogue: animated character busts =================
 const CHAR={
- nora:{name:"Nora",col:"#7048e8",hair:"#17171d",skin:"#ffe0c8",robe:"#7048e8",trim:"#ffd43b",eye:"#7a4520",bold:true,pitch:1.1,blip:72},
- mei:{name:"Mei",col:"#2f9e44",hair:"#6b3d1f",skin:"#f6d5bb",robe:"#2f9e44",trim:"#d3f9d8",eye:"#4a2c17",pitch:1.3,blip:79},
- iris:{name:"Iris",col:"#c92a2a",hair:"#e8b64a",skin:"#f8dcc4",robe:"#e03131",trim:"#ffe066",eye:"#2f6db5",pitch:1.2,blip:76},
- gran:{name:"Grandma",col:"#364fc7",hair:"#d0d0da",skin:"#f0cdb5",robe:"#364fc7",trim:"#ced4da",eye:"#5a3a22",pitch:.95,blip:64},
- lantern:{name:"Gate Lantern",col:"#b7791f",pitch:.8,blip:55},
+ nora:{name:"Nora",cast:["Nicky","Ava","Samantha","Allison","Zoe"],rate:1.0,col:"#7048e8",hair:"#17171d",skin:"#ffe0c8",robe:"#7048e8",trim:"#ffd43b",eye:"#7a4520",bold:true,pitch:1.15,blip:72},
+ mei:{name:"Mei",cast:["Zoe","Joelle","Allison","Susan","Samantha"],rate:.95,col:"#2f9e44",hair:"#6b3d1f",skin:"#f6d5bb",robe:"#2f9e44",trim:"#d3f9d8",eye:"#4a2c17",pitch:1.3,blip:79},
+ iris:{name:"Iris",cast:["Serena","Kate","Stephanie","Martha","Moira"],rate:1.05,col:"#c92a2a",hair:"#e8b64a",skin:"#f8dcc4",robe:"#e03131",trim:"#ffe066",eye:"#2f6db5",pitch:1.2,blip:76},
+ gran:{name:"Grandma",cast:["Moira","Karen","Martha","Susan","Samantha"],rate:.9,col:"#364fc7",hair:"#d0d0da",skin:"#f0cdb5",robe:"#364fc7",trim:"#ced4da",eye:"#5a3a22",pitch:.95,blip:64},
+ lantern:{name:"Gate Lantern",cast:["Daniel","Arthur","Oliver","Aaron","Tom","Fred"],rate:.92,col:"#b7791f",pitch:.75,blip:55},
 };
+const NARR={name:"Narrator",cast:["Samantha","Allison","Evan","Nathan","Susan","Ava"],rate:.97,pitch:1};
+// emotion → how the line is spoken (speed / pitch change)
+const PROS={happy:[.08,.1],surprised:[.12,.15],nervous:[.06,.05],determined:[.03,-.03],sad:[-.12,-.12],shy:[-.08,.05],smug:[-.04,-.06],annoyed:[.05,-.05],warm:[-.05,0],stern:[-.06,-.1],normal:[0,0]};
+function speakAs(who,emo,text,onEnd){const c=CHAR[who]||NARR,pr=PROS[emo]||PROS.normal;
+ try{KAVoice.say(text,{cast:c.cast,rate:Math.max(.6,(c.rate||1)+pr[0]),pitch:Math.max(.5,(c.pitch||1)+pr[1]),onEnd});}catch(e){onEnd&&onEnd();}}
 // expression → eyes / brows / closed mouth / open mouth / extras
 const EMO={
  normal:{eye:"n",brow:"M-38 -24q12-6 24-3M14 -27q12-3 24 3",mc:"smile",mo:"o",x:[]},
@@ -514,14 +519,14 @@ function step(){clearInterval(typer);clearTimeout(talkT);const L=lines[li];
  // typewriter + moving mouth + read-aloud voice
  const txt=document.getElementById("txt"),full=L.t;let i=0;txt.textContent="";typing=true;talk(who);
  const voiceOn=!muted&&("speechSynthesis" in window);let spoken=!voiceOn;
- voiceStop();if(voiceOn){try{KAVoice.say(full,{pitch:c?c.pitch:1,onEnd(){spoken=true;if(!typing)talk(null);}});}catch(e){spoken=true;}}
+ voiceStop();if(voiceOn)speakAs(who,emo,full,()=>{spoken=true;if(!typing)talk(null);});
  typer=setInterval(()=>{i+=1;txt.textContent=full.slice(0,i);if(!voiceOn&&c&&i%3===0)sfx("blip",c.blip);
   if(i>=full.length){clearInterval(typer);typing=false;jbox.classList.add("ready");if(spoken)talk(null);}},reduce?1:28);
  talkT=setTimeout(()=>talk(null),full.length*95+800);
  if(L.fx)L.fx();}
 function advance(){if(typing){clearInterval(typer);typing=false;document.getElementById("txt").textContent=lines[li].t;jbox.classList.add("ready");return;}sfx("tick");li++;step();}
 jbox.addEventListener("click",e=>{if(e.target.closest("#sayBtn"))return;advance();});
-document.getElementById("sayBtn").onclick=e=>{e.stopPropagation();const L=lines[li];if(!L)return;voiceStop();if(muted)setMute(false);const w=L.who||"narr";talk(w);try{KAVoice.say(L.t,{pitch:CHAR[w]?CHAR[w].pitch:1,onEnd(){talk(null);}});}catch(_){}};
+document.getElementById("sayBtn").onclick=e=>{e.stopPropagation();const L=lines[li];if(!L)return;voiceStop();if(muted)setMute(false);const w=L.who||"narr";talk(w);speakAs(w,L.emo,L.t,()=>talk(null));};
 
 // ---- magic effects ----
 const fxc=document.getElementById("fx"),fx=fxc.getContext("2d");let parts=[],fxRaf=0;
@@ -712,6 +717,12 @@ function menu(){setView("far");SC.lit=5;SC.gate=false;drawScene();
   [{t:"▶ Chapter 1<small>第一章</small>",go:ch1},{t:"🪄 Retake Wand Trial",ghost:true,go:()=>{S.trial=null;save();setView("gate");wandTrial();}}]);}
 document.getElementById("tap").onclick=()=>{audio();try{AC.resume();}catch(e){}music(true);sfx("great");if(reduce){endIntro();return;}intro();
  setTimeout(()=>addEventListener("pointerdown",function sk(){removeEventListener("pointerdown",sk);endIntro();}),300);};
+document.getElementById("castBtn2").onclick=e=>{e.stopPropagation();audio();const rows=[["nora","happy","Hi! I'm Nora, and I'm ready for magic school!"],["mei","shy","Um… hi. I'm Mei. Nice to meet you."],["iris","smug","I'm Iris. Top of the class, obviously."],["gran","warm","Be brave, my dear Nora."],["lantern","stern","Halt! Show me what your wand can write."],["narr","normal","One snowy night, a letter arrived."]];
+ const o=document.createElement("div");o.style.cssText="position:fixed;inset:0;z-index:60;background:#0009;display:flex;align-items:center;justify-content:center;padding:12px";
+ const vn=c=>{try{const v=KAVoice.castVoice(c.cast)||KAVoice.voiceFor("en-US");return v?v.name:"(no voice found)";}catch(_){return "?";}};
+ o.innerHTML=`<div class="card" style="max-width:520px;text-align:left"><h2 style="text-align:center">🎭 Character voices</h2>`+rows.map(([w,e,t],i)=>{const c=CHAR[w]||NARR;return `<div style="display:flex;align-items:center;gap:10px;margin:6px 0;background:#fff;border-radius:12px;padding:6px 10px"><div style="width:44px;height:52px;flex:0 0 auto">${w==="narr"?"📖":bust(w,e)}</div><div style="flex:1"><b>${c.name}</b><br><small>${vn(c)}</small></div><button class="btn" data-i="${i}" style="min-height:48px">▶</button></div>`;}).join("")+
+ `<div class="tip">🎧 For livelier voices on the iPad: <b>Settings → Accessibility → Spoken Content → Voices → English</b>, then download <b>Premium</b> or <b>Enhanced</b> voices (e.g. Ava, Zoe, Serena, Moira, Daniel). The game picks them up automatically.</div><div style="text-align:center"><button class="btn ghost" data-x>Close</button></div></div>`;
+ document.body.appendChild(o);o.querySelectorAll("button[data-i]").forEach(b=>b.onclick=()=>{const [w,e,t]=rows[+b.dataset.i];voiceStop();if(muted)setMute(false);speakAs(w,e,t);});o.querySelector("[data-x]").onclick=()=>{voiceStop();o.remove();};};
 document.getElementById("voiceBtn").onclick=e=>{e.stopPropagation();try{KAVoice.picker();}catch(_){}};
 document.getElementById("sndBtn").onclick=e=>{e.stopPropagation();audio();setMute(!muted);};
 document.getElementById("sndBtn2").onclick=()=>{setMute(!muted);};
@@ -729,6 +740,6 @@ window.__test={
  skipIntro:()=>{document.getElementById("tap").click();setTimeout(endIntro,50);}
 };
 </script>
-<div id="kaVer" data-v="1.2" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-25</div>
+<div id="kaVer" data-v="1.3" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.3 · 2026-11-25</div>
 <script>document.getElementById("tap").addEventListener("click",()=>{const v=document.getElementById("kaVer");v&&(v.style.display="none");},{once:true});</script>
 </body></html>

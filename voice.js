@@ -39,10 +39,17 @@
   const clean = t => String(t || '').replace(/[”」』]/g, ', ').replace(/[“"「『*_~#—–]/g, ' ').replace(/…/g, ', ')
     .replace(/([,,。!?!?.:])(\s*,)+/g, '$1').replace(/(,\s*){2,}/g, ', ').replace(/\s+/g, ' ').trim();
   const langOf = t => /[一-鿿]/.test(t) ? 'zh-TW' : 'en-US';
-  function utter(text, l, pitch) {
-    const u = new SpeechSynthesisUtterance(text); u.lang = l; const v = voiceFor(l);
+  // opts.cast: list of preferred English voice names for a character (best installed match wins); opts.rate overrides speed
+  function castVoice(names) {
+    try { const vs = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang || '')); let best = null, bs = -1;
+      names.forEach((n, i) => vs.forEach(v => { const id = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+        if (id.indexOf(n.toLowerCase()) < 0) return; const s = (names.length - i) * 100 + score(v, (v.lang || 'en-US').replace('_', '-')); if (s > bs) { bs = s; best = v; } }));
+      return best; } catch (e) { return null; } }
+  function utter(text, l, pitch, opts) {
+    opts = opts || {};
+    const u = new SpeechSynthesisUtterance(text); u.lang = l; const v = (l === 'en-US' && opts.cast && castVoice(opts.cast)) || voiceFor(l);
     if (v) { u.voice = v; if (v.lang) u.lang = v.lang; }
-    u.rate = l === 'en-US' ? .88 : .8; u.pitch = pitch || 1.15; return u;
+    u.rate = opts.rate || (l === 'en-US' ? .88 : .8); u.pitch = pitch || 1.15; try { u.__ka = 1; } catch (e) {} return u;
   }
   function sayParts(parts, opts) {
     opts = opts || {}; if (!hasTTS()) { opts.onEnd && setTimeout(opts.onEnd, 50); return; }
@@ -50,7 +57,7 @@
       speechSynthesis.cancel();
       const list = (parts || []).map(([t, l]) => [clean(t), l || langOf(t)]).filter(([t]) => /[\p{L}\p{N}]/u.test(t));
       if (!list.length) { opts.onEnd && setTimeout(opts.onEnd, 50); return; }
-      list.forEach(([t, l], k) => { const u = utter(t, l, opts.pitch); if (k === list.length - 1 && opts.onEnd) u.onend = () => setTimeout(opts.onEnd, 50); speechSynthesis.speak(u); });
+      list.forEach(([t, l], k) => { const u = utter(t, l, opts.pitch, opts); if (k === list.length - 1 && opts.onEnd) u.onend = () => setTimeout(opts.onEnd, 50); speechSynthesis.speak(u); });
     } catch (e) {}
   }
   const say = (text, opts) => sayParts([[text, langOf(clean(text))]], opts);
@@ -71,7 +78,7 @@
     };
     draw(); document.body.appendChild(m);
   }
-  window.KAVoice = { say, sayParts, stop, picker, voiceFor, zhVoices, langOf };
+  window.KAVoice = { say, sayParts, stop, picker, voiceFor, zhVoices, langOf, castVoice };
   // Older games call speechSynthesis.speak() themselves: give every utterance the shared voice too
   // (their own speed and character pitch stay as they are; quotes/symbols are not read aloud).
   if (hasTTS() && !speechSynthesis.__ka) {
@@ -79,7 +86,7 @@
       const orig = speechSynthesis.speak.bind(speechSynthesis);
       speechSynthesis.speak = function (u) {
         try {
-          if (u && typeof u.text === 'string') {
+          if (u && typeof u.text === 'string' && !u.__ka) {
             const c = clean(u.text); if (c && /[\p{L}\p{N}]/u.test(c)) u.text = c;
             const l = (/^(zh|yue)/i.test(u.lang || '') || /[一-鿿]/.test(u.text)) ? 'zh-TW' : (/^en/i.test(u.lang || '') || !u.lang ? 'en-US' : '');
             if (l) { const v = voiceFor(l); if (v) { u.voice = v; if (v.lang) u.lang = v.lang; } }
