@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1f3d1c">
+<title>Animal Safari Detective · 動物探險小偵探</title>
+<link rel="preload" as="image" href="art/cover.webp">
+<style>
+/*CSS*/
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- title -->
+  <section id="title" class="screen on">
+    <img class="cover" src="art/cover.webp" alt="">
+    <div class="plaque" id="titlePlaque"></div>
+    <div class="titleBtns">
+      <button class="bigBtn play" id="btnPlay" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="bigBtn book" id="btnBook" aria-label="Sticker book"><img src="art/lens.webp" alt=""><span id="stickerCount">0</span></button>
+    </div>
+    <div class="langPill" id="langPill"><button data-l="en">English</button><button data-l="zh">中文</button></div>
+    <button class="gear" id="btnGear" aria-label="Grown-up settings"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.6 4.7l1.9 1.5-1.9 3.3-2.3-.8c-.6.5-1.3.9-2 1.2l-.4 2.4h-3.8l-.4-2.4c-.7-.3-1.4-.7-2-1.2l-2.3.8-1.9-3.3 1.9-1.5a7 7 0 0 1 0-2.4L1.5 9.3l1.9-3.3 2.3.8c.6-.5 1.3-.9 2-1.2L8.1 3.2h3.8l.4 2.4c.7.3 1.4.7 2 1.2l2.3-.8 1.9 3.3-1.9 1.5a7 7 0 0 1 0 2.4z"/></svg><span>Grown-ups</span></button>
+  </section>
+
+  <!-- map -->
+  <section id="map" class="screen">
+    <div class="mapHead"><button class="hud home" data-go="title" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M12 3l10 9h-3v8h-5v-6h-4v6H5v-8H2z"/></svg></button>
+      <div class="mapTitle" id="mapTitle"></div>
+      <button class="hud" id="mapBook" aria-label="Sticker book"><svg viewBox="0 0 24 24"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-4a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h4z"/></svg></button></div>
+    <div class="cards" id="cards"></div>
+    <img class="mapLeo" src="art/leo.webp" alt=""><img class="mapCoco" src="art/coco_happy.webp" alt="">
+  </section>
+
+  <!-- explorable scene -->
+  <section id="scene" class="screen">
+    <div id="stage">
+      <div id="world"><img id="bg" alt=""><div id="fx"></div></div>
+      <div id="fg"><img src="art/fg_plants.webp" alt=""></div>
+      <div id="motes"></div>
+    </div>
+    <div id="hudTop">
+      <button class="hud home" id="btnHome" aria-label="Map"><svg viewBox="0 0 24 24"><path d="M12 3l10 9h-3v8h-5v-6h-4v6H5v-8H2z"/></svg></button>
+      <div id="tray"></div>
+      <div class="hudR">
+        <button class="hud" id="btnReplay" aria-label="Say it again"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg></button>
+        <button class="hud" id="btnMute" aria-label="Sound"><svg viewBox="0 0 24 24"><path class="spk" d="M4 9h4l5-4v14l-5-4H4z"/><path class="on" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2.2" stroke-linecap="round"/><path class="off" d="M16 9l6 6m0-6l-6 6" fill="none" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+    <div id="bubble" class="bubble"><img src="art/coco_happy.webp" alt=""><div class="txt"></div></div>
+    <button class="arrow left" id="arL" aria-label="Walk left"><svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/></svg></button>
+    <button class="arrow right" id="arR" aria-label="Walk right"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/></svg></button>
+    <div id="panel" class="panelWrap"><div class="panel"><div class="pBody" id="pBody"></div></div></div>
+  </section>
+
+  <!-- sticker journal -->
+  <section id="journal" class="screen">
+    <div class="mapHead"><button class="hud home" id="jBack" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="mapTitle" id="jTitle"></div><span style="width:64px"></span></div>
+    <div class="jbook"><div class="pg" id="jStickers"></div><div class="pg" id="jCases"></div></div>
+  </section>
+
+  <div id="settings" class="modal"></div>
+  <div id="rotateHint"></div>
+</div>
+<div id="kaVer" data-v="1.0" data-d="2026-11-27">v1.0 · 2026-11-27</div>
+<script src="../../voice.js"></script>
+<script src="../../kit.js"></script>
+<script src="../../tracker.js"></script>
+<script>
+/*JS*/
+</script>
+</body>
+</html>

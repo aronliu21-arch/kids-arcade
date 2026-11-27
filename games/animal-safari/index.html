@@ -1,0 +1,1403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1f3d1c">
+<title>Animal Safari Detective · 動物探險小偵探</title>
+<link rel="preload" as="image" href="art/cover.webp">
+<style>
+:root{--wood1:#a86a35;--wood2:#7a4520;--wood3:#5a3014;--cream:#fff6e2;--paper:#fbefd2;--ink:#4a2a12;--leaf:#3f8f3a;--leaf2:#2f6e2b;--teal:#2fa39a;--gold:#ffc83d;
+  --fnt:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Nunito","PingFang TC","Heiti TC",system-ui,sans-serif;--safeT:env(safe-area-inset-top,0px);--safeB:env(safe-area-inset-bottom,0px);--safeL:env(safe-area-inset-left,0px);--safeR:env(safe-area-inset-right,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#1f3d1c;color:var(--ink);font-family:var(--fnt);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;overscroll-behavior:none}
+img{-webkit-user-drag:none;user-drag:none;pointer-events:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
+svg{display:block}
+#app{position:fixed;inset:0;overflow:hidden}
+.screen{position:absolute;inset:0;display:none;overflow:hidden}
+.screen.on{display:block;animation:fadeIn .45s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+ruby{ruby-position:over;ruby-align:center}rt{font-size:.36em;letter-spacing:-.04em;font-weight:600;opacity:.85;white-space:nowrap}
+/* ---------- title ---------- */
+#title{background:#5c8f3a}
+#title .cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:13% 50%}
+#title::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,0) 40%,rgba(10,30,5,.35));pointer-events:none}
+.plaque{position:absolute;z-index:2;left:0;top:max(12px,var(--safeT));padding:14px 26px 16px max(30px,calc(var(--safeL) + 22px));border-radius:0 22px 22px 0;border-left:0!important;color:#fff3cf;text-align:center;
+  background:linear-gradient(180deg,#b57538,#8a4f22 55%,#6d3a17);border:4px solid #4f2a10;box-shadow:0 8px 0 #3d200b,0 14px 26px rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.25);text-shadow:0 3px 0 #4f2a10;max-width:min(92vw,560px)}
+.plaque .en{font-size:clamp(26px,5.2vmin,52px);font-weight:900;line-height:1.02;letter-spacing:.5px}
+.plaque .zh{font-size:clamp(17px,3.2vmin,30px);font-weight:800;margin-top:4px;color:#ffe9a8}
+.plaque .paw{display:inline-block;width:.8em;height:.8em;vertical-align:-.05em;margin-left:.2em}
+.titleBtns{position:absolute;z-index:3;right:max(22px,var(--safeR));bottom:max(22px,calc(var(--safeB) + 12px));display:flex;gap:18px;align-items:flex-end}
+.bigBtn{width:clamp(96px,18vmin,150px);height:clamp(96px,18vmin,150px);border-radius:50%;display:grid;place-items:center;position:relative;
+  box-shadow:0 8px 0 rgba(0,0,0,.28),0 14px 26px rgba(0,0,0,.3),inset 0 3px 0 rgba(255,255,255,.4);border:5px solid #fff}
+.bigBtn.play{background:radial-gradient(circle at 35% 30%,#7fe06a,#2f9a2a 70%);animation:pulse 1.6s ease-in-out infinite}
+.bigBtn.play svg{width:52%;fill:#fff;filter:drop-shadow(0 3px 0 rgba(0,0,0,.25));margin-left:8%}
+.bigBtn.book{width:clamp(76px,13vmin,110px);height:clamp(76px,13vmin,110px);background:radial-gradient(circle at 35% 30%,#ffe18a,#e9a21b 75%)}
+.bigBtn.book img{width:46%}
+.bigBtn.book span{position:absolute;right:-6px;top:-6px;min-width:34px;height:34px;border-radius:17px;background:#e8590c;color:#fff;font-weight:900;font-size:18px;display:grid;place-items:center;border:3px solid #fff;padding:0 6px}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.langPill{position:absolute;z-index:3;left:max(14px,var(--safeL));bottom:max(16px,calc(var(--safeB) + 10px));display:flex;background:rgba(255,246,226,.92);border-radius:999px;padding:5px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.langPill button{min-width:88px;height:52px;border-radius:999px;font-weight:800;font-size:19px;color:#6d4520}
+.langPill button.sel{background:var(--teal);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.gear{position:absolute;z-index:3;right:max(14px,var(--safeR));top:max(12px,var(--safeT));display:flex;gap:6px;align-items:center;height:48px;padding:0 14px;border-radius:24px;background:rgba(255,246,226,.85);font-weight:700;font-size:14px;color:#6d4520}
+.gear svg{width:22px;fill:#6d4520}
+/* ---------- map ---------- */
+#map,#journal{background:radial-gradient(ellipse at 50% 30%,#fbe8bf,#e8c98d 70%,#d2a868)}
+#map::before,#journal::before{content:"";position:absolute;inset:0;background:url(art/trail.webp) center/cover;opacity:.18;filter:blur(2px)}
+.mapHead{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:max(10px,var(--safeT)) max(12px,var(--safeR)) 0 max(12px,var(--safeL))}
+.mapTitle{font-size:clamp(22px,4.4vmin,40px);font-weight:900;color:#5a3014;text-align:center;text-shadow:0 2px 0 #fff8;padding:0 8px}
+.hud{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(180deg,#b57538,#7a4520);border:3px solid #4f2a10;box-shadow:0 5px 0 #3d200b,0 8px 16px rgba(0,0,0,.3)}
+.hud svg{width:34px;fill:#fff3cf;stroke:#fff3cf}
+.hud:active{transform:translateY(3px);box-shadow:0 2px 0 #3d200b}
+.cards{position:absolute;z-index:2;left:0;right:0;top:calc(max(10px,var(--safeT)) + 80px);bottom:max(14px,var(--safeB));display:flex;gap:2.4vw;align-items:center;justify-content:center;padding:0 3vw}
+.card{position:relative;flex:1 1 0;max-width:340px;aspect-ratio:.82;border-radius:26px;background:var(--cream);border:5px solid #fff;box-shadow:0 10px 0 #b98a4c,0 16px 30px rgba(60,30,0,.35);overflow:hidden;display:flex;flex-direction:column;transition:transform .15s}
+.card:active{transform:scale(.97)}
+.card .pic{flex:1;background-size:cover;background-position:center;position:relative}
+.card .nm{padding:10px 8px 12px;text-align:center;font-weight:900;font-size:clamp(17px,2.6vmin,26px);color:#5a3014;line-height:1.15}
+.card .nm small{display:block;font-size:.72em;color:#8a5a2b;font-weight:800}
+.card .solved{position:absolute;right:10px;top:10px;display:flex;gap:4px;align-items:center;background:rgba(255,255,255,.9);border-radius:999px;padding:4px 10px 4px 6px;font-weight:900;color:#e8590c;font-size:20px}
+.card .solved img{width:30px}
+.card .num{position:absolute;left:10px;top:10px;width:46px;height:46px;border-radius:50%;background:var(--teal);color:#fff;font-weight:900;font-size:24px;display:grid;place-items:center;border:3px solid #fff}
+.mapLeo,.mapCoco{position:absolute;z-index:1;bottom:0;pointer-events:none}
+.mapLeo{left:1vw;height:28vh;opacity:.0}.mapCoco{right:1vw;height:16vh;opacity:0}
+body.portrait .cards{flex-direction:column;gap:2.2vh;padding:0 7vw}
+body.portrait .card{flex-direction:row;width:100%;max-width:640px;aspect-ratio:auto;flex:1 1 0;max-height:250px}
+body.portrait .card .pic{flex:1.5}
+body.portrait .card .nm{flex:1;display:grid;place-content:center}
+/* ---------- scene ---------- */
+#scene{background:#1b2a14}
+body.portrait #scene{background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 38px,rgba(0,0,0,.18) 38px 41px),linear-gradient(90deg,#8a5426,#a86a35 30%,#8a5426 60%,#a86a35)}
+#stage{position:absolute;left:0;right:0;overflow:hidden;touch-action:none}
+body.portrait #stage{border-top:5px solid #6d3a17;border-bottom:5px solid #6d3a17;box-shadow:0 0 0 3px #3d200b}
+#world{position:absolute;left:0;top:0;will-change:transform}
+#bg{position:absolute;left:0;top:0;display:block}
+#fx{position:absolute;inset:0}
+#fg{position:absolute;left:0;bottom:-2px;pointer-events:none;z-index:40;will-change:transform}
+#fg img{display:block;height:100%;width:100%}
+#motes{position:absolute;inset:0;pointer-events:none;z-index:41;overflow:hidden}
+.mote{position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,#fff8c8,rgba(255,240,160,0));animation:float 9s linear infinite;opacity:.0}
+@keyframes float{0%{transform:translate(0,0);opacity:0}15%{opacity:.85}85%{opacity:.6}100%{transform:translate(40px,-120px);opacity:0}}
+.obj{position:absolute;transform-origin:50% 100%;touch-action:none}
+.obj img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 3px rgba(0,0,0,.28))}
+.obj.hot{cursor:pointer}
+.obj .shadow,.chr .shadow{position:absolute;left:10%;right:10%;bottom:-5%;height:12%;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.35),rgba(0,0,0,0) 70%);z-index:-1}
+.obj.hang{transform-origin:50% 0}
+.obj.hang .vine{position:absolute;left:calc(50% - 3px);bottom:92%;width:6px;height:600px;background:linear-gradient(90deg,#4d6b1f,#7c9a32,#4d6b1f);border-radius:3px}
+.obj.decal img{filter:none;opacity:.8}
+.obj.hotspot{border-radius:50%}
+.obj.done img{filter:drop-shadow(0 4px 3px rgba(0,0,0,.28)) saturate(.8)}
+.sparkle{position:absolute;inset:-18%;pointer-events:none;background:radial-gradient(circle,rgba(255,248,190,.0) 40%,rgba(255,236,120,.55) 55%,rgba(255,236,120,0) 70%);animation:glow 1.1s ease-in-out infinite;border-radius:50%}
+@keyframes glow{0%,100%{transform:scale(.85);opacity:.4}50%{transform:scale(1.1);opacity:1}}
+.twinkle{position:absolute;width:26px;height:26px;pointer-events:none;background:conic-gradient(from 0deg,transparent 0 40deg,#fff6a8 45deg,transparent 50deg 130deg,#fff6a8 135deg,transparent 140deg 220deg,#fff6a8 225deg,transparent 230deg 310deg,#fff6a8 315deg,transparent 320deg);border-radius:50%;animation:tw 1.2s ease-in-out infinite}
+@keyframes tw{0%,100%{transform:scale(.3) rotate(0);opacity:0}50%{transform:scale(1) rotate(45deg);opacity:1}}
+.chr{position:absolute;transform-origin:50% 100%;pointer-events:auto}
+.chr img{position:absolute;left:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 5px 4px rgba(0,0,0,.3))}
+.chr.flip img{transform:scaleX(-1)}
+.fall{position:absolute;pointer-events:none;z-index:30;filter:drop-shadow(0 3px 2px rgba(0,0,0,.3))}
+.leafbit{position:absolute;width:14px;height:9px;border-radius:0 80% 0 80%;background:#5aa63a;pointer-events:none;z-index:31}
+.ripple{position:absolute;border:3px solid rgba(255,255,255,.85);border-radius:50%;pointer-events:none;animation:rip 1s ease-out forwards}
+@keyframes rip{from{transform:scale(.2);opacity:1}to{transform:scale(1.6);opacity:0}}
+.mist{position:absolute;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(255,255,255,0) 0 18px,rgba(255,255,255,.22) 26px,rgba(255,255,255,0) 34px);background-size:100% 52px;animation:fallw .7s linear infinite;mix-blend-mode:screen;opacity:.45;filter:blur(3px);border-radius:40%}
+@keyframes fallw{to{background-position:0 52px}}
+.ray{position:absolute;pointer-events:none;background:linear-gradient(200deg,rgba(255,250,200,.45),rgba(255,250,200,0) 70%);filter:blur(6px);animation:rayp 6s ease-in-out infinite;transform-origin:top}
+@keyframes rayp{0%,100%{opacity:.35}50%{opacity:.75}}
+.flyer{position:absolute;pointer-events:none;z-index:5}
+/* hud */
+#hudTop{position:absolute;left:0;right:0;top:0;z-index:60;display:flex;align-items:flex-start;justify-content:space-between;padding:max(10px,var(--safeT)) max(12px,var(--safeR)) 0 max(12px,var(--safeL));pointer-events:none}
+#hudTop>*{pointer-events:auto}
+.hudR{display:flex;gap:10px}
+#btnMute .off{display:none;stroke:#fff3cf}#btnMute .on{stroke:#fff3cf}
+body.muted #btnMute .off{display:block}body.muted #btnMute .on{display:none}
+#tray{display:flex;gap:10px;padding:6px 12px;border-radius:22px;background:rgba(255,246,226,.9);box-shadow:0 5px 0 rgba(90,48,20,.35),0 8px 18px rgba(0,0,0,.25);border:3px solid #fff}
+.slot{width:58px;height:58px;border-radius:50%;background:#e9d6ad;display:grid;place-items:center;position:relative;overflow:hidden;box-shadow:inset 0 3px 6px rgba(0,0,0,.18)}
+.slot>img{width:56%;opacity:.35}
+.slot.full{background:#fff;box-shadow:0 0 0 3px var(--gold)}
+.slot .clueMini{position:absolute;inset:0}
+.slot.full>img{display:none}
+.arrow{position:absolute;z-index:60;bottom:max(16px,calc(var(--safeB) + 10px));width:clamp(84px,13vmin,118px);height:clamp(84px,13vmin,118px);border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,rgba(255,236,170,.95),rgba(232,170,60,.95) 75%);border:4px solid #fff;box-shadow:0 6px 0 rgba(120,70,10,.5),0 10px 20px rgba(0,0,0,.3);display:grid;place-items:center;touch-action:none}
+.arrow svg{width:52%;fill:none;stroke:#7a4520;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round}
+.arrow.left{left:max(16px,var(--safeL))}.arrow.right{right:max(16px,var(--safeR))}
+.arrow.press{transform:scale(.92)}
+.arrow.nudge{animation:nudge .8s ease-in-out 3}
+@keyframes nudge{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.bubble{position:absolute;z-index:61;left:50%;transform:translateX(-50%) translateY(-10px);top:calc(max(10px,var(--safeT)) + 84px);width:max-content;max-width:min(90vw,640px);display:flex;gap:10px;align-items:center;
+  background:rgba(255,250,236,.96);border-radius:22px;padding:8px 18px 8px 8px;box-shadow:0 6px 18px rgba(0,0,0,.25);border:3px solid #fff;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none}
+.bubble.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.bubble img{width:46px;height:46px;object-fit:contain;flex:none}
+.bubble .txt{font-size:clamp(15px,2.3vmin,21px);font-weight:700;line-height:1.35;color:#4a2a12}
+body.zh .bubble .txt{line-height:1.6}
+body.portrait .arrow{bottom:max(18px,calc(var(--safeB) + 14px))}
+/* ---------- activity panel ---------- */
+.panelWrap{position:absolute;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(20,30,10,.45);padding:max(10px,var(--safeT)) max(10px,var(--safeR)) max(10px,var(--safeB)) max(10px,var(--safeL))}
+.panelWrap.on{display:flex;animation:fadeIn .3s}
+.panel{position:relative;width:min(96vw,980px);height:min(94%,700px);border-radius:30px;background:linear-gradient(180deg,#fff8e6,#f6e3b9);border:6px solid #fff;
+  box-shadow:0 0 0 5px #8a4f22,0 18px 40px rgba(0,0,0,.45);overflow:hidden;animation:popIn .35s cubic-bezier(.3,1.5,.6,1)}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:none;opacity:1}}
+.panel::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 46px,rgba(160,110,50,.07) 46px 48px);pointer-events:none}
+.pBody{position:absolute;inset:0}
+.pCoco{position:absolute;left:10px;bottom:6px;height:min(26%,150px);z-index:3;pointer-events:none;transform-origin:50% 100%}
+.pCoco.talk{animation:talk .5s ease-in-out infinite}
+@keyframes talk{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.97)}}
+.pClose{position:absolute;right:10px;top:10px;z-index:5;width:56px;height:56px;border-radius:50%;background:#e9d6ad;display:grid;place-items:center;font-size:30px;font-weight:900;color:#7a4520}
+.zone{position:absolute;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;align-content:center}
+.item{position:relative;display:grid;place-items:center;border-radius:50%;transition:transform .2s}
+.item img{width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 4px 3px rgba(0,0,0,.25));pointer-events:none}
+.item .n{position:absolute;right:-4px;top:-6px;min-width:38px;height:38px;border-radius:19px;background:var(--teal);color:#fff;font-weight:900;font-size:22px;display:grid;place-items:center;border:3px solid #fff;transform:scale(0);transition:transform .25s cubic-bezier(.3,1.6,.6,1)}
+.item.on .n{transform:scale(1)}
+.item.hl{transform:scale(1.22)}
+.bounce{animation:bounce .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bounce{0%{transform:scale(1)}40%{transform:scale(1.28) translateY(-8%)}100%{transform:scale(1)}}
+.shake{animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px) rotate(-4deg)}40%{transform:translateX(9px) rotate(3deg)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.opts{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:clamp(12px,3vw,34px)}
+.opt{width:clamp(92px,15vmin,138px);height:clamp(92px,15vmin,138px);border-radius:28px;background:linear-gradient(180deg,#fffdf6,#ffe9b8);border:4px solid #fff;box-shadow:0 7px 0 #c48a3c,0 10px 18px rgba(0,0,0,.2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:#5a3014;transition:transform .15s,opacity .3s;animation:popIn .35s backwards}
+.opt .big{font-size:clamp(44px,7.5vmin,68px);line-height:1}
+.opt .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;max-width:78%;margin-top:4px}
+.opt .dots i{width:9px;height:9px;border-radius:50%;background:#e8590c}
+.opt:active{transform:translateY(4px)}
+.opt.no{opacity:.28;pointer-events:none;filter:grayscale(1)}
+.opt.glow{box-shadow:0 7px 0 #c48a3c,0 0 0 6px #ffd43b,0 0 30px 10px rgba(255,212,59,.9);animation:pulse 1s infinite}
+.opt.yes{background:linear-gradient(180deg,#d3f9d8,#8ce99a);box-shadow:0 7px 0 #2b8a3e,0 0 0 6px #fff}
+.opt.zy .big{font-family:"PingFang TC","Heiti TC",var(--fnt)}
+.leafpad{position:absolute;border-radius:50% 50% 46% 54%/60% 60% 40% 40%;background:radial-gradient(ellipse at 50% 40%,#8fd06b,#4c9a35 70%,#357a24);box-shadow:inset 0 -6px 0 rgba(0,0,0,.15),0 6px 12px rgba(0,0,0,.2)}
+.basket{position:absolute;border-radius:24px 24px 50% 50%/24px 24px 40% 40%;background:repeating-linear-gradient(90deg,#c98a45 0 12px,#b5763a 12px 24px);border:5px solid #8a5220;box-shadow:inset 0 10px 0 rgba(0,0,0,.12),0 8px 14px rgba(0,0,0,.25)}
+.eq{position:absolute;left:0;right:0;text-align:center;font-weight:900;color:#5a3014;font-size:clamp(34px,6vmin,58px);letter-spacing:2px}
+.eq b{color:#e8590c}
+.bigAnimal{position:absolute;object-fit:contain;filter:drop-shadow(0 8px 6px rgba(0,0,0,.3));transform-origin:50% 100%}
+.teach{position:absolute;display:flex;align-items:center;gap:12px;background:#fff;border-radius:22px;padding:10px 18px;box-shadow:0 6px 14px rgba(0,0,0,.18);border:3px solid var(--teal)}
+.teach .ltr{font-size:clamp(46px,8vmin,74px);font-weight:900;color:var(--teal);line-height:1}
+.teach img{height:clamp(60px,11vmin,100px)}
+.clueCard{position:absolute;border-radius:50%;background:#fff;border:6px solid #fff;box-shadow:0 0 0 5px var(--gold),0 10px 24px rgba(0,0,0,.3);overflow:hidden}
+.clueCard .ci{position:absolute;background-repeat:no-repeat}
+.clueCard.shadow .ci{filter:brightness(0) opacity(.85)}
+.clueCard.shadowBg{background:radial-gradient(circle,#fff6d8,#e9cf98)}
+.clueCard .tag{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);width:28%;opacity:.9}
+.lineup{position:absolute;left:12%;right:2%;display:flex;justify-content:center;align-items:flex-end;gap:3vw}
+.suspect{position:relative;border-radius:26px;background:radial-gradient(ellipse at 50% 80%,#d7efb0,#fff8e6 70%);border:4px solid #fff;box-shadow:0 7px 0 #b98a4c,0 10px 18px rgba(0,0,0,.2);display:grid;place-items:end center;transition:opacity .3s,transform .2s}
+.suspect img{width:84%;height:88%;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 5px 4px rgba(0,0,0,.25))}
+.suspect.no{opacity:.35;filter:grayscale(.8)}
+.suspect.no::after{content:"✕";position:absolute;inset:0;display:grid;place-items:center;font-size:70px;color:#c92a2a;font-weight:900;opacity:.6}
+.suspect.yes{box-shadow:0 7px 0 #2b8a3e,0 0 0 6px var(--gold),0 0 40px 10px rgba(255,212,59,.8)}
+.celebrate .sticker{position:absolute;filter:drop-shadow(0 0 0 #fff) drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(0 8px 10px rgba(0,0,0,.35));animation:stick .9s cubic-bezier(.3,1.5,.6,1) backwards}
+@keyframes stick{0%{transform:scale(0) rotate(-30deg)}100%{transform:scale(1) rotate(-4deg)}}
+.burst{position:absolute;inset:0;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 45%,rgba(255,220,100,.35) 0 10deg,rgba(255,255,255,0) 10deg 20deg);animation:spin 18s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.confetti{position:absolute;width:12px;height:16px;top:-20px;pointer-events:none;animation:conf 2.6s linear forwards}
+@keyframes conf{to{transform:translateY(110vh) rotate(720deg)}}
+.endBtns{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:22px}
+.endBtn{height:clamp(70px,12vmin,96px);min-width:clamp(70px,12vmin,96px);padding:0 22px;border-radius:999px;display:flex;align-items:center;gap:10px;font-weight:900;font-size:clamp(17px,2.6vmin,24px);color:#fff;border:4px solid #fff;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.endBtn svg{width:40px;fill:#fff}
+.endBtn.again{background:#2f9a2a}.endBtn.mapb{background:#1c7ed6}.endBtn.bookb{background:#e8590c}
+.binoView{position:absolute;inset:0;z-index:4;background:#000;overflow:hidden}
+.binoView .far{position:absolute;transform-origin:0 0}
+.binoView .mask{position:absolute;inset:0;pointer-events:none}
+/* ---------- journal ---------- */
+.jbook{position:absolute;z-index:2;left:max(14px,var(--safeL));right:max(14px,var(--safeR));top:calc(max(10px,var(--safeT)) + 82px);bottom:max(14px,var(--safeB));display:flex;gap:0;background:#7a4520;border-radius:26px;padding:12px;box-shadow:0 12px 30px rgba(60,30,0,.45)}
+.pg{flex:1;background:linear-gradient(90deg,#fff6e0,#fbecc9);border-radius:16px;position:relative;padding:12px;display:grid;gap:10px;overflow:hidden}
+.pg:first-child{border-radius:16px 4px 4px 16px;box-shadow:inset -14px 0 18px -12px rgba(90,50,10,.4)}
+.pg:last-child{border-radius:4px 16px 16px 4px;box-shadow:inset 14px 0 18px -12px rgba(90,50,10,.4)}
+#jStickers{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.stk img{max-height:78%}
+.stk{position:relative;border-radius:20px;border:3px dashed #d6b27a;display:grid;place-items:center;overflow:visible}
+.stk img{width:82%;height:82%;object-fit:contain}
+.stk.got{border-style:solid;border-color:transparent;background:radial-gradient(circle,#fff 0,#fff 55%,rgba(255,255,255,0) 72%)}
+.stk.got img{filter:drop-shadow(0 0 0 #fff) drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(0 6px 8px rgba(0,0,0,.3));transform:rotate(-4deg)}
+.stk:not(.got) img{filter:brightness(0) opacity(.13)}
+.stk .q{position:absolute;font-size:44px;font-weight:900;color:#c9a46a}
+.stk .cnt{position:absolute;right:4px;top:4px;background:#e8590c;color:#fff;font-weight:900;border-radius:14px;padding:2px 9px;font-size:17px;border:2px solid #fff}
+.stk .lab{position:absolute;bottom:2px;font-weight:800;font-size:clamp(13px,2vmin,18px);color:#7a4520}
+#jCases{grid-template-rows:auto repeat(3,minmax(0,1fr))}
+#jCases h3{margin:0;text-align:center;color:#7a4520;font-size:clamp(17px,2.6vmin,24px)}
+.caseRow{display:flex;align-items:center;gap:12px;background:#fff8;border-radius:16px;padding:6px}
+.caseRow .th{width:38%;align-self:stretch;min-height:50px;border-radius:12px;background-size:cover;background-position:center;border:3px solid #fff}
+.caseRow .ct{font-weight:900;color:#5a3014;font-size:clamp(15px,2.3vmin,21px);flex:1}
+.caseRow .ct b{color:#e8590c;font-size:1.3em}
+.caseRow .ct .stars{display:flex;gap:2px;margin-top:4px;flex-wrap:wrap}
+.caseRow .ct .stars img{width:24px}
+body.portrait .jbook{flex-direction:column}
+body.portrait .pg:first-child{border-radius:16px 16px 4px 4px}body.portrait .pg:last-child{border-radius:4px 4px 16px 16px}
+/* ---------- settings ---------- */
+.modal{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:14px;font-family:-apple-system,system-ui,"PingFang TC",sans-serif}
+.modal.on{display:flex}
+.sheet{background:#fff;color:#222;border-radius:20px;padding:18px 18px 14px;width:min(560px,100%);max-height:94%;overflow:auto;-webkit-overflow-scrolling:touch;user-select:text;-webkit-user-select:text}
+.sheet h2{margin:0 0 4px;font-size:22px}.sheet h3{margin:16px 0 6px;font-size:16px;color:#555}
+.sheet p{margin:4px 0;color:#666;font-size:14px;line-height:1.4}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:48px;padding:0 16px;border-radius:12px;background:#f1f3f5;font-size:16px;font-weight:600}
+.chip.sel{background:#2fa39a;color:#fff}
+.vlist{max-height:220px;overflow:auto;border:1px solid #eee;border-radius:12px}
+.vrow{display:flex;align-items:center;gap:8px;padding:4px 6px;border-bottom:1px solid #f1f1f1}
+.vrow .nm{flex:1;font-size:15px;min-height:48px;text-align:left;border-radius:10px;padding:0 10px}
+.vrow .nm.sel{background:#d3f9d8;font-weight:700}
+.vrow .pv{width:48px;height:48px;border-radius:10px;background:#e7f5ff;font-size:18px}
+.done{display:block;margin:16px auto 0;min-height:52px;padding:0 34px;border-radius:14px;background:#e8590c;color:#fff;font-weight:800;font-size:18px}
+#rotateHint{position:fixed;left:50%;bottom:calc(var(--safeB) + 6px);transform:translateX(-50%);z-index:150;background:rgba(0,0,0,.6);color:#fff;font:600 13px/1 system-ui;padding:6px 12px;border-radius:999px;display:none;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.mote,.burst,.confetti,.bigBtn.play,.mist,.ray{animation:none!important}.mote,.confetti{display:none}}
+/* ---------- small screens ---------- */
+.item .n{min-width:max(22px,38%);height:max(22px,38%);font-size:clamp(12px,2.6vmin,22px);border-width:2px}
+@media (max-width:520px){
+  .hud{width:50px;height:50px;border-radius:16px}.hud svg{width:28px}
+  #tray{gap:6px;padding:4px 8px;border-radius:18px}.slot{width:42px;height:42px}
+  .hudR{gap:6px}
+}
+@media (max-height:420px){
+  .hud{width:50px;height:50px;border-radius:16px}.hud svg{width:28px}
+  #tray{gap:6px;padding:4px 8px}.slot{width:42px;height:42px}
+  .bubble{top:calc(max(6px,var(--safeT)) + 58px)}
+  .plaque{padding:8px 18px 10px max(22px,calc(var(--safeL) + 16px))}
+}
+body.portrait .gear{top:auto;bottom:calc(max(16px,calc(var(--safeB) + 10px)) + 70px);left:max(14px,var(--safeL));right:auto}
+body.portrait .plaque{right:0;top:0;border-radius:0 0 22px 22px;left:0;max-width:none;padding:max(22px,calc(var(--safeT) + 12px)) 16px 18px}
+.obj.grassy img{-webkit-mask-image:linear-gradient(180deg,#000 72%,rgba(0,0,0,.0) 100%),radial-gradient(ellipse 50% 60% at 50% 70%,#000 60%,transparent 100%);-webkit-mask-composite:source-over;mask-image:linear-gradient(180deg,#000 72%,rgba(0,0,0,0) 100%),radial-gradient(ellipse 50% 60% at 50% 70%,#000 60%,transparent 100%);mask-composite:add}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- title -->
+  <section id="title" class="screen on">
+    <img class="cover" src="art/cover.webp" alt="">
+    <div class="plaque" id="titlePlaque"></div>
+    <div class="titleBtns">
+      <button class="bigBtn play" id="btnPlay" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="bigBtn book" id="btnBook" aria-label="Sticker book"><img src="art/lens.webp" alt=""><span id="stickerCount">0</span></button>
+    </div>
+    <div class="langPill" id="langPill"><button data-l="en">English</button><button data-l="zh">中文</button></div>
+    <button class="gear" id="btnGear" aria-label="Grown-up settings"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.6 4.7l1.9 1.5-1.9 3.3-2.3-.8c-.6.5-1.3.9-2 1.2l-.4 2.4h-3.8l-.4-2.4c-.7-.3-1.4-.7-2-1.2l-2.3.8-1.9-3.3 1.9-1.5a7 7 0 0 1 0-2.4L1.5 9.3l1.9-3.3 2.3.8c.6-.5 1.3-.9 2-1.2L8.1 3.2h3.8l.4 2.4c.7.3 1.4.7 2 1.2l2.3-.8 1.9 3.3-1.9 1.5a7 7 0 0 1 0 2.4z"/></svg><span>Grown-ups</span></button>
+  </section>
+
+  <!-- map -->
+  <section id="map" class="screen">
+    <div class="mapHead"><button class="hud home" data-go="title" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M12 3l10 9h-3v8h-5v-6h-4v6H5v-8H2z"/></svg></button>
+      <div class="mapTitle" id="mapTitle"></div>
+      <button class="hud" id="mapBook" aria-label="Sticker book"><svg viewBox="0 0 24 24"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-4a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h4z"/></svg></button></div>
+    <div class="cards" id="cards"></div>
+    <img class="mapLeo" src="art/leo.webp" alt=""><img class="mapCoco" src="art/coco_happy.webp" alt="">
+  </section>
+
+  <!-- explorable scene -->
+  <section id="scene" class="screen">
+    <div id="stage">
+      <div id="world"><img id="bg" alt=""><div id="fx"></div></div>
+      <div id="fg"><img src="art/fg_plants.webp" alt=""></div>
+      <div id="motes"></div>
+    </div>
+    <div id="hudTop">
+      <button class="hud home" id="btnHome" aria-label="Map"><svg viewBox="0 0 24 24"><path d="M12 3l10 9h-3v8h-5v-6h-4v6H5v-8H2z"/></svg></button>
+      <div id="tray"></div>
+      <div class="hudR">
+        <button class="hud" id="btnReplay" aria-label="Say it again"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg></button>
+        <button class="hud" id="btnMute" aria-label="Sound"><svg viewBox="0 0 24 24"><path class="spk" d="M4 9h4l5-4v14l-5-4H4z"/><path class="on" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2.2" stroke-linecap="round"/><path class="off" d="M16 9l6 6m0-6l-6 6" fill="none" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+    <div id="bubble" class="bubble"><img src="art/coco_happy.webp" alt=""><div class="txt"></div></div>
+    <button class="arrow left" id="arL" aria-label="Walk left"><svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/></svg></button>
+    <button class="arrow right" id="arR" aria-label="Walk right"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/></svg></button>
+    <div id="panel" class="panelWrap"><div class="panel"><div class="pBody" id="pBody"></div></div></div>
+  </section>
+
+  <!-- sticker journal -->
+  <section id="journal" class="screen">
+    <div class="mapHead"><button class="hud home" id="jBack" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="mapTitle" id="jTitle"></div><span style="width:64px"></span></div>
+    <div class="jbook"><div class="pg" id="jStickers"></div><div class="pg" id="jCases"></div></div>
+  </section>
+
+  <div id="settings" class="modal"></div>
+  <div id="rotateHint"></div>
+</div>
+<div id="kaVer" data-v="1.0" data-d="2026-11-27">v1.0 · 2026-11-27</div>
+<script src="../../voice.js"></script>
+<script src="../../kit.js"></script>
+<script src="../../tracker.js"></script>
+<script>
+const LINES = {"name_tiger":{"en":"Tiger!","zh":"老虎!","v":"tiger","zy":[["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["!",""]]},"name_monkey":{"en":"Monkey!","zh":"猴子!","v":"monkey","zy":[["猴","ㄏㄡˊ"],["子","˙ㄗ"],["!",""]]},"name_elephant":{"en":"Elephant!","zh":"大象!","v":"elephant","zy":[["大","ㄉㄚˋ"],["象","ㄒㄧㄤˋ"],["!",""]]},"name_zebra":{"en":"Zebra!","zh":"斑馬!","v":"zebra","zy":[["斑","ㄅㄢ"],["馬","ㄇㄚˇ"],["!",""]]},"name_parrot":{"en":"Parrot!","zh":"鸚鵡!","v":"parrot","zy":[["鸚","ㄧㄥ"],["鵡","ㄨˇ"],["!",""]]},"name_giraffe":{"en":"Giraffe!","zh":"長頸鹿!","v":"giraffe","zy":[["長","ㄔㄤˊ"],["頸","ㄐㄧㄥˇ"],["鹿","ㄌㄨˋ"],["!",""]]},"name_deer":{"en":"Deer!","zh":"小鹿!","v":"deer","zy":[["小","ㄒㄧㄠˇ"],["鹿","ㄌㄨˋ"],["!",""]]},"hi_tiger":{"en":"Rawr! Hi! I'm Tiger!","zh":"吼~嗨!我是老虎!","v":"tiger","zy":[["吼","ㄏㄡˇ"],["~",""],["嗨","ㄏㄞ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["!",""]]},"hi_monkey":{"en":"Ooh ooh! Hi! I'm Monkey!","zh":"嗚嗚!嗨!我是猴子!","v":"monkey","zy":[["嗚","ㄨ"],["嗚","ㄨ"],["!",""],["嗨","ㄏㄞ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["猴","ㄏㄡˊ"],["子","˙ㄗ"],["!",""]]},"hi_elephant":{"en":"Hello there! I'm Elephant!","zh":"哈囉!我是大象!","v":"elephant","zy":[["哈","ㄏㄚ"],["囉","ㄌㄨㄛ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["大","ㄉㄚˋ"],["象","ㄒㄧㄤˋ"],["!",""]]},"hi_zebra":{"en":"Neigh! Hi! I'm Zebra!","zh":"嘶~嗨!我是斑馬!","v":"zebra","zy":[["嘶","ㄙ"],["~",""],["嗨","ㄏㄞ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["斑","ㄅㄢ"],["馬","ㄇㄚˇ"],["!",""]]},"hi_parrot":{"en":"Squawk! Hello! I'm Parrot!","zh":"嘎嘎!哈囉!我是鸚鵡!","v":"parrot","zy":[["嘎","ㄍㄚ"],["嘎","ㄍㄚ"],["!",""],["哈","ㄏㄚ"],["囉","ㄌㄨㄛ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["鸚","ㄧㄥ"],["鵡","ㄨˇ"],["!",""]]},"hi_giraffe":{"en":"Hello, down there! I'm Giraffe!","zh":"哈囉,下面的朋友!我是長頸鹿!","v":"giraffe","zy":[["哈","ㄏㄚ"],["囉","ㄌㄨㄛ"],[",",""],["下","ㄒㄧㄚˋ"],["面","ㄇㄧㄢˋ"],["的","˙ㄉㄜ"],["朋","ㄆㄥˊ"],["友","˙ㄧㄡ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["長","ㄔㄤˊ"],["頸","ㄐㄧㄥˇ"],["鹿","ㄌㄨˋ"],["!",""]]},"hi_deer":{"en":"Hi! I'm Deer!","zh":"嗨!我是小鹿!","v":"deer","zy":[["嗨","ㄏㄞ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["小","ㄒㄧㄠˇ"],["鹿","ㄌㄨˋ"],["!",""]]},"fact_tiger":{"en":"Tigers love to swim! And every tiger has its very own stripes.","zh":"老虎很會游泳喔!而且每隻老虎的條紋都不一樣。","v":"coco","zy":[["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["很","ㄏㄣˇ"],["會","ㄏㄨㄟˋ"],["游","ㄧㄡˊ"],["泳","ㄩㄥˇ"],["喔","ㄛ"],["!",""],["而","ㄦˊ"],["且","ㄑㄧㄝˇ"],["每","ㄇㄟˇ"],["隻","ㄓ"],["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["的","˙ㄉㄜ"],["條","ㄊㄧㄠˊ"],["紋","ㄨㄣˊ"],["都","ㄉㄡ"],["不","ㄅㄨˋ"],["一","ㄧ"],["樣","ㄧㄤˋ"],["。",""]]},"sticker_tiger":{"en":"You got a tiger sticker!","zh":"你得到一張老虎貼紙!","v":"coco","zy":[["你","ㄋㄧˇ"],["得","ㄉㄜˊ"],["到","ㄉㄠˋ"],["一","ㄧ"],["張","ㄓㄤ"],["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["貼","ㄊㄧㄝ"],["紙","ㄓˇ"],["!",""]]},"fact_monkey":{"en":"Monkeys can hold on to branches with their long tails!","zh":"猴子可以用長長的尾巴抓住樹枝喔!","v":"coco","zy":[["猴","ㄏㄡˊ"],["子","˙ㄗ"],["可","ㄎㄜˇ"],["以","ㄧˇ"],["用","ㄩㄥˋ"],["長","ㄔㄤˊ"],["長","ㄔㄤˊ"],["的","˙ㄉㄜ"],["尾","ㄨㄟˇ"],["巴","˙ㄅㄚ"],["抓","ㄓㄨㄚ"],["住","ㄓㄨˋ"],["樹","ㄕㄨˋ"],["枝","ㄓ"],["喔","ㄛ"],["!",""]]},"sticker_monkey":{"en":"You got a monkey sticker!","zh":"你得到一張猴子貼紙!","v":"coco","zy":[["你","ㄋㄧˇ"],["得","ㄉㄜˊ"],["到","ㄉㄠˋ"],["一","ㄧ"],["張","ㄓㄤ"],["猴","ㄏㄡˊ"],["子","˙ㄗ"],["貼","ㄊㄧㄝ"],["紙","ㄓˇ"],["!",""]]},"fact_elephant":{"en":"Elephants drink water with their long trunks. They even give trunk hugs!","zh":"大象用長長的鼻子喝水,還會用鼻子抱抱喔!","v":"coco","zy":[["大","ㄉㄚˋ"],["象","ㄒㄧㄤˋ"],["用","ㄩㄥˋ"],["長","ㄔㄤˊ"],["長","ㄔㄤˊ"],["的","˙ㄉㄜ"],["鼻","ㄅㄧˊ"],["子","˙ㄗ"],["喝","ㄏㄜ"],["水","ㄕㄨㄟˇ"],[",",""],["還","ㄏㄞˊ"],["會","ㄏㄨㄟˋ"],["用","ㄩㄥˋ"],["鼻","ㄅㄧˊ"],["子","˙ㄗ"],["抱","ㄅㄠˋ"],["抱","ㄅㄠˋ"],["喔","ㄛ"],["!",""]]},"sticker_elephant":{"en":"You got a elephant sticker!","zh":"你得到一張大象貼紙!","v":"coco","zy":[["你","ㄋㄧˇ"],["得","ㄉㄜˊ"],["到","ㄉㄠˋ"],["一","ㄧ"],["張","ㄓㄤ"],["大","ㄉㄚˋ"],["象","ㄒㄧㄤˋ"],["貼","ㄊㄧㄝ"],["紙","ㄓˇ"],["!",""]]},"fact_zebra":{"en":"No two zebras have the same stripes. Every zebra is special!","zh":"每一隻斑馬的條紋都不一樣,每一隻都很特別!","v":"coco","zy":[["每","ㄇㄟˇ"],["一","ㄧ"],["隻","ㄓ"],["斑","ㄅㄢ"],["馬","ㄇㄚˇ"],["的","˙ㄉㄜ"],["條","ㄊㄧㄠˊ"],["紋","ㄨㄣˊ"],["都","ㄉㄡ"],["不","ㄅㄨˋ"],["一","ㄧ"],["樣","ㄧㄤˋ"],[",",""],["每","ㄇㄟˇ"],["一","ㄧ"],["隻","ㄓ"],["都","ㄉㄡ"],["很","ㄏㄣˇ"],["特","ㄊㄜˋ"],["別","ㄅㄧㄝˊ"],["!",""]]},"sticker_zebra":{"en":"You got a zebra sticker!","zh":"你得到一張斑馬貼紙!","v":"coco","zy":[["你","ㄋㄧˇ"],["得","ㄉㄜˊ"],["到","ㄉㄠˋ"],["一","ㄧ"],["張","ㄓㄤ"],["斑","ㄅㄢ"],["馬","ㄇㄚˇ"],["貼","ㄊㄧㄝ"],["紙","ㄓˇ"],["!",""]]},"fact_parrot":{"en":"Parrots can copy sounds. Hello! Hello! And they love fruit!","zh":"鸚鵡會學別人說話,你好!你好!而且牠們很愛吃水果!","v":"coco","zy":[["鸚","ㄧㄥ"],["鵡","ㄨˇ"],["會","ㄏㄨㄟˋ"],["學","ㄒㄩㄝˊ"],["別","ㄅㄧㄝˊ"],["人","ㄖㄣˊ"],["說","ㄕㄨㄛ"],["話","ㄏㄨㄚˋ"],[",",""],["你","ㄋㄧˇ"],["好","ㄏㄠˇ"],["!",""],["你","ㄋㄧˇ"],["好","ㄏㄠˇ"],["!",""],["而","ㄦˊ"],["且","ㄑㄧㄝˇ"],["牠","ㄊㄚ"],["們","˙ㄇㄣ"],["很","ㄏㄣˇ"],["愛","ㄞˋ"],["吃","ㄔ"],["水","ㄕㄨㄟˇ"],["果","ㄍㄨㄛˇ"],["!",""]]},"sticker_parrot":{"en":"You got a parrot sticker!","zh":"你得到一張鸚鵡貼紙!","v":"coco","zy":[["你","ㄋㄧˇ"],["得","ㄉㄜˊ"],["到","ㄉㄠˋ"],["一","ㄧ"],["張","ㄓㄤ"],["鸚","ㄧㄥ"],["鵡","ㄨˇ"],["貼","ㄊㄧㄝ"],["紙","ㄓˇ"],["!",""]]},"fact_giraffe":{"en":"Giraffes are the tallest animals in the world. And their tongues are purple!","zh":"長頸鹿是世界上最高的動物,牠們的舌頭是紫色的喔!","v":"coco","zy":[["長","ㄔㄤˊ"],["頸","ㄐㄧㄥˇ"],["鹿","ㄌㄨˋ"],["是","ㄕˋ"],["世","ㄕˋ"],["界","ㄐㄧㄝˋ"],["上","ㄕㄤˋ"],["最","ㄗㄨㄟˋ"],["高","ㄍㄠ"],["的","˙ㄉㄜ"],["動","ㄉㄨㄥˋ"],["物","ㄨˋ"],[",",""],["牠","ㄊㄚ"],["們","˙ㄇㄣ"],["的","˙ㄉㄜ"],["舌","ㄕㄜˊ"],["頭","ㄊㄡˊ"],["是","ㄕˋ"],["紫","ㄗˇ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["喔","ㄛ"],["!",""]]},"sticker_giraffe":{"en":"You got a giraffe sticker!","zh":"你得到一張長頸鹿貼紙!","v":"coco","zy":[["你","ㄋㄧˇ"],["得","ㄉㄜˊ"],["到","ㄉㄠˋ"],["一","ㄧ"],["張","ㄓㄤ"],["長","ㄔㄤˊ"],["頸","ㄐㄧㄥˇ"],["鹿","ㄌㄨˋ"],["貼","ㄊㄧㄝ"],["紙","ㄓˇ"],["!",""]]},"patch_tiger":{"en":"Orange fur with black stripes!","zh":"橘色的毛,還有黑色的條紋!","v":"coco","zy":[["橘","ㄐㄩˊ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["毛","ㄇㄠˊ"],[",",""],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["黑","ㄏㄟ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["條","ㄊㄧㄠˊ"],["紋","ㄨㄣˊ"],["!",""]]},"part_tiger":{"en":"A big, stripy tail!","zh":"一條有條紋的大尾巴!","v":"coco","zy":[["一","ㄧ"],["條","ㄊㄧㄠˊ"],["有","ㄧㄡˇ"],["條","ㄊㄧㄠˊ"],["紋","ㄨㄣˊ"],["的","˙ㄉㄜ"],["大","ㄉㄚˋ"],["尾","ㄨㄟˇ"],["巴","˙ㄅㄚ"],["!",""]]},"notme_tiger":{"en":"Not me! I have orange fur and black stripes.","zh":"不是我喔!我是橘色的,有黑色的條紋。","v":"tiger","zy":[["不","ㄅㄨˋ"],["是","ㄕˋ"],["我","ㄨㄛˇ"],["喔","ㄛ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["橘","ㄐㄩˊ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],[",",""],["有","ㄧㄡˇ"],["黑","ㄏㄟ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["條","ㄊㄧㄠˊ"],["紋","ㄨㄣˊ"],["。",""]]},"patch_monkey":{"en":"Soft, brown, fuzzy fur!","zh":"咖啡色、毛茸茸的毛!","v":"coco","zy":[["咖","ㄎㄚ"],["啡","ㄈㄟ"],["色","ㄙㄜˋ"],["、",""],["毛","ㄇㄠˊ"],["茸","ㄖㄨㄥˊ"],["茸","ㄖㄨㄥˊ"],["的","˙ㄉㄜ"],["毛","ㄇㄠˊ"],["!",""]]},"part_monkey":{"en":"A long, curly tail!","zh":"一條長長的、捲捲的尾巴!","v":"coco","zy":[["一","ㄧ"],["條","ㄊㄧㄠˊ"],["長","ㄔㄤˊ"],["長","ㄔㄤˊ"],["的","˙ㄉㄜ"],["、",""],["捲","ㄐㄩㄢˇ"],["捲","ㄐㄩㄢˇ"],["的","˙ㄉㄜ"],["尾","ㄨㄟˇ"],["巴","˙ㄅㄚ"],["!",""]]},"notme_monkey":{"en":"Not me! I have brown, fuzzy fur.","zh":"不是我喔!我的毛是咖啡色的。","v":"monkey","zy":[["不","ㄅㄨˋ"],["是","ㄕˋ"],["我","ㄨㄛˇ"],["喔","ㄛ"],["!",""],["我","ㄨㄛˇ"],["的","˙ㄉㄜ"],["毛","ㄇㄠˊ"],["是","ㄕˋ"],["咖","ㄎㄚ"],["啡","ㄈㄟ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["。",""]]},"patch_elephant":{"en":"Gray, wrinkly skin!","zh":"灰灰的、皺皺的皮膚!","v":"coco","zy":[["灰","ㄏㄨㄟ"],["灰","ㄏㄨㄟ"],["的","˙ㄉㄜ"],["、",""],["皺","ㄓㄡˋ"],["皺","ㄓㄡˋ"],["的","˙ㄉㄜ"],["皮","ㄆㄧˊ"],["膚","ㄈㄨ"],["!",""]]},"part_elephant":{"en":"A long, long trunk!","zh":"長長的、長長的鼻子!","v":"coco","zy":[["長","ㄔㄤˊ"],["長","ㄔㄤˊ"],["的","˙ㄉㄜ"],["、",""],["長","ㄔㄤˊ"],["長","ㄔㄤˊ"],["的","˙ㄉㄜ"],["鼻","ㄅㄧˊ"],["子","˙ㄗ"],["!",""]]},"notme_elephant":{"en":"Not me! I have gray skin and a long trunk.","zh":"不是我喔!我是灰色的,有長長的鼻子。","v":"elephant","zy":[["不","ㄅㄨˋ"],["是","ㄕˋ"],["我","ㄨㄛˇ"],["喔","ㄛ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["灰","ㄏㄨㄟ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],[",",""],["有","ㄧㄡˇ"],["長","ㄔㄤˊ"],["長","ㄔㄤˊ"],["的","˙ㄉㄜ"],["鼻","ㄅㄧˊ"],["子","˙ㄗ"],["。",""]]},"patch_zebra":{"en":"Black and white stripes!","zh":"黑白相間的條紋!","v":"coco","zy":[["黑","ㄏㄟ"],["白","ㄅㄞˊ"],["相","ㄒㄧㄤ"],["間","ㄐㄧㄢ"],["的","˙ㄉㄜ"],["條","ㄊㄧㄠˊ"],["紋","ㄨㄣˊ"],["!",""]]},"part_zebra":{"en":"A stripy head with a fuzzy mane!","zh":"有條紋的頭,還有毛毛的鬃毛!","v":"coco","zy":[["有","ㄧㄡˇ"],["條","ㄊㄧㄠˊ"],["紋","ㄨㄣˊ"],["的","˙ㄉㄜ"],["頭","ㄊㄡˊ"],[",",""],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["毛","ㄇㄠˊ"],["毛","ㄇㄠˊ"],["的","˙ㄉㄜ"],["鬃","ㄗㄨㄥ"],["毛","ㄇㄠˊ"],["!",""]]},"notme_zebra":{"en":"Not me! I'm black and white.","zh":"不是我喔!我是黑白條紋的。","v":"zebra","zy":[["不","ㄅㄨˋ"],["是","ㄕˋ"],["我","ㄨㄛˇ"],["喔","ㄛ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["黑","ㄏㄟ"],["白","ㄅㄞˊ"],["條","ㄊㄧㄠˊ"],["紋","ㄨㄣˊ"],["的","˙ㄉㄜ"],["。",""]]},"patch_parrot":{"en":"Bright red, blue, and yellow feathers!","zh":"紅色、藍色、黃色的漂亮羽毛!","v":"coco","zy":[["紅","ㄏㄨㄥˊ"],["色","ㄙㄜˋ"],["、",""],["藍","ㄌㄢˊ"],["色","ㄙㄜˋ"],["、",""],["黃","ㄏㄨㄤˊ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["漂","ㄆㄧㄠˋ"],["亮","˙ㄌㄧㄤ"],["羽","ㄩˇ"],["毛","ㄇㄠˊ"],["!",""]]},"part_parrot":{"en":"A strong, curvy beak!","zh":"彎彎的、硬硬的嘴巴!","v":"coco","zy":[["彎","ㄨㄢ"],["彎","ㄨㄢ"],["的","˙ㄉㄜ"],["、",""],["硬","ㄧㄥˋ"],["硬","ㄧㄥˋ"],["的","˙ㄉㄜ"],["嘴","ㄗㄨㄟˇ"],["巴","ㄅㄚ"],["!",""]]},"notme_parrot":{"en":"Not me! I have colorful feathers.","zh":"不是我喔!我有彩色的羽毛。","v":"parrot","zy":[["不","ㄅㄨˋ"],["是","ㄕˋ"],["我","ㄨㄛˇ"],["喔","ㄛ"],["!",""],["我","ㄨㄛˇ"],["有","ㄧㄡˇ"],["彩","ㄘㄞˇ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["羽","ㄩˇ"],["毛","ㄇㄠˊ"],["。",""]]},"patch_giraffe":{"en":"Yellow, with big brown spots!","zh":"黃色的,有大大的咖啡色斑點!","v":"coco","zy":[["黃","ㄏㄨㄤˊ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],[",",""],["有","ㄧㄡˇ"],["大","ㄉㄚˋ"],["大","ㄉㄚˋ"],["的","˙ㄉㄜ"],["咖","ㄎㄚ"],["啡","ㄈㄟ"],["色","ㄙㄜˋ"],["斑","ㄅㄢ"],["點","ㄉㄧㄢˇ"],["!",""]]},"part_giraffe":{"en":"A long, long neck!","zh":"長長的、長長的脖子!","v":"coco","zy":[["長","ㄔㄤˊ"],["長","ㄔㄤˊ"],["的","˙ㄉㄜ"],["、",""],["長","ㄔㄤˊ"],["長","ㄔㄤˊ"],["的","˙ㄉㄜ"],["脖","ㄅㄛˊ"],["子","˙ㄗ"],["!",""]]},"notme_giraffe":{"en":"Not me! I have brown spots and a long neck.","zh":"不是我喔!我有咖啡色的斑點和長脖子。","v":"giraffe","zy":[["不","ㄅㄨˋ"],["是","ㄕˋ"],["我","ㄨㄛˇ"],["喔","ㄛ"],["!",""],["我","ㄨㄛˇ"],["有","ㄧㄡˇ"],["咖","ㄎㄚ"],["啡","ㄈㄟ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["斑","ㄅㄢ"],["點","ㄉㄧㄢˇ"],["和","ㄏㄜˊ"],["長","ㄔㄤˊ"],["脖","ㄅㄛˊ"],["子","˙ㄗ"],["。",""]]},"solved_trail_monkey":{"en":"Hee hee! It was me! The bananas were so yummy. Sorry!","zh":"嘻嘻!是我啦!香蕉太好吃了,對不起嘛!","v":"monkey","zy":[["嘻","ㄒㄧ"],["嘻","ㄒㄧ"],["!",""],["是","ㄕˋ"],["我","ㄨㄛˇ"],["啦","˙ㄌㄚ"],["!",""],["香","ㄒㄧㄤ"],["蕉","ㄐㄧㄠ"],["太","ㄊㄞˋ"],["好","ㄏㄠˇ"],["吃","ㄔ"],["了","˙ㄌㄜ"],[",",""],["對","ㄉㄨㄟˋ"],["不","ㄅㄨˋ"],["起","ㄑㄧˇ"],["嘛","˙ㄇㄚ"],["!",""]]},"solved_trail_elephant":{"en":"It was me! I picked the bananas with my trunk. Oops! Sorry!","zh":"是我!我用鼻子把香蕉拿走了。哎呀,對不起!","v":"elephant","zy":[["是","ㄕˋ"],["我","ㄨㄛˇ"],["!",""],["我","ㄨㄛˇ"],["用","ㄩㄥˋ"],["鼻","ㄅㄧˊ"],["子","˙ㄗ"],["把","ㄅㄚˇ"],["香","ㄒㄧㄤ"],["蕉","ㄐㄧㄠ"],["拿","ㄋㄚˊ"],["走","ㄗㄡˇ"],["了","˙ㄌㄜ"],["。",""],["哎","ㄞ"],["呀","ㄧㄚ"],[",",""],["對","ㄉㄨㄟˋ"],["不","ㄅㄨˋ"],["起","ㄑㄧˇ"],["!",""]]},"solved_trail_parrot":{"en":"Squawk! It was me! I love bananas! Sorry, sorry!","zh":"嘎嘎!是我!我最愛吃香蕉了!對不起、對不起!","v":"parrot","zy":[["嘎","ㄍㄚ"],["嘎","ㄍㄚ"],["!",""],["是","ㄕˋ"],["我","ㄨㄛˇ"],["!",""],["我","ㄨㄛˇ"],["最","ㄗㄨㄟˋ"],["愛","ㄞˋ"],["吃","ㄔ"],["香","ㄒㄧㄤ"],["蕉","ㄐㄧㄠ"],["了","˙ㄌㄜ"],["!",""],["對","ㄉㄨㄟˋ"],["不","ㄅㄨˋ"],["起","ㄑㄧˇ"],["、",""],["對","ㄉㄨㄟˋ"],["不","ㄅㄨˋ"],["起","ㄑㄧˇ"],["!",""]]},"solved_river_elephant":{"en":"It was me! I was splashing with my trunk! Splash, splash!","zh":"是我!我用鼻子噴水玩,嘩啦嘩啦!","v":"elephant","zy":[["是","ㄕˋ"],["我","ㄨㄛˇ"],["!",""],["我","ㄨㄛˇ"],["用","ㄩㄥˋ"],["鼻","ㄅㄧˊ"],["子","˙ㄗ"],["噴","ㄆㄣ"],["水","ㄕㄨㄟˇ"],["玩","ㄨㄢˊ"],[",",""],["嘩","ㄏㄨㄚ"],["啦","ㄌㄚ"],["嘩","ㄏㄨㄚ"],["啦","ㄌㄚ"],["!",""]]},"solved_river_zebra":{"en":"It was me! I came to the river for a cool drink.","zh":"是我!我來河邊喝涼涼的水。","v":"zebra","zy":[["是","ㄕˋ"],["我","ㄨㄛˇ"],["!",""],["我","ㄨㄛˇ"],["來","ㄌㄞˊ"],["河","ㄏㄜˊ"],["邊","ㄅㄧㄢ"],["喝","ㄏㄜ"],["涼","ㄌㄧㄤˊ"],["涼","ㄌㄧㄤˊ"],["的","˙ㄉㄜ"],["水","ㄕㄨㄟˇ"],["。",""]]},"solved_river_tiger":{"en":"Rawr! It was me! Tigers love to swim!","zh":"吼~是我!老虎最喜歡游泳了!","v":"tiger","zy":[["吼","ㄏㄡˇ"],["~",""],["是","ㄕˋ"],["我","ㄨㄛˇ"],["!",""],["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["最","ㄗㄨㄟˋ"],["喜","ㄒㄧˇ"],["歡","ㄏㄨㄢ"],["游","ㄧㄡˊ"],["泳","ㄩㄥˇ"],["了","˙ㄌㄜ"],["!",""]]},"solved_canopy_monkey":{"en":"It was me! I borrowed it to look at bugs. Here you go!","zh":"是我!我借來看小蟲蟲,還給你!","v":"monkey","zy":[["是","ㄕˋ"],["我","ㄨㄛˇ"],["!",""],["我","ㄨㄛˇ"],["借","ㄐㄧㄝˋ"],["來","ㄌㄞˊ"],["看","ㄎㄢˋ"],["小","ㄒㄧㄠˇ"],["蟲","ㄔㄨㄥˊ"],["蟲","ㄔㄨㄥˊ"],[",",""],["還","ㄏㄨㄢˊ"],["給","ㄍㄟˇ"],["你","ㄋㄧˇ"],["!",""]]},"solved_canopy_parrot":{"en":"Squawk! It was me! It was so shiny! Here you go!","zh":"嘎嘎!是我!它亮晶晶的好漂亮!還給你!","v":"parrot","zy":[["嘎","ㄍㄚ"],["嘎","ㄍㄚ"],["!",""],["是","ㄕˋ"],["我","ㄨㄛˇ"],["!",""],["它","ㄊㄚ"],["亮","ㄌㄧㄤˋ"],["晶","ㄐㄧㄥ"],["晶","ㄐㄧㄥ"],["的","˙ㄉㄜ"],["好","ㄏㄠˇ"],["漂","ㄆㄧㄠˋ"],["亮","˙ㄌㄧㄤ"],["!",""],["還","ㄏㄨㄢˊ"],["給","ㄍㄟˇ"],["你","ㄋㄧˇ"],["!",""]]},"solved_canopy_giraffe":{"en":"It was me! My long neck reached right up here. Here you go!","zh":"是我!我的長脖子一伸就拿到了。還給你!","v":"giraffe","zy":[["是","ㄕˋ"],["我","ㄨㄛˇ"],["!",""],["我","ㄨㄛˇ"],["的","˙ㄉㄜ"],["長","ㄔㄤˊ"],["脖","ㄅㄛˊ"],["子","˙ㄗ"],["一","ㄧ"],["伸","ㄕㄣ"],["就","ㄐㄧㄡˋ"],["拿","ㄋㄚˊ"],["到","ㄉㄠˋ"],["了","˙ㄌㄜ"],["。",""],["還","ㄏㄨㄢˊ"],["給","ㄍㄟˇ"],["你","ㄋㄧˇ"],["!",""]]},"title":{"en":"Animal Safari Detective","zh":"動物探險小偵探","v":"coco","zy":[["動","ㄉㄨㄥˋ"],["物","ㄨˋ"],["探","ㄊㄢˋ"],["險","ㄒㄧㄢˇ"],["小","ㄒㄧㄠˇ"],["偵","ㄓㄣ"],["探","ㄊㄢˋ"]]},"hello":{"en":"Hi Milo! I'm Coco. Let's solve animal mysteries together! Tap the big green button!","zh":"嗨,洛明!我是可可。我們一起去解開動物的謎題吧!按一下綠色的大按鈕!","v":"coco","zy":[["嗨","ㄏㄞ"],[",",""],["洛","ㄌㄨㄛˋ"],["明","ㄇㄧㄥˊ"],["!",""],["我","ㄨㄛˇ"],["是","ㄕˋ"],["可","ㄎㄜˇ"],["可","ㄎㄜˇ"],["。",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["一","ㄧ"],["起","ㄑㄧˇ"],["去","ㄑㄩˋ"],["解","ㄐㄧㄝˇ"],["開","ㄎㄞ"],["動","ㄉㄨㄥˋ"],["物","ㄨˋ"],["的","˙ㄉㄜ"],["謎","ㄇㄧˊ"],["題","ㄊㄧˊ"],["吧","˙ㄅㄚ"],["!",""],["按","ㄢˋ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["綠","ㄌㄩˋ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["大","ㄉㄚˋ"],["按","ㄢˋ"],["鈕","ㄋㄧㄡˇ"],["!",""]]},"map_pick":{"en":"Where should we go, detective? Tap a picture!","zh":"小偵探,我們要去哪裡呢?點一張圖吧!","v":"coco","zy":[["小","ㄒㄧㄠˇ"],["偵","ㄓㄣ"],["探","ㄊㄢˋ"],[",",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["要","ㄧㄠˋ"],["去","ㄑㄩˋ"],["哪","ㄋㄚˇ"],["裡","ㄌㄧˇ"],["呢","˙ㄋㄜ"],["?",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["張","ㄓㄤ"],["圖","ㄊㄨˊ"],["吧","˙ㄅㄚ"],["!",""]]},"area_trail":{"en":"Jungle Trail!","zh":"叢林小路!","v":"coco","zy":[["叢","ㄘㄨㄥˊ"],["林","ㄌㄧㄣˊ"],["小","ㄒㄧㄠˇ"],["路","ㄌㄨˋ"],["!",""]]},"area_river":{"en":"Waterfall Crossing!","zh":"瀑布吊橋!","v":"coco","zy":[["瀑","ㄆㄨˋ"],["布","ㄅㄨˋ"],["吊","ㄉㄧㄠˋ"],["橋","ㄑㄧㄠˊ"],["!",""]]},"area_canopy":{"en":"Treetop Lookout!","zh":"樹頂瞭望台!","v":"coco","zy":[["樹","ㄕㄨˋ"],["頂","ㄉㄧㄥˇ"],["瞭","ㄌㄧㄠˋ"],["望","ㄨㄤˋ"],["台","ㄊㄞˊ"],["!",""]]},"journal_open":{"en":"Here's our sticker book! Tap a sticker to hear about the animal.","zh":"這是我們的貼紙本!點一下貼紙,聽聽動物的故事。","v":"coco","zy":[["這","ㄓㄜˋ"],["是","ㄕˋ"],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["的","˙ㄉㄜ"],["貼","ㄊㄧㄝ"],["紙","ㄓˇ"],["本","ㄅㄣˇ"],["!",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["貼","ㄊㄧㄝ"],["紙","ㄓˇ"],[",",""],["聽","ㄊㄧㄥ"],["聽","ㄊㄧㄥ"],["動","ㄉㄨㄥˋ"],["物","ㄨˋ"],["的","˙ㄉㄜ"],["故","ㄍㄨˋ"],["事","ㄕˋ"],["。",""]]},"journal_empty":{"en":"Who's hiding here? Solve a mystery to find out!","zh":"這裡躲著誰呢?解開謎題就知道囉!","v":"coco","zy":[["這","ㄓㄜˋ"],["裡","ㄌㄧˇ"],["躲","ㄉㄨㄛˇ"],["著","˙ㄓㄜ"],["誰","ㄕㄨㄟˊ"],["呢","˙ㄋㄜ"],["?",""],["解","ㄐㄧㄝˇ"],["開","ㄎㄞ"],["謎","ㄇㄧˊ"],["題","ㄊㄧˊ"],["就","ㄐㄧㄡˋ"],["知","ㄓ"],["道","ㄉㄠˋ"],["囉","ㄌㄨㄛ"],["!",""]]},"journal_cases":{"en":"Look how many mysteries you solved!","zh":"你看,你解開了好多謎題!","v":"coco","zy":[["你","ㄋㄧˇ"],["看","ㄎㄢˋ"],[",",""],["你","ㄋㄧˇ"],["解","ㄐㄧㄝˇ"],["開","ㄎㄞ"],["了","˙ㄌㄜ"],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["謎","ㄇㄧˊ"],["題","ㄊㄧˊ"],["!",""]]},"intro_trail":{"en":"Oh no! Our picnic bananas are gone! Someone ate them! Let's be detectives and find three clues. Tap things to look around!","zh":"糟糕!我們野餐的香蕉不見了!是誰吃掉的呢?我們來當小偵探,找出三個線索吧!點點看四周的東西!","v":"coco","zy":[["糟","ㄗㄠ"],["糕","ㄍㄠ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["野","ㄧㄝˇ"],["餐","ㄘㄢ"],["的","˙ㄉㄜ"],["香","ㄒㄧㄤ"],["蕉","ㄐㄧㄠ"],["不","ㄅㄨˋ"],["見","ㄐㄧㄢˋ"],["了","˙ㄌㄜ"],["!",""],["是","ㄕˋ"],["誰","ㄕㄨㄟˊ"],["吃","ㄔ"],["掉","ㄉㄧㄠˋ"],["的","˙ㄉㄜ"],["呢","˙ㄋㄜ"],["?",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["當","ㄉㄤ"],["小","ㄒㄧㄠˇ"],["偵","ㄓㄣ"],["探","ㄊㄢˋ"],[",",""],["找","ㄓㄠˇ"],["出","ㄔㄨ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["吧","˙ㄅㄚ"],["!",""],["點","ㄉㄧㄢˇ"],["點","ㄉㄧㄢˇ"],["看","ㄎㄢˋ"],["四","ㄙˋ"],["周","ㄓㄡ"],["的","˙ㄉㄜ"],["東","ㄉㄨㄥ"],["西","˙ㄒㄧ"],["!",""]]},"intro_river":{"en":"Look! Big, wet footprints by the river! Who was splashing here? Let's find three clues!","zh":"你看!河邊有好多濕濕的腳印!是誰在這裡玩水呢?我們來找三個線索吧!","v":"coco","zy":[["你","ㄋㄧˇ"],["看","ㄎㄢˋ"],["!",""],["河","ㄏㄜˊ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["濕","ㄕ"],["濕","ㄕ"],["的","˙ㄉㄜ"],["腳","ㄐㄧㄠˇ"],["印","ㄧㄣˋ"],["!",""],["是","ㄕˋ"],["誰","ㄕㄨㄟˊ"],["在","ㄗㄞˋ"],["這","ㄓㄜˋ"],["裡","ㄌㄧˇ"],["玩","ㄨㄢˊ"],["水","ㄕㄨㄟˇ"],["呢","˙ㄋㄜ"],["?",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["找","ㄓㄠˇ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["吧","˙ㄅㄚ"],["!",""]]},"intro_canopy":{"en":"Uh oh! Leo's magnifying glass is missing! Someone took it up here. Let's find three clues!","zh":"哎呀!里歐的放大鏡不見了!有人把它拿到樹上來了。我們來找三個線索吧!","v":"coco","zy":[["哎","ㄞ"],["呀","ㄧㄚ"],["!",""],["里","ㄌㄧˇ"],["歐","ㄡ"],["的","˙ㄉㄜ"],["放","ㄈㄤˋ"],["大","ㄉㄚˋ"],["鏡","ㄐㄧㄥˋ"],["不","ㄅㄨˋ"],["見","ㄐㄧㄢˋ"],["了","˙ㄌㄜ"],["!",""],["有","ㄧㄡˇ"],["人","ㄖㄣˊ"],["把","ㄅㄚˇ"],["它","ㄊㄚ"],["拿","ㄋㄚˊ"],["到","ㄉㄠˋ"],["樹","ㄕㄨˋ"],["上","ㄕㄤˋ"],["來","ㄌㄞˊ"],["了","˙ㄌㄜ"],["。",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["找","ㄓㄠˇ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["吧","˙ㄅㄚ"],["!",""]]},"walk_help":{"en":"Tap the ground to walk there. Or press the big arrows!","zh":"點一下地面,就可以走過去。也可以按大箭頭喔!","v":"coco","zy":[["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["地","ㄉㄧˋ"],["面","ㄇㄧㄢˋ"],[",",""],["就","ㄐㄧㄡˋ"],["可","ㄎㄜˇ"],["以","ㄧˇ"],["走","ㄗㄡˇ"],["過","ㄍㄨㄛˋ"],["去","ㄑㄩˋ"],["。",""],["也","ㄧㄝˇ"],["可","ㄎㄜˇ"],["以","ㄧˇ"],["按","ㄢˋ"],["大","ㄉㄚˋ"],["箭","ㄐㄧㄢˋ"],["頭","ㄊㄡˊ"],["喔","ㄛ"],["!",""]]},"hint_look":{"en":"Hmm, what's over there? Let's tap something!","zh":"嗯……那邊有什麼呢?我們點點看吧!","v":"coco","zy":[["嗯","ㄣˊ"],["……",""],["那","ㄋㄚˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["什","ㄕㄣˊ"],["麼","˙ㄇㄜ"],["呢","˙ㄋㄜ"],["?",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["點","ㄉㄧㄢˇ"],["點","ㄉㄧㄢˇ"],["看","ㄎㄢˋ"],["吧","˙ㄅㄚ"],["!",""]]},"hint_sparkle":{"en":"Look! Something is sparkling. Tap it!","zh":"你看!有東西在閃閃發亮,點一下!","v":"coco","zy":[["你","ㄋㄧˇ"],["看","ㄎㄢˋ"],["!",""],["有","ㄧㄡˇ"],["東","ㄉㄨㄥ"],["西","˙ㄒㄧ"],["在","ㄗㄞˋ"],["閃","ㄕㄢˇ"],["閃","ㄕㄢˇ"],["發","ㄈㄚ"],["亮","ㄌㄧㄤˋ"],[",",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["!",""]]},"hint_walk":{"en":"Let's walk this way! There's more to see.","zh":"我們往這邊走吧!還有好多東西可以看。","v":"coco","zy":[["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["往","ㄨㄤˇ"],["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["走","ㄗㄡˇ"],["吧","˙ㄅㄚ"],["!",""],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["東","ㄉㄨㄥ"],["西","˙ㄒㄧ"],["可","ㄎㄜˇ"],["以","ㄧˇ"],["看","ㄎㄢˋ"],["。",""]]},"looked_here":{"en":"We already looked here. Let's try something else!","zh":"這裡我們看過了喔,換別的看看!","v":"coco","zy":[["這","ㄓㄜˋ"],["裡","ㄌㄧˇ"],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["看","ㄎㄢˋ"],["過","ㄍㄨㄛˋ"],["了","˙ㄌㄜ"],["喔","ㄛ"],[",",""],["換","ㄏㄨㄢˋ"],["別","ㄅㄧㄝˊ"],["的","˙ㄉㄜ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["!",""]]},"clue_look":{"en":"Look! A clue!","zh":"你看!一個線索!","v":"coco","zy":[["你","ㄋㄧˇ"],["看","ㄎㄢˋ"],["!",""],["一","ㄧ"],["個","ㄍㄜˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["!",""]]},"clue_1":{"en":"We found one clue! Let's find two more.","zh":"找到一個線索了!再找兩個吧。","v":"coco","zy":[["找","ㄓㄠˇ"],["到","ㄉㄠˋ"],["一","ㄧ"],["個","ㄍㄜˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["了","˙ㄌㄜ"],["!",""],["再","ㄗㄞˋ"],["找","ㄓㄠˇ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["吧","˙ㄅㄚ"],["。",""]]},"clue_2":{"en":"Another clue! Just one more!","zh":"又一個線索!只差一個了!","v":"coco","zy":[["又","ㄧㄡˋ"],["一","ㄧ"],["個","ㄍㄜˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["!",""],["只","ㄓˇ"],["差","ㄔㄚˋ"],["一","ㄧ"],["個","ㄍㄜˋ"],["了","˙ㄌㄜ"],["!",""]]},"clue_3":{"en":"Three clues! Now we can solve the mystery!","zh":"三個線索都找到了!我們可以解開謎題了!","v":"coco","zy":[["三","ㄙㄢ"],["個","ㄍㄜˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["都","ㄉㄡ"],["找","ㄓㄠˇ"],["到","ㄉㄠˋ"],["了","˙ㄌㄜ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["可","ㄎㄜˇ"],["以","ㄧˇ"],["解","ㄐㄧㄝˇ"],["開","ㄎㄞ"],["謎","ㄇㄧˊ"],["題","ㄊㄧˊ"],["了","˙ㄌㄜ"],["!",""]]},"shadow":{"en":"And here's its shadow!","zh":"還有,這是牠的影子!","v":"coco","zy":[["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],[",",""],["這","ㄓㄜˋ"],["是","ㄕˋ"],["牠","ㄊㄚ"],["的","˙ㄉㄜ"],["影","ㄧㄥˇ"],["子","˙ㄗ"],["!",""]]},"witness_clue":{"en":"Our new friend saw who did it! Here's a clue!","zh":"我們的新朋友有看到是誰喔!這是一個線索!","v":"coco","zy":[["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["的","˙ㄉㄜ"],["新","ㄒㄧㄣ"],["朋","ㄆㄥˊ"],["友","˙ㄧㄡ"],["有","ㄧㄡˇ"],["看","ㄎㄢˋ"],["到","ㄉㄠˋ"],["是","ㄕˋ"],["誰","ㄕㄨㄟˊ"],["喔","ㄛ"],["!",""],["這","ㄓㄜˋ"],["是","ㄕˋ"],["一","ㄧ"],["個","ㄍㄜˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["!",""]]},"ui_pick":{"en":"Pick a place!","zh":"選一個地方!","v":"coco","zy":[["選","ㄒㄩㄢˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["地","ㄉㄧˋ"],["方","˙ㄈㄤ"],["!",""]]},"ui_book":{"en":"Sticker Book","zh":"貼紙本","v":"coco","zy":[["貼","ㄊㄧㄝ"],["紙","ㄓˇ"],["本","ㄅㄣˇ"]]},"ui_cases":{"en":"Mysteries solved","zh":"解開的謎題","v":"coco","zy":[["解","ㄐㄧㄝˇ"],["開","ㄎㄞ"],["的","˙ㄉㄜ"],["謎","ㄇㄧˊ"],["題","ㄊㄧˊ"]]},"final_intro":{"en":"Let's look at our clues.","zh":"我們來看看線索。","v":"coco","zy":[["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["。",""]]},"final_ask":{"en":"Who matches all our clues? Tap the animal!","zh":"誰跟我們的線索一樣呢?點一下那隻動物!","v":"coco","zy":[["誰","ㄕㄨㄟˊ"],["跟","ㄍㄣ"],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["的","˙ㄉㄜ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["一","ㄧ"],["樣","ㄧㄤˋ"],["呢","˙ㄋㄜ"],["?",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["那","ㄋㄚˋ"],["隻","ㄓ"],["動","ㄉㄨㄥˋ"],["物","ㄨˋ"],["!",""]]},"final_again":{"en":"Let's look at the clues again.","zh":"我們再看一次線索吧。","v":"coco","zy":[["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["再","ㄗㄞˋ"],["看","ㄎㄢˋ"],["一","ㄧ"],["次","ㄘˋ"],["線","ㄒㄧㄢˋ"],["索","ㄙㄨㄛˇ"],["吧","˙ㄅㄚ"],["。",""]]},"solved_yay":{"en":"You solved the mystery! Great detective work, Milo!","zh":"你解開謎題了!洛明,你真是厲害的小偵探!","v":"coco","zy":[["你","ㄋㄧˇ"],["解","ㄐㄧㄝˇ"],["開","ㄎㄞ"],["謎","ㄇㄧˊ"],["題","ㄊㄧˊ"],["了","˙ㄌㄜ"],["!",""],["洛","ㄌㄨㄛˋ"],["明","ㄇㄧㄥˊ"],[",",""],["你","ㄋㄧˇ"],["真","ㄓㄣ"],["是","ㄕˋ"],["厲","ㄌㄧˋ"],["害","ㄏㄞˋ"],["的","˙ㄉㄜ"],["小","ㄒㄧㄠˇ"],["偵","ㄓㄣ"],["探","ㄊㄢˋ"],["!",""]]},"play_again":{"en":"Play again, or pick a new place!","zh":"要再玩一次,還是換個地方呢?","v":"coco","zy":[["要","ㄧㄠˋ"],["再","ㄗㄞˋ"],["玩","ㄨㄢˊ"],["一","ㄧ"],["次","ㄘˋ"],[",",""],["還","ㄏㄞˊ"],["是","ㄕˋ"],["換","ㄏㄨㄢˋ"],["個","ㄍㄜˋ"],["地","ㄉㄧˋ"],["方","˙ㄈㄤ"],["呢","˙ㄋㄜ"],["?",""]]},"act_log":{"en":"Let's peek under the log!","zh":"我們來看看木頭下面!","v":"coco","zy":[["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["木","ㄇㄨˋ"],["頭","ㄊㄡˊ"],["下","ㄒㄧㄚˋ"],["面","ㄇㄧㄢˋ"],["!",""]]},"act_bananas":{"en":"Shake, shake! What falls down?","zh":"搖一搖!會掉下什麼呢?","v":"coco","zy":[["搖","ㄧㄠˊ"],["一","ㄧ"],["搖","ㄧㄠˊ"],["!",""],["會","ㄏㄨㄟˋ"],["掉","ㄉㄧㄠˋ"],["下","ㄒㄧㄚˋ"],["什","ㄕㄣˊ"],["麼","˙ㄇㄜ"],["呢","˙ㄋㄜ"],["?",""]]},"act_fern":{"en":"Rustle, rustle! Who's hiding in there?","zh":"沙沙沙!是誰躲在裡面?","v":"coco","zy":[["沙","ㄕㄚ"],["沙","ㄕㄚ"],["沙","ㄕㄚ"],["!",""],["是","ㄕˋ"],["誰","ㄕㄨㄟˊ"],["躲","ㄉㄨㄛˇ"],["在","ㄗㄞˋ"],["裡","ㄌㄧˇ"],["面","ㄇㄧㄢˋ"],["?",""]]},"act_prints":{"en":"Footprints! Let's follow them!","zh":"有腳印!我們跟著走!","v":"coco","zy":[["有","ㄧㄡˇ"],["腳","ㄐㄧㄠˇ"],["印","ㄧㄣˋ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["跟","ㄍㄣ"],["著","˙ㄓㄜ"],["走","ㄗㄡˇ"],["!",""]]},"act_nest":{"en":"A nest! Let's look inside.","zh":"一個鳥窩!我們看看裡面。","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["鳥","ㄋㄧㄠˇ"],["窩","ㄨㄛ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["裡","ㄌㄧˇ"],["面","ㄇㄧㄢˋ"],["。",""]]},"act_crate":{"en":"A wooden box! Let's open it!","zh":"一個木箱子!打開看看!","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["木","ㄇㄨˋ"],["箱","ㄒㄧㄤ"],["子","˙ㄗ"],["!",""],["打","ㄉㄚˇ"],["開","ㄎㄞ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["!",""]]},"act_chest":{"en":"A treasure chest! Let's open it!","zh":"一個寶箱!打開看看!","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["寶","ㄅㄠˇ"],["箱","ㄒㄧㄤ"],["!",""],["打","ㄉㄚˇ"],["開","ㄎㄞ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["!",""]]},"act_barrel":{"en":"A floating barrel! What's inside?","zh":"一個漂來的木桶!裡面有什麼?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["漂","ㄆㄧㄠ"],["來","ㄌㄞˊ"],["的","˙ㄉㄜ"],["木","ㄇㄨˋ"],["桶","ㄊㄨㄥˇ"],["!",""],["裡","ㄌㄧˇ"],["面","ㄇㄧㄢˋ"],["有","ㄧㄡˇ"],["什","ㄕㄣˊ"],["麼","˙ㄇㄜ"],["?",""]]},"act_plank":{"en":"This board is wiggly! Let's lift it up.","zh":"這塊木板鬆鬆的,我們掀開看看!","v":"coco","zy":[["這","ㄓㄜˋ"],["塊","ㄎㄨㄞˋ"],["木","ㄇㄨˋ"],["板","ㄅㄢˇ"],["鬆","ㄙㄨㄥ"],["鬆","ㄙㄨㄥ"],["的","˙ㄉㄜ"],[",",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["掀","ㄒㄧㄢ"],["開","ㄎㄞ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["!",""]]},"act_binoculars":{"en":"Binoculars! Let's look far, far away.","zh":"望遠鏡!我們來看好遠好遠的地方。","v":"coco","zy":[["望","ㄨㄤˋ"],["遠","ㄩㄢˇ"],["鏡","ㄐㄧㄥˋ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["看","ㄎㄢˋ"],["好","ㄏㄠˇ"],["遠","ㄩㄢˇ"],["好","ㄏㄠˇ"],["遠","ㄩㄢˇ"],["的","˙ㄉㄜ"],["地","ㄉㄧˋ"],["方","˙ㄈㄤ"],["。",""]]},"act_basket":{"en":"A basket on a rope! Let's pull it down.","zh":"繩子上有一個籃子!我們把它拉下來。","v":"coco","zy":[["繩","ㄕㄥˊ"],["子","˙ㄗ"],["上","ㄕㄤˋ"],["有","ㄧㄡˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["籃","ㄌㄢˊ"],["子","˙ㄗ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["把","ㄅㄚˇ"],["它","ㄊㄚ"],["拉","ㄌㄚ"],["下","ㄒㄧㄚˋ"],["來","ㄌㄞˊ"],["。",""]]},"act_egg":{"en":"A big spotty egg! Let's look behind it.","zh":"一顆有斑點的大蛋!我們看看後面。","v":"coco","zy":[["一","ㄧ"],["顆","ㄎㄜ"],["有","ㄧㄡˇ"],["斑","ㄅㄢ"],["點","ㄉㄧㄢˇ"],["的","˙ㄉㄜ"],["大","ㄉㄚˋ"],["蛋","ㄉㄢˋ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["後","ㄏㄡˋ"],["面","ㄇㄧㄢˋ"],["。",""]]},"sur_star":{"en":"A sparkly star! Twinkle, twinkle!","zh":"一顆亮晶晶的星星!一閃一閃!","v":"coco","zy":[["一","ㄧ"],["顆","ㄎㄜ"],["亮","ㄌㄧㄤˋ"],["晶","ㄐㄧㄥ"],["晶","ㄐㄧㄥ"],["的","˙ㄉㄜ"],["星","ㄒㄧㄥ"],["星","ㄒㄧㄥ"],["!",""],["一","ㄧ"],["閃","ㄕㄢˇ"],["一","ㄧ"],["閃","ㄕㄢˇ"],["!",""]]},"sur_gem":{"en":"Ooh! A shiny blue gem!","zh":"哇!一顆藍色的寶石!","v":"coco","zy":[["哇","ㄨㄚ"],["!",""],["一","ㄧ"],["顆","ㄎㄜ"],["藍","ㄌㄢˊ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["寶","ㄅㄠˇ"],["石","ㄕˊ"],["!",""]]},"sur_mushroom":{"en":"Boing! A bouncy mushroom!","zh":"咚!會彈跳的香菇!","v":"coco","zy":[["咚","ㄉㄨㄥ"],["!",""],["會","ㄏㄨㄟˋ"],["彈","ㄊㄢˊ"],["跳","ㄊㄧㄠˋ"],["的","˙ㄉㄜ"],["香","ㄒㄧㄤ"],["菇","ㄍㄨ"],["!",""]]},"sur_map":{"en":"An old treasure map! So cool!","zh":"一張舊舊的藏寶圖!好酷喔!","v":"coco","zy":[["一","ㄧ"],["張","ㄓㄤ"],["舊","ㄐㄧㄡˋ"],["舊","ㄐㄧㄡˋ"],["的","˙ㄉㄜ"],["藏","ㄘㄤˊ"],["寶","ㄅㄠˇ"],["圖","ㄊㄨˊ"],["!",""],["好","ㄏㄠˇ"],["酷","ㄎㄨˋ"],["喔","ㄛ"],["!",""]]},"sur_nothing":{"en":"Nothing here. Let's look somewhere else!","zh":"這裡沒有東西,我們去別的地方看看!","v":"coco","zy":[["這","ㄓㄜˋ"],["裡","ㄌㄧˇ"],["沒","ㄇㄟˊ"],["有","ㄧㄡˇ"],["東","ㄉㄨㄥ"],["西","˙ㄒㄧ"],[",",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["去","ㄑㄩˋ"],["別","ㄅㄧㄝˊ"],["的","˙ㄉㄜ"],["地","ㄉㄧˋ"],["方","˙ㄈㄤ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["!",""]]},"sur_flower":{"en":"What a pretty flower! Sniff, sniff. It smells nice!","zh":"好漂亮的花!聞一聞,香香的!","v":"coco","zy":[["好","ㄏㄠˇ"],["漂","ㄆㄧㄠˋ"],["亮","˙ㄌㄧㄤ"],["的","˙ㄉㄜ"],["花","ㄏㄨㄚ"],["!",""],["聞","ㄨㄣˊ"],["一","ㄧ"],["聞","ㄨㄣˊ"],[",",""],["香","ㄒㄧㄤ"],["香","ㄒㄧㄤ"],["的","˙ㄉㄜ"],["!",""]]},"sur_splash":{"en":"Splash! The water is nice and cool!","zh":"嘩啦!水涼涼的好舒服!","v":"coco","zy":[["嘩","ㄏㄨㄚ"],["啦","ㄌㄚ"],["!",""],["水","ㄕㄨㄟˇ"],["涼","ㄌㄧㄤˊ"],["涼","ㄌㄧㄤˊ"],["的","˙ㄉㄜ"],["好","ㄏㄠˇ"],["舒","ㄕㄨ"],["服","˙ㄈㄨ"],["!",""]]},"sur_waterfall":{"en":"Whoosh! Listen to the waterfall!","zh":"嘩~聽聽瀑布的聲音!","v":"coco","zy":[["嘩","ㄏㄨㄚ"],["~",""],["聽","ㄊㄧㄥ"],["聽","ㄊㄧㄥ"],["瀑","ㄆㄨˋ"],["布","ㄅㄨˋ"],["的","˙ㄉㄜ"],["聲","ㄕㄥ"],["音","ㄧㄣ"],["!",""]]},"sur_lantern":{"en":"A glowing lantern! It's warm and bright.","zh":"一盞亮亮的燈籠!暖暖的好亮喔。","v":"coco","zy":[["一","ㄧ"],["盞","ㄓㄢˇ"],["亮","ㄌㄧㄤˋ"],["亮","ㄌㄧㄤˋ"],["的","˙ㄉㄜ"],["燈","ㄉㄥ"],["籠","ㄌㄨㄥˊ"],["!",""],["暖","ㄋㄨㄢˇ"],["暖","ㄋㄨㄢˇ"],["的","˙ㄉㄜ"],["好","ㄏㄠˇ"],["亮","ㄌㄧㄤˋ"],["喔","ㄛ"],["。",""]]},"sur_egg":{"en":"A big spotty egg! Shh, it's resting.","zh":"一顆有斑點的大蛋!噓,牠在休息喔。","v":"coco","zy":[["一","ㄧ"],["顆","ㄎㄜ"],["有","ㄧㄡˇ"],["斑","ㄅㄢ"],["點","ㄉㄧㄢˇ"],["的","˙ㄉㄜ"],["大","ㄉㄚˋ"],["蛋","ㄉㄢˋ"],["!",""],["噓","ㄒㄩ"],[",",""],["牠","ㄊㄚ"],["在","ㄗㄞˋ"],["休","ㄒㄧㄡ"],["息","ㄒㄧ"],["喔","ㄛ"],["。",""]]},"sur_palm":{"en":"Wiggle, wiggle! What a tall palm tree!","zh":"搖搖搖!好高的椰子樹!","v":"coco","zy":[["搖","ㄧㄠˊ"],["搖","ㄧㄠˊ"],["搖","ㄧㄠˊ"],["!",""],["好","ㄏㄠˇ"],["高","ㄍㄠ"],["的","˙ㄉㄜ"],["椰","ㄧㄝ"],["子","˙ㄗ"],["樹","ㄕㄨˋ"],["!",""]]},"sur_coco":{"en":"Hee hee! That tickles!","zh":"嘻嘻!好癢喔!","v":"coco","zy":[["嘻","ㄒㄧ"],["嘻","ㄒㄧ"],["!",""],["好","ㄏㄠˇ"],["癢","ㄧㄤˇ"],["喔","ㄛ"],["!",""]]},"sur_leo":{"en":"Leo is ready to explore!","zh":"里歐準備好去探險了!","v":"coco","zy":[["里","ㄌㄧˇ"],["歐","ㄡ"],["準","ㄓㄨㄣˇ"],["備","ㄅㄟˋ"],["好","ㄏㄠˇ"],["去","ㄑㄩˋ"],["探","ㄊㄢˋ"],["險","ㄒㄧㄢˇ"],["了","˙ㄌㄜ"],["!",""]]},"sur_orchid":{"en":"Purple flowers! So pretty up high!","zh":"紫色的花!在高高的樹上好漂亮!","v":"coco","zy":[["紫","ㄗˇ"],["色","ㄙㄜˋ"],["的","˙ㄉㄜ"],["花","ㄏㄨㄚ"],["!",""],["在","ㄗㄞˋ"],["高","ㄍㄠ"],["高","ㄍㄠ"],["的","˙ㄉㄜ"],["樹","ㄕㄨˋ"],["上","ㄕㄤˋ"],["好","ㄏㄠˇ"],["漂","ㄆㄧㄠˋ"],["亮","˙ㄌㄧㄤ"],["!",""]]},"count_intro_berries":{"en":"Look at all these berries! Let's count them. Touch each one!","zh":"哇,好多藍莓!我們來數一數。每一顆都摸一下喔!","v":"coco","zy":[["哇","ㄨㄚ"],[",",""],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["藍","ㄌㄢˊ"],["莓","ㄇㄟˊ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["數","ㄕㄨˇ"],["一","ㄧ"],["數","ㄕㄨˇ"],["。",""],["每","ㄇㄟˇ"],["一","ㄧ"],["顆","ㄎㄜ"],["都","ㄉㄡ"],["摸","ㄇㄛ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["喔","ㄛ"],["!",""]]},"count_ask_berries":{"en":"How many berries are there?","zh":"總共有幾顆藍莓呢?","v":"coco","zy":[["總","ㄗㄨㄥˇ"],["共","ㄍㄨㄥˋ"],["有","ㄧㄡˇ"],["幾","ㄐㄧˇ"],["顆","ㄎㄜ"],["藍","ㄌㄢˊ"],["莓","ㄇㄟˊ"],["呢","˙ㄋㄜ"],["?",""]]},"count_intro_apples":{"en":"Look at all these apples! Let's count them. Touch each one!","zh":"哇,好多蘋果!我們來數一數。每一顆都摸一下喔!","v":"coco","zy":[["哇","ㄨㄚ"],[",",""],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["蘋","ㄆㄧㄥˊ"],["果","ㄍㄨㄛˇ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["數","ㄕㄨˇ"],["一","ㄧ"],["數","ㄕㄨˇ"],["。",""],["每","ㄇㄟˇ"],["一","ㄧ"],["顆","ㄎㄜ"],["都","ㄉㄡ"],["摸","ㄇㄛ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["喔","ㄛ"],["!",""]]},"count_ask_apples":{"en":"How many apples are there?","zh":"總共有幾顆蘋果呢?","v":"coco","zy":[["總","ㄗㄨㄥˇ"],["共","ㄍㄨㄥˋ"],["有","ㄧㄡˇ"],["幾","ㄐㄧˇ"],["顆","ㄎㄜ"],["蘋","ㄆㄧㄥˊ"],["果","ㄍㄨㄛˇ"],["呢","˙ㄋㄜ"],["?",""]]},"count_intro_bananas":{"en":"Look at all these bananas! Let's count them. Touch each one!","zh":"哇,好多香蕉!我們來數一數。每一根都摸一下喔!","v":"coco","zy":[["哇","ㄨㄚ"],[",",""],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["香","ㄒㄧㄤ"],["蕉","ㄐㄧㄠ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["數","ㄕㄨˇ"],["一","ㄧ"],["數","ㄕㄨˇ"],["。",""],["每","ㄇㄟˇ"],["一","ㄧ"],["根","ㄍㄣ"],["都","ㄉㄡ"],["摸","ㄇㄛ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["喔","ㄛ"],["!",""]]},"count_ask_bananas":{"en":"How many bananas are there?","zh":"總共有幾根香蕉呢?","v":"coco","zy":[["總","ㄗㄨㄥˇ"],["共","ㄍㄨㄥˋ"],["有","ㄧㄡˇ"],["幾","ㄐㄧˇ"],["根","ㄍㄣ"],["香","ㄒㄧㄤ"],["蕉","ㄐㄧㄠ"],["呢","˙ㄋㄜ"],["?",""]]},"count_intro_eggs":{"en":"Look at all these eggs! Let's count them. Touch each one!","zh":"哇,好多蛋!我們來數一數。每一顆都摸一下喔!","v":"coco","zy":[["哇","ㄨㄚ"],[",",""],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["蛋","ㄉㄢˋ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["數","ㄕㄨˇ"],["一","ㄧ"],["數","ㄕㄨˇ"],["。",""],["每","ㄇㄟˇ"],["一","ㄧ"],["顆","ㄎㄜ"],["都","ㄉㄡ"],["摸","ㄇㄛ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["喔","ㄛ"],["!",""]]},"count_ask_eggs":{"en":"How many eggs are there?","zh":"總共有幾顆蛋呢?","v":"coco","zy":[["總","ㄗㄨㄥˇ"],["共","ㄍㄨㄥˋ"],["有","ㄧㄡˇ"],["幾","ㄐㄧˇ"],["顆","ㄎㄜ"],["蛋","ㄉㄢˋ"],["呢","˙ㄋㄜ"],["?",""]]},"count_intro_gems":{"en":"Look at all these gems! Let's count them. Touch each one!","zh":"哇,好多寶石!我們來數一數。每一顆都摸一下喔!","v":"coco","zy":[["哇","ㄨㄚ"],[",",""],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["寶","ㄅㄠˇ"],["石","ㄕˊ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["數","ㄕㄨˇ"],["一","ㄧ"],["數","ㄕㄨˇ"],["。",""],["每","ㄇㄟˇ"],["一","ㄧ"],["顆","ㄎㄜ"],["都","ㄉㄡ"],["摸","ㄇㄛ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["喔","ㄛ"],["!",""]]},"count_ask_gems":{"en":"How many gems are there?","zh":"總共有幾顆寶石呢?","v":"coco","zy":[["總","ㄗㄨㄥˇ"],["共","ㄍㄨㄥˋ"],["有","ㄧㄡˇ"],["幾","ㄐㄧˇ"],["顆","ㄎㄜ"],["寶","ㄅㄠˇ"],["石","ㄕˊ"],["呢","˙ㄋㄜ"],["?",""]]},"count_intro_stars":{"en":"Look at all these stars! Let's count them. Touch each one!","zh":"哇,好多星星!我們來數一數。每一顆都摸一下喔!","v":"coco","zy":[["哇","ㄨㄚ"],[",",""],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["星","ㄒㄧㄥ"],["星","ㄒㄧㄥ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["數","ㄕㄨˇ"],["一","ㄧ"],["數","ㄕㄨˇ"],["。",""],["每","ㄇㄟˇ"],["一","ㄧ"],["顆","ㄎㄜ"],["都","ㄉㄡ"],["摸","ㄇㄛ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["喔","ㄛ"],["!",""]]},"count_ask_stars":{"en":"How many stars are there?","zh":"總共有幾顆星星呢?","v":"coco","zy":[["總","ㄗㄨㄥˇ"],["共","ㄍㄨㄥˋ"],["有","ㄧㄡˇ"],["幾","ㄐㄧˇ"],["顆","ㄎㄜ"],["星","ㄒㄧㄥ"],["星","ㄒㄧㄥ"],["呢","˙ㄋㄜ"],["?",""]]},"count_intro_cherries":{"en":"Look at all these cherries! Let's count them. Touch each one!","zh":"哇,好多櫻桃!我們來數一數。每一顆都摸一下喔!","v":"coco","zy":[["哇","ㄨㄚ"],[",",""],["好","ㄏㄠˇ"],["多","ㄉㄨㄛ"],["櫻","ㄧㄥ"],["桃","ㄊㄠˊ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["數","ㄕㄨˇ"],["一","ㄧ"],["數","ㄕㄨˇ"],["。",""],["每","ㄇㄟˇ"],["一","ㄧ"],["顆","ㄎㄜ"],["都","ㄉㄡ"],["摸","ㄇㄛ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["喔","ㄛ"],["!",""]]},"count_ask_cherries":{"en":"How many cherries are there?","zh":"總共有幾顆櫻桃呢?","v":"coco","zy":[["總","ㄗㄨㄥˇ"],["共","ㄍㄨㄥˋ"],["有","ㄧㄡˇ"],["幾","ㄐㄧˇ"],["顆","ㄎㄜ"],["櫻","ㄧㄥ"],["桃","ㄊㄠˊ"],["呢","˙ㄋㄜ"],["?",""]]},"num_1":{"en":"One!","zh":"一!","v":"coco","zy":[["一","ㄧ"],["!",""]]},"yes_1":{"en":"Yes! One!","zh":"對!一!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["一","ㄧ"],["!",""]]},"group_1":{"en":"One here.","zh":"這邊有一個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["。",""]]},"more_1":{"en":"And one more here!","zh":"這邊還有一個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["!",""]]},"num_2":{"en":"Two!","zh":"二!","v":"coco","zy":[["二","ㄦˋ"],["!",""]]},"yes_2":{"en":"Yes! Two!","zh":"對!二!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["二","ㄦˋ"],["!",""]]},"group_2":{"en":"Two here.","zh":"這邊有兩個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["。",""]]},"more_2":{"en":"And two more here!","zh":"這邊還有兩個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["!",""]]},"num_3":{"en":"Three!","zh":"三!","v":"coco","zy":[["三","ㄙㄢ"],["!",""]]},"yes_3":{"en":"Yes! Three!","zh":"對!三!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["三","ㄙㄢ"],["!",""]]},"group_3":{"en":"Three here.","zh":"這邊有三個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],["。",""]]},"more_3":{"en":"And three more here!","zh":"這邊還有三個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],["!",""]]},"num_4":{"en":"Four!","zh":"四!","v":"coco","zy":[["四","ㄙˋ"],["!",""]]},"yes_4":{"en":"Yes! Four!","zh":"對!四!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["四","ㄙˋ"],["!",""]]},"group_4":{"en":"Four here.","zh":"這邊有四個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["四","ㄙˋ"],["個","ㄍㄜˋ"],["。",""]]},"more_4":{"en":"And four more here!","zh":"這邊還有四個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["四","ㄙˋ"],["個","ㄍㄜˋ"],["!",""]]},"num_5":{"en":"Five!","zh":"五!","v":"coco","zy":[["五","ㄨˇ"],["!",""]]},"yes_5":{"en":"Yes! Five!","zh":"對!五!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["五","ㄨˇ"],["!",""]]},"group_5":{"en":"Five here.","zh":"這邊有五個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["五","ㄨˇ"],["個","ㄍㄜˋ"],["。",""]]},"more_5":{"en":"And five more here!","zh":"這邊還有五個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["五","ㄨˇ"],["個","ㄍㄜˋ"],["!",""]]},"num_6":{"en":"Six!","zh":"六!","v":"coco","zy":[["六","ㄌㄧㄡˋ"],["!",""]]},"yes_6":{"en":"Yes! Six!","zh":"對!六!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["六","ㄌㄧㄡˋ"],["!",""]]},"group_6":{"en":"Six here.","zh":"這邊有六個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],["。",""]]},"more_6":{"en":"And six more here!","zh":"這邊還有六個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],["!",""]]},"num_7":{"en":"Seven!","zh":"七!","v":"coco","zy":[["七","ㄑㄧ"],["!",""]]},"yes_7":{"en":"Yes! Seven!","zh":"對!七!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["七","ㄑㄧ"],["!",""]]},"group_7":{"en":"Seven here.","zh":"這邊有七個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["七","ㄑㄧ"],["個","ㄍㄜˋ"],["。",""]]},"more_7":{"en":"And seven more here!","zh":"這邊還有七個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["七","ㄑㄧ"],["個","ㄍㄜˋ"],["!",""]]},"num_8":{"en":"Eight!","zh":"八!","v":"coco","zy":[["八","ㄅㄚ"],["!",""]]},"yes_8":{"en":"Yes! Eight!","zh":"對!八!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["八","ㄅㄚ"],["!",""]]},"group_8":{"en":"Eight here.","zh":"這邊有八個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["八","ㄅㄚ"],["個","ㄍㄜˋ"],["。",""]]},"more_8":{"en":"And eight more here!","zh":"這邊還有八個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["八","ㄅㄚ"],["個","ㄍㄜˋ"],["!",""]]},"num_9":{"en":"Nine!","zh":"九!","v":"coco","zy":[["九","ㄐㄧㄡˇ"],["!",""]]},"yes_9":{"en":"Yes! Nine!","zh":"對!九!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["九","ㄐㄧㄡˇ"],["!",""]]},"group_9":{"en":"Nine here.","zh":"這邊有九個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["九","ㄐㄧㄡˇ"],["個","ㄍㄜˋ"],["。",""]]},"more_9":{"en":"And nine more here!","zh":"這邊還有九個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["九","ㄐㄧㄡˇ"],["個","ㄍㄜˋ"],["!",""]]},"num_10":{"en":"Ten!","zh":"十!","v":"coco","zy":[["十","ㄕˊ"],["!",""]]},"yes_10":{"en":"Yes! Ten!","zh":"對!十!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["!",""],["十","ㄕˊ"],["!",""]]},"group_10":{"en":"Ten here.","zh":"這邊有十個。","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["有","ㄧㄡˇ"],["十","ㄕˊ"],["個","ㄍㄜˋ"],["。",""]]},"more_10":{"en":"And ten more here!","zh":"這邊還有十個!","v":"coco","zy":[["這","ㄓㄜˋ"],["邊","ㄅㄧㄢ"],["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["十","ㄕˊ"],["個","ㄍㄜˋ"],["!",""]]},"count_right":{"en":"You counted them all! Great counting!","zh":"你全部都數完了!數得好棒!","v":"coco","zy":[["你","ㄋㄧˇ"],["全","ㄑㄩㄢˊ"],["部","ㄅㄨˋ"],["都","ㄉㄡ"],["數","ㄕㄨˇ"],["完","ㄨㄢˊ"],["了","˙ㄌㄜ"],["!",""],["數","ㄕㄨˇ"],["得","˙ㄉㄜ"],["好","ㄏㄠˇ"],["棒","ㄅㄤˋ"],["!",""]]},"count_again":{"en":"Hmm, not quite. Let's count them together!","zh":"嗯,好像不是喔。我們一起再數一次!","v":"coco","zy":[["嗯","ㄣˊ"],[",",""],["好","ㄏㄠˇ"],["像","ㄒㄧㄤˋ"],["不","ㄅㄨˋ"],["是","ㄕˋ"],["喔","ㄛ"],["。",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["一","ㄧ"],["起","ㄑㄧˇ"],["再","ㄗㄞˋ"],["數","ㄕㄨˇ"],["一","ㄧ"],["次","ㄘˋ"],["!",""]]},"count_glow":{"en":"This many! Tap the glowing number.","zh":"就是這麼多!點一下發亮的數字。","v":"coco","zy":[["就","ㄐㄧㄡˋ"],["是","ㄕˋ"],["這","ㄓㄜˋ"],["麼","˙ㄇㄜ"],["多","ㄉㄨㄛ"],["!",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["發","ㄈㄚ"],["亮","ㄌㄧㄤˋ"],["的","˙ㄉㄜ"],["數","ㄕㄨˋ"],["字","ㄗˋ"],["。",""]]},"count_more":{"en":"There are more to touch! Find the ones without a number.","zh":"還有沒摸到的喔!找找看沒有數字的。","v":"coco","zy":[["還","ㄏㄞˊ"],["有","ㄧㄡˇ"],["沒","ㄇㄟˊ"],["摸","ㄇㄛ"],["到","ㄉㄠˋ"],["的","˙ㄉㄜ"],["喔","ㄛ"],["!",""],["找","ㄓㄠˇ"],["找","ㄓㄠˇ"],["看","ㄎㄢˋ"],["沒","ㄇㄟˊ"],["有","ㄧㄡˇ"],["數","ㄕㄨˋ"],["字","ㄗˋ"],["的","˙ㄉㄜ"],["。",""]]},"add_intro":{"en":"Two little groups! Let's look.","zh":"有兩小堆!我們來看看。","v":"coco","zy":[["有","ㄧㄡˇ"],["兩","ㄌㄧㄤˇ"],["小","ㄒㄧㄠˇ"],["堆","ㄉㄨㄟ"],["!",""],["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["來","ㄌㄞˊ"],["看","ㄎㄢˋ"],["看","ㄎㄢˋ"],["。",""]]},"add_push":{"en":"Let's put them all in the basket! Tap each group.","zh":"我們把它們都放進籃子裡!點一下每一堆。","v":"coco","zy":[["我","ㄨㄛˇ"],["們","˙ㄇㄣ"],["把","ㄅㄚˇ"],["它","ㄊㄚ"],["們","˙ㄇㄣ"],["都","ㄉㄡ"],["放","ㄈㄤˋ"],["進","ㄐㄧㄣˋ"],["籃","ㄌㄢˊ"],["子","˙ㄗ"],["裡","ㄌㄧˇ"],["!",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["每","ㄇㄟˇ"],["一","ㄧ"],["堆","ㄉㄨㄟ"],["。",""]]},"add_countall":{"en":"Now count them all together! Touch each one.","zh":"現在全部一起數!每一個都摸一下。","v":"coco","zy":[["現","ㄒㄧㄢˋ"],["在","ㄗㄞˋ"],["全","ㄑㄩㄢˊ"],["部","ㄅㄨˋ"],["一","ㄧ"],["起","ㄑㄧˇ"],["數","ㄕㄨˇ"],["!",""],["每","ㄇㄟˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["都","ㄉㄡ"],["摸","ㄇㄛ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["。",""]]},"add_right":{"en":"Yes! Putting groups together is called adding!","zh":"對了!把兩堆合在一起,就是加法喔!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!",""],["把","ㄅㄚˇ"],["兩","ㄌㄧㄤˇ"],["堆","ㄉㄨㄟ"],["合","ㄏㄜˊ"],["在","ㄗㄞˋ"],["一","ㄧ"],["起","ㄑㄧˇ"],[",",""],["就","ㄐㄧㄡˋ"],["是","ㄕˋ"],["加","ㄐㄧㄚ"],["法","ㄈㄚˇ"],["喔","ㄛ"],["!",""]]},"add_ask_1_1":{"en":"One and one make how many?","zh":"一個和一個,合起來是幾個呢?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["一","ㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_1_2":{"en":"One and two make how many?","zh":"一個和兩個,合起來是幾個呢?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_1_3":{"en":"One and three make how many?","zh":"一個和三個,合起來是幾個呢?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_1_4":{"en":"One and four make how many?","zh":"一個和四個,合起來是幾個呢?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["四","ㄙˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_1_5":{"en":"One and five make how many?","zh":"一個和五個,合起來是幾個呢?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["五","ㄨˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_1_6":{"en":"One and six make how many?","zh":"一個和六個,合起來是幾個呢?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_1_7":{"en":"One and seven make how many?","zh":"一個和七個,合起來是幾個呢?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["七","ㄑㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_1_8":{"en":"One and eight make how many?","zh":"一個和八個,合起來是幾個呢?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["八","ㄅㄚ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_1_9":{"en":"One and nine make how many?","zh":"一個和九個,合起來是幾個呢?","v":"coco","zy":[["一","ㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["九","ㄐㄧㄡˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_2_1":{"en":"Two and one make how many?","zh":"兩個和一個,合起來是幾個呢?","v":"coco","zy":[["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["一","ㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_2_2":{"en":"Two and two make how many?","zh":"兩個和兩個,合起來是幾個呢?","v":"coco","zy":[["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_2_3":{"en":"Two and three make how many?","zh":"兩個和三個,合起來是幾個呢?","v":"coco","zy":[["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_2_4":{"en":"Two and four make how many?","zh":"兩個和四個,合起來是幾個呢?","v":"coco","zy":[["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["四","ㄙˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_2_5":{"en":"Two and five make how many?","zh":"兩個和五個,合起來是幾個呢?","v":"coco","zy":[["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["五","ㄨˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_2_6":{"en":"Two and six make how many?","zh":"兩個和六個,合起來是幾個呢?","v":"coco","zy":[["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_2_7":{"en":"Two and seven make how many?","zh":"兩個和七個,合起來是幾個呢?","v":"coco","zy":[["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["七","ㄑㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_2_8":{"en":"Two and eight make how many?","zh":"兩個和八個,合起來是幾個呢?","v":"coco","zy":[["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["八","ㄅㄚ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_3_1":{"en":"Three and one make how many?","zh":"三個和一個,合起來是幾個呢?","v":"coco","zy":[["三","ㄙㄢ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["一","ㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_3_2":{"en":"Three and two make how many?","zh":"三個和兩個,合起來是幾個呢?","v":"coco","zy":[["三","ㄙㄢ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_3_3":{"en":"Three and three make how many?","zh":"三個和三個,合起來是幾個呢?","v":"coco","zy":[["三","ㄙㄢ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_3_4":{"en":"Three and four make how many?","zh":"三個和四個,合起來是幾個呢?","v":"coco","zy":[["三","ㄙㄢ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["四","ㄙˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_3_5":{"en":"Three and five make how many?","zh":"三個和五個,合起來是幾個呢?","v":"coco","zy":[["三","ㄙㄢ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["五","ㄨˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_3_6":{"en":"Three and six make how many?","zh":"三個和六個,合起來是幾個呢?","v":"coco","zy":[["三","ㄙㄢ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_3_7":{"en":"Three and seven make how many?","zh":"三個和七個,合起來是幾個呢?","v":"coco","zy":[["三","ㄙㄢ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["七","ㄑㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_4_1":{"en":"Four and one make how many?","zh":"四個和一個,合起來是幾個呢?","v":"coco","zy":[["四","ㄙˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["一","ㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_4_2":{"en":"Four and two make how many?","zh":"四個和兩個,合起來是幾個呢?","v":"coco","zy":[["四","ㄙˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_4_3":{"en":"Four and three make how many?","zh":"四個和三個,合起來是幾個呢?","v":"coco","zy":[["四","ㄙˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_4_4":{"en":"Four and four make how many?","zh":"四個和四個,合起來是幾個呢?","v":"coco","zy":[["四","ㄙˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["四","ㄙˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_4_5":{"en":"Four and five make how many?","zh":"四個和五個,合起來是幾個呢?","v":"coco","zy":[["四","ㄙˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["五","ㄨˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_4_6":{"en":"Four and six make how many?","zh":"四個和六個,合起來是幾個呢?","v":"coco","zy":[["四","ㄙˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_5_1":{"en":"Five and one make how many?","zh":"五個和一個,合起來是幾個呢?","v":"coco","zy":[["五","ㄨˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["一","ㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_5_2":{"en":"Five and two make how many?","zh":"五個和兩個,合起來是幾個呢?","v":"coco","zy":[["五","ㄨˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_5_3":{"en":"Five and three make how many?","zh":"五個和三個,合起來是幾個呢?","v":"coco","zy":[["五","ㄨˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_5_4":{"en":"Five and four make how many?","zh":"五個和四個,合起來是幾個呢?","v":"coco","zy":[["五","ㄨˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["四","ㄙˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_5_5":{"en":"Five and five make how many?","zh":"五個和五個,合起來是幾個呢?","v":"coco","zy":[["五","ㄨˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["五","ㄨˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_6_1":{"en":"Six and one make how many?","zh":"六個和一個,合起來是幾個呢?","v":"coco","zy":[["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["一","ㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_6_2":{"en":"Six and two make how many?","zh":"六個和兩個,合起來是幾個呢?","v":"coco","zy":[["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_6_3":{"en":"Six and three make how many?","zh":"六個和三個,合起來是幾個呢?","v":"coco","zy":[["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_6_4":{"en":"Six and four make how many?","zh":"六個和四個,合起來是幾個呢?","v":"coco","zy":[["六","ㄌㄧㄡˋ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["四","ㄙˋ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_7_1":{"en":"Seven and one make how many?","zh":"七個和一個,合起來是幾個呢?","v":"coco","zy":[["七","ㄑㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["一","ㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_7_2":{"en":"Seven and two make how many?","zh":"七個和兩個,合起來是幾個呢?","v":"coco","zy":[["七","ㄑㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_7_3":{"en":"Seven and three make how many?","zh":"七個和三個,合起來是幾個呢?","v":"coco","zy":[["七","ㄑㄧ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["三","ㄙㄢ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_8_1":{"en":"Eight and one make how many?","zh":"八個和一個,合起來是幾個呢?","v":"coco","zy":[["八","ㄅㄚ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["一","ㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_8_2":{"en":"Eight and two make how many?","zh":"八個和兩個,合起來是幾個呢?","v":"coco","zy":[["八","ㄅㄚ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["兩","ㄌㄧㄤˇ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"add_ask_9_1":{"en":"Nine and one make how many?","zh":"九個和一個,合起來是幾個呢?","v":"coco","zy":[["九","ㄐㄧㄡˇ"],["個","ㄍㄜˋ"],["和","ㄏㄜˊ"],["一","ㄧ"],["個","ㄍㄜˋ"],[",",""],["合","ㄏㄜˊ"],["起","ㄑㄧˇ"],["來","ㄌㄞˊ"],["是","ㄕˋ"],["幾","ㄐㄧˇ"],["個","ㄍㄜˋ"],["呢","˙ㄋㄜ"],["?",""]]},"sound_teach":{"en":"Every word starts with a sound. Listen: Lll, Lll, Leo! Leo starts with L!","zh":"每個詞都有開頭的聲音。聽聽看:ㄎ、ㄎ、可可!可可的開頭是ㄎ!","v":"coco","zs":"每個詞都有開頭的聲音。聽聽看:科、科、可可!可可的開頭是,科!","sp":"Every word starts with a sound. Listen: Lll, Lll, Leo! Leo starts with L!","zy":[["每","ㄇㄟˇ"],["個","ㄍㄜˋ"],["詞","ㄘˊ"],["都","ㄉㄡ"],["有","ㄧㄡˇ"],["開","ㄎㄞ"],["頭","ㄊㄡˊ"],["的","˙ㄉㄜ"],["聲","ㄕㄥ"],["音","ㄧㄣ"],["。",""],["聽","ㄊㄧㄥ"],["聽","ㄊㄧㄥ"],["看","ㄎㄢˋ"],[":ㄎ、ㄎ、",""],["可","ㄎㄜˇ"],["可","ㄎㄜˇ"],["!",""],["可","ㄎㄜˇ"],["可","ㄎㄜˇ"],["的","˙ㄉㄜ"],["開","ㄎㄞ"],["頭","ㄊㄡˊ"],["是","ㄕˋ"],["ㄎ!",""]]},"sound_ask_tiger":{"en":"Now listen: Tuh, tuh, tiger! Which letter makes the tuh sound? Tap it!","zh":"現在聽:ㄌ、ㄌ、老虎!老虎的開頭是哪一個注音呢?點一下!","v":"coco","zs":"現在聽:勒、勒、老虎!老虎的開頭是哪一個注音呢?點一下!","zy":[["現","ㄒㄧㄢˋ"],["在","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],[":ㄌ、ㄌ、",""],["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["!",""],["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["的","˙ㄉㄜ"],["開","ㄎㄞ"],["頭","ㄊㄡˊ"],["是","ㄕˋ"],["哪","ㄋㄚˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["注","ㄓㄨˋ"],["音","ㄧㄣ"],["呢","˙ㄋㄜ"],["?",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["!",""]]},"sound_right_tiger":{"en":"Yes! T says tuh. Tuh, tuh, tiger!","zh":"對了!ㄌ,老虎!","v":"coco","zs":"對了!勒,老虎!","zy":[["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!ㄌ,",""],["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["!",""]]},"sound_again_tiger":{"en":"Listen again: Tuh, tuh, tiger!","zh":"再聽一次:ㄌ、ㄌ、老虎!","v":"coco","zs":"再聽一次:勒、勒、老虎!","zy":[["再","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],["一","ㄧ"],["次","ㄘˋ"],[":ㄌ、ㄌ、",""],["老","ㄌㄠˇ"],["虎","ㄏㄨˇ"],["!",""]]},"sound_ask_monkey":{"en":"Now listen: Mmm, mmm, monkey! Which letter makes the mmm sound? Tap it!","zh":"現在聽:ㄏ、ㄏ、猴子!猴子的開頭是哪一個注音呢?點一下!","v":"coco","zs":"現在聽:喝、喝、猴子!猴子的開頭是哪一個注音呢?點一下!","zy":[["現","ㄒㄧㄢˋ"],["在","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],[":ㄏ、ㄏ、",""],["猴","ㄏㄡˊ"],["子","˙ㄗ"],["!",""],["猴","ㄏㄡˊ"],["子","˙ㄗ"],["的","˙ㄉㄜ"],["開","ㄎㄞ"],["頭","ㄊㄡˊ"],["是","ㄕˋ"],["哪","ㄋㄚˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["注","ㄓㄨˋ"],["音","ㄧㄣ"],["呢","˙ㄋㄜ"],["?",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["!",""]]},"sound_right_monkey":{"en":"Yes! M says mmm. Mmm, mmm, monkey!","zh":"對了!ㄏ,猴子!","v":"coco","zs":"對了!喝,猴子!","zy":[["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!ㄏ,",""],["猴","ㄏㄡˊ"],["子","˙ㄗ"],["!",""]]},"sound_again_monkey":{"en":"Listen again: Mmm, mmm, monkey!","zh":"再聽一次:ㄏ、ㄏ、猴子!","v":"coco","zs":"再聽一次:喝、喝、猴子!","zy":[["再","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],["一","ㄧ"],["次","ㄘˋ"],[":ㄏ、ㄏ、",""],["猴","ㄏㄡˊ"],["子","˙ㄗ"],["!",""]]},"sound_ask_elephant":{"en":"Now listen: Eh, eh, elephant! Which letter makes the eh sound? Tap it!","zh":"現在聽:ㄉ、ㄉ、大象!大象的開頭是哪一個注音呢?點一下!","v":"coco","zs":"現在聽:得、得、大象!大象的開頭是哪一個注音呢?點一下!","zy":[["現","ㄒㄧㄢˋ"],["在","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],[":ㄉ、ㄉ、",""],["大","ㄉㄚˋ"],["象","ㄒㄧㄤˋ"],["!",""],["大","ㄉㄚˋ"],["象","ㄒㄧㄤˋ"],["的","˙ㄉㄜ"],["開","ㄎㄞ"],["頭","ㄊㄡˊ"],["是","ㄕˋ"],["哪","ㄋㄚˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["注","ㄓㄨˋ"],["音","ㄧㄣ"],["呢","˙ㄋㄜ"],["?",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["!",""]]},"sound_right_elephant":{"en":"Yes! E says eh. Eh, eh, elephant!","zh":"對了!ㄉ,大象!","v":"coco","zs":"對了!得,大象!","zy":[["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!ㄉ,",""],["大","ㄉㄚˋ"],["象","ㄒㄧㄤˋ"],["!",""]]},"sound_again_elephant":{"en":"Listen again: Eh, eh, elephant!","zh":"再聽一次:ㄉ、ㄉ、大象!","v":"coco","zs":"再聽一次:得、得、大象!","zy":[["再","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],["一","ㄧ"],["次","ㄘˋ"],[":ㄉ、ㄉ、",""],["大","ㄉㄚˋ"],["象","ㄒㄧㄤˋ"],["!",""]]},"sound_ask_zebra":{"en":"Now listen: Zzz, zzz, zebra! Which letter makes the zzz sound? Tap it!","zh":"現在聽:ㄅ、ㄅ、斑馬!斑馬的開頭是哪一個注音呢?點一下!","v":"coco","zs":"現在聽:玻、玻、斑馬!斑馬的開頭是哪一個注音呢?點一下!","zy":[["現","ㄒㄧㄢˋ"],["在","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],[":ㄅ、ㄅ、",""],["斑","ㄅㄢ"],["馬","ㄇㄚˇ"],["!",""],["斑","ㄅㄢ"],["馬","ㄇㄚˇ"],["的","˙ㄉㄜ"],["開","ㄎㄞ"],["頭","ㄊㄡˊ"],["是","ㄕˋ"],["哪","ㄋㄚˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["注","ㄓㄨˋ"],["音","ㄧㄣ"],["呢","˙ㄋㄜ"],["?",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["!",""]]},"sound_right_zebra":{"en":"Yes! Z says zzz. Zzz, zzz, zebra!","zh":"對了!ㄅ,斑馬!","v":"coco","zs":"對了!玻,斑馬!","zy":[["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!ㄅ,",""],["斑","ㄅㄢ"],["馬","ㄇㄚˇ"],["!",""]]},"sound_again_zebra":{"en":"Listen again: Zzz, zzz, zebra!","zh":"再聽一次:ㄅ、ㄅ、斑馬!","v":"coco","zs":"再聽一次:玻、玻、斑馬!","zy":[["再","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],["一","ㄧ"],["次","ㄘˋ"],[":ㄅ、ㄅ、",""],["斑","ㄅㄢ"],["馬","ㄇㄚˇ"],["!",""]]},"sound_ask_parrot":{"en":"Now listen: Puh, puh, parrot! Which letter makes the puh sound? Tap it!","zh":"現在聽:ㄧ、ㄧ、鸚鵡!鸚鵡的開頭是哪一個注音呢?點一下!","v":"coco","zs":"現在聽:衣、衣、鸚鵡!鸚鵡的開頭是哪一個注音呢?點一下!","zy":[["現","ㄒㄧㄢˋ"],["在","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],[":ㄧ、ㄧ、",""],["鸚","ㄧㄥ"],["鵡","ㄨˇ"],["!",""],["鸚","ㄧㄥ"],["鵡","ㄨˇ"],["的","˙ㄉㄜ"],["開","ㄎㄞ"],["頭","ㄊㄡˊ"],["是","ㄕˋ"],["哪","ㄋㄚˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["注","ㄓㄨˋ"],["音","ㄧㄣ"],["呢","˙ㄋㄜ"],["?",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["!",""]]},"sound_right_parrot":{"en":"Yes! P says puh. Puh, puh, parrot!","zh":"對了!ㄧ,鸚鵡!","v":"coco","zs":"對了!衣,鸚鵡!","zy":[["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!ㄧ,",""],["鸚","ㄧㄥ"],["鵡","ㄨˇ"],["!",""]]},"sound_again_parrot":{"en":"Listen again: Puh, puh, parrot!","zh":"再聽一次:ㄧ、ㄧ、鸚鵡!","v":"coco","zs":"再聽一次:衣、衣、鸚鵡!","zy":[["再","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],["一","ㄧ"],["次","ㄘˋ"],[":ㄧ、ㄧ、",""],["鸚","ㄧㄥ"],["鵡","ㄨˇ"],["!",""]]},"sound_ask_giraffe":{"en":"Now listen: Juh, juh, giraffe! Which letter makes the juh sound? Tap it!","zh":"現在聽:ㄔ、ㄔ、長頸鹿!長頸鹿的開頭是哪一個注音呢?點一下!","v":"coco","zs":"現在聽:吃、吃、長頸鹿!長頸鹿的開頭是哪一個注音呢?點一下!","zy":[["現","ㄒㄧㄢˋ"],["在","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],[":ㄔ、ㄔ、",""],["長","ㄔㄤˊ"],["頸","ㄐㄧㄥˇ"],["鹿","ㄌㄨˋ"],["!",""],["長","ㄔㄤˊ"],["頸","ㄐㄧㄥˇ"],["鹿","ㄌㄨˋ"],["的","˙ㄉㄜ"],["開","ㄎㄞ"],["頭","ㄊㄡˊ"],["是","ㄕˋ"],["哪","ㄋㄚˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["注","ㄓㄨˋ"],["音","ㄧㄣ"],["呢","˙ㄋㄜ"],["?",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["!",""]]},"sound_right_giraffe":{"en":"Yes! G says juh. Juh, juh, giraffe!","zh":"對了!ㄔ,長頸鹿!","v":"coco","zs":"對了!吃,長頸鹿!","zy":[["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!ㄔ,",""],["長","ㄔㄤˊ"],["頸","ㄐㄧㄥˇ"],["鹿","ㄌㄨˋ"],["!",""]]},"sound_again_giraffe":{"en":"Listen again: Juh, juh, giraffe!","zh":"再聽一次:ㄔ、ㄔ、長頸鹿!","v":"coco","zs":"再聽一次:吃、吃、長頸鹿!","zy":[["再","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],["一","ㄧ"],["次","ㄘˋ"],[":ㄔ、ㄔ、",""],["長","ㄔㄤˊ"],["頸","ㄐㄧㄥˇ"],["鹿","ㄌㄨˋ"],["!",""]]},"sound_ask_deer":{"en":"Now listen: Duh, duh, deer! Which letter makes the duh sound? Tap it!","zh":"現在聽:ㄒ、ㄒ、小鹿!小鹿的開頭是哪一個注音呢?點一下!","v":"coco","zs":"現在聽:希、希、小鹿!小鹿的開頭是哪一個注音呢?點一下!","zy":[["現","ㄒㄧㄢˋ"],["在","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],[":ㄒ、ㄒ、",""],["小","ㄒㄧㄠˇ"],["鹿","ㄌㄨˋ"],["!",""],["小","ㄒㄧㄠˇ"],["鹿","ㄌㄨˋ"],["的","˙ㄉㄜ"],["開","ㄎㄞ"],["頭","ㄊㄡˊ"],["是","ㄕˋ"],["哪","ㄋㄚˇ"],["一","ㄧ"],["個","ㄍㄜˋ"],["注","ㄓㄨˋ"],["音","ㄧㄣ"],["呢","˙ㄋㄜ"],["?",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["!",""]]},"sound_right_deer":{"en":"Yes! D says duh. Duh, duh, deer!","zh":"對了!ㄒ,小鹿!","v":"coco","zs":"對了!希,小鹿!","zy":[["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!ㄒ,",""],["小","ㄒㄧㄠˇ"],["鹿","ㄌㄨˋ"],["!",""]]},"sound_again_deer":{"en":"Listen again: Duh, duh, deer!","zh":"再聽一次:ㄒ、ㄒ、小鹿!","v":"coco","zs":"再聽一次:希、希、小鹿!","zy":[["再","ㄗㄞˋ"],["聽","ㄊㄧㄥ"],["一","ㄧ"],["次","ㄘˋ"],[":ㄒ、ㄒ、",""],["小","ㄒㄧㄠˇ"],["鹿","ㄌㄨˋ"],["!",""]]},"letter_A":{"en":"A says ah.","zh":"A","v":"coco"},"letter_B":{"en":"B says buh.","zh":"B","v":"coco"},"letter_D":{"en":"D says duh.","zh":"D","v":"coco"},"letter_E":{"en":"E says eh.","zh":"E","v":"coco"},"letter_F":{"en":"F says fff.","zh":"F","v":"coco"},"letter_G":{"en":"G says guh.","zh":"G","v":"coco"},"letter_H":{"en":"H says hhh.","zh":"H","v":"coco"},"letter_M":{"en":"M says mmm.","zh":"M","v":"coco"},"letter_N":{"en":"N says nnn.","zh":"N","v":"coco"},"letter_P":{"en":"P says puh.","zh":"P","v":"coco"},"letter_R":{"en":"R says rrr.","zh":"R","v":"coco"},"letter_S":{"en":"S says sss.","zh":"S","v":"coco"},"letter_T":{"en":"T says tuh.","zh":"T","v":"coco"},"letter_Z":{"en":"Z says zzz.","zh":"Z","v":"coco"},"letter_ok_G":{"en":"G can say juh, like giraffe!","zh":"G","v":"coco"},"sound_hmm":{"en":"Hmm, that one sounds different.","zh":"嗯,這個聲音不一樣喔。","v":"coco","zy":[["嗯","ㄣˊ"],[",",""],["這","ㄓㄜˋ"],["個","ㄍㄜˋ"],["聲","ㄕㄥ"],["音","ㄧㄣ"],["不","ㄅㄨˋ"],["一","ㄧ"],["樣","ㄧㄤˋ"],["喔","ㄛ"],["。",""]]},"sound_glow":{"en":"It's this one! Tap the glowing letter.","zh":"是這一個!點一下發亮的符號。","v":"coco","zy":[["是","ㄕˋ"],["這","ㄓㄜˋ"],["一","ㄧ"],["個","ㄍㄜˋ"],["!",""],["點","ㄉㄧㄢˇ"],["一","ㄧ"],["下","ㄒㄧㄚˋ"],["發","ㄈㄚ"],["亮","ㄌㄧㄤˋ"],["的","˙ㄉㄜ"],["符","ㄈㄨˊ"],["號","ㄏㄠˋ"],["。",""]]},"praise_1":{"en":"Great job!","zh":"好棒喔!","v":"coco","zy":[["好","ㄏㄠˇ"],["棒","ㄅㄤˋ"],["喔","ㄛ"],["!",""]]},"praise_2":{"en":"Wow, you did it!","zh":"哇,你做到了!","v":"coco","zy":[["哇","ㄨㄚ"],[",",""],["你","ㄋㄧˇ"],["做","ㄗㄨㄛˋ"],["到","ㄉㄠˋ"],["了","˙ㄌㄜ"],["!",""]]},"praise_3":{"en":"Super detective!","zh":"超級小偵探!","v":"coco","zy":[["超","ㄔㄠ"],["級","ㄐㄧˊ"],["小","ㄒㄧㄠˇ"],["偵","ㄓㄣ"],["探","ㄊㄢˋ"],["!",""]]},"praise_4":{"en":"Yes! That's right!","zh":"對了!答對了!","v":"coco","zy":[["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!",""],["答","ㄉㄚˊ"],["對","ㄉㄨㄟˋ"],["了","˙ㄌㄜ"],["!",""]]},"tap_here":{"en":"Tap here!","zh":"點這裡!","v":"coco","zy":[["點","ㄉㄧㄢˇ"],["這","ㄓㄜˋ"],["裡","ㄌㄧˇ"],["!",""]]}};
+const ANIMAL_INFO = {"tiger": {"en": "Tiger", "zh": "老虎", "letter": "T", "zy": "ㄌ", "zys": "勒"}, "monkey": {"en": "Monkey", "zh": "猴子", "letter": "M", "zy": "ㄏ", "zys": "喝"}, "elephant": {"en": "Elephant", "zh": "大象", "letter": "E", "zy": "ㄉ", "zys": "得"}, "zebra": {"en": "Zebra", "zh": "斑馬", "letter": "Z", "zy": "ㄅ", "zys": "玻"}, "parrot": {"en": "Parrot", "zh": "鸚鵡", "letter": "P", "zy": "ㄧ", "zys": "衣"}, "giraffe": {"en": "Giraffe", "zh": "長頸鹿", "letter": "G", "zy": "ㄔ", "zys": "吃"}, "deer": {"en": "Deer", "zh": "小鹿", "letter": "D", "zy": "ㄒ", "zys": "希"}};
+const LETTERS = {"en": ["A", "B", "D", "E", "F", "G", "H", "M", "N", "P", "R", "S", "T", "Z"], "zh": {"ㄅ": "玻", "ㄆ": "坡", "ㄇ": "摸", "ㄈ": "佛", "ㄉ": "得", "ㄊ": "特", "ㄋ": "訥", "ㄌ": "勒", "ㄍ": "哥", "ㄎ": "科", "ㄏ": "喝", "ㄒ": "希", "ㄔ": "吃", "ㄙ": "思", "ㄧ": "衣"}};
+/* ---------- static data: animals, areas, objects ---------- */
+// patch / part: [focusX, focusY, zoom] inside the animal picture (for the clue cards)
+const ANIMALS = {
+  tiger:    {img: 'tiger',    w: 134, h: 141, patch: [.50, .62, 3.2], part: [.13, .40, 2.1], pitch: .85},
+  monkey:   {img: 'monkey',   w: 152, h: 161, patch: [.44, .40, 3.2], part: [.14, .78, 2.2], pitch: 1.45},
+  elephant: {img: 'elephant', w: 155, h: 152, patch: [.30, .60, 3.2], part: [.64, .64, 2.0], pitch: .75},
+  zebra:    {img: 'zebra',    w: 146, h: 159, patch: [.42, .58, 3.2], part: [.72, .28, 1.9], pitch: 1.1},
+  parrot:   {img: 'parrot',   w: 139, h: 137, patch: [.40, .45, 3.0], part: [.86, .30, 2.4], pitch: 1.6},
+  giraffe:  {img: 'giraffe',  w: 120, h: 189, patch: [.42, .62, 3.2], part: [.66, .22, 1.7], pitch: 1.0},
+  deer:     {img: 'deer',     w: 109, h: 172, pitch: 1.3},
+};
+const SUSPECTS = ['tiger', 'monkey', 'elephant', 'zebra', 'parrot', 'giraffe'];
+const CLUE_ORDER = ['patch', 'part', 'shadow'];
+const ITEM_IMG = {berries: 'berry', apples: 'apple', bananas: 'banana', eggs: 'egg', gems: 'gem', stars: 'star', cherries: 'cherry'};
+// object kinds. h = display height as a share of the stage height. acts = activities it can host as a clue.
+const KINDS = {
+  log:        {img: 'log', h: .15, acts: ['count', 'add'], items: ['berries', 'cherries', 'apples'], sur: 'star'},
+  fern:       {img: 'fern', h: .24, acts: ['sound'], sur: 'nothing'},
+  crate:      {img: 'crate', h: .15, acts: ['count', 'add'], items: ['apples', 'gems', 'stars'], sur: 'map'},
+  chest:      {img: 'chest', h: .15, acts: ['count'], items: ['gems', 'stars'], sur: 'gem'},
+  nest:       {img: 'nest', h: .12, acts: ['count'], items: ['eggs'], sur: 'egg'},
+  barrel:     {img: 'barrel', h: .14, acts: ['count', 'add'], items: ['apples'], sur: 'splash'},
+  bananas:    {img: 'banana2', h: .12, hang: 1, acts: ['count', 'add'], items: ['bananas'], sur: 'star'},
+  cherries:   {img: 'cherry', h: .11, hang: 1, acts: ['count', 'add'], items: ['cherries'], sur: 'star'},
+  binoculars: {img: 'binoculars', h: .09, acts: ['sound'], sur: 'waterfall'},
+  mushroom:   {img: 'mushroom', h: .12, sur: 'mushroom'},
+  flowers:    {img: 'flowers', h: .16, sur: 'flower'},
+  egg:        {img: 'egg', h: .12, sur: 'egg'},
+  palm:       {img: 'palm', h: .30, sur: 'palm'},
+  lantern:    {img: 'lantern', h: .13, hang: 1, sur: 'lantern'},
+  water:      {spot: 1, sur: 'splash'},
+  waterfall:  {spot: 1, sur: 'waterfall'},
+  orchid:     {spot: 1, sur: 'orchid'},
+};
+// Areas. Coordinates are fractions of the background picture. path = where feet go.
+const AREAS = {
+  trail: {
+    bg: 'trail', iw: 1672, ih: 405, leoH: .36, feet: .80,
+    path: [[.03, .80], [.97, .80]],
+    pool: ['monkey', 'elephant', 'parrot'],
+    groups: [
+      {spots: [[.15, .785], [.26, .785], [.37, .785], [.49, .785], [.60, .785], [.71, .785], [.84, .785]],
+       kinds: ['log', 'fern', 'crate', 'chest', 'mushroom', 'flowers', 'egg']},
+      {spots: [[.215, .27], [.865, .25]], kinds: [['bananas', 'cherries']], pick: 1},
+    ],
+    deco: {mist: [.722, .42, .045, .25], ray: [.74, 0, .14, .6]},
+  },
+  river: {
+    bg: 'river', iw: 1294, ih: 454, leoH: .27, feet: .66,
+    path: [[.03, .64], [.20, .62], [.31, .63], [.44, .705], [.57, .74], [.70, .715], [.80, .66], [.88, .63], [.97, .64]],
+    pool: ['elephant', 'zebra', 'tiger'],
+    groups: [
+      {spots: [[.07, .64], [.20, .615], [.885, .625], [.965, .64]], kinds: ['fern', 'palm', 'flowers', 'mushroom']},
+      {spots: [[.43, .69], [.64, .73]], kinds: ['crate', 'nest'], scale: .85},
+      {spots: [[.50, .93]], kinds: ['barrel'], bob: 1},
+      {spots: [[.13, .16], [.93, .13]], kinds: [['bananas', 'cherries']], pick: 1},
+    ],
+    hot: [['water', .64, .90, .10], ['waterfall', .785, .33, .09]],
+    deco: {mist: [.752, .17, .06, .36]},
+  },
+  canopy: {
+    bg: 'canopy', iw: 1536, ih: 1024, leoH: .33, feet: .76,
+    path: [[.04, .745], [.96, .745]],
+    pool: ['monkey', 'parrot', 'giraffe'],
+    groups: [
+      {spots: [[.14, .74], [.26, .74], [.38, .74], [.51, .74], [.64, .74], [.77, .74], [.89, .74]],
+       kinds: ['binoculars', 'nest', 'crate', 'chest', 'flowers', 'egg', 'mushroom'], take: 6, keep: 'binoculars'},
+      {spots: [[.31, .30], [.58, .25], [.80, .33]], kinds: [['bananas', 'cherries'], 'lantern']},
+    ],
+    hot: [['orchid', .045, .37, .07], ['orchid', .955, .47, .07]],
+    deco: {mist: [.765, .40, .06, .12]},
+  },
+};
+const AREA_IDS = ['trail', 'river', 'canopy'];
+const EN_LETTERS = ['A', 'B', 'D', 'E', 'F', 'G', 'H', 'M', 'N', 'P', 'R', 'S', 'T', 'Z'];
+
+function zhVoice() { // the shared Chinese voice choice (same key as every Kids Arcade game), else the best Taiwan voice
+  try { const id = localStorage.getItem('dinoworld.zhvoice'); if (id) { const v = speechSynthesis.getVoices().find(x => x.voiceURI === id); if (v) return v; } } catch (e) {}
+  return window.KAVoice ? KAVoice.voiceFor('zh-TW') : null;
+}
+/* ---------- audio: one narrator at a time, recorded English clips, device voice for Chinese ---------- */
+const AU = (function () {
+  let ac = null, master, sfxG, musG, voxG, src = null, token = 0, musicOn = false, musTimer = 0, speaking = false;
+  const bufs = {}, loading = {};
+  const FAST = /[?&]fast=1/.test(location.search);
+  function ctx() {
+    if (ac) return ac;
+    try {
+      const C = window.AudioContext || window.webkitAudioContext; ac = new C();
+      master = ac.createGain(); master.connect(ac.destination);
+      sfxG = ac.createGain(); sfxG.gain.value = .55; sfxG.connect(master);
+      musG = ac.createGain(); musG.gain.value = 0; musG.connect(master);
+      voxG = ac.createGain(); voxG.gain.value = 1; voxG.connect(master);
+    } catch (e) { ac = null; }
+    return ac;
+  }
+  function unlock() {
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    const c = ctx(); if (!c) return;
+    if (c.state !== 'running') c.resume();
+    try { const b = c.createBuffer(1, 1, 22050), s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0); } catch (e) {}
+    if (!unlock.tts) { unlock.tts = 1; try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) {} }
+  }
+  function load(key) {
+    if (key in bufs) return Promise.resolve(bufs[key]);
+    if (loading[key]) return loading[key];
+    if (!ctx()) return Promise.resolve(null);
+    loading[key] = fetch('audio/en/' + key + '.mp3').then(r => r.ok ? r.arrayBuffer() : Promise.reject())
+      .then(b => new Promise((res, rej) => ac.decodeAudioData(b, res, rej)))
+      .then(buf => (bufs[key] = buf)).catch(() => (bufs[key] = null));
+    return loading[key];
+  }
+  function preload(keys) { keys.forEach(k => load(k)); }
+  function stop() {
+    token++;
+    if (src) { try { src.onended = null; src.stop(); } catch (e) {} src = null; }
+    try { speechSynthesis.cancel(); } catch (e) {}
+    speaking = false; G.onSpeak(false);
+  }
+  const timeout = (p, ms) => Promise.race([p, new Promise(r => setTimeout(() => r(null), ms))]);
+  function enVoice() {
+    const id = DB.enVoice; if (!id || id === 'rec') return null;
+    try { return speechSynthesis.getVoices().find(v => v.voiceURI === id) || null; } catch (e) { return null; }
+  }
+  function tts(text, lang, pitch, my) {
+    return new Promise(res => {
+      let done = false; const fin = () => { if (!done) { done = true; res(); } };
+      try {
+        const clean = text.replace(/[「」“”"~…]/g, ' ');
+        const u = new SpeechSynthesisUtterance(clean);
+        if (lang === 'zh') { const v = zhVoice(); if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'zh-TW'; u.rate = .82; u.pitch = pitch || 1.1; }
+        else { const v = enVoice() || (window.KAVoice && KAVoice.voiceFor('en-US')); if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-US'; u.rate = .9; u.pitch = Math.min(1.25, Math.max(.8, pitch || 1.05)); }
+        u.__ka = 1; u.onend = fin; u.onerror = fin;
+        speechSynthesis.speak(u);
+        setTimeout(fin, 1500 + clean.length * (lang === 'zh' ? 330 : 90)); // Safari sometimes drops onend
+      } catch (e) { setTimeout(fin, 600); }
+      const iv = setInterval(() => { if (my !== token) { clearInterval(iv); fin(); } if (done) clearInterval(iv); }, 120);
+    });
+  }
+  // say(key) -> Promise<boolean>: true when it finished, false if something else interrupted it
+  async function say(key, opts) {
+    opts = opts || {};
+    const line = LINES[key]; if (!line) return true;
+    stop(); const my = token;
+    if (opts.prompt) G.lastPrompt = key;
+    G.showBubble(key);
+    speaking = true; G.onSpeak(true, line.v);
+    if (FAST) { await wait(40); }
+    else if (DB.muted) { await wait(Math.min(3500, 700 + (DB.lang === 'zh' ? line.zh.length * 110 : line.en.length * 40))); }
+    else if (DB.lang === 'zh') {
+      const a = ANIMALS[line.v]; await tts(line.zs || line.zh, 'zh', a ? a.pitch : 1.12, my);
+    } else {
+      let buf = null;
+      if (DB.enVoice === 'rec' || !DB.enVoice) buf = await timeout(load(key), 3000);
+      if (my !== token) return false;
+      if (buf && ac) {
+        await new Promise(res => {
+          if (ac.state !== 'running') ac.resume();
+          const s = ac.createBufferSource(); s.buffer = buf; s.connect(voxG); src = s;
+          s.onended = () => { if (src === s) src = null; res(); };
+          s.start(0);
+          setTimeout(res, buf.duration * 1000 + 600);
+        });
+      } else {
+        const a = ANIMALS[line.v]; await tts(line.sp || line.en, 'en', a ? (.9 + a.pitch * .15) : 1.05, my);
+      }
+    }
+    if (my !== token) return false;
+    speaking = false; G.onSpeak(false); G.hideBubbleSoon();
+    return true;
+  }
+  async function seq(keys, opts) { for (const k of keys) { if (!(await say(k, opts))) return false; } return true; }
+  // speak raw text (zhuyin sound for a symbol in Chinese mode)
+  async function raw(text, lang) { stop(); const my = token; if (DB.muted || FAST) { await wait(300); return true; } await tts(text, lang, 1.1, my); return my === token; }
+
+  /* --- synthesized sound effects (no files) --- */
+  function tone(f, t, d, type, g, f2) {
+    if (!ac || DB.muted) return; const o = ac.createOscillator(), e = ac.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    e.gain.setValueAtTime(0.0001, t); e.gain.exponentialRampToValueAtTime(g || .3, t + .015); e.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(e); e.connect(sfxG); o.start(t); o.stop(t + d + .05);
+  }
+  function noise(t, d, f, q, g, f2) {
+    if (!ac || DB.muted) return; const n = ac.createBuffer(1, Math.max(1, ac.sampleRate * d | 0), ac.sampleRate), da = n.getChannelData(0);
+    for (let i = 0; i < da.length; i++) da[i] = Math.random() * 2 - 1;
+    const s = ac.createBufferSource(); s.buffer = n; const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.setValueAtTime(f, t); if (f2) bp.frequency.exponentialRampToValueAtTime(f2, t + d); bp.Q.value = q || 1;
+    const e = ac.createGain(); e.gain.setValueAtTime(g || .4, t); e.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    s.connect(bp); bp.connect(e); e.connect(sfxG); s.start(t);
+  }
+  function sfx(name) {
+    if (!ctx() || DB.muted) return; const t = ac.currentTime + .01;
+    switch (name) {
+      case 'tap': tone(660, t, .09, 'sine', .25, 990); break;
+      case 'pop': tone(420, t, .12, 'sine', .35, 900); break;
+      case 'count': tone(520 + Math.random() * 60, t, .16, 'triangle', .3, 780); break;
+      case 'rustle': noise(t, .45, 2600, .7, .35); noise(t + .12, .35, 3400, .7, .25); break;
+      case 'thud': tone(140, t, .25, 'sine', .5, 60); noise(t, .2, 300, 1, .3); break;
+      case 'splash': noise(t, .6, 1800, .6, .5, 500); tone(300, t, .2, 'sine', .2, 900); break;
+      case 'boing': tone(180, t, .45, 'sine', .45, 520); break;
+      case 'sparkle': [1320, 1568, 1976, 2637].forEach((f, i) => tone(f, t + i * .07, .25, 'sine', .14)); break;
+      case 'ding': tone(880, t, .35, 'sine', .3); tone(1320, t + .09, .4, 'sine', .22); break;
+      case 'soft': tone(330, t, .22, 'sine', .22, 260); break;
+      case 'whoosh': noise(t, .5, 600, .8, .35, 3000); break;
+      case 'step': noise(t, .06, 900, 1.5, .08); break;
+      case 'fanfare': [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, t + i * .13, i > 3 ? .5 : .22, 'triangle', .28)); break;
+      case 'shake': for (let i = 0; i < 4; i++) noise(t + i * .08, .1, 3000, 1, .25); break;
+    }
+  }
+  /* --- gentle marimba loop for the title / map / sticker book only --- */
+  const MEL = [0, 4, 7, 9, 7, 4, 2, 4, 0, 2, 4, 7, 9, 12, 9, 7];
+  function music(on) {
+    musicOn = on && DB.music && !DB.muted;
+    if (!ctx()) return;
+    musG.gain.cancelScheduledValues(ac.currentTime);
+    musG.gain.linearRampToValueAtTime(musicOn ? .16 : 0, ac.currentTime + (musicOn ? 1.2 : .6));
+    clearInterval(musTimer);
+    if (!musicOn) return;
+    let i = 0; const beat = .32;
+    const play = () => {
+      if (!musicOn || !ac) return; const t = ac.currentTime + .05;
+      for (let k = 0; k < 4; k++, i++) {
+        const n = MEL[i % MEL.length], f = 392 * Math.pow(2, n / 12), tt = t + k * beat;
+        const o = ac.createOscillator(), e = ac.createGain(); o.type = 'sine'; o.frequency.value = f;
+        e.gain.setValueAtTime(.0001, tt); e.gain.exponentialRampToValueAtTime(.5, tt + .01); e.gain.exponentialRampToValueAtTime(.0001, tt + .5);
+        o.connect(e); e.connect(musG); o.start(tt); o.stop(tt + .55);
+        if (k === 0) { const b = ac.createOscillator(), be = ac.createGain(); b.type = 'triangle'; b.frequency.value = f / 4; be.gain.setValueAtTime(.0001, tt); be.gain.exponentialRampToValueAtTime(.35, tt + .02); be.gain.exponentialRampToValueAtTime(.0001, tt + 1.1); b.connect(be); be.connect(musG); b.start(tt); b.stop(tt + 1.2); }
+      }
+    };
+    play(); musTimer = setInterval(play, beat * 4 * 1000);
+  }
+  function duck(on) { if (ac && musicOn) musG.gain.setTargetAtTime(on ? .05 : .16, ac.currentTime, .15); }
+  return { unlock, say, seq, raw, stop, sfx, music, preload, load, duck, isSpeaking: () => speaking, FAST };
+})();
+
+/* ---------- Animal Safari Detective: main game ---------- */
+const FASTMODE = /[?&]fast=1/.test(location.search);
+const wait = ms => new Promise(r => setTimeout(r, FASTMODE ? Math.min(ms, 30) : ms));
+const $ = s => document.querySelector(s);
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const IMG = n => 'art/' + n + '.webp';
+function el(tag, cls, parent, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; if (parent) parent.appendChild(e); return e; }
+function onTap(e, fn) { e.addEventListener('pointerdown', ev => { if (ev.button > 0) return; ev.stopPropagation(); ev.preventDefault(); AU.unlock(); G.poke(); fn(ev); }); }
+function anim(e, kf, o) { try { return e.animate(kf, Object.assign({duration: 500, easing: 'ease-out', fill: 'forwards'}, o)).finished.catch(() => {}); } catch (x) { return Promise.resolve(); } }
+
+/* ---------- saved data (this device) ---------- */
+const DB = (window.KAKit && KAKit.store('animalSafari.v1', {lang: 'en', muted: false, music: true, enVoice: 'rec', stickers: {}, cases: {trail: 0, river: 0, canopy: 0}, last: {}, walkHelp: 0})) ||
+  {lang: 'en', muted: false, music: true, enVoice: 'rec', stickers: {}, cases: {trail: 0, river: 0, canopy: 0}, last: {}, walkHelp: 0, save() {}};
+
+/* ---------- text ---------- */
+function esc(s) { return String(s).replace(/[&<>]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c])); }
+function zhHTML(line) { return line.zy ? line.zy.map(([c, z]) => z ? '<ruby>' + esc(c) + '<rt>' + z + '</rt></ruby>' : esc(c)).join('') : esc(line.zh); }
+function T(key, lang) { const l = LINES[key]; if (!l) return ''; return (lang || DB.lang) === 'zh' ? zhHTML(l) : esc(l.en); }
+
+/* ---------- global game object ---------- */
+const G = {
+  screen: 'title', lastPrompt: null, lastPoke: Date.now(), busy: false, panelOpen: false,
+  poke() { this.lastPoke = Date.now(); },
+  onSpeak(on, who) {
+    AU.duck(on);
+    const pc = $('.pCoco'); if (pc) pc.classList.toggle('talk', !!on && (!who || who === 'coco'));
+    if (S.coco && S.coco.el) S.coco.el.classList.toggle('talking', !!on);
+  },
+  showBubble(key) {
+    const b = $('#bubble'); if (!b || this.screen !== 'scene') return;
+    clearTimeout(this._bt); b.querySelector('.txt').innerHTML = T(key);
+    const v = LINES[key] && LINES[key].v; b.querySelector('img').src = IMG(v && v !== 'coco' ? ANIMALS[v].img : 'coco_happy');
+    b.classList.add('show');
+  },
+  hideBubbleSoon() { clearTimeout(this._bt); this._bt = setTimeout(() => $('#bubble').classList.remove('show'), 1400); },
+};
+
+/* ---------- layout ---------- */
+const V = {w: 0, h: 0, portrait: false, stageTop: 0, stageH: 0};
+function measure() {
+  V.w = window.innerWidth; V.h = window.innerHeight; V.portrait = V.h > V.w * 1.05;
+  document.body.classList.toggle('portrait', V.portrait);
+  if (V.portrait) {
+    const top = Math.max(96, V.h * .12), bottom = Math.max(140, V.h * .17);
+    V.stageH = Math.round(Math.min(V.h - top - bottom, V.w * 1.12)); V.stageTop = Math.round(top + (V.h - top - bottom - V.stageH) / 2);
+  } else { V.stageH = V.h; V.stageTop = 0; }
+  const st = $('#stage'); st.style.top = V.stageTop + 'px'; st.style.height = V.stageH + 'px';
+  const bub = $('#bubble'); bub.style.top = V.portrait ? (V.stageTop + 10) + 'px' : '';
+  if (G.screen === 'scene' && S.ready) layoutScene();
+}
+window.addEventListener('resize', () => { clearTimeout(measure.t); measure.t = setTimeout(measure, 120); });
+window.addEventListener('orientationchange', () => setTimeout(measure, 300));
+
+/* ---------- screens ---------- */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id));
+  G.screen = id; AU.stop();
+  AU.music(id !== 'scene');
+  if (id === 'title') renderTitle();
+  if (id === 'map') renderMap();
+  if (id === 'journal') renderJournal();
+  if (id !== 'scene') { S.area = null; closePanel(); }
+}
+function setLang(l) {
+  DB.lang = l; DB.save(); document.body.classList.toggle('zh', l === 'zh');
+  document.documentElement.lang = l === 'zh' ? 'zh-Hant-TW' : 'en';
+  renderTitle(); if (G.screen === 'map') renderMap(); if (G.screen === 'journal') renderJournal();
+}
+function renderTitle() {
+  $('#titlePlaque').innerHTML = '<div class="en">Animal Safari Detective</div><div class="zh">' + zhHTML(LINES.title) + '</div>';
+  document.querySelectorAll('#langPill button').forEach(b => b.classList.toggle('sel', b.dataset.l === DB.lang));
+  $('#stickerCount').textContent = Object.values(DB.stickers).reduce((a, b) => a + b, 0);
+}
+function renderMap() {
+  $('#mapTitle').innerHTML = T('ui_pick');
+  const c = $('#cards'); c.innerHTML = '';
+  AREA_IDS.forEach((id, i) => {
+    const a = AREAS[id], card = el('button', 'card', c);
+    const pic = el('div', 'pic', card); pic.style.backgroundImage = 'url(' + IMG(a.bg) + ')';
+    if (id === 'trail') pic.style.backgroundPosition = '42% 70%';
+    if (id === 'canopy') pic.style.backgroundPosition = '50% 62%';
+    el('div', 'num', pic, String(i + 1));
+    const n = DB.cases[id] || 0;
+    if (n) el('div', 'solved', pic, '<img src="' + IMG('lens') + '" alt="">×' + n);
+    el('div', 'nm', card, T('area_' + id) + (DB.lang === 'zh' ? '<small>' + esc(LINES['area_' + id].en) + '</small>' : ''));
+    card.setAttribute('aria-label', LINES['area_' + id].en);
+    onTap(card, () => { AU.sfx('tap'); startArea(id); });
+  });
+}
+
+/* ---------- scene state ---------- */
+const S = {area: null, A: null, objs: [], leo: null, coco: null, cam: 0, worldW: 0, s: 1, offY: 0, keys: 0, clues: [], kase: null};
+function imgX(fx) { return fx * S.A.iw * S.s; }
+function imgY(fy) { return fy * S.A.ih * S.s - S.offY; }
+function pathY(px) { // feet y (stage px) at world x px
+  const p = S.A.path, fx = px / (S.A.iw * S.s);
+  if (fx <= p[0][0]) return imgY(p[0][1]);
+  for (let i = 1; i < p.length; i++) if (fx <= p[i][0]) { const t = (fx - p[i - 1][0]) / (p[i][0] - p[i - 1][0]); return imgY(p[i - 1][1] + t * (p[i][1] - p[i - 1][1])); }
+  return imgY(p[p.length - 1][1]);
+}
+function minX() { return imgX(S.A.path[0][0]); }
+function maxX() { return imgX(S.A.path[S.A.path.length - 1][0]); }
+
+function layoutScene() {
+  const A = S.A, H = V.stageH, W = V.w;
+  S.s = Math.max(H / A.ih, (W * 1.3) / A.iw);
+  const ih = A.ih * S.s; S.worldW = A.iw * S.s;
+  S.offY = ih > H * 1.02 ? Math.max(0, Math.min(ih - H, A.path[0][1] * ih - A.feet * H)) : 0;
+  const bg = $('#bg'); bg.style.width = S.worldW + 'px'; bg.style.height = ih + 'px'; bg.style.top = -S.offY + 'px';
+  const w = $('#world'); w.style.width = S.worldW + 'px'; w.style.height = H + 'px';
+  const fg = $('#fg'); fg.style.height = Math.round(H * (S.area === 'canopy' ? .12 : .15)) + 'px'; fg.style.width = (S.worldW * 1.15 + W * .3) + 'px';
+  S.objs.forEach(placeObj);
+  S.decos.forEach(d => d.place());
+  sizeChars();
+  S.leo.x = Math.min(Math.max(S.leo.x, minX()), maxX()); S.coco.x = Math.min(Math.max(S.coco.x, minX()), maxX());
+  S.cam = camTarget(); render();
+}
+function sizeChars() {
+  const H = V.stageH, lh = S.A.leoH * H;
+  S.leo.h = lh; S.leo.el.style.height = lh + 'px'; S.leo.el.style.width = lh * .62 + 'px';
+  S.coco.h = lh * .52; S.coco.el.style.height = S.coco.h + 'px'; S.coco.el.style.width = S.coco.h * .95 + 'px';
+  S.objs.forEach(o => { if (o.witnessEl) placeWitness(o); });
+  if (S.culpritEl) placeCulprit();
+}
+
+/* ---------- case setup (varies every replay) ---------- */
+function newCase(areaId) {
+  const A = AREAS[areaId];
+  const pool = A.pool.filter(a => a !== DB.last[areaId]);
+  const fresh = pool.filter(a => !DB.stickers[a]);
+  const culprit = pick(fresh.length && Math.random() < .75 ? fresh : pool); // usually a sticker Milo does not have yet
+  const witness = pick(Object.keys(ANIMALS).filter(a => a !== culprit));
+  const decoys = shuffle(SUSPECTS.filter(a => a !== culprit && a !== witness)).slice(0, 2);
+  // place objects
+  const objs = [];
+  A.groups.forEach(g => {
+    let kinds = g.kinds.map(k => Array.isArray(k) ? pick(k) : k);
+    kinds = shuffle(kinds); if (g.keep) kinds = [g.keep].concat(kinds.filter(k => k !== g.keep));
+    kinds = shuffle(kinds.slice(0, g.take || g.pick || kinds.length));
+    const spots = shuffle(g.spots);
+    kinds.forEach((k, i) => objs.push({kind: k, fx: spots[i][0], fy: spots[i][1], scale: g.scale || 1, bob: g.bob}));
+  });
+  (A.hot || []).forEach(([k, fx, fy, r]) => objs.push({kind: k, fx, fy, r, hot: 1}));
+  // choose clue objects: one sound, one count, one add
+  const sound = objs.find(o => (KINDS[o.kind].acts || []).includes('sound'));
+  sound.act = 'sound';
+  const cands = shuffle(objs.filter(o => o !== sound && KINDS[o.kind].acts));
+  const addO = cands.find(o => KINDS[o.kind].acts.includes('add'));
+  if (addO) addO.act = 'add';
+  const countO = cands.find(o => !o.act && KINDS[o.kind].acts.includes('count'));
+  if (countO) countO.act = 'count';
+  objs.forEach(o => {
+    if (o.act === 'count') { o.item = pick(KINDS[o.kind].items); o.n = rnd(3, 8); }
+    if (o.act === 'add') { o.item = pick(KINDS[o.kind].items); o.a = rnd(1, 5); o.b = rnd(1, Math.min(5, 10 - o.a)); if (o.a + o.b < 3) o.b = 3 - o.a; }
+  });
+  return {area: areaId, culprit, witness, decoys, objs, found: 0};
+}
+
+/* ---------- build scene ---------- */
+function startArea(areaId) {
+  show('scene');
+  closePanel(); S.ready = false; S.sid = (S.sid || 0) + 1; S.keys = 0;
+  S.area = areaId; S.A = AREAS[areaId]; S.kase = newCase(areaId); S.clues = []; G.busy = false; S.culpritEl = null; G.lastPrompt = null;
+  window.__lastCase = S.kase;
+  const w = $('#world'); w.querySelectorAll('.obj,.chr,.fall,.decal,.flyer').forEach(e => e.remove());
+  $('#fx').innerHTML = '';
+  $('#bg').src = IMG(S.A.bg);
+  S.objs = []; S.decos = [];
+  measure();
+  // characters
+  S.leo = {x: 0, dir: 1, target: null, walking: false, t: 0, el: el('div', 'chr leo', w)};
+  S.leo.el.innerHTML = '<div class="shadow"></div><img class="f0" src="' + IMG('leo') + '"><img class="f1" src="' + IMG('leo_walk1') + '"><img class="f2" src="' + IMG('leo_walk2') + '"><img class="f3" src="' + IMG('leo_walk3') + '">';
+  S.coco = {x: 0, dir: 1, el: el('div', 'chr coco', w), hop: 0};
+  S.coco.el.innerHTML = '<div class="shadow"></div><img class="f0" src="' + IMG('coco') + '"><img class="f1" src="' + IMG('coco_side') + '">';
+  onTap(S.leo.el, () => { if (!G.busy) { hop(S.leo.el); AU.say('sur_leo'); } });
+  onTap(S.coco.el, () => { if (!G.busy) { hop(S.coco.el); AU.sfx('boing'); AU.say('sur_coco'); } });
+  S.leo.el.style.zIndex = 22; S.coco.el.style.zIndex = 21;
+  // objects
+  S.kase.objs.forEach(makeObj);
+  makeDecos();
+  S.ready = true;
+  layoutScene();
+  S.leo.x = minX() - S.leo.h * .4; S.coco.x = S.leo.x - S.leo.h * .5;
+  S.cam = 0; layoutScene();
+  renderTray(); makeMotes();
+  // preload this case's clips
+  const k = S.kase, pre = ['intro_' + areaId, 'walk_help', 'hint_sparkle', 'hint_walk', 'clue_look', 'clue_1', 'clue_2', 'clue_3', 'patch_' + k.culprit, 'part_' + k.culprit, 'shadow',
+    'final_intro', 'final_ask', 'final_again', 'solved_' + areaId + '_' + k.culprit, 'solved_yay', 'sticker_' + k.culprit, 'fact_' + k.culprit, 'play_again', 'count_right', 'count_again',
+    'hi_' + k.witness, 'sound_teach', 'sound_ask_' + k.witness, 'sound_right_' + k.witness, 'sound_again_' + k.witness, 'witness_clue', 'add_intro', 'add_push', 'add_countall', 'add_right'];
+  for (let n = 1; n <= 10; n++) pre.push('num_' + n);
+  k.objs.forEach(o => { pre.push('act_' + actKey(o), 'sur_' + KINDS[o.kind].sur); if (o.item) pre.push('count_intro_' + o.item, 'count_ask_' + o.item); });
+  if (DB.lang === 'en') AU.preload(pre.filter(x => LINES[x]));
+  // walk in, then the mystery
+  (async () => {
+    G.busy = true; await wait(300);
+    walkTo(minX() + S.leo.h * .55);
+    await wait(900);
+    G.busy = false;
+    await AU.say('intro_' + areaId, {prompt: true});
+    if (!DB.walkHelp && G.screen === 'scene') { DB.walkHelp = 1; DB.save(); $('#arR').classList.add('nudge'); await AU.say('walk_help'); $('#arR').classList.remove('nudge'); }
+    G.poke();
+  })();
+}
+function makeDecos() {
+  const d = S.A.deco || {}, fx = $('#fx');
+  if (d.mist) { const m = el('div', 'mist', fx); S.decos.push({place() { m.style.left = imgX(d.mist[0]) + 'px'; m.style.top = imgY(d.mist[1]) + 'px'; m.style.width = imgX(d.mist[2]) + 'px'; m.style.height = d.mist[3] * S.A.ih * S.s + 'px'; }}); }
+  if (d.ray) { const r = el('div', 'ray', fx); S.decos.push({place() { r.style.left = imgX(d.ray[0]) + 'px'; r.style.top = imgY(d.ray[1]) + 'px'; r.style.width = imgX(d.ray[2]) + 'px'; r.style.height = d.ray[3] * S.A.ih * S.s + 'px'; }}); }
+  // a parrot or butterfly-like flyer now and then: use the parrot cut-out, small, far away
+  if (S.kase.culprit !== 'parrot' && S.kase.witness !== 'parrot') {
+    const f = el('img', 'flyer', fx); f.src = IMG('parrot'); f.style.opacity = 0;
+    S.decos.push({place() { f.style.height = V.stageH * .06 + 'px'; }});
+    S.flyer = f;
+  } else S.flyer = null;
+}
+function makeMotes() {
+  const m = $('#motes'); m.innerHTML = '';
+  for (let i = 0; i < 14; i++) { const d = el('div', 'mote', m); d.style.left = Math.random() * 100 + '%'; d.style.top = 20 + Math.random() * 70 + '%'; d.style.animationDelay = (-Math.random() * 9) + 's'; d.style.animationDuration = 7 + Math.random() * 6 + 's'; }
+}
+
+/* ---------- objects ---------- */
+function makeObj(o) {
+  const K = KINDS[o.kind], w = $('#world');
+  o.el = el('div', 'obj hot' + (K.hang ? ' hang' : '') + (o.hot ? ' hotspot' : '') + (/^(fern|palm|flowers|egg|log)$/.test(o.kind) ? ' grassy' : ''), w);
+  if (!o.hot) {
+    o.img = el('img', '', o.el); o.img.src = IMG(K.img);
+    if (K.hang) el('div', 'vine', o.el); else el('div', 'shadow', o.el);
+    o.el.insertBefore(o.el.lastChild, o.el.firstChild);
+  }
+  o.el.style.zIndex = K.hang ? 8 : 10;
+  onTap(o.el, () => tapObj(o));
+  S.objs.push(o);
+  if (o.act === 'sound' && o.kind === 'fern') { // footprints leading to the fern
+    o.prints = [];
+    for (let i = 0; i < 5; i++) { const p = el('div', 'obj decal hot', w); p.innerHTML = '<img src="' + IMG('print') + '">'; p.style.zIndex = 9; onTap(p, () => tapObj(o)); o.prints.push(p); }
+  }
+  o.tw = el('div', 'twinkle', o.el); o.tw.style.animationDelay = (-Math.random() * 1.2) + 's'; o.tw.style.display = 'none';
+}
+function placeObj(o) {
+  const K = KINDS[o.kind], H = V.stageH;
+  if (o.hot) {
+    const r = o.r * S.A.iw * S.s; o.w = o.h = r * 2;
+    o.x = imgX(o.fx); o.y = imgY(o.fy) + r;
+    Object.assign(o.el.style, {left: o.x - r + 'px', top: imgY(o.fy) - r + 'px', width: r * 2 + 'px', height: r * 2 + 'px'});
+    return;
+  }
+  const nat = o.img.naturalWidth ? o.img.naturalWidth / o.img.naturalHeight : 1.2;
+  o.h = K.h * H * (o.scale || 1) * (S.area === 'river' ? .85 : 1); o.w = o.h * nat;
+  o.x = imgX(o.fx);
+  if (K.hang) { o.y = imgY(o.fy); Object.assign(o.el.style, {left: o.x - o.w / 2 + 'px', top: o.y + 'px', width: o.w + 'px', height: o.h + 'px'}); }
+  else { o.y = imgY(o.fy); Object.assign(o.el.style, {left: o.x - o.w / 2 + 'px', top: o.y - o.h + 'px', width: o.w + 'px', height: o.h + 'px'}); }
+  if (!o.img.naturalWidth) o.img.onload = () => placeObj(o);
+  if (o.bob && !o.bobA) { try { o.bobA = o.img.animate([{transform: 'translateY(0) rotate(-2deg)'}, {transform: 'translateY(-6%) rotate(2deg)'}, {transform: 'translateY(0) rotate(-2deg)'}], {duration: 2600, iterations: Infinity}); } catch (e) {} }
+  if (o.prints) {
+    const step = H * .085, dir = o.x - step * 6 > minX() ? -1 : 1;
+    o.prints.forEach((p, i) => {
+      const px = o.x + dir * (o.w * .45 + step * (i + .6)), py = pathY(px) + (i % 2 ? H * .012 : -H * .006), s = H * .045;
+      Object.assign(p.style, {left: px - s / 2 + 'px', top: py - s + 'px', width: s + 'px', height: s + 'px', transform: 'rotate(' + (dir > 0 ? -90 : 90) + 'deg)'});
+    });
+  }
+  if (o.witnessEl) placeWitness(o);
+}
+function hop(e) { anim(e, [{transform: 'translateY(0)'}, {transform: 'translateY(-14%)'}, {transform: 'translateY(0)'}], {duration: 420, fill: 'none'}); }
+function wobble(e, n) { return anim(e, [{transform: 'rotate(0)'}, {transform: 'rotate(-7deg)'}, {transform: 'rotate(6deg)'}, {transform: 'rotate(-4deg)'}, {transform: 'rotate(0)'}], {duration: 600 * (n || 1), fill: 'none'}); }
+function squash(e) { return anim(e, [{transform: 'scale(1,1)'}, {transform: 'scale(1.25,.7)'}, {transform: 'scale(.85,1.25)'}, {transform: 'scale(1,1)'}], {duration: 600, fill: 'none'}); }
+function leaves(x, y, n) {
+  const w = $('#world');
+  for (let i = 0; i < (n || 8); i++) { const l = el('div', 'leafbit', w); l.style.left = x + 'px'; l.style.top = y + 'px'; l.style.zIndex = 30;
+    anim(l, [{transform: 'translate(0,0) rotate(0)', opacity: 1}, {transform: 'translate(' + rnd(-90, 90) + 'px,' + rnd(-110, -30) + 'px) rotate(' + rnd(-200, 200) + 'deg)', opacity: 1, offset: .4}, {transform: 'translate(' + rnd(-120, 120) + 'px,' + rnd(10, 60) + 'px) rotate(' + rnd(-400, 400) + 'deg)', opacity: 0}], {duration: 1300, easing: 'ease-out'}).then(() => l.remove()); }
+}
+function ripples(x, y) { const w = $('#world'); for (let i = 0; i < 3; i++) setTimeout(() => { const r = el('div', 'ripple', w); const s = V.stageH * .16; Object.assign(r.style, {left: x - s / 2 + 'px', top: y - s / 4 + 'px', width: s + 'px', height: s / 2 + 'px', zIndex: 30}); setTimeout(() => r.remove(), 1100); }, i * 220); }
+function popItem(o, imgName, stay) { // a treasure pops out of an object
+  const w = $('#world'), f = el('img', 'fall', w), s = V.stageH * .1; f.src = IMG(imgName);
+  const top = (KINDS[o.kind].hang ? o.y + o.h / 2 : o.y - o.h * .6);
+  Object.assign(f.style, {left: o.x - s / 2 + 'px', top: top - s / 2 + 'px', height: s + 'px'});
+  AU.sfx('sparkle');
+  return anim(f, [{transform: 'translateY(0) scale(.2)', opacity: 0}, {transform: 'translateY(-' + s * 1.3 + 'px) scale(1.25)', opacity: 1, offset: .5}, {transform: 'translateY(-' + s * 1.1 + 'px) scale(1)', opacity: 1}], {duration: 700}).then(async () => {
+    if (!stay) { await wait(1800); anim(f, [{opacity: 1}, {opacity: 0}], {duration: 400}).then(() => f.remove()); } return f;
+  });
+}
+function dropItems(o, item, n) { // fruit falls from a branch to the ground
+  const w = $('#world'), s = V.stageH * .07, arr = [];
+  for (let i = 0; i < n; i++) {
+    const f = el('img', 'fall', w); f.src = IMG(ITEM_IMG[item]); arr.push(f);
+    const x0 = o.x + rnd(-o.w / 3, o.w / 3), y0 = o.y + o.h * .5, x1 = o.x + (i - n / 2) * s * .9 + rnd(-5, 5), y1 = pathY(x1) - s * .2;
+    Object.assign(f.style, {left: x0 - s / 2 + 'px', top: y0 + 'px', height: s + 'px'});
+    setTimeout(() => AU.sfx('pop'), 300 + i * 90);
+    anim(f, [{transform: 'translate(0,0)'}, {transform: 'translate(' + (x1 - x0) + 'px,' + (y1 - y0 - s) + 'px)', offset: .75, easing: 'ease-in'}, {transform: 'translate(' + (x1 - x0) + 'px,' + (y1 - y0 - s * 1.3) + 'px)', offset: .87}, {transform: 'translate(' + (x1 - x0) + 'px,' + (y1 - y0 - s) + 'px)'}], {duration: 700, delay: i * 90});
+  }
+  S.ground = arr; return wait(700 + n * 90);
+}
+function clearGround() { (S.ground || []).forEach(f => anim(f, [{opacity: 1}, {opacity: 0}], {duration: 300}).then(() => f.remove())); S.ground = null; }
+
+async function tapObj(o) {
+  if (G.busy || G.panelOpen) return;
+  G.poke(); AU.sfx('tap');
+  if (o.hot) { await surprise(o); return; }
+  if (o.done && o.act) { wobble(o.el); AU.say('looked_here'); return; }
+  G.busy = true; o.tried = true; o.tw.style.display = 'none';
+  try {
+    // walk next to it (along the footprints if there are any)
+    const side = o.x >= S.leo.x ? -1 : 1;
+    const stand = Math.min(maxX(), Math.max(minX(), o.x + side * (o.w * .5 + S.leo.h * .22)));
+    if (Math.abs(stand - S.leo.x) > 6) await walkToP(stand);
+    S.leo.dir = o.x >= S.leo.x ? 1 : -1; S.leo.forceSide = 600;
+    inspect();
+    if (o.act) { await clueAction(o); }
+    else await surprise(o);
+  } finally { G.busy = false; G.poke(); }
+}
+function inspect() { // Leo pulls out his magnifying glass
+  const w = $('#world'), l = el('img', 'fall', w), s = S.leo.h * .32; l.src = IMG('lens');
+  Object.assign(l.style, {left: S.leo.x + S.leo.dir * S.leo.h * .2 - s / 2 + 'px', top: pathY(S.leo.x) - S.leo.h * .62 + 'px', height: s + 'px', zIndex: 25});
+  anim(l, [{transform: 'scale(0) rotate(-40deg)', opacity: 0}, {transform: 'scale(1.15) rotate(10deg)', opacity: 1, offset: .4}, {transform: 'scale(1) rotate(0)', opacity: 1, offset: .7}, {transform: 'scale(1)', opacity: 0}], {duration: 1300}).then(() => l.remove());
+}
+async function surprise(o) {
+  const K = KINDS[o.kind], line = 'sur_' + K.sur;
+  switch (o.kind) {
+    case 'log': AU.sfx('thud'); await anim(o.el, [{transform: 'translateX(0)'}, {transform: 'translateX(' + o.w * .7 + 'px)'}], {duration: 600}); await popItem(o, 'star'); anim(o.el, [{transform: 'translateX(' + o.w * .7 + 'px)'}, {transform: 'translateX(0)'}], {duration: 600, delay: 1600}); break;
+    case 'fern': AU.sfx('rustle'); leaves(o.x, o.y - o.h * .6, 10); await wobble(o.el, 1.4); break;
+    case 'crate': AU.sfx('shake'); await wobble(o.el); await popItem(o, 'map'); break;
+    case 'chest': AU.sfx('shake'); await wobble(o.el); await popItem(o, 'gem'); break;
+    case 'mushroom': AU.sfx('boing'); squash(o.el); hop(S.coco.el); break;
+    case 'flowers': AU.sfx('sparkle'); wobble(o.el); twinkles(o); break;
+    case 'egg': case 'nest': AU.sfx('soft'); wobble(o.el, 1.5); break;
+    case 'palm': AU.sfx('rustle'); wobble(o.el, 1.5); leaves(o.x, o.y - o.h * .8, 6); break;
+    case 'barrel': AU.sfx('splash'); ripples(o.x, o.y); hop(o.el); break;
+    case 'bananas': case 'cherries': AU.sfx('shake'); leaves(o.x, o.y, 6); await wobble(o.el, 1.2); await popItem(o, 'star'); break;
+    case 'lantern': AU.sfx('sparkle'); o.el.animate([{filter: 'brightness(1)'}, {filter: 'brightness(1.6) drop-shadow(0 0 20px #ffd43b)'}, {filter: 'brightness(1)'}], {duration: 1600}); wobble(o.el); break;
+    case 'binoculars': await binoSurprise(o); break;
+    case 'water': AU.sfx('splash'); ripples(o.x, o.y - o.h / 2); break;
+    case 'waterfall': AU.sfx('whoosh'); twinkles(o); break;
+    case 'orchid': AU.sfx('sparkle'); twinkles(o); break;
+  }
+  await AU.say(line);
+}
+function twinkles(o) { const w = $('#world'); for (let i = 0; i < 6; i++) { const t = el('div', 'twinkle', w); Object.assign(t.style, {left: o.x + rnd(-o.w / 2, o.w / 2) - 13 + 'px', top: (o.hot ? o.y - o.h : o.y - o.h) + rnd(0, o.h) + 'px', zIndex: 35, animationDelay: i * 120 + 'ms'}); setTimeout(() => t.remove(), 2400); } }
+
+/* ---------- clue objects: do the thing, then the lesson ---------- */
+const actKey = o => o.kind === 'cherries' ? 'bananas' : o.kind;
+async function clueAction(o) {
+  const k = S.kase, sid = S.sid;
+  AU.say('act_' + actKey(o));
+  switch (o.kind) {
+    case 'log': AU.sfx('thud'); await anim(o.el, [{transform: 'translateX(0)'}, {transform: 'translateX(' + o.w * .8 + 'px)'}], {duration: 700}); break;
+    case 'bananas': case 'cherries': AU.sfx('shake'); leaves(o.x, o.y, 8); wobble(o.el, 1.2); await dropItems(o, o.item, o.act === 'add' ? o.a + o.b : o.n); break;
+    case 'crate': case 'chest': case 'nest': case 'barrel': AU.sfx(o.kind === 'barrel' ? 'splash' : 'shake'); if (o.kind === 'barrel') ripples(o.x, o.y); await wobble(o.el); AU.sfx('sparkle'); break;
+    case 'fern': await followPrints(o); AU.sfx('rustle'); leaves(o.x, o.y - o.h * .6, 10); await wobble(o.el, 1.2); showWitness(o); AU.sfx('boing'); break;
+    case 'binoculars': break;
+  }
+  await wait(900);
+  o.done = true; o.el.classList.add('done');
+  let ok = false;
+  openPanel();
+  if (o.act === 'count') ok = await actCount(o);
+  else if (o.act === 'add') ok = await actAdd(o);
+  else if (o.act === 'sound') ok = await actSound(o);
+  if (sid !== S.sid) return;
+  if (!ok) { closePanel(); return; }
+  await revealClue();
+  if (sid !== S.sid) return;
+  clearGround();
+  if (S.clues.length >= 3) { await wait(300); await finalCase(); }
+}
+async function followPrints(o) {
+  if (!o.prints) return;
+  for (const p of o.prints) { anim(p, [{transform: p.style.transform + ' scale(1)'}, {transform: p.style.transform + ' scale(1.5)'}, {transform: p.style.transform + ' scale(1)'}], {duration: 400, fill: 'none'}); AU.sfx('step'); await wait(160); }
+}
+function showWitness(o) {
+  const w = $('#world'), e = el('div', 'chr witness', w); e.innerHTML = '<div class="shadow"></div><img src="' + IMG(ANIMALS[S.kase.witness].img) + '">';
+  o.witnessEl = e; e.style.zIndex = 11; placeWitness(o);
+  anim(e, [{transform: 'translateY(40%) scale(.6)', opacity: 0}, {transform: 'translateY(-10%) scale(1.05)', opacity: 1, offset: .6}, {transform: 'translateY(0) scale(1)', opacity: 1}], {duration: 600});
+  onTap(e, () => { if (!G.busy) { hop(e); AU.say('hi_' + S.kase.witness); } });
+}
+function placeWitness(o) {
+  const a = ANIMALS[S.kase.witness], h = S.leo.h * (S.kase.witness === 'giraffe' ? .85 : .6), wd = h * a.w / a.h, x = o.x + o.w * .15;
+  Object.assign(o.witnessEl.style, {left: x - wd / 2 + 'px', top: pathY(x) - h - V.stageH * .01 + 'px', width: wd + 'px', height: h + 'px'});
+}
+async function binoSurprise(o) {
+  openPanel(); const b = $('#pBody'); b.innerHTML = '';
+  await binoView(b, null); await AU.say('sur_waterfall'); await wait(400); closePanel();
+}
+async function binoView(b, animal) { // look through the binoculars at the far trees
+  const v = el('div', 'binoView', b), A = S.A, pw = b.clientWidth, ph = b.clientHeight, inner = el('div', '', v);
+  inner.style.cssText = 'position:absolute;inset:0;overflow:hidden';
+  const far = el('div', 'far', inner), s = ph * 2.2 / A.ih, im = el('img', '', far); im.src = IMG(A.bg); im.style.width = A.iw * s + 'px'; im.style.display = 'block';
+  if (animal) { const ai = el('img', '', far), a = ANIMALS[animal], h = ph * .45; ai.src = IMG(a.img); Object.assign(ai.style, {position: 'absolute', height: h + 'px', left: A.iw * s * .56 + 'px', top: A.ih * s * .40 - h + 'px', filter: 'drop-shadow(0 4px 4px rgba(0,0,0,.3))'}); v.ai = ai; }
+  const r = Math.min(pw * .24, ph * .42);
+  const mk = 'radial-gradient(circle ' + r + 'px at ' + (pw / 2 - r * .82) + 'px 50%, #000 96%, transparent 100%), radial-gradient(circle ' + r + 'px at ' + (pw / 2 + r * .82) + 'px 50%, #000 96%, transparent 100%)';
+  inner.style.webkitMaskImage = mk; inner.style.maskImage = mk;
+  far.style.transform = 'translate(' + (-A.iw * s * .25) + 'px,' + (-A.ih * s * .25) + 'px)';
+  AU.sfx('whoosh');
+  await anim(far, [{transform: far.style.transform}, {transform: 'translate(' + (-A.iw * s * .56 + pw / 2 - ph * .12) + 'px,' + (-A.ih * s * .40 + ph * .62) + 'px)'}], {duration: FASTMODE ? 50 : 2200, easing: 'ease-in-out'});
+  if (v.ai) { AU.sfx('boing'); await anim(v.ai, [{transform: 'translateY(0)'}, {transform: 'translateY(-12%)'}, {transform: 'translateY(0)'}], {duration: 500, iterations: 2, fill: 'none'}); }
+  return v;
+}
+
+/* ---------- walking ---------- */
+let walkCb = null;
+function walkTo(x, cb) { S.leo.target = Math.min(maxX(), Math.max(minX(), x)); walkCb = cb || null; }
+function walkToP(x) { return new Promise(r => walkTo(x, r)); }
+function camTarget() { const lead = S.leo.walking ? S.leo.dir * V.w * .08 : 0; return Math.max(0, Math.min(S.worldW - V.w, S.leo.x - V.w * .45 + lead)); }
+let lastT = 0;
+function tick(t) {
+  requestAnimationFrame(tick);
+  const dt = Math.min(.05, (t - lastT) / 1000 || 0); lastT = t;
+  if (G.screen !== 'scene' || !S.leo || !S.A) return;
+  const L = S.leo, speed = V.stageH * .62 * (FASTMODE ? 6 : 1);
+  let moving = false;
+  if (S.keys && !G.busy && !G.panelOpen) { L.target = null; walkCb = null; const nx = L.x + S.keys * speed * dt; L.x = Math.min(maxX(), Math.max(minX(), nx)); L.dir = S.keys; moving = nx > minX() && nx < maxX(); }
+  else if (L.target != null) {
+    const d = L.target - L.x;
+    if (Math.abs(d) < speed * dt + 1) { L.x = L.target; L.target = null; const cb = walkCb; walkCb = null; if (cb) cb(); }
+    else { L.x += Math.sign(d) * speed * dt; L.dir = Math.sign(d); moving = true; }
+  }
+  if (L.forceSide > 0) L.forceSide -= dt * 1000;
+  L.walking = moving; if (moving) { L.t += dt; G.poke(); if ((L.t * 4.5 | 0) !== L.stepN) { L.stepN = L.t * 4.5 | 0; AU.sfx('step'); } }
+  // Coco follows a little behind
+  const C = S.coco, want = L.x - L.dir * L.h * .55, cd = want - C.x;
+  let cm = false;
+  if (Math.abs(cd) > L.h * .12) { C.x += Math.sign(cd) * Math.min(Math.abs(cd), speed * 1.05 * dt) * (Math.abs(cd) > L.h ? 1.4 : 1); C.dir = Math.sign(cd); cm = true; }
+  C.walking = cm; if (cm) C.hop += dt * 9;
+  S.cam += (camTarget() - S.cam) * Math.min(1, dt * 5);
+  render();
+  // flyer
+  if (S.flyer) { S.flyT = (S.flyT || 0) + dt; const p = (S.flyT % 26) / 26; if (p < .35) { const q = p / .35; S.flyer.style.opacity = Math.sin(q * Math.PI) * .9; S.flyer.style.left = (S.cam - V.w * .1 + q * V.w * 1.25) * 1 + 'px'; S.flyer.style.top = V.stageH * (.12 + .05 * Math.sin(q * 12)) + 'px'; } else S.flyer.style.opacity = 0; }
+  // hints when Milo is stuck
+  hintTick();
+}
+function render() {
+  const L = S.leo, C = S.coco;
+  $('#world').style.transform = 'translate3d(' + (-S.cam) + 'px,0,0)';
+  $('#fg').style.transform = 'translate3d(' + (-S.cam * 1.15) + 'px,0,0)';
+  const ly = pathY(L.x), lw = L.h * .62;
+  L.el.style.transform = 'translate3d(' + (L.x - lw / 2) + 'px,' + (ly - L.h + (L.walking ? -Math.abs(Math.sin(L.t * 9)) * L.h * .025 : 0)) + 'px,0)';
+  const f = L.walking ? [1, 2, 3, 2][(L.t * 9 | 0) % 4] : 0;
+  if (f !== L.f) { L.el.querySelectorAll('img').forEach((im, i) => im.style.opacity = i === f ? 1 : 0); L.f = f; }
+  L.el.classList.toggle('flip', L.dir < 0 && (L.walking || L.forceSide > 0));
+  const cy = pathY(C.x), cw = C.h * .95;
+  C.el.style.transform = 'translate3d(' + (C.x - cw / 2) + 'px,' + (cy - C.h - (C.walking ? Math.abs(Math.sin(C.hop)) * C.h * .08 : 0)) + 'px,0)';
+  const cf = C.walking ? 1 : 0; if (cf !== C.f) { C.el.querySelectorAll('img').forEach((im, i) => im.style.opacity = i === cf ? 1 : 0); C.f = cf; }
+  C.el.classList.toggle('flip', C.walking && C.dir < 0);
+  L.el.style.zIndex = 22; C.el.style.zIndex = C.x > L.x ? 21 : 23;
+  // footprints light up as Leo walks over them
+}
+
+/* ---------- hints ---------- */
+let hintN = 0;
+function hintTick() {
+  if (G.busy || G.panelOpen || AU.isSpeaking() || S.keys || S.leo.target != null) return;
+  const idle = Date.now() - G.lastPoke;
+  // little twinkles on things you have not tried yet (after a few seconds of looking)
+  if (idle > 5000) S.objs.forEach(o => { if (!o.hot && !o.done && !o.tried && o.tw) o.tw.style.display = 'block'; });
+  if (idle < 13000) return;
+  G.poke(); hintN++;
+  const left = S.objs.filter(o => o.act && !o.done);
+  if (!left.length) return;
+  left.sort((a, b) => Math.abs(a.x - S.leo.x) - Math.abs(b.x - S.leo.x));
+  const o = left[0], onScreen = o.x > S.cam + 40 && o.x < S.cam + V.w - 40;
+  if (onScreen) {
+    const sp = el('div', 'sparkle', o.el); setTimeout(() => sp.remove(), 4500);
+    AU.say(hintN % 3 === 0 ? 'hint_look' : 'hint_sparkle');
+  } else {
+    const ar = o.x > S.leo.x ? $('#arR') : $('#arL'); ar.classList.add('nudge'); setTimeout(() => ar.classList.remove('nudge'), 2600);
+    AU.say('hint_walk');
+  }
+}
+
+/* ---------- clue tray ---------- */
+function clueHTML(type, size) {
+  const a = ANIMALS[S.kase.culprit];
+  if (type === 'shadow') {
+    const h = size * .78, w = h * a.w / a.h;
+    return '<div class="ci" style="left:' + (size - w) / 2 + 'px;top:' + (size - h) / 2 + 'px;width:' + w + 'px;height:' + h + 'px;background:url(' + IMG(a.img) + ') center/contain no-repeat"></div>';
+  }
+  const [fx, fy, z] = type === 'patch' ? a.patch : a.part;
+  const W = size * z, H = W * a.h / a.w;
+  return '<div class="ci" style="left:' + (size / 2 - fx * W) + 'px;top:' + (size / 2 - fy * H) + 'px;width:' + W + 'px;height:' + H + 'px;background:url(' + IMG(a.img) + ') 0 0/100% 100% no-repeat"></div>';
+}
+function renderTray() {
+  const t = $('#tray'); t.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const s = el('div', 'slot' + (S.clues[i] ? ' full' : ''), t, '<img src="' + IMG('lens') + '" alt="">');
+    if (S.clues[i]) { const m = el('div', 'clueMini clueCard ' + (S.clues[i] === 'shadow' ? 'shadow shadowBg' : ''), s, clueHTML(S.clues[i], 58)); m.style.cssText = 'position:absolute;inset:0;border:0;box-shadow:none'; onTap(s, () => AU.say(S.clues[i] === 'shadow' ? 'shadow' : S.clues[i] + '_' + S.kase.culprit)); }
+  }
+}
+
+/* ---------- activity panel ---------- */
+function openPanel() {
+  G.panelOpen = true; const p = $('#panel'); p.classList.add('on');
+  const b = $('#pBody'); b.innerHTML = '';
+  return b;
+}
+function closePanel() { G.panelOpen = false; $('#panel').classList.remove('on'); const b = $('#pBody'); if (b) b.innerHTML = ''; S.act = null; }
+function pDims() { const b = $('#pBody'); return {b, w: b.clientWidth, h: b.clientHeight}; }
+function addCoco(b) { const c = el('img', 'pCoco', b); c.src = IMG('coco_happy'); onTap(c, () => { if (G.lastPrompt) AU.say(G.lastPrompt); }); return c; }
+function placeAbs(e, x, y, w, h) { Object.assign(e.style, {position: 'absolute', left: x + 'px', top: y + 'px', width: w + 'px', height: (h == null ? w : h) + 'px'}); }
+function gridPos(n, box, size, perRow) {
+  perRow = perRow || (n <= 5 ? n : Math.ceil(n / 2)); const rows = Math.ceil(n / perRow), out = [];
+  const gx = Math.min(size * 1.25, box.w / perRow), gy = Math.min(size * 1.25, box.h / rows);
+  for (let i = 0; i < n; i++) { const r = i / perRow | 0, c = i % perRow, inRow = Math.min(perRow, n - r * perRow);
+    out.push([box.x + box.w / 2 + (c - (inRow - 1) / 2) * gx - size / 2 + rnd(-3, 3), box.y + box.h / 2 + (r - (rows - 1) / 2) * gy - size / 2 + rnd(-3, 3)]); }
+  return out;
+}
+function makeItems(b, item, n, pos, size) {
+  return pos.slice(0, n).map(([x, y]) => { const it = el('div', 'item', b, '<img src="' + IMG(ITEM_IMG[item]) + '"><span class="n"></span>'); placeAbs(it, x, y, size); it.style.transition = 'left .6s cubic-bezier(.4,1.4,.6,1),top .6s cubic-bezier(.4,1.4,.6,1),transform .2s'; return it; });
+}
+function bounce(e) { e.classList.remove('bounce'); void e.offsetWidth; e.classList.add('bounce'); }
+// Milo touches each item; numbers appear. Resolves when all are counted.
+function countByTouch(items) {
+  return new Promise(res => {
+    let c = 0, idle = Date.now(); items.forEach(it => { it.num = 0; it.classList.remove('on'); });
+    const iv = setInterval(() => { if (!G.panelOpen) { clearInterval(iv); res(false); return; } if (Date.now() - idle > 11000 && !AU.isSpeaking()) { idle = Date.now(); const u = items.find(i => !i.num); if (u) { bounce(u); AU.say('count_more'); } } }, 500);
+    items.forEach(it => {
+      it.onpointerdown = ev => {
+        ev.stopPropagation(); ev.preventDefault(); AU.unlock(); G.poke(); idle = Date.now();
+        bounce(it); AU.sfx('count');
+        if (it.num) { AU.say('num_' + it.num); return; }
+        c++; it.num = c; it.querySelector('.n').textContent = c; it.classList.add('on'); AU.say('num_' + c);
+        if (c === items.length) { clearInterval(iv); items.forEach(i => i.onpointerdown = ev2 => { ev2.stopPropagation(); bounce(i); AU.say('num_' + i.num); }); setTimeout(() => res(true), FASTMODE ? 30 : 900); }
+      };
+    });
+    S.act = {type: 'count', items, solveStep: () => { const u = items.find(i => !i.num); if (u) u.onpointerdown({stopPropagation() {}, preventDefault() {}}); }};
+  });
+}
+async function recount(items) {
+  items.forEach(it => { it.classList.remove('on'); });
+  for (let i = 0; i < items.length; i++) {
+    if (!G.panelOpen) return;
+    const it = items[i]; it.num = i + 1; it.querySelector('.n').textContent = i + 1; it.classList.add('on', 'hl'); AU.sfx('count');
+    await AU.say('num_' + (i + 1)); await wait(120); it.classList.remove('hl');
+  }
+}
+function numOptions(n) { const s = new Set([n]); const near = shuffle([n - 1, n + 1, n - 2, n + 2, n + 3, n - 3]).filter(x => x >= 1 && x <= 10); for (const x of near) { if (s.size >= 3) break; s.add(x); } return shuffle([...s]); }
+function makeOpts(b, vals, render, y) {
+  const row = el('div', 'opts', b); row.style.top = y + 'px';
+  return vals.map((v, i) => { const o = el('button', 'opt', row, render(v)); o.dataset.v = v; o.style.animationDelay = i * 90 + 'ms'; return o; });
+}
+const dots = n => '<div class="dots">' + '<i></i>'.repeat(n) + '</div>';
+// ask "how many?" with 3 number choices; unlimited tries, recount after a miss, glow after two misses
+async function askNumber(b, n, askKey, items, y, qid) {
+  const opts = makeOpts(b, numOptions(n), v => '<span class="big">' + v + '</span>' + dots(+v), y);
+  let misses = 0; S.act.correct = String(n);
+  AU.say(askKey, {prompt: true});
+  while (true) {
+    const v = await new Promise(res => { opts.forEach(o => o.onpointerdown = ev => { ev.stopPropagation(); ev.preventDefault(); AU.unlock(); G.poke(); res(+o.dataset.v); }); S.act.answer = () => res(n); if (!G.panelOpen) res(null); S.act.cancel = () => res(null); });
+    if (v == null) return false;
+    const o = opts.find(x => +x.dataset.v === v);
+    try { window.KA && KA.answer({q: qid, given: v, expected: n, correct: v === n, tryNo: misses + 1, qid, topic: 'counting'}); } catch (e) {}
+    if (v === n) { o.classList.add('yes'); opts.forEach(x => x.style.pointerEvents = 'none'); AU.sfx('ding'); await AU.seq(['yes_' + n]); return true; }
+    misses++; o.classList.add('shake', 'no'); AU.sfx('soft');
+    opts.forEach(x => x.style.pointerEvents = 'none');
+    await AU.say('count_again'); await recount(items);
+    opts.forEach(x => x.style.pointerEvents = '');
+    if (misses >= 2) { opts.find(x => +x.dataset.v === n).classList.add('glow'); await AU.say('count_glow', {prompt: true}); }
+    else AU.say(askKey, {prompt: true});
+  }
+}
+async function actCount(o) {
+  const {b, w, h} = pDims(); addCoco(b); S.act = {type: 'count'};
+  const size = Math.min(w * .8 / Math.min(5, Math.ceil(o.n <= 5 ? o.n : o.n / 2)) / 1.3, h * .22, 130);
+  const items = makeItems(b, o.item, o.n, gridPos(o.n, {x: w * .14, y: h * .06, w: w * .8, h: h * .56}, size), size);
+  items.forEach((it, i) => anim(it, [{transform: 'scale(0)'}, {transform: 'scale(1)'}], {duration: 400, delay: i * 70, easing: 'cubic-bezier(.3,1.6,.6,1)', fill: 'none'}));
+  AU.say('count_intro_' + o.item, {prompt: true});
+  if (!(await countByTouch(items))) return false;
+  return await askNumber(b, o.n, 'count_ask_' + o.item, items, h * .66, 'count-' + o.item + '-' + o.n);
+}
+async function actAdd(o) {
+  const {b, w, h} = pDims(); addCoco(b); S.act = {type: 'add'};
+  const a = o.a, c = o.b, n = a + c, size = Math.min(h * .18, w * .1, 92);
+  const padL = el('div', 'leafpad', b), padR = el('div', 'leafpad', b), bas = el('div', 'basket', b);
+  placeAbs(padL, w * .12, h * .06, w * .32, h * .34); placeAbs(padR, w * .56, h * .06, w * .32, h * .34); placeAbs(bas, w * .2, h * .44, w * .66, h * .22);
+  const posL = gridPos(a, {x: w * .12, y: h * .06, w: w * .32, h: h * .34}, size, a > 3 ? 3 : a), posR = gridPos(c, {x: w * .56, y: h * .06, w: w * .32, h: h * .34}, size, c > 3 ? 3 : c);
+  const A = makeItems(b, o.item, a, posL, size), B = makeItems(b, o.item, c, posR, size), all = A.concat(B);
+  all.forEach(it => it.style.zIndex = 2);
+  await AU.say('add_intro');
+  padL.classList.add('bounce'); A.forEach(bounce); await AU.say('group_' + a);
+  padR.classList.add('bounce'); B.forEach(bounce); await AU.say('more_' + c);
+  if (!G.panelOpen) return false;
+  // put them in the basket
+  const inBas = gridPos(n, {x: w * .2, y: h * .44, w: w * .66, h: h * .22}, size * .9, n > 5 ? Math.ceil(n / 2) : n);
+  let moved = 0;
+  await new Promise(res => {
+    const move = (grp, pad, off) => { if (grp.moved) return; grp.moved = 1; moved++; AU.sfx('whoosh'); pad.style.transition = 'opacity .5s'; pad.style.opacity = .35;
+      grp.forEach((it, i) => { const [x, y] = inBas[off + i]; it.style.left = x + 'px'; it.style.top = y + 'px'; it.style.width = it.style.height = size * .9 + 'px'; });
+      if (moved === 2) setTimeout(res, FASTMODE ? 30 : 700); };
+    const hit = (grp, pad, off) => ev => { ev && ev.stopPropagation && ev.stopPropagation(); AU.unlock(); G.poke(); move(grp, pad, off); };
+    padL.onpointerdown = hit(A, padL, 0); A.forEach(it => it.onpointerdown = hit(A, padL, 0));
+    padR.onpointerdown = hit(B, padR, a); B.forEach(it => it.onpointerdown = hit(B, padR, a));
+    padL.style.animation = padR.style.animation = 'pulse 1.2s infinite';
+    S.act.solveStep = () => { if (!A.moved) hit(A, padL, 0)(); else hit(B, padR, a)(); };
+    AU.say('add_push', {prompt: true});
+  });
+  padL.style.animation = padR.style.animation = 'none';
+  const eq = el('div', 'eq', b); eq.style.top = h * .14 + 'px'; eq.innerHTML = a + ' + ' + c + ' = <b>?</b>';
+  padL.remove(); padR.remove();
+  AU.say('add_countall', {prompt: true});
+  if (!(await countByTouch(all))) return false;
+  const ok = await askNumber(b, n, 'add_ask_' + a + '_' + c, all, h * .7, 'add-' + a + '+' + c);
+  if (ok) { eq.innerHTML = a + ' + ' + c + ' = <b>' + n + '</b>'; bounce(eq); await AU.say('add_right'); }
+  return ok;
+}
+async function actSound(o) {
+  const {b, w, h} = pDims(); const k = S.kase, wit = k.witness, an = ANIMALS[wit], zh = DB.lang === 'zh';
+  if (o.kind === 'binoculars') { const v = await binoView(b, wit); await wait(500); if (!G.panelOpen) return false; anim(v, [{opacity: 1}, {opacity: 0}], {duration: 400}).then(() => v.remove()); }
+  addCoco(b); S.act = {type: 'sound'};
+  const ah = h * .5, aw = ah * an.w / an.h;
+  const big = el('img', 'bigAnimal', b); big.src = IMG(an.img); placeAbs(big, w * .26 - aw / 2, h * .05, aw, ah);
+  anim(big, [{transform: 'scale(.3)', opacity: 0}, {transform: 'scale(1)', opacity: 1}], {duration: 450, easing: 'cubic-bezier(.3,1.6,.6,1)'});
+  onTap(big, () => { hop(big); AU.say(S.act.asked ? 'sound_again_' + wit : 'hi_' + wit); });
+  await AU.say('hi_' + wit);
+  // teach with a sound we know
+  const teach = el('div', 'teach', b, '<span class="ltr">' + (zh ? 'ㄎ' : 'L') + '</span><img src="' + IMG(zh ? 'coco' : 'leo') + '">');
+  teach.style.left = w * .55 + 'px'; teach.style.top = h * .12 + 'px';
+  anim(teach, [{transform: 'scale(0)'}, {transform: 'scale(1)'}], {duration: 400, easing: 'cubic-bezier(.3,1.6,.6,1)'});
+  onTap(teach, () => AU.say('sound_teach'));
+  if (!(await AU.say('sound_teach'))) { if (!G.panelOpen) return false; }
+  if (!G.panelOpen) return false;
+  anim(teach, [{transform: 'scale(1)'}, {transform: 'scale(.7) translate(22%,-30%)', opacity: .8}], {duration: 400});
+  // ask
+  const ans = zh ? ANIMAL_INFO[wit].zy : ANIMAL_INFO[wit].letter;
+  const pool = zh ? Object.keys(LETTERS.zh).filter(x => x !== 'ㄎ' && x !== ans) : EN_LETTERS.filter(x => x !== 'L' && x !== ans);
+  const vals = shuffle([ans].concat(shuffle(pool).slice(0, 2)));
+  const opts = makeOpts(b, vals, v => '<span class="big">' + v + '</span>', h * .64);
+  if (zh) opts.forEach(x => x.classList.add('zy'));
+  S.act.asked = 1; S.act.correct = ans; let misses = 0;
+  AU.say('sound_ask_' + wit, {prompt: true});
+  while (true) {
+    const v = await new Promise(res => { opts.forEach(x => x.onpointerdown = ev => { ev.stopPropagation(); ev.preventDefault(); AU.unlock(); G.poke(); res(x.dataset.v); }); S.act.answer = () => res(ans); S.act.cancel = () => res(null); });
+    if (v == null || !G.panelOpen) return false;
+    const x = opts.find(q => q.dataset.v === v);
+    try { window.KA && KA.answer({q: 'first sound of ' + wit, given: v, expected: ans, correct: v === ans, tryNo: misses + 1, qid: 'sound-' + wit + '-' + DB.lang, topic: 'phonics'}); } catch (e) {}
+    if (v === ans) {
+      x.classList.add('yes'); opts.forEach(q => q.style.pointerEvents = 'none'); AU.sfx('ding'); hop(big);
+      await AU.say('sound_right_' + wit); await AU.say('witness_clue'); return true;
+    }
+    misses++; x.classList.add('shake', 'no'); AU.sfx('soft');
+    opts.forEach(q => q.style.pointerEvents = 'none');
+    if (zh) await AU.raw(LETTERS.zh[v], 'zh'); else await AU.say('letter_' + v);
+    await AU.say('sound_hmm');
+    opts.forEach(q => q.style.pointerEvents = '');
+    if (misses >= 2) { opts.find(q => q.dataset.v === ans).classList.add('glow'); await AU.say('sound_again_' + wit); AU.say('sound_glow', {prompt: true}); }
+    else AU.say('sound_again_' + wit, {prompt: true});
+  }
+}
+
+/* ---------- clue reveal ---------- */
+async function revealClue() {
+  const {b, w, h} = pDims(); b.innerHTML = ''; el('div', 'burst', b);
+  const type = CLUE_ORDER[S.clues.length], size = Math.min(w * .5, h * .6);
+  const card = el('div', 'clueCard ' + (type === 'shadow' ? 'shadow shadowBg' : ''), b, clueHTML(type, size));
+  placeAbs(card, (w - size) / 2, (h - size) / 2 - h * .04, size);
+  AU.sfx('sparkle');
+  await anim(card, [{transform: 'scale(0) rotate(-20deg)'}, {transform: 'scale(1) rotate(0)'}], {duration: 600, easing: 'cubic-bezier(.3,1.5,.6,1)'});
+  addCoco(b);
+  await AU.say('clue_look');
+  await AU.say(type === 'shadow' ? 'shadow' : type + '_' + S.kase.culprit);
+  await wait(300);
+  // fly to the tray
+  const slot = $('#tray').children[S.clues.length], r1 = card.getBoundingClientRect(), r2 = slot.getBoundingClientRect();
+  await anim(card, [{transform: 'none'}, {transform: 'translate(' + (r2.left + r2.width / 2 - (r1.left + r1.width / 2)) + 'px,' + (r2.top + r2.height / 2 - (r1.top + r1.height / 2)) + 'px) scale(' + r2.width / r1.width + ')'}], {duration: FASTMODE ? 30 : 700, easing: 'ease-in'});
+  S.clues.push(type); renderTray(); AU.sfx('ding');
+  closePanel();
+  await AU.say('clue_' + S.clues.length);
+}
+
+/* ---------- solve the mystery ---------- */
+async function finalCase() {
+  const k = S.kase; openPanel(); const {b, w, h} = pDims(); S.act = {type: 'final'};
+  const cs = Math.min(h * .27, w * .2), cards = [];
+  CLUE_ORDER.forEach((type, i) => {
+    const c = el('div', 'clueCard ' + (type === 'shadow' ? 'shadow shadowBg' : ''), b, clueHTML(type, cs));
+    placeAbs(c, w / 2 + (i - 1) * cs * 1.35 - cs / 2, h * .05, cs); cards.push(c);
+    onTap(c, () => { bounce(c); AU.say(type === 'shadow' ? 'shadow' : type + '_' + k.culprit); });
+  });
+  const lineup = el('div', 'lineup', b); lineup.style.top = h * .42 + 'px'; lineup.style.height = h * .52 + 'px';
+  const sus = shuffle([k.culprit].concat(k.decoys));
+  const sh = h * .5, sw = Math.min(w * .26, sh * .95);
+  const els = sus.map(a => { const s = el('button', 'suspect', lineup, '<img src="' + IMG(ANIMALS[a].img) + '" alt="' + a + '">'); s.style.width = sw + 'px'; s.style.height = sh + 'px'; s.dataset.a = a; return s; });
+  addCoco(b);
+  await AU.say('final_intro');
+  for (let i = 0; i < 3; i++) { if (!G.panelOpen) return; cards[i].classList.add('bounce'); await AU.say(CLUE_ORDER[i] === 'shadow' ? 'shadow' : CLUE_ORDER[i] + '_' + k.culprit); }
+  AU.say('final_ask', {prompt: true});
+  let misses = 0; S.act.correct = k.culprit;
+  while (true) {
+    const a = await new Promise(res => { els.forEach(s => s.onpointerdown = ev => { ev.stopPropagation(); ev.preventDefault(); AU.unlock(); G.poke(); res(s.dataset.a); }); S.act.answer = () => res(k.culprit); S.act.cancel = () => res(null); });
+    if (a == null || !G.panelOpen) return;
+    const s = els.find(x => x.dataset.a === a);
+    try { window.KA && KA.answer({q: 'who did it (' + k.area + ')', given: a, expected: k.culprit, correct: a === k.culprit, tryNo: misses + 1, qid: 'final-' + k.area + '-' + k.culprit, topic: 'animals'}); } catch (e) {}
+    if (a === k.culprit) { s.classList.add('yes'); AU.sfx('fanfare'); hop(s); break; }
+    misses++; s.classList.add('shake'); AU.sfx('soft'); hop(s);
+    els.forEach(x => x.style.pointerEvents = 'none');
+    await AU.say('notme_' + a); s.classList.add('no');
+    await AU.say('final_again'); cards.forEach(bounce);
+    els.forEach(x => { if (!x.classList.contains('no')) x.style.pointerEvents = ''; });
+    if (misses >= 2) { const c = els.find(x => x.dataset.a === k.culprit); c.style.animation = 'pulse 1s infinite'; }
+    AU.say('final_ask', {prompt: true});
+  }
+  await wait(500);
+  await celebrate();
+}
+async function celebrate() {
+  const k = S.kase, a = k.culprit, an = ANIMALS[a];
+  DB.stickers[a] = (DB.stickers[a] || 0) + 1; DB.cases[k.area] = (DB.cases[k.area] || 0) + 1; DB.last[k.area] = a; DB.save();
+  const {b, w, h} = pDims(); b.innerHTML = ''; b.classList.add('celebrate'); el('div', 'burst', b);
+  const sh = h * .52, sw = sh * an.w / an.h, st = el('img', 'sticker', b); st.src = IMG(an.img); placeAbs(st, (w - sw) / 2, h * .08, sw, sh);
+  for (let i = 0; i < 40; i++) { const c = el('div', 'confetti', b); c.style.left = Math.random() * 100 + '%'; c.style.background = pick(['#ffd43b', '#ff6b6b', '#4dabf7', '#69db7c', '#f783ac', '#2fa39a']); c.style.animationDelay = Math.random() * 1.2 + 's'; }
+  addCoco(b);
+  AU.sfx('fanfare');
+  await AU.say('solved_' + k.area + '_' + a);
+  // the animal joins the scene
+  showCulpritInScene();
+  await AU.say('solved_yay');
+  await AU.say('sticker_' + a);
+  await AU.say('fact_' + a);
+  b.classList.remove('celebrate');
+  const row = el('div', 'endBtns', b); row.style.top = h * .66 + 'px';
+  const again = el('button', 'endBtn again', row, '<svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>');
+  const mapb = el('button', 'endBtn mapb', row, '<svg viewBox="0 0 24 24"><path d="M15 5l-6-2-6 2v16l6-2 6 2 6-2V3zM9 5.2l6 2v11.6l-6-2z"/></svg>');
+  const bookb = el('button', 'endBtn bookb', row, '<img src="' + IMG('lens') + '" style="height:46px">');
+  onTap(again, () => startArea(k.area)); onTap(mapb, () => show('map')); onTap(bookb, () => { G.fromScene = k.area; show('journal'); AU.say('journal_open'); });
+  S.act = {type: 'end'};
+  AU.say('play_again', {prompt: true});
+}
+function showCulpritInScene() {
+  const w = $('#world'), e = el('div', 'chr culprit', w); e.innerHTML = '<div class="shadow"></div><img src="' + IMG(ANIMALS[S.kase.culprit].img) + '">';
+  S.culpritEl = e; e.style.zIndex = 12; placeCulprit();
+  onTap(e, () => { if (!G.busy) { hop(e); AU.say('fact_' + S.kase.culprit); } });
+}
+function placeCulprit() {
+  const a = ANIMALS[S.kase.culprit], h = S.leo.h * (S.kase.culprit === 'giraffe' ? .95 : S.kase.culprit === 'elephant' ? .75 : .6), wd = h * a.w / a.h;
+  const x = Math.min(maxX(), S.leo.x + S.leo.h * .75);
+  Object.assign(S.culpritEl.style, {left: x - wd / 2 + 'px', top: pathY(x) - h + 'px', width: wd + 'px', height: h + 'px'});
+}
+
+/* ---------- sticker journal ---------- */
+function renderJournal() {
+  $('#jTitle').innerHTML = T('ui_book');
+  const s = $('#jStickers'); s.innerHTML = '';
+  SUSPECTS.forEach(a => {
+    const n = DB.stickers[a] || 0, c = el('button', 'stk' + (n ? ' got' : ''), s, '<img src="' + IMG(ANIMALS[a].img) + '" alt="">');
+    if (n) { el('span', 'lab', c, T('name_' + a).replace(/!|!/g, '')); if (n > 1) el('span', 'cnt', c, '×' + n); }
+    else el('span', 'q', c, '?');
+    onTap(c, async () => { bounce(c); if (n) { AU.sfx('pop'); if (await AU.say('name_' + a)) AU.say('fact_' + a); } else AU.say('journal_empty'); });
+  });
+  const cs = $('#jCases'); cs.innerHTML = '<h3>' + T('ui_cases') + '</h3>';
+  AREA_IDS.forEach(id => {
+    const n = DB.cases[id] || 0, r = el('button', 'caseRow', cs);
+    const th = el('div', 'th', r); th.style.backgroundImage = 'url(' + IMG(AREAS[id].bg) + ')';
+    el('div', 'ct', r, T('area_' + id).replace(/!|!/g, '') + ' <b>' + n + '</b><div class="stars">' + ('<img src="' + IMG('star') + '">').repeat(Math.min(n, 10)) + '</div>');
+    onTap(r, () => AU.say(n ? 'journal_cases' : 'area_' + id));
+  });
+}
+
+/* ---------- grown-up settings ---------- */
+function openSettings() {
+  const m = $('#settings'); m.classList.add('on');
+  const vs = (() => { try { return speechSynthesis.getVoices(); } catch (e) { return []; } })();
+  const en = vs.filter(v => /^en/i.test(v.lang)).sort((a, b) => vScore(b) - vScore(a)), zh = (window.KAVoice ? KAVoice.zhVoices() : vs.filter(v => /^zh/i.test(v.lang)));
+  const curZh = zhVoice();
+  const row = (v, sel, kind) => '<div class="vrow"><button class="nm' + (sel ? ' sel' : '') + '" data-k="' + kind + '" data-u="' + esc(v.voiceURI) + '">' + (sel ? '✓ ' : '') + esc(v.name) + ' <small>(' + esc(v.lang) + ')</small></button><button class="pv" data-pk="' + kind + '" data-u="' + esc(v.voiceURI) + '">▶</button></div>';
+  m.innerHTML = '<div class="sheet"><h2>Grown-ups · 家長設定</h2><p>Milo plays by voice; reading is optional. Stickers and settings save on this device only.</p>' +
+    '<h3>Language · 語言</h3><div class="row"><button class="chip' + (DB.lang === 'en' ? ' sel' : '') + '" data-l="en">English</button><button class="chip' + (DB.lang === 'zh' ? ' sel' : '') + '" data-l="zh">中文(台灣)</button></div>' +
+    '<h3>Sound · 聲音</h3><div class="row"><button class="chip' + (!DB.muted ? ' sel' : '') + '" id="sSnd">' + (DB.muted ? '🔇 Sound off · 靜音' : '🔊 Sound on · 有聲音') + '</button><button class="chip' + (DB.music ? ' sel' : '') + '" id="sMus">' + (DB.music ? '♪ Menu music on' : '♪ Menu music off') + '</button></div>' +
+    '<h3>English voice</h3><p>Recommended: the recorded narrator (same warm voice every time, made with the open-source Kokoro voice model). Or pick a voice installed on this device.</p>' +
+    '<div class="vlist"><div class="vrow"><button class="nm' + (DB.enVoice === 'rec' ? ' sel' : '') + '" data-k="en" data-u="rec">' + (DB.enVoice === 'rec' ? '✓ ' : '') + 'Recorded narrator (Coco) ★</button><button class="pv" data-pk="en" data-u="rec">▶</button></div>' + en.map(v => row(v, DB.enVoice === v.voiceURI, 'en')).join('') + '</div>' +
+    '<h3>中文聲音 Chinese voice</h3><p>Uses this device\'s voices. On iPad, Settings → Accessibility → Spoken Content → Voices → Chinese (Taiwan) → download Meijia (Enhanced) or Lilian (Premium) for the most natural sound.</p>' +
+    '<div class="vlist">' + (zh.length ? zh.map(v => row(v, curZh && v.voiceURI === curZh.voiceURI, 'zh')).join('') : '<p style="padding:8px">No Chinese voice found on this device.</p>') + '</div>' +
+    '<h3>Progress · 進度</h3><div class="row"><button class="chip" id="sReset">Reset stickers…</button></div>' +
+    '<p style="margin-top:10px">Animal Safari Detective v1.0 · art supplied by the family; English narration pre-recorded offline with Kokoro-82M (Apache-2.0).</p>' +
+    '<button class="done" id="sDone">Done · 完成</button></div>';
+  m.querySelectorAll('[data-l]').forEach(x => x.onclick = () => { setLang(x.dataset.l); openSettings(); });
+  m.querySelector('#sSnd').onclick = () => { setMuted(!DB.muted); openSettings(); };
+  m.querySelector('#sMus').onclick = () => { DB.music = !DB.music; DB.save(); AU.music(G.screen !== 'scene'); openSettings(); };
+  m.querySelectorAll('.nm').forEach(x => x.onclick = () => { if (x.dataset.k === 'en') { DB.enVoice = x.dataset.u; DB.save(); } else { try { localStorage.setItem('dinoworld.zhvoice', x.dataset.u); } catch (e) {} } openSettings(); previewVoice(x.dataset.k, x.dataset.u); });
+  m.querySelectorAll('.pv').forEach(x => x.onclick = () => previewVoice(x.dataset.pk, x.dataset.u));
+  m.querySelector('#sReset').onclick = () => {
+    const done = () => { DB.stickers = {}; DB.cases = {trail: 0, river: 0, canopy: 0}; DB.last = {}; DB.save(); renderTitle(); openSettings(); };
+    if (window.KAKit && KAKit.resetGate) KAKit.resetGate({kids: ['milo'], onReset: done}); else if (confirm('Reset all stickers?')) done();
+  };
+  m.querySelector('#sDone').onclick = () => { m.classList.remove('on'); AU.stop(); };
+}
+function vScore(v) { const id = (v.name + ' ' + v.voiceURI).toLowerCase(); return (/premium/.test(id) ? 30 : /enhanced|neural|natural/.test(id) ? 20 : 0) + (v.lang === 'en-US' ? 5 : 0) - (/compact|eloquence|novelty/.test(id) ? 40 : 0); }
+function previewVoice(kind, uri) {
+  AU.stop(); AU.unlock();
+  if (kind === 'en' && uri === 'rec') { const pl = DB.lang, pv = DB.enVoice; DB.lang = 'en'; DB.enVoice = 'rec'; AU.say('hello'); DB.lang = pl; DB.enVoice = pv; return; }
+  try {
+    const v = speechSynthesis.getVoices().find(x => x.voiceURI === uri), u = new SpeechSynthesisUtterance(kind === 'en' ? LINES.hello.en : LINES.hello.zh);
+    if (v) { u.voice = v; u.lang = v.lang; } u.rate = kind === 'en' ? .9 : .82; u.pitch = kind === 'en' ? 1.05 : 1.1; u.__ka = 1; speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function setMuted(m) { DB.muted = m; DB.save(); document.body.classList.toggle('muted', m); if (m) AU.stop(); AU.music(G.screen !== 'scene'); }
+
+/* ---------- controls ---------- */
+function bindControls() {
+  $('#btnPlay').addEventListener('pointerdown', e => { e.preventDefault(); AU.unlock(); AU.sfx('tap'); show('map'); AU.say('map_pick'); });
+  $('#btnBook').addEventListener('pointerdown', e => { e.preventDefault(); AU.unlock(); AU.sfx('tap'); G.fromScene = null; show('journal'); AU.say('journal_open'); });
+  $('#title').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; AU.unlock(); if (!AU.isSpeaking()) AU.say('hello'); });
+  document.querySelectorAll('#langPill button').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); AU.unlock(); setLang(b.dataset.l); AU.say('title'); }));
+  $('#btnGear').onclick = () => { AU.unlock(); openSettings(); };
+  document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); AU.unlock(); show(b.dataset.go); }));
+  $('#mapBook').addEventListener('pointerdown', e => { e.preventDefault(); G.fromScene = null; show('journal'); AU.say('journal_open'); });
+  $('#jBack').addEventListener('pointerdown', e => { e.preventDefault(); if (G.fromScene) show('map'); else show('title'); });
+  $('#btnHome').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.sfx('tap'); show('map'); AU.say('map_pick'); });
+  $('#btnReplay').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); if (G.lastPrompt) AU.say(G.lastPrompt); });
+  $('#btnMute').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); setMuted(!DB.muted); });
+  // tap the ground to walk
+  $('#stage').addEventListener('pointerdown', e => {
+    AU.unlock(); G.poke(); if (G.busy || G.panelOpen) return;
+    const r = $('#stage').getBoundingClientRect(), x = e.clientX - r.left + S.cam;
+    walkTo(x); const m = el('div', 'ripple', $('#world')), s = V.stageH * .08; Object.assign(m.style, {left: x - s / 2 + 'px', top: pathY(x) - s / 4 + 'px', width: s + 'px', height: s / 2 + 'px', borderColor: 'rgba(255,240,170,.9)', zIndex: 15}); setTimeout(() => m.remove(), 1000);
+  });
+  // hold the arrows to walk
+  const hold = (b, d) => {
+    const on = e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); if (G.busy || G.panelOpen) return; S.keys = d; b.classList.add('press'); try { b.setPointerCapture(e.pointerId); } catch (x) {} };
+    const off = () => { if (S.keys === d) S.keys = 0; b.classList.remove('press'); };
+    b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
+  };
+  hold($('#arL'), -1); hold($('#arR'), 1);
+  window.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') S.keys = -1; if (e.key === 'ArrowRight') S.keys = 1; });
+  window.addEventListener('keyup', e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') S.keys = 0; });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { AU.stop(); AU.music(false); } else AU.music(G.screen !== 'scene'); });
+  document.addEventListener('gesturestart', e => e.preventDefault());
+}
+
+/* ---------- automated playtest hook (harmless for players) ---------- */
+window.__test = {
+  state: () => ({screen: G.screen, area: S.area, clues: S.clues.length, panel: G.panelOpen, act: S.act && S.act.type, busy: G.busy, culprit: S.kase && S.kase.culprit, witness: S.kase && S.kase.witness,
+    objs: S.kase ? S.kase.objs.map(o => o.kind + (o.act ? ':' + o.act + (o.n ? o.n : '') + (o.a ? o.a + '+' + o.b : '') : '') + (o.done ? '✓' : '')) : [], stickers: DB.stickers, cases: DB.cases, lang: DB.lang, leoX: S.leo && Math.round(S.leo.x), cam: S.cam && Math.round(S.cam), done: S.act && S.act.type === 'end'}),
+  start: id => startArea(id),
+  nextClue: () => { const o = S.objs.find(x => x.act && !x.done); if (o) tapObj(o); return o && o.kind; },
+  step: () => { if (S.act && S.act.solveStep && S.act.type !== 'final') S.act.solveStep(); },
+  answer: () => { if (S.act && S.act.answer) S.act.answer(); },
+  wrong: () => { const o = [...document.querySelectorAll('.opt:not(.no):not(.yes),.suspect:not(.no):not(.yes)')].find(x => (x.dataset.v != null ? x.dataset.v : x.dataset.a) !== (S.act && S.act.correct)); if (o) o.onpointerdown({stopPropagation() {}, preventDefault() {}}); return o && (o.dataset.v || o.dataset.a); },
+  db: () => DB,
+};
+
+/* ---------- boot ---------- */
+(function boot() {
+  document.body.classList.toggle('zh', DB.lang === 'zh'); document.body.classList.toggle('muted', !!DB.muted);
+  measure(); bindControls(); renderTitle(); requestAnimationFrame(tick);
+  ['leo_walk1', 'leo_walk2', 'leo_walk3', 'coco_side', 'coco', 'leo', 'trail', 'river', 'canopy'].forEach(n => { const i = new Image(); i.src = IMG(n); });
+  if (DB.lang === 'en') AU.preload(['hello', 'map_pick', 'title']);
+})();
+
+</script>
+</body>
+</html>
