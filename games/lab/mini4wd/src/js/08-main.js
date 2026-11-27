@@ -52,6 +52,7 @@
   };
   addEventListener("resize", function () { if (CUR === "sRace") { Race.resize(); Race.draw(); } });
   ["p_lucas", "p_max", "p_kai", "bg_shop"].forEach(function (n) { new Image().src = A(n); });
+  Object.keys(CarArt.LAYERS).concat(CarArt.PARTS).forEach(function (n) { img("L_" + n); }); // car layer art
 })();
 
 /* Expose for automated playtests. Harmless for players. */

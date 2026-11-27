@@ -1096,7 +1096,8 @@ var Race = {
   // opts (Chapter 2): { track, laps, build, rivals:[{who,col,build}], onDone(res) }
   start: function (mode, opts) {
     var self = this, k = G.kd; opts = opts || null; this.opts = opts;
-    setTrack(opts ? opts.track : "classic");
+    var tid = opts ? opts.track : "classic"; if (tid !== this.trackId) { this._q = null; this.trackId = tid; } // track changed: rebuild cached pieces
+    setTrack(tid);
     this.mode = mode; this.laps = opts && opts.laps ? opts.laps : mode === "race" ? 3 : 1; this.over = false; this.t = 0; this.fx = []; this.said = {}; this.camD = 11;
     this.cars = [{ who: "lucas", car: "c_blue", col: "blue", build: opts ? opts.build : null, r: new Racer(opts ? opts.build : k.build, { laps: this.laps, lane: 0 }) }];
     var rv0 = opts ? (opts.rivals || []) : mode === "race" ? RIVALS : [];
@@ -1605,16 +1606,46 @@ var CarArt = {
   },
   MOTORCAP: { normal: "#adb5bd", turbo: "#e03131", torque: "#fab005", hyper: "#1c7ed6" },
   GEARCOL: { speed: "#ffd43b", power: "#51cf66", mid: "#ff922b" },
-  LAYERS: {}, // filled by the art list: name -> {box:[x,y,w,h] in car-width units}
-  img: function (n) { var L = this.LAYERS[n]; if (!L) return null; var im = img("L_" + n); return im.complete && im.naturalWidth ? im : null; },
+  // ChatGPT layer art: name -> box [x, y, w, h] in car-width units (rear: origin = ground center; top: origin = car center)
+  LAYERS: {
+    rear_body_boxy: [-0.416, -0.688, 0.832, 0.588], rear_body_sleek: [-0.431, -0.592, 0.863, 0.492], rear_body_aero: [-0.47, -0.504, 0.94, 0.404],
+    top_body_boxy: [-0.402, -0.749, 0.804, 1.498], top_body_sleek: [-0.481, -0.75, 0.963, 1.5], top_body_aero: [-0.45, -0.75, 0.9, 1.5]
+  },
+  PARTS: ["rear_tire_hard", "rear_tire_soft", "rear_tire_low", "rear_wing_small", "rear_wing_big", "rear_roller"], // sized in code (by width)
+  part: function (x, n, cx, bottom, wid, w, flip, col) { // draw a part image by width with its bottom at y; false if not loaded
+    var im = img("L_" + n); if (!(im.complete && im.naturalWidth)) return false;
+    var hh0 = wid * im.naturalHeight / im.naturalWidth; if (col && col !== "blue") im = this.tinted(n, im, col) || im;
+    var hh = hh0;
+    if (flip) { x.save(); x.translate(cx * w, 0); x.scale(-1, 1); x.drawImage(im, -wid / 2 * w, (bottom - hh) * w, wid * w, hh * w); x.restore(); }
+    else x.drawImage(im, (cx - wid / 2) * w, (bottom - hh) * w, wid * w, hh * w);
+    return hh;
+  },
+  img: function (n) { if (!this.LAYERS[n]) return null; var im = img("L_" + n); return im.complete && im.naturalWidth ? im : null; },
+  _tint: {},
+  tinted: function (n, im, col) { // recolor the blue art to a team color (blue parts only; white, black and red stay)
+    var key = n + ":" + col; if (this._tint[key] !== undefined) return this._tint[key];
+    var t = null;
+    try {
+      var cv = document.createElement("canvas"); cv.width = im.naturalWidth; cv.height = im.naturalHeight;
+      var x = cv.getContext("2d"); x.drawImage(im, 0, 0); var d = x.getImageData(0, 0, cv.width, cv.height), p = d.data;
+      var m = this.COL[col].main, tr = parseInt(m.substr(1, 2), 16), tg = parseInt(m.substr(3, 2), 16), tb = parseInt(m.substr(5, 2), 16);
+      for (var i = 0; i < p.length; i += 4) {
+        var r = p[i], g = p[i + 1], b = p[i + 2];
+        if (b > r + 40 && b > g + 15) { var k = Math.min(1.4, b / 214); p[i] = Math.min(255, tr * k); p[i + 1] = Math.min(255, tg * k); p[i + 2] = Math.min(255, tb * k); }
+      }
+      x.putImageData(d, 0, 0); t = cv;
+    } catch (e) { t = null; } // file:// pages can't read pixels: keep blue
+    this._tint[key] = t; return t;
+  },
   draw: function (x, b, view, X, Y, w, o) {
-    o = o || {}; var c = this.COL[o.col || "blue"] || this.COL.blue;
+    o = o || {}; var c = this.COL[o.col || "blue"] || this.COL.blue; this.cn = this.COL[o.col] ? o.col : "blue";
     x.save(); x.translate(X, Y); x.lineJoin = "round"; x.lineCap = "round";
     var h = view === "rear" ? this.rear(x, b, w, c) : this.top(x, b, w, c, o.center);
     x.restore(); return h;
   },
-  lay: function (x, n, w) { // draw a layer image if we have one; box is in units of car width, origin = ground center (rear) or car center (top)
-    var im = this.img(n); if (!im) return false; var bx = this.LAYERS[n].box;
+  lay: function (x, n, w, col) { // draw a layer image if we have one
+    var im = this.img(n); if (!im) return false; var bx = this.LAYERS[n];
+    if (col && col !== "blue") im = this.tinted(n, im, col) || im;
     x.drawImage(im, bx[0] * w, bx[1] * w, bx[2] * w, bx[3] * w); return true;
   },
   /* ---- rear view (chase cam), low camera behind the car ---- */
@@ -1623,7 +1654,8 @@ var CarArt = {
     function R(px, py, pw, ph, r, fill) { rr(x, px * w, py * w, pw * w, ph * w, r * w); x.fillStyle = fill; x.fill(); x.lineWidth = lw; x.strokeStyle = "#111"; x.stroke(); }
     function wheels(front) {
       var s = front ? 0.72 : 1, ty = front ? -0.36 : 0, tw = (tire === "low" ? 0.2 : 0.23) * s, th = (tire === "low" ? 0.3 : 0.36) * s, sx = front ? 0.36 : 0.43;
-      if (k.lay(x, "rear_tire_" + tire + (front ? "_f" : ""), w)) return;
+      var pw = (tire === "low" ? 0.235 : 0.27) * s;
+      if (k.part(x, "rear_tire_" + tire, -sx, ty, pw, w) && k.part(x, "rear_tire_" + tire, sx, ty, pw, w)) return;
       [-1, 1].forEach(function (d) {
         var cx = d * sx - tw / 2;
         R(cx, ty - th, tw, th, 0.05 * s, tire === "soft" ? "#212529" : "#343a40");
@@ -1633,8 +1665,8 @@ var CarArt = {
     }
     function rollers(front) {
       if (b.roller === "no" || (front && b.roller !== "four")) return;
-      if (k.lay(x, "rear_roller" + (front ? "_f" : ""), w)) return;
       var s = front ? 0.7 : 1, ty = front ? -0.33 : -0.1, sx = front ? 0.5 : 0.6;
+      if (k.part(x, "rear_roller", -(sx - 0.03), ty + 0.1 * s, 0.3 * s, w) && k.part(x, "rear_roller", sx - 0.03, ty + 0.1 * s, 0.3 * s, w, true)) return;
       [-1, 1].forEach(function (d) {
         x.lineWidth = lw; x.strokeStyle = "#111";
         x.beginPath(); x.moveTo(d * (sx - 0.12) * w, ty * w); x.lineTo(d * sx * w, ty * w); x.stroke(); // stay
@@ -1648,7 +1680,8 @@ var CarArt = {
     R(-0.42, -0.2, 0.84, 0.1, 0.03, "#343a40");
     // body shell
     var top = -0.72;
-    if (!this.lay(x, "rear_body_" + body + "_" + (Object.keys(this.COL).find(function (n) { return CarArt.COL[n] === c; }) || "blue"), w)) {
+    if (this.lay(x, "rear_body_" + body, w, this.cn)) top = this.LAYERS["rear_body_" + body][1];
+    else {
       x.lineWidth = lw; x.strokeStyle = "#111"; x.fillStyle = c.main; x.beginPath();
       if (body === "boxy") { x.moveTo(-0.38 * w, -0.2 * w); x.lineTo(-0.34 * w, -0.62 * w); x.lineTo(0.34 * w, -0.62 * w); x.lineTo(0.38 * w, -0.2 * w); top = -0.62; }
       else if (body === "sleek") { x.moveTo(-0.4 * w, -0.2 * w); x.quadraticCurveTo(-0.36 * w, -0.5 * w, -0.16 * w, -0.56 * w); x.lineTo(0.16 * w, -0.56 * w); x.quadraticCurveTo(0.36 * w, -0.5 * w, 0.4 * w, -0.2 * w); top = -0.56; }
@@ -1670,7 +1703,9 @@ var CarArt = {
     }
     wheels(false); rollers(false);
     // rear wing
-    if (b.wing && b.wing !== "none" && !this.lay(x, "rear_wing_" + b.wing, w)) {
+    var wh = b.wing && b.wing !== "none" ? this.part(x, "rear_wing_" + b.wing, 0, top + 0.1, b.wing === "big" ? 0.84 : 0.58, w, false, this.cn) : 0;
+    if (wh) top = top + 0.1 - wh;
+    else if (b.wing && b.wing !== "none") {
       var big = b.wing === "big", wy = top - (big ? 0.2 : 0.12), ww = big ? 0.9 : 0.62;
       [-1, 1].forEach(function (d) { R(d * ww * 0.3 - 0.025, wy, 0.05, top - wy + 0.05, 0.01, "#495057"); });
       R(-ww / 2, wy - 0.07, ww, 0.08, 0.03, c.dark); top = wy - 0.07;
@@ -1698,7 +1733,7 @@ var CarArt = {
       rp.forEach(function (p) { x.lineWidth = lw; x.strokeStyle = "#111"; x.beginPath(); x.moveTo(p[0] * 0.3 * w, p[1] * w); x.lineTo(p[0] * 0.5 * w, p[1] * w); x.stroke(); x.beginPath(); x.arc(p[0] * 0.53 * w, p[1] * w, 0.07 * w, 0, 7); x.fillStyle = "#dee2e6"; x.fill(); x.stroke(); });
     }
     // body
-    if (!this.lay(x, "top_body_" + body + "_" + (Object.keys(this.COL).find(function (n) { return CarArt.COL[n] === c; }) || "blue"), w)) {
+    if (!this.lay(x, "top_body_" + body, w, this.cn)) {
       x.lineWidth = lw; x.strokeStyle = "#111"; x.fillStyle = c.main; x.beginPath();
       if (body === "boxy") { rr(x, -0.32 * w, -0.72 * w, 0.64 * w, 1.4 * w, 0.12 * w); }
       else if (body === "sleek") { x.moveTo(0, -0.8 * w); x.quadraticCurveTo(0.34 * w, -0.5 * w, 0.32 * w, 0.66 * w); x.lineTo(-0.32 * w, 0.66 * w); x.quadraticCurveTo(-0.34 * w, -0.5 * w, 0, -0.8 * w); }
@@ -2182,6 +2217,7 @@ var C2G = {
   };
   addEventListener("resize", function () { if (CUR === "sRace") { Race.resize(); Race.draw(); } });
   ["p_lucas", "p_max", "p_kai", "bg_shop"].forEach(function (n) { new Image().src = A(n); });
+  Object.keys(CarArt.LAYERS).concat(CarArt.PARTS).forEach(function (n) { img("L_" + n); }); // car layer art
 })();
 
 /* Expose for automated playtests. Harmless for players. */
@@ -2204,6 +2240,6 @@ window.__test = {
   }
 };
 </script>
-<div id="kaVer" data-v="1.9" data-d="2026-11-27">v1.9 · 2026-11-27</div>
+<div id="kaVer" data-v="2.0" data-d="2026-11-27">v2.0 · 2026-11-27</div>
 </body>
 </html>

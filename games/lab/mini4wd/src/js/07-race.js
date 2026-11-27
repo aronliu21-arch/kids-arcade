@@ -8,7 +8,8 @@ var Race = {
   // opts (Chapter 2): { track, laps, build, rivals:[{who,col,build}], onDone(res) }
   start: function (mode, opts) {
     var self = this, k = G.kd; opts = opts || null; this.opts = opts;
-    setTrack(opts ? opts.track : "classic");
+    var tid = opts ? opts.track : "classic"; if (tid !== this.trackId) { this._q = null; this.trackId = tid; } // track changed: rebuild cached pieces
+    setTrack(tid);
     this.mode = mode; this.laps = opts && opts.laps ? opts.laps : mode === "race" ? 3 : 1; this.over = false; this.t = 0; this.fx = []; this.said = {}; this.camD = 11;
     this.cars = [{ who: "lucas", car: "c_blue", col: "blue", build: opts ? opts.build : null, r: new Racer(opts ? opts.build : k.build, { laps: this.laps, lane: 0 }) }];
     var rv0 = opts ? (opts.rivals || []) : mode === "race" ? RIVALS : [];
