@@ -3,7 +3,7 @@
    Zookeeper says (listening to spoken Chinese). New lines are spoken with the device voices. */
 
 // pictures that exist in art/ ; anything else falls back to an emoji until its art is added
-const ART_OK = new Set(['banana', 'berry', 'apple', 'star']);
+const ART_OK = new Set(['banana', 'berry', 'apple', 'star', 'fish', 'leaf', 'carrot', 'poop', 'sponge', 'pillow']);
 const EMOJI = {fish: '🐟', leaf: '🍃', carrot: '🥕', poop: '💩', sponge: '🧽', pillow: '🛏️', heart: '❤️'};
 function thing(name, parent, cls) {
   if (ART_OK.has(name)) { const i = el('img', 'thing ' + (cls || ''), parent); i.src = IMG(name); i.alt = ''; i.draggable = false; return i; }
