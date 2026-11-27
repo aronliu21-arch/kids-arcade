@@ -1,3 +1,11 @@
+// ============ content ============
+const LOWER_P='abcdefghijklmnopqrstuvwxyz'.split('');
+const UPPER_P='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const WORDS1=['it','up','in','at','on','is','me','we','go','us','an','am','to','so','my','no','he','do','be','by'];
+const WORDS2=['lit','sun','owl','map','cat','hat','fly','wand','glow','star','moon','book','ink','cap','web','fox','jam','lamp','cup','pen','bell','gem','key','nest','bat','frog','cake','rope','sock','hill','pond','door'];
+const WORDS3=['spell','magic','brave','quill','castle','friend','honest','kind','sparkle','lantern','wizard','potion','broom','dragon','secret','garden','candle','school','window','hidden','puzzle','gentle','helper','window','rainbow','journey','promise','courage','treasure','whisper'];
+const FAMILY=['love','home','hug','smile','thank','miss','dear','hello','family','sister','cousin','write','soon','proud','cozy','laugh','share','care','visit','heart'];
+const COURAGE=['be brave','try again','I can','keep going','be kind','we can','hold on','dream big','stand tall','never quit','I will','go on','be true','help out'];
 const DRAGON_W=['egg','wing','claw','tail','scale','nest','roar','horn','hatch','snout','talon','spike','warm','safe','tiny','glowy','dragon','feather'];
 const FLIGHT_W=['soar','glide','swoop','loop','lift','high','float','zoom','dive','flap','sky','up and away','spin','rise','breezy'];
 const SONG_W=['sing','song','echo','hum','tune','call','peak','far','near','listen','music','hello there','find me','sky song'];
@@ -21,15 +29,15 @@ function pickWords(themes,n){ const t=joinTier(); const lists=[...themes]; for(l
  for(const L of lists){ const un=shuffle([...new Set(L)].filter(w=>fitsJoin(w,t)&&!S.seen.includes(w)&&!out.includes(w))); while(out.length<n&&un.length) out.push(un.pop()); if(out.length>=n) break; }
  if(out.length<n) out.push(...pickUnseen([JOIN_T.flat(),WORDS2,WORDS3],n-out.length,out)); return out; }
 const POOLS={
- rune:()=>{ const L=pickUnseen([LOWER_P,UPPER_P],2); return [...L,...pickWords([],1)]; },
- chain:()=>pickWords([],3),
- caps:()=>{ const q=S.seen.includes('Q')?[]:['Q']; return [...q,...pickUnseen([UPPER_P],3-q.length,q)]; },
- family:()=>pickWords([FAMILY],3),
- restore:()=>pickWords([WORDS3,WORDS2],3),
- courage:()=>pickWords([COURAGE,WORDS3],3),
- dragon:()=>pickWords([DRAGON_W,WORDS2],3),
- flight:()=>pickWords([FLIGHT_W,DRAGON_W,WORDS2],3),
- song:()=>pickWords([SONG_W,FAMILY,WORDS3],3),
+ rune:()=>{ const L=pickUnseen([LOWER_P,UPPER_P],3); return [...L,...pickWords([],2)]; },
+ chain:()=>pickWords([],5),
+ caps:()=>{ const q=S.seen.includes('Q')?[]:['Q']; return [...q,...pickUnseen([UPPER_P],5-q.length,q)]; },
+ family:()=>pickWords([FAMILY],5),
+ restore:()=>pickWords([WORDS3,WORDS2],5),
+ courage:()=>pickWords([COURAGE,WORDS3],5),
+ dragon:()=>pickWords([DRAGON_W,WORDS2],5),
+ flight:()=>pickWords([FLIGHT_W,DRAGON_W,WORDS2],5),
+ song:()=>pickWords([SONG_W,FAMILY,WORDS3],5),
 };
 
 // ---- battle spells: write the word to cast that element (each word used once, ever)
@@ -59,7 +67,7 @@ const FOES={
 
 // ---- chapters
 const sc=(bg,chars,extra)=>sceneSVG(bg,chars,extra||'');
-const CHAPTERS=[
+let CHAPTERS=[
  {n:1,title:'The Lamps Go Dark',theme:'night',missions:[
   {id:'rune',icon:'🕯️',name:'Rune Hall',x:22,y:40,kind:'write',pool:'rune',title:'Rune Casting',goal:'Light the candles',done:'The candles are glowing!',
    intro:'The castle lamps are going dark! Trace each rune to light a candle.',tip:'Try it today: write your name in cursive on something you made.'},
@@ -112,11 +120,3 @@ const CHAPTERS=[
    tip:'Try it today: write a note to someone who might feel lonely.'},
  ]},
 ];
-const CH=n=>CHAPTERS[n-1];
-const key=(n,id)=>`c${n}:${id}`;
-const isDone=(n,id)=>!!S.done[key(n,id)];
-const mainOf=n=>CH(n).missions.filter(m=>m.kind!=='mini');
-const nextMain=(n=S.view)=>mainOf(n).find(m=>!isDone(n,m.id));
-function isOpen(n,m){ if(n>S.ch) return false; if(m.needs&&!S.done[m.needs]) return false; if(m.kind==='mini') return isDone(n,m.after); const L=mainOf(n),k=L.indexOf(m); return k===0||isDone(n,L[k-1].id); }
-
-

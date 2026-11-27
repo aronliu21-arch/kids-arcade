@@ -1,3 +1,5 @@
+const ENVELOPE=`<g class="float"><g transform="translate(700,250) rotate(-8)" filter="url(#glow)"><rect x="-70" y="-46" width="140" height="92" rx="6" fill="#fff8e1"/><path d="M-70 -46L0 10L70 -46" fill="none" stroke="#c9a96b" stroke-width="4"/><circle cx="0" cy="10" r="14" fill="#c92a2a"/><path d="M0 0l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z" fill="#ffd43b"/></g></g>`;
+const LETTERTXT=`<g transform="translate(560,300) rotate(-4)"><rect width="320" height="210" rx="8" fill="#fff8e1" filter="url(#soft)"/><text x="24" y="56" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="40" fill="#e9a91c" filter="url(#glow)">Dear Nora,</text><text x="24" y="104" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="30" fill="#7048e8">You are invited to</text><text x="24" y="146" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="34" fill="#7048e8">Inkwell Academy</text></g>`;
 const INTRO=()=>[
  {scene:sceneSVG('home',[['nora',300,250,1,{expr:'closed'}]]),text:'The house was quiet. Rain tapped softly on the roof, and Nora was almost asleep… when something else tapped on her window. Tap. Tap. Tap.'},
  {scene:sceneSVG('home',[['nora',300,250,1,{expr:'wow'}]],ENVELOPE),text:'A letter! It slipped through the crack in the window and floated across the room, glowing like a tiny moon.',sfx:'spark'},
@@ -59,7 +61,7 @@ class Pad{
   if(this.demo){ g.strokeStyle='#7048e8'; g.lineWidth=Math.max(6,U*.13); g.shadowColor='#b197fc'; g.shadowBlur=14; let left=this.demo.k; for(const s of this.L.strokes){ if(left<=0) break; if(s.dot){ const [x,yy]=this.toPx(s.pts[0]); g.fillStyle='#7048e8'; g.beginPath(); g.arc(x,yy,U*.1,0,7); g.fill(); left--; continue; } const n=Math.min(s.pts.length,Math.floor(left)); if(n>0){ this.path(s.pts,n); g.stroke(); this.demo.tip=this.toPx(s.pts[n-1]); } left-=s.pts.length; } g.shadowBlur=0; }
   // ink (glowing gold)
   g.lineCap='round'; g.lineJoin='round';
-  for(const pass of [[Math.max(14,U*.24),'rgba(255,212,59,.35)'],[Math.max(6,U*.12),'#e9a91c'],[Math.max(2,U*.04),'#fff3bf']]){ g.strokeStyle=pass[1]; g.fillStyle=pass[1]; g.lineWidth=pass[0]; for(const s of this.strokes){ if(s.length===1){ const [x,yy]=this.toPx(s[0]); g.beginPath(); g.arc(x,yy,pass[0]*.6,0,7); g.fill(); continue; } this.path(s); g.stroke(); } }
+  const IC=(typeof inkColors==='function')?inkColors():['rgba(255,212,59,.35)','#e9a91c','#fff3bf']; for(const pass of [[Math.max(14,U*.24),IC[0]],[Math.max(6,U*.12),IC[1]],[Math.max(2,U*.04),IC[2]]]){ g.strokeStyle=pass[1]; g.fillStyle=pass[1]; g.lineWidth=pass[0]; for(const s of this.strokes){ if(s.length===1){ const [x,yy]=this.toPx(s[0]); g.beginPath(); g.arc(x,yy,pass[0]*.6,0,7); g.fill(); continue; } this.path(s); g.stroke(); } }
   // sparkles
   const now=performance.now(); this.trail=this.trail.filter(t=>now-t.t<600); for(const t of this.trail){ const [x,yy]=this.toPx(t.p),k=1-(now-t.t)/600; g.fillStyle=`rgba(255,240,150,${k})`; g.beginPath(); g.arc(x+(Math.random()-.5)*10,yy-(1-k)*20,3*k+1,0,7); g.fill(); }
   if(this.trail.length&&!this.raf){ this.raf=requestAnimationFrame(()=>{this.raf=null;this.draw();}); }
@@ -75,11 +77,3 @@ function padScreenPts(){ const r=pad.cv.getBoundingClientRect(); const out=[]; p
 function padFlash(cls){ const w=$('#padHost'); w.classList.remove(cls); void w.offsetWidth; w.classList.add(cls); setTimeout(()=>w.classList.remove(cls),700); }
 const fbEl=$('#fb'); function showFb(t){ fbEl.textContent=t; fbEl.classList.add('on'); } function hideFb(){ fbEl.classList.remove('on'); }
 
-// ============ content ============
-const LOWER_P='abcdefghijklmnopqrstuvwxyz'.split('');
-const UPPER_P='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-const WORDS1=['it','up','in','at','on','is','me','we','go','us','an','am','to','so','my','no','he','do','be','by'];
-const WORDS2=['lit','sun','owl','map','cat','hat','fly','wand','glow','star','moon','book','ink','cap','web','fox','jam','lamp','cup','pen','bell','gem','key','nest','bat','frog','cake','rope','sock','hill','pond','door'];
-const WORDS3=['spell','magic','brave','quill','castle','friend','honest','kind','sparkle','lantern','wizard','potion','broom','dragon','secret','garden','candle','school','window','hidden','puzzle','gentle','helper','window','rainbow','journey','promise','courage','treasure','whisper'];
-const FAMILY=['love','home','hug','smile','thank','miss','dear','hello','family','sister','cousin','write','soon','proud','cozy','laugh','share','care','visit','heart'];
-const COURAGE=['be brave','try again','I can','keep going','be kind','we can','hold on','dream big','stand tall','never quit','I will','go on','be true','help out'];

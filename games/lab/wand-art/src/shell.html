@@ -16,8 +16,9 @@
   <h1>Nora's <span class="cur" style="color:var(--gold)">Wand-Writing</span> Academy</h1>
   <div class="sub">諾拉的魔法草寫學院 · Write cursive to cast magic</div>
   <div class="stats"><div class="stat"><span id="stStars">0</span> ✨<small>magic stars</small></div><div class="stat"><span id="stCh">0/4</span><small id="stChL">Chapter 1</small></div></div>
+  <div class="row years"><button class="yr" id="y1Btn">📘 Year 1 <small>The Fading Letters</small></button><button class="yr" id="y2Btn">📗 Year 2</button></div>
   <div class="row"><button class="btn gold" id="startBtn">▶ Tap to start</button></div>
-  <div class="row"><button class="btn ghost sm" id="friendsBtn">📖 Friends</button><button class="btn ghost sm" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost sm" id="muteBtn1">🔊</button></div>
+  <div class="row"><button class="btn ghost sm" id="friendsBtn">📖 Friends</button><button class="btn ghost sm" id="shopBtn">🛍 Shop</button><button class="btn ghost sm" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost sm" id="muteBtn1">🔊</button></div>
   <button id="resetBtn">🔒 Reset records</button>
 </section>
 
@@ -28,6 +29,21 @@
   <div class="choices" id="stChoices"></div>
 </section>
 
+<section class="screen paper" id="read">
+  <div class="bar paper"><button class="btn ghost sm" id="rdMap">🗺️</button><div class="ttl" id="rdTtl"></div><div class="pill"><span id="rdStars">0</span> ✨</div></div>
+  <div class="rdBody"><div class="rdDots" id="rdDots"></div><div class="rdPrompt">📖 What does this say? Type it below.</div><div class="rdCard" id="rdWord"></div><div class="rdHint" id="rdHint"></div>
+  <div class="rdRow"><input id="rdIn" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="Type what it says…"><button class="btn gold" id="rdGo">✨ Check</button></div>
+  <div class="rdFb" id="rdFb"></div></div>
+</section>
+<section class="screen paper" id="shop">
+  <div class="bar paper"><button class="btn ghost sm" id="shBack">◀</button><div class="ttl">🛍 Magic Shop</div><div class="pill"><span id="shStars">0</span> ✨</div></div>
+  <div id="shTabs"><button data-t="wand">🪄 Wands</button><button data-t="robe">👘 Robes</button><button data-t="treat">🍪 Treats</button><button data-t="nest">🐉 Ember's Nest</button></div>
+  <div id="shItems"></div><div id="shMsg">Spend your magic stars on wands, robes and treats for Ember.</div>
+</section>
+<section class="screen" id="map2">
+  <div class="bar paper"><button class="btn ghost sm" id="m2Home">🏠</button><button class="btn ghost sm" id="m2Prev">◀</button><div class="ttl" id="m2Ttl"></div><button class="btn ghost sm" id="m2Next">▶</button><div class="pill"><span id="m2Stars">0</span> ✨</div><button class="btn ghost sm" id="m2Shop">🛍</button><button class="btn ghost sm" id="m2Friends">📖</button></div>
+  <div class="m2wrap"><div id="m2Rooms"></div></div><div id="m2Msg"></div>
+</section>
 <section class="screen" id="map">
   <div class="bar paper"><button class="btn ghost sm" id="mapHome">🏠</button><button class="btn ghost sm" id="chPrev">◀</button><div class="ttl" id="mapTtl">Chapter 1</div><button class="btn ghost sm" id="chNext">▶</button><div class="pill"><span id="mapStars">0</span> ✨</div><button class="btn ghost sm" id="mapFriends">📖</button><button class="btn ghost sm" id="muteBtn2">🔊</button></div>
   <div class="wrap"><div id="mapBox"><canvas id="mapCv" width="480" height="270"></canvas><div id="spots"></div><div class="mapmsg" id="mapMsg"></div></div></div><div id="swipeHint">👆 Swipe to see the whole castle ↔</div>
@@ -81,8 +97,9 @@
 <div class="hint port" id="rotHint">Turn your phone sideways ↻</div>
 
 <script src="../../../voice.js"></script>
-<script>/*@inc js/01-C.js js/02-cursiveSVG.js js/03-CAST.js js/04-HAIR.js js/05-ART-BG.js js/06-INTRO.js js/07-DRAGON-W.js js/08-show.js js/09-goMap.js js/10-foeSVG.js js/11-TRANS.js js/12-fadeLetters.js*/</script>
-<div id="kaVer" data-v="1.7" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.7 · 2026-11-26</div>
+<script>/*@inc js/01-C.js js/02-cursiveSVG.js js/03-CAST.js js/04-HAIR.js js/05-ART-BG.js js/06-ENVELOPE.js js/07-LOWER-P.js js/08-CH.js js/09-openSpotGo.js js/10-foeSVG.js js/11-say.js js/12-TRANS.js js/13-fadeLetters.js*/</script>
+<script>/*@inc js/14-DIARY.js js/15-CH1.js js/16-eq.js*/</script>
+<div id="kaVer" data-v="2.1" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.1 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>

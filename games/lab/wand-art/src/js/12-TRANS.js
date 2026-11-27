@@ -80,7 +80,7 @@ const STORY_RESULT={ sunny:['Sunny found her way!','🌟','Try it today: help so
  grandma:['You and Grandma are a team!','👵💜','Try it today: ask a grandparent about their best friend when they were little.'], golemPost:['You calmed the Storm Golem!'], wrenPost:['You saved Wren, and the whole world\'s words!'] };
 
 // ----- chapter openings and endings
-const CH_TEXT={
+let CH_TEXT={
  1:{end:()=>{ const hall=(n,i,m='shy')=>sc('hall',[['mei',230,270,.95,{expr:m}],['nora',512,250,1.1,{expr:n}],['iris',800,270,.95,{expr:i,flip:true}]]); return [
   say(null,"Back in the great hall, everyone is talking about the new girl who saved the Shadow Gate. Well… almost everyone is smiling.",hall('happy','smirk','happy')),
   say('iris',"So you're the new girl everyone keeps talking about.",hall('wow','smirk','wow')),

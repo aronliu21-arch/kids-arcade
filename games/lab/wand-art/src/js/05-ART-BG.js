@@ -1,13 +1,15 @@
 const ART_BG={room:1,gate:1,library:1,hall:1,courtyard:1,stairs:1,tower:1,runehall:1,common:1,home:1,bigstairs:1,greenhouse:1,bridge:1,shadowgate:1,cellar:1,office:1,field:1,peaks:1};
 const MISSION_BG={rune:'runehall',caps:'runehall',roost:'greenhouse',chain:'bridge',flight:'field',home:'common',restore:'library',song:'room',courage:'hall'};
 const BG_FALLBACK={runehall:'hall',common:'room',home:'room',bigstairs:'hall',greenhouse:'courtyard',bridge:'stairs',shadowgate:'tower',cellar:'library',office:'library',field:'courtyard',peaks:'stairs'};
-function BG(k){ return BGS[BGS[k]?k:BG_FALLBACK[k]]()+(ART_BG[k]?`<image href="art/bg-${k}.webp" x="-24" y="-16" width="1072" height="670" preserveAspectRatio="xMidYMid slice"/>`:''); }
+const BG_ALIAS={};
+function bgKey(k){ return BG_ALIAS[k]||k; }
+function BG(k){ k=bgKey(k); return BGS[BGS[k]?k:BG_FALLBACK[k]]()+(ART_BG[k]?`<image href="art/bg-${k}.webp" x="-24" y="-16" width="1072" height="670" preserveAspectRatio="xMidYMid slice"/>`:''); }
 function sceneSVG(bg,chars,extra=''){ return svg(BG(bg)+chars.map(c=>girl(...c)).join('')+extra); }
 
 // ============ dragons (original designs) ============
 const DRAGONS={ember:{c:'#ffa94d',belly:'#fff3bf',wing:'#ffd8a8',horn:'#e8590c'},thistle:{c:'#e599f7',belly:'#fff0f6',wing:'#f3d9fa',horn:'#9c36b5'},dawn:{c:'#ffd43b',belly:'#fff9db',wing:'#ffec99',horn:'#f08c00'}};
 function dragon(x,y,s,o={}){ const d=DRAGONS[o.who||'ember'], st=o.stage||'baby', k=s*(st==='big'?1.6:st==='young'?1:.72);
- const dw=o.who||'ember'; if(st!=='egg'&&DRAGON_ART[dw]){ const [iw,ih,h]=DRAGON_ART[dw], w=h*iw/ih; return `<g transform="translate(${x},${y}) scale(${o.flip?-k:k},${k})"><ellipse cx="0" cy="184" rx="${w*.3}" ry="10" fill="#000" opacity="${o.fly?.08:.16}"/><g${o.fly?' transform="translate(0,-30)"':''}><image href="art/d-${dw}.webp" x="${-w/2}" y="${184-h}" width="${w}" height="${h}"/></g></g>`; }
+ const dw=o.who||'ember'; const dk=(dw==='granite')?((o.expr==='happy'||o.expr==='closed')?'granite-happy':'granite'):y2()?(dw==='ember'&&o.sick?'ember2-sick':dw==='ember'?'ember2':dw):dw; const DA=((y2()||dw==='granite')&&Y2ART.drag[dk])||DRAGON_ART[dw]; const dsrc=((y2()||dw==='granite')&&Y2ART.drag[dk])?`art/d-${dk}.webp`:`art/d-${dw}.webp`; if(st!=='egg'&&DA){ const [iw,ih,h]=DA, w=h*iw/ih; return `<g transform="translate(${x},${y}) scale(${o.flip?-k:k},${k})"><ellipse cx="0" cy="184" rx="${w*.3}" ry="10" fill="#000" opacity="${o.fly?.08:.16}"/><g${o.fly?' transform="translate(0,-30)"':''}><image href="${dsrc}" x="${-w/2}" y="${184-h}" width="${w}" height="${h}"/></g></g>`; }
  if(st==='egg'){ const crack=o.crack?`<path d="M-40 -10l18 14 14-20 16 18 16-16 16 12" stroke="#7a4520" stroke-width="5" fill="none"/>`:'';
   return `<g transform="translate(${x},${y}) scale(${s})" filter="url(#soft)"><ellipse cx="0" cy="40" rx="110" ry="120" fill="url(#warm)"/><ellipse cx="0" cy="0" rx="62" ry="80" fill="#ffd8a8"/><circle cx="-20" cy="-30" r="10" fill="#ffa94d"/><circle cx="22" cy="5" r="13" fill="#ffa94d"/><circle cx="-14" cy="35" r="8" fill="#ffa94d"/><ellipse cx="-22" cy="-46" rx="12" ry="18" fill="#fff" opacity=".5"/>${crack}</g>`; }
  const ex=o.expr||'happy', wingUp=o.fly?-1:1;
@@ -40,6 +42,10 @@ const CHARS=[
  {id:'prof',name:'Professor Quill',role:'Headmistress',art:()=>girl('prof',0,0,1,{}),bio:'Wise, warm and a little strict. She failed her first hundred spells and keeps every failed page in a drawer to show students that mistakes are how wizards grow.'},
  {id:'gran',name:'Grandma Rose',role:'Nora\'s grandma',art:()=>girl('gran',0,0,1,{}),bio:'Nora\'s grandma, and a former student of Inkwell Academy. She once made a promise to her best friend that she did not keep, and she has never forgotten it.'},
  {id:'wren',name:'Wren',role:'The girl in the tower',art:()=>girl('wren',0,0,1,{expr:'sad'}),bio:'Rose\'s best friend from long ago. She loved writing letters more than anything. When no one wrote back, her loneliness grew into the Fading.'},
+ {id:'opal',name:'Opal',role:'New student (Year 2)',art:()=>girl('opal',0,0,1,{}),bio:'Transferred from Starfall Academy. Quiet, proud, and secretly very lonely. She wears a crystal necklace from her grandmother.'},
+ {id:'wick',name:'Ms. Wick',role:'Librarian (Year 2)',art:()=>girl('wick',0,0,1,{}),bio:'The new librarian. Keeps pencils in her bun and knows a story for every problem.'},
+ {id:'saffron',name:'Aunt Saffron',role:'Dragon healer (Year 2)',art:()=>girl('saffron',0,0,1,{}),bio:'Lives in a round hut on the Five Peaks. Smells like cinnamon. Can tell what is wrong with a dragon just by listening to it hum.'},
+ {id:'granite',name:'Granite',role:'Dragon elder (Year 2)',dragon:true,art:()=>dragon(0,40,.55,{who:'granite',stage:'big'}),bio:'Thistle\'s grandfather, four hundred years old. Grumpy on the outside, but a single honest sorry can melt his stony heart.'},
  {id:'thistle',name:'Thistle',role:'Dragon elder',dragon:true,art:()=>dragon(0,40,.6,{who:'thistle',stage:'big'}),bio:'A great Dawnfeather dragon and Ember\'s aunt. She was Coach Bree\'s flying partner, and she has searched every sky for her lost family.'},
 ];
 function meet(id){ if(id&&CHARS.some(c=>c.id===id)&&!S.met[id]){ S.met[id]=true; save(); } }
@@ -81,5 +87,3 @@ $('#stNext').onclick=()=>{ Snd.sfx('tap'); storyIdx++; stepStory(); };
 $('#stStage').onclick=()=>{ if(!storyLines[storyIdx]||storyLines[storyIdx].choices) return; storyIdx++; stepStory(); };
 $('#skipBtn').onclick=e=>{ e.stopPropagation(); Voice.stop(); storyIdx=storyLines.length; stepStory(); };
 
-const ENVELOPE=`<g class="float"><g transform="translate(700,250) rotate(-8)" filter="url(#glow)"><rect x="-70" y="-46" width="140" height="92" rx="6" fill="#fff8e1"/><path d="M-70 -46L0 10L70 -46" fill="none" stroke="#c9a96b" stroke-width="4"/><circle cx="0" cy="10" r="14" fill="#c92a2a"/><path d="M0 0l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z" fill="#ffd43b"/></g></g>`;
-const LETTERTXT=`<g transform="translate(560,300) rotate(-4)"><rect width="320" height="210" rx="8" fill="#fff8e1" filter="url(#soft)"/><text x="24" y="56" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="40" fill="#e9a91c" filter="url(#glow)">Dear Nora,</text><text x="24" y="104" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="30" fill="#7048e8">You are invited to</text><text x="24" y="146" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="34" fill="#7048e8">Inkwell Academy</text></g>`;

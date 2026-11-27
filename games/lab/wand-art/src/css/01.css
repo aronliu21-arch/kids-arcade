@@ -78,6 +78,61 @@ h1,h2,h3{margin:0}
 @media (orientation:portrait) and (max-width:600px){#title.mag #titleArt{height:34vh}#title.mag{justify-content:center}}
 @media (prefers-reduced-motion:reduce){#title.mag *,#title.mag #tBg{animation:none!important}}
 @media (orientation:portrait) and (max-width:600px){#story{justify-content:center}#story .stage{flex:0 0 auto;width:100%;aspect-ratio:16/10;height:auto}#story .caption{font-size:16px}}
+
+/* ===== Year 2: title year picker, reading test, shop, explorable castle ===== */
+#title .years{gap:10px;animation:tRise 1.2s both .8s}
+#title .yr{background:#ffffff1f;border:2px solid #ffffff55;color:#fff;border-radius:16px;padding:8px 16px;font:700 17px Poppins,system-ui;display:flex;flex-direction:column;align-items:center;min-width:150px;min-height:52px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#title .yr small{font-weight:500;font-size:12px;color:#e5dbff}
+#title .yr.on{background:#ffd43b;color:#3b2f5c;border-color:#fff3bf;box-shadow:0 0 18px #ffd43b88}#title .yr.on small{color:#5c4a12}
+#title .yr:disabled{opacity:.55}
+#read .rdBody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px}
+#read .rdPrompt{font-weight:700;font-size:clamp(16px,2.4vw,22px);color:var(--ink)}
+#read .rdCard{background:#fffdf5;border:3px solid #e3d2ae;border-radius:20px;padding:14px 26px;box-shadow:0 6px 0 #e3d2ae;max-width:94vw}
+#read .rdCard svg{height:clamp(110px,22vh,200px);width:auto;max-width:86vw;display:block;--line-top:#9bb3d8;--line-mid:#f3a0a0;--line-base:#8fa6cf}
+#read .rdRow{display:flex;gap:10px;width:min(560px,94vw)}
+#read input{flex:1;font:700 clamp(20px,3vw,30px) Poppins,system-ui;padding:10px 16px;border-radius:14px;border:3px solid #b197fc;min-width:0;text-align:center;color:#3b2f5c}
+#read .rdFb{min-height:2.6em;font-weight:700;text-align:center;color:#5f3dc4;font-size:clamp(15px,2.2vw,20px)}
+#read .rdHint{min-height:1.3em;color:#a06a00;font-weight:600}
+#read .rdDots{display:flex;gap:8px}#read .rdDots i{width:14px;height:14px;border-radius:50%;background:#e3d2ae}#read .rdDots i.ok{background:#40c057}#read .rdDots i.cur{background:#7048e8;box-shadow:0 0 0 4px #b197fc66}
+#shop #shTabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px}
+#shop #shTabs button{border:2px solid #e3d2ae;background:#fffaf0;border-radius:999px;padding:8px 16px;font:700 16px Poppins,system-ui;color:#3b2f5c;min-height:48px}
+#shop #shTabs button.on{background:#7048e8;color:#fff;border-color:#7048e8}
+#shItems{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:8px 14px;align-content:start}
+#shItems .item{background:#fffaf0;border:3px solid #e3d2ae;border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+#shItems .item.on{border-color:#ffd43b;box-shadow:0 0 16px #ffd43b88}
+#shItems .pic{height:96px;width:100%;display:grid;place-items:center;border-radius:12px;background:#f3ead6}
+#shItems .wandPic span{font-size:44px;background:var(--ink);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 6px #fff)}
+#shItems .wandPic{background:#2b2440}
+#shItems .robePic img{height:92px}
+#shItems .treatPic{font-size:54px}
+#shMsg{text-align:center;font-weight:700;color:#5f3dc4;padding:8px 12px 14px;min-height:2.4em}
+#shItems .nest{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:8px}
+#shItems .nestArt{width:min(420px,80vw)}#shItems .love{font-size:22px}
+#shItems .feed{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+#shItems .feed button{font-size:34px;background:#fffaf0;border:3px solid #e3d2ae;border-radius:14px;padding:6px 10px;display:flex;flex-direction:column;align-items:center;min-width:84px}
+#shItems .feed button small{font-size:12px;font-weight:700;color:#3b2f5c}#shItems .feed button:disabled{opacity:.4}
+#map2{background:radial-gradient(ellipse at 50% 0%,#3b2f7a,#1b1440 60%,#120c2c);color:#fff}
+#map2 .m2wrap{flex:1;min-height:0;overflow:auto;perspective:1400px;padding:24px 18px 30px}
+#m2Rooms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 22px;max-width:1000px;margin:0 auto;transform:rotateX(14deg);transform-origin:50% 0}
+.room{position:relative;border:0;padding:0;background:#fffaf0;border-radius:16px;overflow:visible;box-shadow:0 10px 0 #0006,0 0 0 4px #fff4;text-align:left;color:#3b2f5c;transition:transform .2s}
+.room .pic{display:block;aspect-ratio:16/10;border-radius:16px 16px 0 0;background-size:cover;background-position:center}
+.room .lbl{display:block;padding:8px 10px;font-weight:800;font-size:clamp(14px,1.8vw,18px)}.room .lbl small{display:block;font-weight:600;font-size:12px;color:#7a6a9a}
+.room.lock .pic{filter:grayscale(1) brightness(.55)}.room.lock{opacity:.85}
+.room.done .tick{position:absolute;top:8px;right:10px;background:#40c057;color:#fff;border-radius:50%;width:30px;height:30px;display:grid;place-items:center;font-weight:900}
+.room.next{box-shadow:0 10px 0 #0006,0 0 0 5px #ffd43b,0 0 34px #ffd43bcc;animation:roomGlow 1.6s ease-in-out infinite}
+@keyframes roomGlow{50%{transform:translateY(-6px)}}
+.room.mini .lbl{background:#e5dbff}
+.room .here{position:absolute;left:-14px;bottom:30px;width:84px;height:110px;pointer-events:none;filter:drop-shadow(0 4px 4px #0006)}.room .here svg{width:100%;height:100%}
+.room .treasure{position:absolute;font-size:26px;cursor:pointer;animation:twinkle 1.4s ease-in-out infinite;filter:drop-shadow(0 0 6px #fff);min-width:44px;min-height:44px;display:grid;place-items:center}
+@keyframes twinkle{50%{transform:scale(1.35) rotate(15deg);opacity:.6}}
+#m2Msg{text-align:center;font-weight:700;padding:8px 12px 12px;color:#fff3bf;text-shadow:0 2px 4px #000}
+@media (orientation:portrait) and (max-width:600px){#m2Rooms{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 14px;transform:rotateX(8deg)}#map2 .bar{flex-wrap:wrap}#m2Ttl{order:10;flex:1 0 100%!important;font-size:16px!important}#title .yr{min-width:130px}}
+@media (max-height:430px){#m2Rooms{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;transform:none}.room .lbl{padding:4px 8px}.room .here{width:60px;height:80px}}
+#hpMe{margin-top:4px;font-size:clamp(16px,2.2vw,22px)}
+#cards .shieldCard{background:linear-gradient(#e7f5ff,#a5d8ff)!important;border-color:#1c7ed6!important;animation:pulseCard 1s ease-in-out infinite}
+@keyframes pulseCard{50%{transform:scale(1.06)}}
+#playArt.charging{animation:charge .5s ease-in-out infinite alternate}
+@keyframes charge{to{filter:drop-shadow(0 0 18px #ff6b6b) brightness(1.15);transform:scale(1.04)}}
 /* map */
 /* upright phone map: full-height map you can swipe sideways, title on its own line, message pinned below */
 @media (orientation:portrait) and (max-width:600px){

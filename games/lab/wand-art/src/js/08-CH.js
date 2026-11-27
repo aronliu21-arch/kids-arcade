@@ -1,3 +1,11 @@
+const CH=n=>CHAPTERS[n-1];
+const key=(n,id)=>`c${n}:${id}`;
+const isDone=(n,id)=>!!S.done[key(n,id)];
+const mainOf=n=>CH(n).missions.filter(m=>m.kind!=='mini');
+const nextMain=(n=S.view)=>mainOf(n).find(m=>!isDone(n,m.id));
+function isOpen(n,m){ if(n>S.ch) return false; if(m.needs&&!S.done[m.needs]) return false; if(m.kind==='mini') return isDone(n,m.after); const L=mainOf(n),k=L.indexOf(m); return k===0||isDone(n,L[k-1].id); }
+
+
 // ===== title magic particles =====
 (function(){ const cv=$('#tFx'); if(!cv) return; const g=cv.getContext('2d'); let W=0,H=0,parts=[],stars=[],shoot=null,last=0; const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
  function size(){ const r=cv.getBoundingClientRect(), d=Math.min(2,devicePixelRatio||1); W=r.width; H=r.height; cv.width=W*d; cv.height=H*d; g.setTransform(d,0,0,d,0,0);
@@ -85,5 +93,3 @@ $('#chNext').onclick=()=>{ if(S.view<Math.min(S.ch,CHAPTERS.length)){ S.view++; 
 let walking=false; async function walkTo(x,y){ walking=true; const sx=noraPos.x,sy=noraPos.y; for(let k=1;k<=18;k++){ noraPos={x:sx+(x-sx)*k/18,y:sy+(y-sy)*k/18}; await sleep(28); } walking=false; }
 let spotBusy=false;
 async function openSpot(m){ if(spotBusy) return; spotBusy=true; try{ await openSpotGo(m); } finally { setTimeout(()=>spotBusy=false,400); } }
-async function openSpotGo(m){ const n=S.view; if(!isOpen(n,m)){ Snd.sfx('fizz'); $('#mapMsg').textContent='Locked! Finish the glowing place first.'; setTimeout(()=>{spotsKey='';renderSpots();},1600); return; }
- Snd.sfx('tap'); await walkTo(m.x,m.y+22); const sp=document.querySelector(`.spot[data-id="${m.id}"]`); if(sp){ FX.burst(...FX.center(sp),{n:45,speed:7}); Snd.sfx('spark'); } await sleep(350); startMission(m,n); }

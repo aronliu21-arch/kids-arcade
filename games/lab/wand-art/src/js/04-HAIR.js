@@ -13,17 +13,22 @@ const FOE_ART={blob:[261,244,300],imps:[271,231,280],crystal:[217,247,320],golem
 const DRAGON_ART={ember:[244,304,250],thistle:[295,357,300]};
 const FRIEND_ART={mei:[105,190,300],iris:[113,190,300],sunny:[148,191,300],juni:[113,189,300],lola:[133,193,305],wren:[121,192,305],bree:[108,242,360],gran:[109,225,345],prof:[144,247,370]};
 const FRIEND_EMO={'mei-sad':[159,285],'iris-sad':[157,283],'sunny-sad':[200,286],'juni-sad':[157,276],'lola-sad':[171,277],'wren-sad':[151,284],'bree-sad':[149,315],'gran-sad':[150,310],'mei-wow':[168,287],'iris-wow':[188,286],'sunny-wow':[204,288],'juni-wow':[158,277],'lola-wow':[172,279],'wren-wow':[152,284],'bree-wow':[190,316],'gran-wow':[174,310]};
+const Y2ART={nora:{},f:{},femo:{},drag:{},foe:{}}; // filled in by the Year 2 art
+function y2(){ return (S&&S.year)===2; }
+function fArt(who){ if((y2()||!FRIEND_ART[who])&&Y2ART.f[who]) return [Y2ART.f[who],'f2-']; if(FRIEND_ART[who]) return [FRIEND_ART[who],'f-']; return null; }
+function fEmo(key){ const w0=key.split('-')[0]; if((y2()||!FRIEND_ART[w0])&&Y2ART.f[w0]) return Y2ART.femo[key]?[Y2ART.femo[key],'f2-']:null; return FRIEND_EMO[key]?[FRIEND_EMO[key],'f-']:null; }
 function girl(who,x,y,s,o={}){
- if(FRIEND_ART[who]&&window.NORA_ART!==false){ const ek=who+'-'+(o.expr==='sad'?'sad':o.expr==='wow'?'wow':''); const emo=FRIEND_EMO[ek]; const [iw,ih,h]=emo?[emo[0],emo[1],FRIEND_ART[who][2]]:FRIEND_ART[who], w=h*iw/ih;
+ const FA=fArt(who);
+ if(FA&&window.NORA_ART!==false){ const ek=who+'-'+(o.expr==='sad'?'sad':o.expr==='wow'?'wow':''); const EM=fEmo(ek); const emo=EM&&EM[0]; const pre=EM?EM[1]:FA[1]; const [iw,ih,h]=emo?[emo[0],emo[1],FA[0][2]]:FA[0], w=h*iw/ih;
   const glow=o.glow?`<ellipse cx="0" cy="120" rx="110" ry="170" fill="url(#warm)" opacity=".8"/>`:'';
-  return `<g transform="translate(${x},${y}) scale(${o.flip?-s:s},${s})">${glow}<ellipse cx="0" cy="252" rx="${w*.34}" ry="9" fill="#000" opacity=".16"/><image href="art/f-${emo?ek:who}.webp" x="${-w/2}" y="${252-h}" width="${w}" height="${h}"/></g>`; }
+  return `<g transform="translate(${x},${y}) scale(${o.flip?-s:s},${s})">${glow}<ellipse cx="0" cy="252" rx="${w*.34}" ry="9" fill="#000" opacity=".16"/><image href="art/${pre}${emo?ek:who}.webp" x="${-w/2}" y="${252-h}" width="${w}" height="${h}"/></g>`; }
  if(who==='nora'&&window.NORA_ART!==false){ const ex=o.expr||'happy', arm=o.arm||'none';
   const pose=ex==='wow'?'wow':ex==='sad'?'sad':ex==='closed'?'sleepy':arm==='wand'?(o.glow?'happy':'cast'):arm==='wave'?'wave':ex==='smirk'?'brave':'happy';
-  const R=NORA_DIM[pose]; const h=340,w=h*R[0]/R[1];
+  const N2=y2()&&Y2ART.nora[pose]; const R=N2||NORA_DIM[pose]; const h=N2?352:340,w=h*R[0]/R[1]; const nsrc0=`art/${N2?'nora2':'nora'}-${pose}.webp`, nsrc=(typeof robeSrc==='function')?robeSrc(nsrc0):nsrc0;
   const glow=o.glow?`<ellipse cx="0" cy="120" rx="120" ry="180" fill="url(#warm)" opacity=".8"/>`:'';
   const badge=o.badge!==false?`<g transform="translate(-42,262)"><rect width="84" height="28" rx="14" fill="#7048e8"/><text x="42" y="20" font-family="Poppins,system-ui" font-weight="700" font-size="16" fill="#fff" text-anchor="middle">Nora</text></g>`:'';
   const sc=s*1.12;
-  return `<g transform="translate(${x},${y}) scale(${o.flip?-sc:sc},${sc})">${glow}<ellipse cx="0" cy="262" rx="${w*.32}" ry="10" fill="#000" opacity=".18"/><image href="art/nora-${pose}.webp" x="${-w/2}" y="${262-h}" width="${w}" height="${h}"/>${badge}</g>`; }
+  return `<g transform="translate(${x},${y}) scale(${o.flip?-sc:sc},${sc})">${glow}<ellipse cx="0" cy="262" rx="${w*.32}" ry="10" fill="#000" opacity=".18"/><image href="${nsrc}" x="${-w/2}" y="${262-h}" width="${w}" height="${h}"/>${badge}</g>`; }
  const hair=HAIR[who],robe=ROBE[who],trim=TRIM[who],skin=(who==='gran'||who==='prof')?'#f3d3bd':who==='lola'?'#eef6ff':'#f9dcc6';const g=[];
  const glow=o.glow?`<ellipse cx="0" cy="120" rx="110" ry="170" fill="url(#warm)" opacity=".8"/>`:'';
  g.push(glow);
