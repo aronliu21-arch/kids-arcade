@@ -169,6 +169,10 @@ button{font:inherit;cursor:pointer;color:inherit}
   #sMenu .wrap{padding-top:16px}.logo .l1{font-size:44px}
   .prof{min-height:0;flex-direction:row;width:auto}.prof img{width:64px;height:64px}.prof.tester .ic{font-size:44px;line-height:64px}
 }
+/* ---------- every screen size: the garage never scrolls; a too-tall card pages instead ---------- */
+.gwrap{overflow:hidden}.gmain{flex:1;min-height:0;align-items:stretch}.side{overflow:hidden}
+.gmain .card{display:flex;flex-direction:column;overflow:hidden;max-height:100%}
+.ovl .card{max-height:100%;display:flex;flex-direction:column;overflow:hidden}
 /* ---------- phones: everything fits on one screen, long cards page with ◀ ▶ instead of scrolling ---------- */
 .pgnav{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:8px}
 .pgnav .pgd{flex:1;text-align:center;font-weight:900;color:#555}
@@ -678,7 +682,7 @@ function show(id) {
 function ovl(html) { $("#ovlCard").innerHTML = html; $("#ovl").classList.add("on"); $("#ovl").scrollTop = 0; setTimeout(function () { Pager.fit($("#ovlCard")); }, 0); }
 
 /* ---------- Pager: on phones, split a too-tall card into pages (◀ ▶) instead of scrolling ---------- */
-var FIT = window.matchMedia("(max-height:500px),(max-width:600px)");
+var FIT = window.matchMedia("all"); // page on every screen size, never scroll
 var Pager = {
   fit: function (card, opt) {
     opt = opt || {}; card.__opt = opt;
@@ -1348,6 +1352,6 @@ window.__test = {
   }
 };
 </script>
-<div id="kaVer" data-v="1.4" data-d="2026-11-27">v1.4 · 2026-11-27</div>
+<div id="kaVer" data-v="1.5" data-d="2026-11-27">v1.5 · 2026-11-27</div>
 </body>
 </html>

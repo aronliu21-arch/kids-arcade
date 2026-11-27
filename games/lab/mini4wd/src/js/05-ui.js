@@ -27,7 +27,7 @@ function show(id) {
 function ovl(html) { $("#ovlCard").innerHTML = html; $("#ovl").classList.add("on"); $("#ovl").scrollTop = 0; setTimeout(function () { Pager.fit($("#ovlCard")); }, 0); }
 
 /* ---------- Pager: on phones, split a too-tall card into pages (◀ ▶) instead of scrolling ---------- */
-var FIT = window.matchMedia("(max-height:500px),(max-width:600px)");
+var FIT = window.matchMedia("all"); // page on every screen size, never scroll
 var Pager = {
   fit: function (card, opt) {
     opt = opt || {}; card.__opt = opt;
