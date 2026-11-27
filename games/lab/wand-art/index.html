@@ -85,6 +85,61 @@ h1,h2,h3{margin:0}
 @media (orientation:portrait) and (max-width:600px){#title.mag #titleArt{height:34vh}#title.mag{justify-content:center}}
 @media (prefers-reduced-motion:reduce){#title.mag *,#title.mag #tBg{animation:none!important}}
 @media (orientation:portrait) and (max-width:600px){#story{justify-content:center}#story .stage{flex:0 0 auto;width:100%;aspect-ratio:16/10;height:auto}#story .caption{font-size:16px}}
+
+/* ===== Year 2: title year picker, reading test, shop, explorable castle ===== */
+#title .years{gap:10px;animation:tRise 1.2s both .8s}
+#title .yr{background:#ffffff1f;border:2px solid #ffffff55;color:#fff;border-radius:16px;padding:8px 16px;font:700 17px Poppins,system-ui;display:flex;flex-direction:column;align-items:center;min-width:150px;min-height:52px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#title .yr small{font-weight:500;font-size:12px;color:#e5dbff}
+#title .yr.on{background:#ffd43b;color:#3b2f5c;border-color:#fff3bf;box-shadow:0 0 18px #ffd43b88}#title .yr.on small{color:#5c4a12}
+#title .yr:disabled{opacity:.55}
+#read .rdBody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px}
+#read .rdPrompt{font-weight:700;font-size:clamp(16px,2.4vw,22px);color:var(--ink)}
+#read .rdCard{background:#fffdf5;border:3px solid #e3d2ae;border-radius:20px;padding:14px 26px;box-shadow:0 6px 0 #e3d2ae;max-width:94vw}
+#read .rdCard svg{height:clamp(110px,22vh,200px);width:auto;max-width:86vw;display:block;--line-top:#9bb3d8;--line-mid:#f3a0a0;--line-base:#8fa6cf}
+#read .rdRow{display:flex;gap:10px;width:min(560px,94vw)}
+#read input{flex:1;font:700 clamp(20px,3vw,30px) Poppins,system-ui;padding:10px 16px;border-radius:14px;border:3px solid #b197fc;min-width:0;text-align:center;color:#3b2f5c}
+#read .rdFb{min-height:2.6em;font-weight:700;text-align:center;color:#5f3dc4;font-size:clamp(15px,2.2vw,20px)}
+#read .rdHint{min-height:1.3em;color:#a06a00;font-weight:600}
+#read .rdDots{display:flex;gap:8px}#read .rdDots i{width:14px;height:14px;border-radius:50%;background:#e3d2ae}#read .rdDots i.ok{background:#40c057}#read .rdDots i.cur{background:#7048e8;box-shadow:0 0 0 4px #b197fc66}
+#shop #shTabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:8px}
+#shop #shTabs button{border:2px solid #e3d2ae;background:#fffaf0;border-radius:999px;padding:8px 16px;font:700 16px Poppins,system-ui;color:#3b2f5c;min-height:48px}
+#shop #shTabs button.on{background:#7048e8;color:#fff;border-color:#7048e8}
+#shItems{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:8px 14px;align-content:start}
+#shItems .item{background:#fffaf0;border:3px solid #e3d2ae;border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+#shItems .item.on{border-color:#ffd43b;box-shadow:0 0 16px #ffd43b88}
+#shItems .pic{height:96px;width:100%;display:grid;place-items:center;border-radius:12px;background:#f3ead6}
+#shItems .wandPic span{font-size:44px;background:var(--ink);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 6px #fff)}
+#shItems .wandPic{background:#2b2440}
+#shItems .robePic img{height:92px}
+#shItems .treatPic{font-size:54px}
+#shMsg{text-align:center;font-weight:700;color:#5f3dc4;padding:8px 12px 14px;min-height:2.4em}
+#shItems .nest{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:8px}
+#shItems .nestArt{width:min(420px,80vw)}#shItems .love{font-size:22px}
+#shItems .feed{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+#shItems .feed button{font-size:34px;background:#fffaf0;border:3px solid #e3d2ae;border-radius:14px;padding:6px 10px;display:flex;flex-direction:column;align-items:center;min-width:84px}
+#shItems .feed button small{font-size:12px;font-weight:700;color:#3b2f5c}#shItems .feed button:disabled{opacity:.4}
+#map2{background:radial-gradient(ellipse at 50% 0%,#3b2f7a,#1b1440 60%,#120c2c);color:#fff}
+#map2 .m2wrap{flex:1;min-height:0;overflow:auto;perspective:1400px;padding:24px 18px 30px}
+#m2Rooms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 22px;max-width:1000px;margin:0 auto;transform:rotateX(14deg);transform-origin:50% 0}
+.room{position:relative;border:0;padding:0;background:#fffaf0;border-radius:16px;overflow:visible;box-shadow:0 10px 0 #0006,0 0 0 4px #fff4;text-align:left;color:#3b2f5c;transition:transform .2s}
+.room .pic{display:block;aspect-ratio:16/10;border-radius:16px 16px 0 0;background-size:cover;background-position:center}
+.room .lbl{display:block;padding:8px 10px;font-weight:800;font-size:clamp(14px,1.8vw,18px)}.room .lbl small{display:block;font-weight:600;font-size:12px;color:#7a6a9a}
+.room.lock .pic{filter:grayscale(1) brightness(.55)}.room.lock{opacity:.85}
+.room.done .tick{position:absolute;top:8px;right:10px;background:#40c057;color:#fff;border-radius:50%;width:30px;height:30px;display:grid;place-items:center;font-weight:900}
+.room.next{box-shadow:0 10px 0 #0006,0 0 0 5px #ffd43b,0 0 34px #ffd43bcc;animation:roomGlow 1.6s ease-in-out infinite}
+@keyframes roomGlow{50%{transform:translateY(-6px)}}
+.room.mini .lbl{background:#e5dbff}
+.room .here{position:absolute;left:-14px;bottom:30px;width:84px;height:110px;pointer-events:none;filter:drop-shadow(0 4px 4px #0006)}.room .here svg{width:100%;height:100%}
+.room .treasure{position:absolute;font-size:26px;cursor:pointer;animation:twinkle 1.4s ease-in-out infinite;filter:drop-shadow(0 0 6px #fff);min-width:44px;min-height:44px;display:grid;place-items:center}
+@keyframes twinkle{50%{transform:scale(1.35) rotate(15deg);opacity:.6}}
+#m2Msg{text-align:center;font-weight:700;padding:8px 12px 12px;color:#fff3bf;text-shadow:0 2px 4px #000}
+@media (orientation:portrait) and (max-width:600px){#m2Rooms{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 14px;transform:rotateX(8deg)}#map2 .bar{flex-wrap:wrap}#m2Ttl{order:10;flex:1 0 100%!important;font-size:16px!important}#title .yr{min-width:130px}}
+@media (max-height:430px){#m2Rooms{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;transform:none}.room .lbl{padding:4px 8px}.room .here{width:60px;height:80px}}
+#hpMe{margin-top:4px;font-size:clamp(16px,2.2vw,22px)}
+#cards .shieldCard{background:linear-gradient(#e7f5ff,#a5d8ff)!important;border-color:#1c7ed6!important;animation:pulseCard 1s ease-in-out infinite}
+@keyframes pulseCard{50%{transform:scale(1.06)}}
+#playArt.charging{animation:charge .5s ease-in-out infinite alternate}
+@keyframes charge{to{filter:drop-shadow(0 0 18px #ff6b6b) brightness(1.15);transform:scale(1.04)}}
 /* map */
 /* upright phone map: full-height map you can swipe sideways, title on its own line, message pinned below */
 @media (orientation:portrait) and (max-width:600px){
@@ -229,8 +284,9 @@ h1,h2,h3{margin:0}
   <h1>Nora's <span class="cur" style="color:var(--gold)">Wand-Writing</span> Academy</h1>
   <div class="sub">諾拉的魔法草寫學院 · Write cursive to cast magic</div>
   <div class="stats"><div class="stat"><span id="stStars">0</span> ✨<small>magic stars</small></div><div class="stat"><span id="stCh">0/4</span><small id="stChL">Chapter 1</small></div></div>
+  <div class="row years"><button class="yr" id="y1Btn">📘 Year 1 <small>The Fading Letters</small></button><button class="yr" id="y2Btn">📗 Year 2</button></div>
   <div class="row"><button class="btn gold" id="startBtn">▶ Tap to start</button></div>
-  <div class="row"><button class="btn ghost sm" id="friendsBtn">📖 Friends</button><button class="btn ghost sm" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost sm" id="muteBtn1">🔊</button></div>
+  <div class="row"><button class="btn ghost sm" id="friendsBtn">📖 Friends</button><button class="btn ghost sm" id="shopBtn">🛍 Shop</button><button class="btn ghost sm" id="voiceBtn">🗣 聲音 Voice</button><button class="btn ghost sm" id="muteBtn1">🔊</button></div>
   <button id="resetBtn">🔒 Reset records</button>
 </section>
 
@@ -241,6 +297,21 @@ h1,h2,h3{margin:0}
   <div class="choices" id="stChoices"></div>
 </section>
 
+<section class="screen paper" id="read">
+  <div class="bar paper"><button class="btn ghost sm" id="rdMap">🗺️</button><div class="ttl" id="rdTtl"></div><div class="pill"><span id="rdStars">0</span> ✨</div></div>
+  <div class="rdBody"><div class="rdDots" id="rdDots"></div><div class="rdPrompt">📖 What does this say? Type it below.</div><div class="rdCard" id="rdWord"></div><div class="rdHint" id="rdHint"></div>
+  <div class="rdRow"><input id="rdIn" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="Type what it says…"><button class="btn gold" id="rdGo">✨ Check</button></div>
+  <div class="rdFb" id="rdFb"></div></div>
+</section>
+<section class="screen paper" id="shop">
+  <div class="bar paper"><button class="btn ghost sm" id="shBack">◀</button><div class="ttl">🛍 Magic Shop</div><div class="pill"><span id="shStars">0</span> ✨</div></div>
+  <div id="shTabs"><button data-t="wand">🪄 Wands</button><button data-t="robe">👘 Robes</button><button data-t="treat">🍪 Treats</button><button data-t="nest">🐉 Ember's Nest</button></div>
+  <div id="shItems"></div><div id="shMsg">Spend your magic stars on wands, robes and treats for Ember.</div>
+</section>
+<section class="screen" id="map2">
+  <div class="bar paper"><button class="btn ghost sm" id="m2Home">🏠</button><button class="btn ghost sm" id="m2Prev">◀</button><div class="ttl" id="m2Ttl"></div><button class="btn ghost sm" id="m2Next">▶</button><div class="pill"><span id="m2Stars">0</span> ✨</div><button class="btn ghost sm" id="m2Shop">🛍</button><button class="btn ghost sm" id="m2Friends">📖</button></div>
+  <div class="m2wrap"><div id="m2Rooms"></div></div><div id="m2Msg"></div>
+</section>
 <section class="screen" id="map">
   <div class="bar paper"><button class="btn ghost sm" id="mapHome">🏠</button><button class="btn ghost sm" id="chPrev">◀</button><div class="ttl" id="mapTtl">Chapter 1</div><button class="btn ghost sm" id="chNext">▶</button><div class="pill"><span id="mapStars">0</span> ✨</div><button class="btn ghost sm" id="mapFriends">📖</button><button class="btn ghost sm" id="muteBtn2">🔊</button></div>
   <div class="wrap"><div id="mapBox"><canvas id="mapCv" width="480" height="270"></canvas><div id="spots"></div><div class="mapmsg" id="mapMsg"></div></div></div><div id="swipeHint">👆 Swipe to see the whole castle ↔</div>
@@ -885,17 +956,22 @@ const FOE_ART={blob:[261,244,300],imps:[271,231,280],crystal:[217,247,320],golem
 const DRAGON_ART={ember:[244,304,250],thistle:[295,357,300]};
 const FRIEND_ART={mei:[105,190,300],iris:[113,190,300],sunny:[148,191,300],juni:[113,189,300],lola:[133,193,305],wren:[121,192,305],bree:[108,242,360],gran:[109,225,345],prof:[144,247,370]};
 const FRIEND_EMO={'mei-sad':[159,285],'iris-sad':[157,283],'sunny-sad':[200,286],'juni-sad':[157,276],'lola-sad':[171,277],'wren-sad':[151,284],'bree-sad':[149,315],'gran-sad':[150,310],'mei-wow':[168,287],'iris-wow':[188,286],'sunny-wow':[204,288],'juni-wow':[158,277],'lola-wow':[172,279],'wren-wow':[152,284],'bree-wow':[190,316],'gran-wow':[174,310]};
+const Y2ART={nora:{},f:{},femo:{},drag:{},foe:{}}; // filled in by the Year 2 art
+function y2(){ return (S&&S.year)===2; }
+function fArt(who){ if((y2()||!FRIEND_ART[who])&&Y2ART.f[who]) return [Y2ART.f[who],'f2-']; if(FRIEND_ART[who]) return [FRIEND_ART[who],'f-']; return null; }
+function fEmo(key){ const w0=key.split('-')[0]; if((y2()||!FRIEND_ART[w0])&&Y2ART.f[w0]) return Y2ART.femo[key]?[Y2ART.femo[key],'f2-']:null; return FRIEND_EMO[key]?[FRIEND_EMO[key],'f-']:null; }
 function girl(who,x,y,s,o={}){
- if(FRIEND_ART[who]&&window.NORA_ART!==false){ const ek=who+'-'+(o.expr==='sad'?'sad':o.expr==='wow'?'wow':''); const emo=FRIEND_EMO[ek]; const [iw,ih,h]=emo?[emo[0],emo[1],FRIEND_ART[who][2]]:FRIEND_ART[who], w=h*iw/ih;
+ const FA=fArt(who);
+ if(FA&&window.NORA_ART!==false){ const ek=who+'-'+(o.expr==='sad'?'sad':o.expr==='wow'?'wow':''); const EM=fEmo(ek); const emo=EM&&EM[0]; const pre=EM?EM[1]:FA[1]; const [iw,ih,h]=emo?[emo[0],emo[1],FA[0][2]]:FA[0], w=h*iw/ih;
   const glow=o.glow?`<ellipse cx="0" cy="120" rx="110" ry="170" fill="url(#warm)" opacity=".8"/>`:'';
-  return `<g transform="translate(${x},${y}) scale(${o.flip?-s:s},${s})">${glow}<ellipse cx="0" cy="252" rx="${w*.34}" ry="9" fill="#000" opacity=".16"/><image href="art/f-${emo?ek:who}.webp" x="${-w/2}" y="${252-h}" width="${w}" height="${h}"/></g>`; }
+  return `<g transform="translate(${x},${y}) scale(${o.flip?-s:s},${s})">${glow}<ellipse cx="0" cy="252" rx="${w*.34}" ry="9" fill="#000" opacity=".16"/><image href="art/${pre}${emo?ek:who}.webp" x="${-w/2}" y="${252-h}" width="${w}" height="${h}"/></g>`; }
  if(who==='nora'&&window.NORA_ART!==false){ const ex=o.expr||'happy', arm=o.arm||'none';
   const pose=ex==='wow'?'wow':ex==='sad'?'sad':ex==='closed'?'sleepy':arm==='wand'?(o.glow?'happy':'cast'):arm==='wave'?'wave':ex==='smirk'?'brave':'happy';
-  const R=NORA_DIM[pose]; const h=340,w=h*R[0]/R[1];
+  const N2=y2()&&Y2ART.nora[pose]; const R=N2||NORA_DIM[pose]; const h=N2?352:340,w=h*R[0]/R[1]; const nsrc0=`art/${N2?'nora2':'nora'}-${pose}.webp`, nsrc=(typeof robeSrc==='function')?robeSrc(nsrc0):nsrc0;
   const glow=o.glow?`<ellipse cx="0" cy="120" rx="120" ry="180" fill="url(#warm)" opacity=".8"/>`:'';
   const badge=o.badge!==false?`<g transform="translate(-42,262)"><rect width="84" height="28" rx="14" fill="#7048e8"/><text x="42" y="20" font-family="Poppins,system-ui" font-weight="700" font-size="16" fill="#fff" text-anchor="middle">Nora</text></g>`:'';
   const sc=s*1.12;
-  return `<g transform="translate(${x},${y}) scale(${o.flip?-sc:sc},${sc})">${glow}<ellipse cx="0" cy="262" rx="${w*.32}" ry="10" fill="#000" opacity=".18"/><image href="art/nora-${pose}.webp" x="${-w/2}" y="${262-h}" width="${w}" height="${h}"/>${badge}</g>`; }
+  return `<g transform="translate(${x},${y}) scale(${o.flip?-sc:sc},${sc})">${glow}<ellipse cx="0" cy="262" rx="${w*.32}" ry="10" fill="#000" opacity=".18"/><image href="${nsrc}" x="${-w/2}" y="${262-h}" width="${w}" height="${h}"/>${badge}</g>`; }
  const hair=HAIR[who],robe=ROBE[who],trim=TRIM[who],skin=(who==='gran'||who==='prof')?'#f3d3bd':who==='lola'?'#eef6ff':'#f9dcc6';const g=[];
  const glow=o.glow?`<ellipse cx="0" cy="120" rx="110" ry="170" fill="url(#warm)" opacity=".8"/>`:'';
  g.push(glow);
@@ -952,7 +1028,7 @@ function sceneSVG(bg,chars,extra=''){ return svg(BG(bg)+chars.map(c=>girl(...c))
 // ============ dragons (original designs) ============
 const DRAGONS={ember:{c:'#ffa94d',belly:'#fff3bf',wing:'#ffd8a8',horn:'#e8590c'},thistle:{c:'#e599f7',belly:'#fff0f6',wing:'#f3d9fa',horn:'#9c36b5'},dawn:{c:'#ffd43b',belly:'#fff9db',wing:'#ffec99',horn:'#f08c00'}};
 function dragon(x,y,s,o={}){ const d=DRAGONS[o.who||'ember'], st=o.stage||'baby', k=s*(st==='big'?1.6:st==='young'?1:.72);
- const dw=o.who||'ember'; if(st!=='egg'&&DRAGON_ART[dw]){ const [iw,ih,h]=DRAGON_ART[dw], w=h*iw/ih; return `<g transform="translate(${x},${y}) scale(${o.flip?-k:k},${k})"><ellipse cx="0" cy="184" rx="${w*.3}" ry="10" fill="#000" opacity="${o.fly?.08:.16}"/><g${o.fly?' transform="translate(0,-30)"':''}><image href="art/d-${dw}.webp" x="${-w/2}" y="${184-h}" width="${w}" height="${h}"/></g></g>`; }
+ const dw=o.who||'ember'; const dk=y2()?(dw==='ember'&&o.sick?'ember2-sick':dw==='ember'?'ember2':dw):dw; const DA=(y2()&&Y2ART.drag[dk])||DRAGON_ART[dw]; const dsrc=(y2()&&Y2ART.drag[dk])?`art/d-${dk}.webp`:`art/d-${dw}.webp`; if(st!=='egg'&&DA){ const [iw,ih,h]=DA, w=h*iw/ih; return `<g transform="translate(${x},${y}) scale(${o.flip?-k:k},${k})"><ellipse cx="0" cy="184" rx="${w*.3}" ry="10" fill="#000" opacity="${o.fly?.08:.16}"/><g${o.fly?' transform="translate(0,-30)"':''}><image href="${dsrc}" x="${-w/2}" y="${184-h}" width="${w}" height="${h}"/></g></g>`; }
  if(st==='egg'){ const crack=o.crack?`<path d="M-40 -10l18 14 14-20 16 18 16-16 16 12" stroke="#7a4520" stroke-width="5" fill="none"/>`:'';
   return `<g transform="translate(${x},${y}) scale(${s})" filter="url(#soft)"><ellipse cx="0" cy="40" rx="110" ry="120" fill="url(#warm)"/><ellipse cx="0" cy="0" rx="62" ry="80" fill="#ffd8a8"/><circle cx="-20" cy="-30" r="10" fill="#ffa94d"/><circle cx="22" cy="5" r="13" fill="#ffa94d"/><circle cx="-14" cy="35" r="8" fill="#ffa94d"/><ellipse cx="-22" cy="-46" rx="12" ry="18" fill="#fff" opacity=".5"/>${crack}</g>`; }
  const ex=o.expr||'happy', wingUp=o.fly?-1:1;
@@ -985,6 +1061,10 @@ const CHARS=[
  {id:'prof',name:'Professor Quill',role:'Headmistress',art:()=>girl('prof',0,0,1,{}),bio:'Wise, warm and a little strict. She failed her first hundred spells and keeps every failed page in a drawer to show students that mistakes are how wizards grow.'},
  {id:'gran',name:'Grandma Rose',role:'Nora\'s grandma',art:()=>girl('gran',0,0,1,{}),bio:'Nora\'s grandma, and a former student of Inkwell Academy. She once made a promise to her best friend that she did not keep, and she has never forgotten it.'},
  {id:'wren',name:'Wren',role:'The girl in the tower',art:()=>girl('wren',0,0,1,{expr:'sad'}),bio:'Rose\'s best friend from long ago. She loved writing letters more than anything. When no one wrote back, her loneliness grew into the Fading.'},
+ {id:'opal',name:'Opal',role:'New student (Year 2)',art:()=>girl('opal',0,0,1,{}),bio:'Transferred from Starfall Academy. Quiet, proud, and secretly very lonely. She wears a crystal necklace from her grandmother.'},
+ {id:'wick',name:'Ms. Wick',role:'Librarian (Year 2)',art:()=>girl('wick',0,0,1,{}),bio:'The new librarian. Keeps pencils in her bun and knows a story for every problem.'},
+ {id:'saffron',name:'Aunt Saffron',role:'Dragon healer (Year 2)',art:()=>girl('saffron',0,0,1,{}),bio:'Lives in a round hut on the Five Peaks. Smells like cinnamon. Can tell what is wrong with a dragon just by listening to it hum.'},
+ {id:'granite',name:'Granite',role:'Dragon elder (Year 2)',dragon:true,art:()=>dragon(0,40,.55,{who:'granite',stage:'big'}),bio:'Thistle\'s grandfather, four hundred years old. Grumpy on the outside, but a single honest sorry can melt his stony heart.'},
  {id:'thistle',name:'Thistle',role:'Dragon elder',dragon:true,art:()=>dragon(0,40,.6,{who:'thistle',stage:'big'}),bio:'A great Dawnfeather dragon and Ember\'s aunt. She was Coach Bree\'s flying partner, and she has searched every sky for her lost family.'},
 ];
 function meet(id){ if(id&&CHARS.some(c=>c.id===id)&&!S.met[id]){ S.met[id]=true; save(); } }
@@ -1089,7 +1169,7 @@ class Pad{
   if(this.demo){ g.strokeStyle='#7048e8'; g.lineWidth=Math.max(6,U*.13); g.shadowColor='#b197fc'; g.shadowBlur=14; let left=this.demo.k; for(const s of this.L.strokes){ if(left<=0) break; if(s.dot){ const [x,yy]=this.toPx(s.pts[0]); g.fillStyle='#7048e8'; g.beginPath(); g.arc(x,yy,U*.1,0,7); g.fill(); left--; continue; } const n=Math.min(s.pts.length,Math.floor(left)); if(n>0){ this.path(s.pts,n); g.stroke(); this.demo.tip=this.toPx(s.pts[n-1]); } left-=s.pts.length; } g.shadowBlur=0; }
   // ink (glowing gold)
   g.lineCap='round'; g.lineJoin='round';
-  for(const pass of [[Math.max(14,U*.24),'rgba(255,212,59,.35)'],[Math.max(6,U*.12),'#e9a91c'],[Math.max(2,U*.04),'#fff3bf']]){ g.strokeStyle=pass[1]; g.fillStyle=pass[1]; g.lineWidth=pass[0]; for(const s of this.strokes){ if(s.length===1){ const [x,yy]=this.toPx(s[0]); g.beginPath(); g.arc(x,yy,pass[0]*.6,0,7); g.fill(); continue; } this.path(s); g.stroke(); } }
+  const IC=(typeof inkColors==='function')?inkColors():['rgba(255,212,59,.35)','#e9a91c','#fff3bf']; for(const pass of [[Math.max(14,U*.24),IC[0]],[Math.max(6,U*.12),IC[1]],[Math.max(2,U*.04),IC[2]]]){ g.strokeStyle=pass[1]; g.fillStyle=pass[1]; g.lineWidth=pass[0]; for(const s of this.strokes){ if(s.length===1){ const [x,yy]=this.toPx(s[0]); g.beginPath(); g.arc(x,yy,pass[0]*.6,0,7); g.fill(); continue; } this.path(s); g.stroke(); } }
   // sparkles
   const now=performance.now(); this.trail=this.trail.filter(t=>now-t.t<600); for(const t of this.trail){ const [x,yy]=this.toPx(t.p),k=1-(now-t.t)/600; g.fillStyle=`rgba(255,240,150,${k})`; g.beginPath(); g.arc(x+(Math.random()-.5)*10,yy-(1-k)*20,3*k+1,0,7); g.fill(); }
   if(this.trail.length&&!this.raf){ this.raf=requestAnimationFrame(()=>{this.raf=null;this.draw();}); }
@@ -1136,15 +1216,15 @@ function pickWords(themes,n){ const t=joinTier(); const lists=[...themes]; for(l
  for(const L of lists){ const un=shuffle([...new Set(L)].filter(w=>fitsJoin(w,t)&&!S.seen.includes(w)&&!out.includes(w))); while(out.length<n&&un.length) out.push(un.pop()); if(out.length>=n) break; }
  if(out.length<n) out.push(...pickUnseen([JOIN_T.flat(),WORDS2,WORDS3],n-out.length,out)); return out; }
 const POOLS={
- rune:()=>{ const L=pickUnseen([LOWER_P,UPPER_P],2); return [...L,...pickWords([],1)]; },
- chain:()=>pickWords([],3),
- caps:()=>{ const q=S.seen.includes('Q')?[]:['Q']; return [...q,...pickUnseen([UPPER_P],3-q.length,q)]; },
- family:()=>pickWords([FAMILY],3),
- restore:()=>pickWords([WORDS3,WORDS2],3),
- courage:()=>pickWords([COURAGE,WORDS3],3),
- dragon:()=>pickWords([DRAGON_W,WORDS2],3),
- flight:()=>pickWords([FLIGHT_W,DRAGON_W,WORDS2],3),
- song:()=>pickWords([SONG_W,FAMILY,WORDS3],3),
+ rune:()=>{ const L=pickUnseen([LOWER_P,UPPER_P],3); return [...L,...pickWords([],2)]; },
+ chain:()=>pickWords([],5),
+ caps:()=>{ const q=S.seen.includes('Q')?[]:['Q']; return [...q,...pickUnseen([UPPER_P],5-q.length,q)]; },
+ family:()=>pickWords([FAMILY],5),
+ restore:()=>pickWords([WORDS3,WORDS2],5),
+ courage:()=>pickWords([COURAGE,WORDS3],5),
+ dragon:()=>pickWords([DRAGON_W,WORDS2],5),
+ flight:()=>pickWords([FLIGHT_W,DRAGON_W,WORDS2],5),
+ song:()=>pickWords([SONG_W,FAMILY,WORDS3],5),
 };
 
 // ---- battle spells: write the word to cast that element (each word used once, ever)
@@ -1174,7 +1254,7 @@ const FOES={
 
 // ---- chapters
 const sc=(bg,chars,extra)=>sceneSVG(bg,chars,extra||'');
-const CHAPTERS=[
+let CHAPTERS=[
  {n:1,title:'The Lamps Go Dark',theme:'night',missions:[
   {id:'rune',icon:'🕯️',name:'Rune Hall',x:22,y:40,kind:'write',pool:'rune',title:'Rune Casting',goal:'Light the candles',done:'The candles are glowing!',
    intro:'The castle lamps are going dark! Trace each rune to light a candle.',tip:'Try it today: write your name in cursive on something you made.'},
@@ -1371,7 +1451,7 @@ function startWriteGo(m,n,items){
 // Fading guide: full trace while learning, then a faint path, then some freehand words. Two fizzles bring the full trace back.
 function guideFor(t,i=0){ const k=S.joinOK||0; if(k>=30) return (i%2===1)?'free':'faint'; if(k>=15) return 'faint'; return 'full'; }
 function guidePrompt(t){ const g=pad.guide; if(g==='free') return '✍️ Write it yourself!'; if(g==='faint') return '✨ Follow the faint path'; return null; }
-function loadItem(){ const t=M.items[M.i]; M.tries=0; pad.pen=false; pad.guide=guideFor(t,M.i); pad.set(t);
+function loadItem(){ { const h=document.getElementById('hpMe'); if(h) h.style.display='none'; } const t=M.items[M.i]; M.tries=0; pad.pen=false; pad.guide=guideFor(t,M.i); pad.set(t);
  if(!M.battle&&t.replace(/ /g,'').length>1&&(S.joinOK||0)<6) setTimeout(()=>{ if(M&&M.items[M.i]===t&&!pad.hasInk()){ showFb('👀 Watch the quill join them'); Voice.say('Watch the quill. It never lifts between letters. Then you try.'); pad.playDemo().then(()=>hideFb()); } },700);
  const isWord=t.length>1, cap=t.length===1&&t===t.toUpperCase();
  $('#playPrompt').textContent=t.includes(' ')?'Write the courage words':t.length===2?'Join the two letters':isWord?'Trace the joined word':'Trace the rune'; { const gp=guidePrompt(t); if(gp) $('#playPrompt').textContent=gp; }
@@ -1391,16 +1471,17 @@ async function cast(){
  if(r.stars>=1){
   pad.locked=true; const p=M.tries===1?2:1; M.pts+=p; M.quality.push(r.stars); if(pad.pen&&!M.penBonus){ M.penBonus=true; M.pts+=1; }
   if(!S.seen.includes(pad.text)) S.seen.push(pad.text); if(r.stars>=2&&pad.text.replace(/ /g,'').length>1){ const before=joinTier(); S.joinOK=(S.joinOK||0)+1; if(joinTier()>before) M.levelUp=joinTier(); } save();
+  if(M.battle&&M.defend) return shieldBlock(r.stars);
   if(M.battle){ showFb(r.stars===3?'PERFECT writing: CRITICAL spell! ✨✨✨':'The words are turning into magic…'); return battleHit(r.stars); }
   { const pts=padScreenPts(); FX.inkSparkle(pts); const e=pts[pts.length-1]||FX.center($('#padHost')); FX.burst(e[0],e[1],{n:40+r.stars*15,speed:7,size:6}); padFlash('glowok'); Snd.sfx('rise');
     const c=FX.center($('#padHost')); FX.text(c[0],c[1]-40,r.stars===3?'PERFECT!':r.stars===2?'GREAT!':'NICE!',r.stars===3?'#ffd43b':'#fff3bf',r.stars===3?64:52); if(r.stars===3){ FX.flash('#fff3bf',.35); FX.ring(c[0],c[1],'#ffd43b',260); } }
   const msg=(r.stars===3?'Perfect spell! ':r.stars===2?'Strong spell! ':'The spell worked! ')+'✨'.repeat(r.stars)+(p===2?'  +2':'  +1')+(pad.pen&&M.penBonus?'  ✏️+1':'');
   showFb(msg); Voice.say(r.stars===3?'Perfect spell!':r.stars===2?'Strong spell!':'The spell worked!');
   await sleep(1400); nextItem();
- } else if(M.tries<2){
-  FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); if(pad.guide!=='full'){ pad.guide='full'; pad.clear(); const m='Fizzle! Here is the full path to help. Try once more.'; showFb(m); Voice.say(m); if(!M.battle) $('#playPrompt').textContent='Trace the joined word'; } else { const tip=r.tips[0]||'Follow the glowing path.'; showFb('Fizzle! '+tip+' Try once more.'); Voice.say('Fizzle! '+tip+' Try once more.'); pad.clear(); }
+ } else if(M.tries<((S.year===2)?3:2)){
+  FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); if(S.year===2){ const tip=r.tips[0]||'Look at the word above and go slowly.'; if(M.tries>=2){ pad.guide='faint'; pad.clear(); const m='Fizzle! Here is a faint path to help. One more try.'; showFb(m); Voice.say(m); } else { pad.clear(); showFb('Fizzle! '+tip+' Try again, on your own.'); Voice.say('Fizzle! '+tip+' Try again.'); } } else if(pad.guide!=='full'){ pad.guide='full'; pad.clear(); const m='Fizzle! Here is the full path to help. Try once more.'; showFb(m); Voice.say(m); if(!M.battle) $('#playPrompt').textContent='Trace the joined word'; } else { const tip=r.tips[0]||'Follow the glowing path.'; showFb('Fizzle! '+tip+' Try once more.'); Voice.say('Fizzle! '+tip+' Try once more.'); pad.clear(); }
  } else {
-  FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); pad.locked=true; showFb('Watch how this one is written, then we move on.'); Voice.say('Watch how this one is written.'); pad.clear(); pad.locked=false; await pad.playDemo(); M.quality.push(0); S.seen.push(pad.text); save(); await sleep(400); if(M.battle) return battleMiss(); nextItem();
+  FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); pad.locked=true; showFb('Watch how this one is written, then we move on.'); Voice.say('Watch how this one is written.'); pad.clear(); pad.locked=false; await pad.playDemo(); M.quality.push(0); S.seen.push(pad.text); save(); await sleep(400); if(M.battle&&M.defend) return shieldFail(); if(M.battle) return battleMiss(); nextItem();
  }
 }
 function nextItem(){ M.i++; hideFb(); if(M.i<M.items.length) loadItem(); else finishMission(); }
@@ -1432,19 +1513,20 @@ function foeBody(f,state,x,y,k){ const hurt=state==='hurt'; const eyes=(ex,ey,r)
  if(f.kind==='imps') b=[[-120,40,.8],[0,-20,1],[120,40,.8]].map(([dx,dy,s])=>`<g transform="translate(${dx},${dy}) scale(${s})"><path d="M-60 -60L-40 -110L-20 -70ZM60 -60L40 -110L20 -70Z" fill="${f.body}"/><ellipse cx="0" cy="0" rx="75" ry="80" fill="${f.body}"/><path d="M-70 60q20 40 0 60M70 60q-20 40 0 60M0 70q10 40-10 60" stroke="${f.body}" stroke-width="16" fill="none" stroke-linecap="round"/>${eyes(26,-10,14)}<path d="M-22 30q22 ${hurt?-10:16} 44 0" stroke="${f.eye}" stroke-width="6" fill="none" stroke-linecap="round"/></g>`).join('');
  if(f.kind==='crystal') b=`<ellipse cx="0" cy="20" rx="200" ry="190" fill="#d0ebff" opacity=".5" filter="url(#wash)"/><path d="M0 -190L60 -60L190 -40L80 40L120 170L0 100L-120 170L-80 40L-190 -40L-60 -60Z" fill="${f.body}" stroke="#e7f5ff" stroke-width="6"/><path d="M0 -190L0 100M-190 -40L80 40M190 -40L-80 40" stroke="#e7f5ff" stroke-width="3" opacity=".7"/>${eyes(40,-10,18)}<path d="M-30 50q30 ${hurt?-14:18} 60 0" stroke="${f.eye}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
  if(f.kind==='golem') b=`<ellipse cx="0" cy="40" rx="220" ry="190" fill="#868e96" opacity=".35" filter="url(#wash)"/><rect x="-130" y="-90" width="260" height="230" rx="30" fill="${f.body}"/><rect x="-90" y="-180" width="180" height="110" rx="24" fill="${f.body}"/><rect x="-210" y="-60" width="70" height="170" rx="26" fill="${f.body}"/><rect x="140" y="-60" width="70" height="170" rx="26" fill="${f.body}"/><path d="M-40 -60L-10 0L-40 40L0 100M60 -20L30 30L60 70" stroke="${f.eye}" stroke-width="6" fill="none" filter="url(#glow)"/>${eyes(36,-130,14)}`;
- if(FOE_ART[f.kind]){ const [iw,ih,h]=FOE_ART[f.kind], w=h*iw/ih; b=`<ellipse cx="0" cy="${h/2-10}" rx="${w*.36}" ry="14" fill="#000" opacity=".18"/><g${hurt?' opacity=".7" transform="rotate(-8) translate(-14,6)"':''}><image href="art/m-${f.kind}.webp" x="${-w/2}" y="${-h/2-30}" width="${w}" height="${h}"/></g>${hurt?'<text x="-20" y="-150" font-size="64">💥</text>':''}`; }
+ if(FOE_ART[f.kind]||Y2ART.foe[f.kind]){ const [iw,ih,h]=Y2ART.foe[f.kind]||FOE_ART[f.kind], w=h*iw/ih; b=`<ellipse cx="0" cy="${h/2-10}" rx="${w*.36}" ry="14" fill="#000" opacity=".18"/><g${hurt?' opacity=".7" transform="rotate(-8) translate(-14,6)"':''}><image href="art/m-${f.kind}.webp" x="${-w/2}" y="${-h/2-30}" width="${w}" height="${h}"/></g>${hurt?'<text x="-20" y="-150" font-size="64">💥</text>':''}`; }
  else if(f.kind==='girl'){ const aura=f.who==='wren'?`<ellipse cx="0" cy="40" rx="230" ry="260" fill="#2b2540" opacity=".55" filter="url(#wash)"/>`:''; b=`${aura}<g transform="translate(0,-110)">${girl(f.who,0,0,1.25,{arm:'wand',expr:hurt?'sad':(f.who==='wren'?'sad':'smirk'),flip:true})}</g><ellipse cx="0" cy="10" rx="215" ry="250" fill="${f.shield}" opacity="${hurt?.45:.22}" stroke="${f.shield}" stroke-width="6"/>`; }
  return `<g transform="translate(${x},${y}) scale(${k})" filter="url(#soft)">${b}</g>`; }
 function foeSVG(f,state=''){ return svg(BG(f.bg)+foeBody(f,state,512,330,1),'272 130 480 400'); }
 function drawHP(){ const f=M.mon, a=f.kind==='girl'?'🛡️':'🖤'; $('#hp').textContent=a.repeat(f.hp)+'▫️'.repeat(f.max-f.hp); }
 function sideMode(battle){ $('#hp').style.display=battle?'block':'none'; $('#cards').style.display=battle?'flex':'none'; $('#playTarget').style.display=battle?'none':''; }
 function startBattle(m,n){ const f=Object.assign({},FOES[m.foe]); f.max=f.hp;
- M={m,n,battle:true,mon:f,pts:0,quality:[],penBonus:false,word:null,tries:0,casts:0,phase:1};
+ M={m,n,battle:true,mon:f,pts:0,quality:[],penBonus:false,word:null,tries:0,casts:0,phase:1}; M.hearts=3; M.defend=false; { let h=$('#hpMe'); if(!h){ h=document.createElement('div'); h.id='hpMe'; h.className='hp'; $('#hp').after(h); } h.textContent=heartsTxt(); h.title='Nora'; h.style.display='block'; }
  $('#playTtl').textContent=`⚔️ ${m.title} — ${f.name}`; $('#playPrompt').textContent=`Weak to ${ELEM[f.weak].e} ${ELEM[f.weak].n}`; $('#penBadge').textContent='✨ Perfect writing = CRITICAL hit!'; $('#playDots').innerHTML='';
  show('play'); sideMode(true); $('#playArt').innerHTML=foeSVG(f); drawHP(); dealCards(true);
 }
 function dealCards(first){ const f=M.mon; M.word=null; pad.set(' '); pad.locked=true; M.tries=0; pad.pen=false;
  const box=$('#cards'); box.innerHTML='';
+ if(M.defend&&M.phase===1){ const w=pickWords([DEFEND_W],1)[0]; const b=document.createElement('button'); b.innerHTML=`<span>🛡️</span><span class="cur">${w}</span><span class="el">Shield</span>`; b.classList.add('weak','shieldCard'); b.onclick=()=>pickCard(w,b); box.appendChild(b); const t=`${f.name} is getting ready to attack! Write a shield spell to block it!`; showFb('⚠️ '+t); Voice.say(t); $('#playArt').classList.add('charging'); return; }
  if(M.phase===2){ const w=FINAL.find(x=>!S.seen.includes(x)); if(!w) return battleWin(); const b=document.createElement('button'); b.innerHTML=`<span>💌</span><span class="cur">${w}</span><span class="el">Kindness</span>`; b.classList.add('weak'); b.onclick=()=>pickCard(w,b); box.appendChild(b); showFb('Write the kind words for Wren 💌'); return; }
  const words=spellCards(f.weak);
  if(!words.length) return battleWin();
@@ -1461,6 +1543,17 @@ async function spellSequence(elk,emoji,crit){ const host=$('#padHost'), c=FX.cen
  FX.burst(c[0],c[1],{n:50,colors:E.c,shape:E.shape,speed:9}); FX.ring(c[0],c[1],col,220); FX.shake(host,8,300); Snd.sfx('whoosh'); Snd.sfx(elk);
  const t=FX.center($('#playArt')); await FX.projectile(elk,emoji,c[0],c[1],t[0],t[1],crit?560:680); // 3. launch!
  return t; }
+const DEFEND_W=['safe','wall','ward','guard','shield','block','shell','dome','armor','cover','defend','protect','barrier','bubble','fence','helmet','fort','strong','brave','stand','hold','calm','steady','sturdy'];
+function heartsTxt(){ return 'Nora '+'💜'.repeat(M.hearts)+'🤍'.repeat(3-M.hearts); }
+async function shieldBlock(stars){ const c=FX.center($('#padHost')), t=FX.center($('#playArt')); $('#playArt').classList.remove('charging'); M.defend=false; M.blocks=(M.blocks||0)+1;
+ FX.ring(c[0],c[1],'#74c0fc',260); FX.burst(c[0],c[1],{n:50,colors:['#4dabf7','#a5d8ff','#ffffff'],shape:'circle',speed:8}); Snd.sfx('charge'); await sleep(500);
+ await FX.projectile('wind','💥',t[0],t[1],c[0],c[1],600); FX.ring(c[0],c[1],'#a5d8ff',320); FX.flash('#d0ebff',.4,400); FX.text(c[0],c[1]-20,stars===3?'🛡️ PERFECT BLOCK!':'🛡️ BLOCKED!','#a5d8ff',52); Snd.sfx('boom');
+ const m=stars===3?'Perfect shield! Not even a scratch. Now strike back!':'Blocked! Your shield held. Now strike back!'; showFb(m); Voice.say(m); await sleep(1400); dealCards(false); }
+async function shieldFail(){ const c=FX.center($('#padHost')), t=FX.center($('#playArt')); $('#playArt').classList.remove('charging'); M.defend=false;
+ await FX.projectile('wind','💥',t[0],t[1],c[0],c[1],600); FX.shake($('#play'),16,500); FX.flash('#ffc9c9',.45,400); Snd.sfx('boom'); M.hearts=Math.max(0,M.hearts-1); $('#hpMe').textContent=heartsTxt();
+ if(M.hearts===0){ M.hearts=3; await sleep(500); $('#hpMe').textContent=heartsTxt(); const m='Ouch! But Ember shares her warmth with you. Hearts are full again!'; showFb(m); Voice.say(m); FX.hearts(c[0],c[1]); }
+ else { const m='Ouch! The attack got through. Keep going, you can do it!'; showFb(m); Voice.say(m); }
+ await sleep(1500); dealCards(false); }
 async function battleHit(stars){ const f=M.mon; const kind=M.phase===2; const elk=kind?'light':ELEM_OF[M.word], el=kind?{e:'💌',n:'Kindness'}:ELEM[elk];
  const weak=kind||elk===f.weak, crit=stars===3; M.casts++;
  const t=await spellSequence(elk,el.e,crit);
@@ -1472,6 +1565,8 @@ async function battleHit(stars){ const f=M.mon; const kind=M.phase===2; const el
  const msg=kind?'Your kind words reach her…':weak?`Super effective! ${el.e} ${el.n} hits for ${dmg}!`:`${el.e} Hit for ${dmg}! Try ${ELEM[f.weak].n.toLowerCase()} for more!`; showFb(msg); Voice.say(kind?'Your kind words reach her.':crit?'Critical hit!':weak?'Super effective!':'Hit!');
  await sleep(1400); art.classList.remove('hit'); art.innerHTML=foeSVG(f);
  if(f.hp>0&&M.phase===1&&S.done['c2:flight']&&M.casts%2===0){ await emberBreath(f); }
+ if(f.hp<=0&&M.phase===1&&M.casts<5){ f.hp=1; drawHP(); const m=`${f.name} is still standing! Keep casting!`; FX.text(t[0],t[1]-60,'STILL STANDING!','#ffd43b',40); showFb(m); Voice.say(m); await sleep(1100); }
+ if(f.hp>0&&M.phase===1&&M.casts%2===0) M.defend=true;
  if(f.hp<=0){ if(f.final&&M.phase===1){ return wrenPhase2(); } if(f.final&&M.phase===2&&FINAL.some(x=>!S.seen.includes(x))){ f.hp=1; drawHP(); return dealCards(false); } return battleWin(); }
  dealCards(false);
 }
@@ -1880,7 +1975,7 @@ const STORY_RESULT={ sunny:['Sunny found her way!','🌟','Try it today: help so
  grandma:['You and Grandma are a team!','👵💜','Try it today: ask a grandparent about their best friend when they were little.'], golemPost:['You calmed the Storm Golem!'], wrenPost:['You saved Wren, and the whole world\'s words!'] };
 
 // ----- chapter openings and endings
-const CH_TEXT={
+let CH_TEXT={
  1:{end:()=>{ const hall=(n,i,m='shy')=>sc('hall',[['mei',230,270,.95,{expr:m}],['nora',512,250,1.1,{expr:n}],['iris',800,270,.95,{expr:i,flip:true}]]); return [
   say(null,"Back in the great hall, everyone is talking about the new girl who saved the Shadow Gate. Well… almost everyone is smiling.",hall('happy','smirk','happy')),
   say('iris',"So you're the new girl everyone keeps talking about.",hall('wow','smirk','wow')),
@@ -2004,7 +2099,604 @@ window.__test={
  resetSession:()=>{ sessionMissions=0; }
 };
 </script>
-<div id="kaVer" data-v="1.7" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.7 · 2026-11-26</div>
+<script>
+// ================= YEAR 2 · THE DRAGON PACT =================
+NAMES.opal='Opal'; NAMES.saffron='Aunt Saffron'; NAMES.wick='Ms. Wick'; NAMES.granite='Granite'; NAMES.diary='The Diary'; NAMES.spirit='The Whisper';
+Object.assign(CAST,{
+ opal:{cast:['Tessa','Fiona','Samantha'],pitch:1.25,rate:.95},
+ saffron:{cast:['Moira','Allison','Samantha'],pitch:1.0,rate:.92},
+ wick:{cast:['Kate','Serena','Samantha'],pitch:1.1,rate:.9},
+ granite:{cast:['Karen','Allison','Samantha'],pitch:.6,rate:.8},
+ diary:{cast:['Moira','Karen','Samantha'],pitch:.85,rate:.82},
+ spirit:{cast:['Moira','Karen','Samantha'],pitch:.7,rate:.8},
+});
+const DIARY=(x=760,y=330,s=1)=>`<g class="float" transform="translate(${x},${y}) scale(${s})"><ellipse cx="0" cy="10" rx="90" ry="70" fill="url(#warm)" opacity=".5"/><image href="art/diary.webp" x="-70" y="-70" width="140" height="140"/></g>`;
+const INKNOTE=(t,x=640,y=170,sz=42)=>SILVER(t,x,y,sz).replace('#f8f9fa','#e5dbff').replace('#4c3d8f','#3b1f6b');
+const D2=(x,y,s,o={})=>dragon(x,y,s,o);
+const Y2={};
+Y2.INTRO=()=>[
+ say(null,"Summer at home was full of sunshine, scraped knees and Grandma's dumplings. Ember spent the summer on the Five Peaks with her dragon family.",sc('home',[['nora',330,250,1,{expr:'happy'}],['gran',720,270,.95,{expr:'happy'}]])),
+ say(null,"Every week, a letter in silver ink arrived from Wren. Every week, Nora wrote back. Not one week was missed.",sc('home',[['nora',512,250,1.05,{arm:'hold',expr:'happy'}]],ENVELOPE)),
+ say('gran',"Look at you. A whole year older and a whole inch taller. Ready for your second year, sweetheart?",sc('home',[['gran',300,270,1,{expr:'happy'}],['nora',700,250,1,{arm:'wave'}]])),
+ say('nora',"So ready. I can't wait to see Ember again. And Mei, and Iris, and everyone!",sc('home',[['gran',300,270,1,{expr:'happy'}],['nora',700,250,1,{expr:'happy'}]])),
+ say(null,"But far away, in a dusty corner of the academy, something old was waking up. Something that loved secrets.",sc('attic',[],DIARY(512,330,1.3)),{sfx:'dissolve'}),
+];
+Y2.CH=[
+ {n:1,title:'A New Year',theme:'night',missions:[
+  {id:'back',icon:'🏰',name:'Academy Gate',bg:'gate',kind:'story',story:'y2back',title:'Back to Inkwell'},
+  {id:'banner',icon:'🎉',name:'Great Hall',bg:'hall',kind:'write',pool:'y2warm',title:'Welcome-Back Spells',goal:'Relight the welcome banner',done:'The banner is shining!',
+   intro:'Write each word on your own. If you fizzle twice, a faint path will help.',tip:'Try it today: write a welcome note for someone in your family.'},
+  {id:'opal',icon:'💎',name:'Courtyard',bg:'courtyard',kind:'story',story:'y2opal',title:'The New Girl'},
+  {id:'attic',icon:'📔',name:'Library Attic',bg:'attic',kind:'story',story:'y2attic',title:'The Diary in the Attic'},
+  {id:'labels',icon:'🏷️',name:'Library',bg:'library',kind:'read',title:'Ms. Wick\'s Labels',goal:'Read the cursive labels',done:'Every book is back on its shelf!',
+   intro:'Ms. Wick\'s book labels are written in cursive. Read each one and type what it says.',tip:'Try it today: ask a grown-up to write you a secret word in cursive, and read it.'},
+  {id:'impsB',icon:'👾',name:'Attic Stairs',bg:'attic',kind:'battle',foe:'imps2',pre:'y2impsPre',post:'y2impsPost',title:'Imps in the Attic',tip:'Try it today: tidy up one shelf and put everything back where it belongs.'},
+  {id:'fly2',icon:'✨',name:'Firefly Garden',bg:'courtyard',kind:'mini',game:'fireflies',after:'banner'},
+ ]},
+ {n:2,title:'Ember\'s Grey Scales',theme:'dusk',missions:[
+  {id:'sick',icon:'🐉',name:'Dragon Nest',bg:'infirm',kind:'story',story:'y2sick',title:'Something Is Wrong'},
+  {id:'care',icon:'🧣',name:'Infirmary',bg:'infirm',kind:'write',pool:'y2care',title:'Caring Words',goal:'Keep Ember warm and calm',done:'Ember is resting comfortably.',
+   intro:'Write caring words for Ember. Slow and steady, all on your own.',tip:'Try it today: help feed or care for a pet or a plant.'},
+  {id:'juni2',icon:'🌿',name:'Greenhouse',bg:'greenhouse',kind:'story',story:'y2juni',title:'Juni Notices'},
+  {id:'diaryRead',icon:'📔',name:'Dorm Room',bg:'room',kind:'read',title:'The Diary\'s Messages',goal:'Read what the diary wrote',done:'You read every message.',
+   intro:'The diary writes in curly cursive. Read each message and type it.',tip:'Try it today: if a message ever makes you feel worried, show it to a grown-up.'},
+  {id:'night',icon:'🌙',name:'Night Watch',bg:'infirm',kind:'story',story:'y2night',title:'The Long Night'},
+  {id:'mist',icon:'🌫️',name:'Misty Hall',bg:'hall',kind:'battle',foe:'mist',pre:'y2mistPre',post:'y2mistPost',title:'The Grey Mist',tip:'Try it today: when you feel worried, say the worry out loud to someone you trust.'},
+  {id:'potion2',icon:'🧪',name:'Potion Room',bg:'cellar',kind:'mini',game:'potion',after:'care'},
+ ]},
+ {n:3,title:'Secrets and Splits',theme:'violet',missions:[
+  {id:'meiFight',icon:'💔',name:'Library',bg:'library',kind:'story',story:'y2mei',title:'What the Diary Said'},
+  {id:'friendW',icon:'🤝',name:'Common Room',bg:'common',kind:'write',pool:'y2friend',title:'Friendship Spells',goal:'Mend the broken friendship charm',done:'The charm glows again!',
+   intro:'Friendship words. Write them yourself; the faint path only comes if you need it.',tip:'Try it today: write a friend a short note that says what you like about them.'},
+  {id:'irisSees',icon:'👀',name:'Classroom',bg:'hall',kind:'story',story:'y2iris',title:'Iris Is Watching'},
+  {id:'notes',icon:'📝',name:'Classroom',bg:'hall',kind:'read',title:'Passed Notes',goal:'Read the notes',done:'You read every note.',
+   intro:'Notes are flying around class, all in cursive. Read each one and type it.',tip:'Try it today: read a birthday card or letter written in cursive.'},
+  {id:'opalFight',icon:'💎',name:'Tower Stairs',bg:'bigstairs',kind:'story',story:'y2opalFight',title:'Nobody Likes Me'},
+  {id:'opalDuel',icon:'⚔️',name:'Duel Ring',bg:'courtyard',kind:'battle',foe:'opal',pre:'y2duelPre',post:'y2duelPost',title:'A Duel with Opal',tip:'Try it today: if you\'re upset with someone, take three slow breaths before you answer.'},
+ ]},
+ {n:4,title:'Telling the Truth',theme:'storm',missions:[
+  {id:'wick',icon:'🕯️',name:'Ms. Wick\'s Desk',bg:'library',kind:'story',story:'y2wick',title:'Telling a Grown-Up'},
+  {id:'granVisit',icon:'👵',name:'Academy Gate',bg:'gate',kind:'story',story:'y2gran',title:'Grandma Knows a Way'},
+  {id:'pack',icon:'🎒',name:'Dorm Room',bg:'room',kind:'write',pool:'y2journey',title:'Packing Spells',goal:'Pack for the mountains',done:'Your bag is packed!',
+   intro:'Journey words. Write them on your own.',tip:'Try it today: make a checklist in cursive before your next trip.'},
+  {id:'oldMap',icon:'🗺️',name:'Map Room',bg:'office',kind:'read',title:'The Old Map',goal:'Read the map labels',done:'You know the way to the Five Peaks!',
+   intro:'The old map is labelled in faded cursive. Read each place name and type it.',tip:'Try it today: find your town on a map and read the names around it.'},
+  {id:'breeFly',icon:'🌬️',name:'Dragon Field',bg:'field',kind:'story',story:'y2bree',title:'Coach Bree\'s Promise'},
+  {id:'frost',icon:'❄️',name:'Mountain Gate',bg:'path',kind:'battle',foe:'sprite2',pre:'y2frostPre',post:'y2frostPost',title:'The Frozen Gate',tip:'Try it today: help someone who is cold or tired. A blanket or a kind word counts.'},
+  {id:'broom2',icon:'🧹',name:'Broom Field',bg:'field',kind:'mini',game:'broom',after:'pack'},
+ ]},
+ {n:5,title:'The Five Peaks',theme:'dusk',missions:[
+  {id:'journey',icon:'🏔️',name:'Mountain Path',bg:'path',kind:'story',story:'y2journey',title:'Over the Clouds'},
+  {id:'saffron',icon:'🍵',name:'Healer\'s Hut',bg:'hut',kind:'story',story:'y2saffron',title:'Aunt Saffron'},
+  {id:'warmW',icon:'🔥',name:'Snowy Pass',bg:'snow',kind:'write',pool:'y2warmth',title:'Warming Spells',goal:'Melt a path through the snow',done:'The pass is open!',
+   intro:'Warm words melt snow. Write them on your own.',tip:'Try it today: make a warm drink for someone in your family.'},
+  {id:'granite',icon:'🗿',name:'Dragon Cave',bg:'cave',kind:'story',story:'y2granite',title:'The Grumpy Elder'},
+  {id:'law',icon:'📜',name:'Standing Stones',bg:'council',kind:'read',title:'The Dragon Law',goal:'Read the old dragon law',done:'You read the whole dragon law!',
+   intro:'The dragon law is carved in cursive on the stones. Read each word and type it.',tip:'Try it today: read the rules of a game out loud before you play.'},
+  {id:'golem2',icon:'🌩️',name:'Storm Ridge',bg:'council',kind:'battle',foe:'golem2',pre:'y2golemPre',post:'y2golemPost',title:'The Stone Guardian',tip:'Try it today: when something is hard, ask "what is one small step I can do now?"'},
+  {id:'lanterns2',icon:'🏮',name:'Sky Garden',bg:'peaks',kind:'mini',game:'lanterns',after:'warmW'},
+ ]},
+ {n:6,title:'The Dragon Pact',theme:'storm',missions:[
+  {id:'truth2',icon:'📔',name:'Moonlit Ridge',bg:'council',kind:'story',story:'y2truth',title:'Who Wrote the Diary?'},
+  {id:'opalSorry',icon:'💎',name:'Healer\'s Hut',bg:'hut',kind:'story',story:'y2opalSorry',title:'Opal\'s Secret'},
+  {id:'mossW',icon:'🌱',name:'Moss Garden',bg:'moss',kind:'write',pool:'y2heal',title:'Healing Spells',goal:'Wake the glowing moss',done:'The moss is glowing bright!',
+   intro:'Healing words wake the moss. Write each one on your own.',tip:'Try it today: plant a seed or water a plant, and give it a name.'},
+  {id:'pactRead',icon:'📜',name:'Standing Stones',bg:'council',kind:'read',title:'The Pact Words',goal:'Read the words of the pact',done:'You know every word of the pact.',
+   intro:'Read the pact words, written in shining cursive. Type each one.',tip:'Try it today: make a promise to someone and write it down.'},
+  {id:'spirit',icon:'🌑',name:'The Dark Ridge',bg:'council',kind:'battle',foe:'spirit',pre:'y2spiritPre',post:'y2spiritPost',title:'Final Battle: The Whisper',tip:'Try it today: if someone asks you to keep a secret that feels bad, tell a grown-up you trust.'},
+  {id:'pact',icon:'🤝',name:'Five Peaks',bg:'peaks',kind:'story',story:'y2pact',title:'The Dragon Pact'},
+ ]},
+];
+Y2.FOES={
+ imps2:{name:'Ink Imps',hp:5,weak:'wind',kind:'imps',body:'#1b1b2f',eye:'#69db7c',bg:'attic'},
+ mist:{name:'The Grey Mist',hp:5,weak:'light',kind:'blob',body:'#2b2540',eye:'#ffd43b',bg:'hall'},
+ opal:{name:'Opal (friendly duel)',hp:5,weak:'water',kind:'girl',who:'opal',shield:'#91a7ff',bg:'courtyard',duel:true},
+ sprite2:{name:'Frost Sprite',hp:6,weak:'fire',kind:'crystal',body:'#a5d8ff',eye:'#1864ab',bg:'path'},
+ golem2:{name:'Stone Guardian',hp:6,weak:'water',kind:'golem',body:'#495057',eye:'#fab005',bg:'council'},
+ spirit:{name:'The Whisper',hp:7,weak:'light',kind:'spirit',body:'#2b2540',eye:'#b197fc',bg:'council'},
+};
+Y2.STORIES={
+ // ---------- Chapter 1
+ y2back:done=>{ const s=(n,a,b,c)=>sc('gate',[['mei',170,280,.9,a],['nora',512,250,1.05,n],['iris',850,280,.9,{...b,flip:true}]],c||''); playStory([
+  say(null,"The paper-bird carriage lands at the gate with a soft flutter. Inkwell Academy looks exactly the same. But everyone else… looks a little different.",s({expr:'wow'},{},{})),
+  say('mei',"NORA! You're taller than me now! That's not fair!",s({expr:'happy'},{expr:'wow',arm:'wave'},{})),
+  say('nora',"Mei! You got a new hair clip! And Iris… you braided your hair!",s({arm:'wave'},{expr:'happy'},{expr:'happy'})),
+  say('iris',"My mom braided it before she flew away on her sky-ship. It's the first thing I've ever let anyone touch my hair for.",s({},{expr:'happy'},{expr:'happy'})),
+  say(null,"Then a golden blur shoots down from the sky. It's Ember! She's twice as big, and she knocks Nora flat into the grass.",sc('gate',[['nora',360,260,1,{expr:'wow'}]],D2(680,300,.8,{expr:'happy',fly:true})),{sfx:'gold'}),
+  say('ember',"RRR-EEE! RRR-EEE!",sc('gate',[['nora',360,260,1,{expr:'happy',arm:'wave'}]],D2(660,330,.8,{expr:'happy'}))),
+  say('nora',"I missed you too, Ember! You smell like mountain air and campfire.",sc('gate',[['nora',360,260,1,{expr:'happy',arm:'hold'}]],D2(660,330,.8,{expr:'closed'}))),
+  say('prof',"Welcome back, second-years. This year you will learn to write without tracing. Your hands already know the way. Trust them.",sc('gate',[['prof',512,250,1,{arm:'wave'}]])),
+ ],done); },
+ y2opal:done=>{ const s=(n,o)=>sc('courtyard',[['nora',300,250,1,n],['opal',720,270,1,{...o,flip:true}]]); playStory([
+  say(null,"In the courtyard, a girl with wavy dark-blue hair sits alone on the fountain, polishing a crystal necklace.",s({},{expr:'sad'})),
+  say('nora',"Hi! I'm Nora. Are you new? Do you want to sit with us at lunch?",s({arm:'wave'},{expr:'wow'})),
+  say('opal',"I'm Opal. I transferred from Starfall Academy. And no thanks. I already know everything about you.",s({expr:'wow'},{expr:'smirk'})),
+  say('opal',"You're the famous Nora who saved the world's words. Everyone talks about you like you're a hero.",s({expr:'sad'},{expr:'sad'})),
+  say(null,"What should Nora do?",s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:"😤 “Fine. Be alone, then.”",ok:false,why:"Opal turns away even more. Snapping back makes the wall between them taller. Try again."},
+   {t:"🙂 “I'm not a hero. I was new once too. The offer stays open.”",ok:true,reply:[
+    say('nora',"I'm really not a hero. I was new last year, and I was scared of everything. The offer stays open, okay?",s({arm:'wave'},{expr:'wow'})),
+    say('opal',"…Whatever.",s({},{expr:'sad'})),
+    say(null,"But as Nora walks away, she sees Opal watching her. Not angry. Just… lonely. Like Wren used to look.",s({expr:'sad'},{expr:'sad'})),
+   ]},
+   {t:"🙈 Pretend she didn't hear and walk away",ok:false,why:"Opal looks even lonelier. Ignoring someone doesn't help them feel welcome. Try again."},
+  ]}),
+ ],done); },
+ y2attic:done=>{ const s=(n,w,x='')=>sc('attic',[['nora',300,250,1,n],['wick',720,260,1,w]],x); playStory([
+  say(null,"Ms. Wick, the new librarian, needs help carrying books up to the attic. It's dusty and dim, and the floorboards creak like old bones.",s({arm:'hold'},{arm:'hold'})),
+  say('wick',"Thank you, Nora. Careful with that box. Some of these books are older than the castle itself.",s({arm:'hold'},{expr:'happy'})),
+  say(null,"When Ms. Wick goes back downstairs, Nora notices something on a dusty desk: a little leather diary with a purple ribbon. It's glowing.",sc('attic',[['nora',300,250,1,{expr:'wow'}]],DIARY(700,320,1.1))),
+  say(null,"She opens it. The first page is empty. Then, slowly, silver-purple words appear, as if an invisible hand is writing.",sc('attic',[['nora',300,250,1,{expr:'wow',arm:'hold'}]],DIARY(700,320,1.1)+INKNOTE('Hello, Nora.',640,140,44)),{sfx:'chime'}),
+  say('diary',"Hello, Nora. Don't be scared. I am you… from the future. I came back to help you.",sc('attic',[['nora',300,250,1,{expr:'wow',arm:'hold'}]],DIARY(700,320,1.1))),
+  say('diary',"I know what will happen this year. Something bad. But I can help you, if you promise to keep me a secret. Don't tell ANYONE.",sc('attic',[['nora',300,250,1,{expr:'sad',arm:'hold'}]],DIARY(700,320,1.1))),
+  say(null,"Nora's tummy feels funny. A diary that knows her name? That's amazing. And a little bit scary.",sc('attic',[['nora',300,250,1,{expr:'sad',arm:'hold'}]],DIARY(700,320,1.1))),
+  say(null,"What should Nora do?",sc('attic',[['nora',300,250,1,{expr:'sad',arm:'hold'}]],DIARY(700,320,1.1)),{choices:[
+   {t:"🤫 Promise to keep it secret forever",ok:false,why:"A real friend never asks you to hide things from everyone who loves you. Let's find a safer choice."},
+   {t:"🔎 Keep it for now, but stay careful and watch what it says",ok:true,reply:[
+    say('nora',"I'll listen to you. But I'm going to be careful. Real friends don't ask for secrets that feel funny.",sc('attic',[['nora',300,250,1,{arm:'hold'}]],DIARY(700,320,1.1))),
+    say('diary',"Of course, Nora. You're so smart. That's why I chose you.",sc('attic',[['nora',300,250,1,{arm:'hold',expr:'wow'}]],DIARY(700,320,1.1))),
+    say(null,"Nora slips the diary into her bag. She doesn't notice the faint purple shadow that slides out of it and under the door.",sc('attic',[],DIARY(512,330,1.2)),{sfx:'dissolve'}),
+   ]},
+  ]}),
+ ],done); },
+ y2impsPre:done=>{ const f=Y2.FOES.imps2, s=(e)=>sc('attic',[['wick',180,290,.85,{arm:'hold',expr:'wow'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.5)); playStory([
+  say(null,"CRASH! A stack of books topples over. Ink Imps! They're back, and they're tearing labels off the book spines.",s('wow')),
+  say('wick',"My labels! Those imps have been sneaking up here all week!",s('wow')),
+  say('nora',"Leave it to me. Wind spells blow their ink everywhere!",s('happy')),
+ ],done); },
+ y2impsPost:done=>playStory([
+  say(null,"The imps tumble out of the window, squeaking. One of them drops a torn note on the floor.",sc('attic',[['wick',300,270,1,{expr:'wow'}],['nora',700,250,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
+  say(null,"It says, in shaky imp writing: The Whisper told us to come. The Whisper is hungry for secrets.",sc('attic',[['wick',300,270,1,{expr:'sad'}],['nora',700,250,1,{arm:'hold',expr:'sad'}]])),
+  say('wick',"The Whisper? I've never heard of such a thing. Have you, Nora?",sc('attic',[['wick',300,270,1,{expr:'wow'}],['nora',700,250,1,{arm:'hold',expr:'sad'}]])),
+  say(null,"Nora thinks of the diary in her bag. Her mouth opens… and then closes again.",sc('attic',[['wick',300,270,1,{}],['nora',700,250,1,{expr:'sad'}]])),
+ ],done),
+ // ---------- Chapter 2
+ y2sick:done=>{ const s=(n,e)=>sc('infirm',[['nora',300,250,1,n]],D2(700,320,.8,e)); playStory([
+  say(null,"One morning, Ember doesn't come to wake Nora up. Nora finds her curled in the dragon nest, shivering.",s({expr:'wow'},{sick:true,expr:'sad'})),
+  say(null,"Grey patches are spreading across Ember's golden scales, like ash on a fire that's going out.",s({expr:'sad'},{sick:true,expr:'closed'})),
+  say('nora',"Ember? Ember, what's wrong? Your scales are cold!",s({expr:'sad',arm:'hold'},{sick:true,expr:'sad'})),
+  say('ember',"Rrr… eee…",s({expr:'sad'},{sick:true,expr:'sad'})),
+  say(null,"In Nora's bag, the diary is glowing. She opens it with shaking hands.",sc('infirm',[['nora',300,250,1,{expr:'sad',arm:'hold'}]],D2(760,330,.7,{sick:true,expr:'closed'})+INKNOTE('Tell no one.',600,150,44))),
+  say('diary',"Tell no one. If the teachers see a sick dragon, they'll take her far away. Only I can tell you how to save her.",sc('infirm',[['nora',300,250,1,{expr:'sad',arm:'hold'}]],D2(760,330,.7,{sick:true,expr:'closed'})+DIARY(560,140,.6))),
+  say(null,"Nora hugs Ember tight. She doesn't want anyone to take Ember away. Not ever.",s({expr:'sad',arm:'hold'},{sick:true,expr:'closed'})),
+ ],done); },
+ y2juni:done=>{ const s=(n,j)=>sc('greenhouse',[['nora',300,250,1,n],['juni',720,270,1,j]]); playStory([
+  say(null,"Nora sneaks into the greenhouse to find warming herbs. Juni is there, watering her talking tulips.",s({expr:'sad'},{expr:'happy'})),
+  say('juni',"Nora! The tulips said you looked worried. They're very nosy. Is everything okay? Is Ember okay?",s({expr:'wow'},{expr:'wow'})),
+  say(null,"What should Nora say?",s({expr:'sad'},{expr:'wow'}),{choices:[
+   {t:"😶 “She's totally fine. Why would you ask?”",ok:false,why:"That's not true, and Nora's tummy twists when she says it. Lying to a friend who wants to help never feels good. Try again."},
+   {t:"😟 “I can't tell you everything… but I'm really worried.”",ok:true,reply:[
+    say('nora',"I can't tell you everything. But I'm really, really worried about her.",s({expr:'sad'},{expr:'sad'})),
+    say('juni',"That's okay. You don't have to carry it all alone, you know. Here, sunleaf tea. It keeps dragons warm.",s({expr:'sad'},{expr:'happy',arm:'hold'}),{sfx:'chime'}),
+    say('juni',"And Nora? If it's something big… maybe tell a grown-up. My grandpa says worries shrink when you share them.",s({expr:'sad'},{expr:'sad'})),
+    say(null,"Nora nods. But that night, the diary whispers: Juni can't help. Only I can.",sc('room',[['nora',512,250,1.05,{expr:'sad',arm:'hold'}]],DIARY(780,320,.8))),
+   ]},
+   {t:"😠 “Mind your own business, Juni!”",ok:false,why:"Juni's face falls. She only wanted to help. Being rude doesn't keep a worry smaller. Try again."},
+  ]}),
+ ],done); },
+ y2night:done=>{ const s=(n,b,e={sick:true,expr:'closed'})=>sc('infirm',[['nora',300,250,1,n],['bree',720,250,1,b]],D2(512,380,.6,e)); playStory([
+  say(null,"Nora stays with Ember all night. Around midnight, the door creaks. It's Coach Bree, holding a lantern.",s({expr:'wow'},{expr:'wow'})),
+  say('bree',"I heard a dragon crying from all the way across the field. Oh, Nora. Grey-scale fever. I've seen it once before, a long time ago.",s({expr:'sad'},{expr:'sad'})),
+  say('nora',"You know what it is? Can you fix it?",s({expr:'wow'},{expr:'sad'})),
+  say('bree',"Only one thing cures it. Moonmoss, which grows on top of the Five Peaks. But the dragons up there guard it with their lives. They don't trust people.",s({expr:'sad'},{expr:'sad'})),
+  say('bree',"Why didn't you tell anyone, Nora? We could have helped days ago.",s({expr:'sad'},{expr:'sad'})),
+  say(null,"Nora looks at her bag. The diary is completely dark and silent now, as if it's hiding.",s({expr:'sad',arm:'hold'},{expr:'sad'})),
+ ],done); },
+ y2mistPre:done=>{ const f=Y2.FOES.mist, s=(e)=>sc('hall',[['iris',180,290,.85,{arm:'wand'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.55)); playStory([
+  say(null,"In the morning, a cold grey mist rolls through the great hall. Everywhere it touches, colors fade to grey, just like Ember's scales.",s('wow')),
+  say('iris',"Nora! This mist is making everyone feel gloomy. Even Sunny stopped smiling!",s('wow')),
+  say('nora',"It feels like a worry you never say out loud. Light spells, Iris! Let's chase it out!",s('happy')),
+ ],done); },
+ y2mistPost:done=>playStory([
+  say(null,"Sunlight bursts through the windows. The mist shrinks into the cracks of the floor and disappears. Colors come rushing back.",sc('hall',[['iris',300,280,.95,{expr:'wow'}],['nora',700,250,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
+  say('iris',"Did you see where it went? It slid right into your bag, Nora.",sc('hall',[['iris',300,280,.95,{expr:'wow'}],['nora',700,250,1,{expr:'wow'}]])),
+  say(null,"Nora clutches her bag. The diary feels cold. Colder than a book should ever feel.",sc('hall',[['iris',300,280,.95,{expr:'sad'}],['nora',700,250,1,{arm:'hold',expr:'sad'}]])),
+ ],done),
+ // ---------- Chapter 3
+ y2mei:done=>{ const s=(n,m)=>sc('library',[['nora',300,250,1,n],['mei',720,280,1,m]]); playStory([
+  say(null,"That evening, the diary writes a new message, in curly purple ink.",sc('room',[['nora',512,250,1.05,{arm:'hold',expr:'wow'}]],INKNOTE('Mei laughed at you.',640,160,40))),
+  say('diary',"I saw Mei laughing about you in the library. She told everyone your Q still fizzles. She's not a real friend.",sc('room',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],DIARY(800,330,.8))),
+  say(null,"Nora storms into the library. Mei is there, giggling with Sunny over a book.",s({expr:'sad'},{expr:'happy'})),
+  say(null,"What should Nora do?",s({expr:'sad'},{expr:'wow'}),{choices:[
+   {t:"😡 “I KNOW you were laughing at me!”",ok:false,why:"Mei looks shocked and hurt. Nora only heard one side of the story, from a diary she doesn't really know. Try again."},
+   {t:"🗣️ Ask calmly: “What are you laughing about?”",ok:true,reply:[
+    say('nora',"Hey, Mei. Can I ask… what are you two laughing about?",s({expr:'sad'},{expr:'wow'})),
+    say('mei',"This book! A wizard tried to cast a cake spell and turned his own beard into frosting. Look!",s({expr:'wow'},{expr:'happy',arm:'hold'})),
+    say('mei',"Why? You look upset. Did somebody say something about me?",s({expr:'sad'},{expr:'sad'})),
+    say(null,"Nora's cheeks burn. The diary lied. Mei was never laughing at her at all.",s({expr:'sad'},{expr:'sad'})),
+    say('nora',"I'm sorry, Mei. I believed something without asking you first. That wasn't fair.",s({expr:'sad'},{expr:'happy'})),
+    say('mei',"Fizzle buddies forgive each other. That's the rule. But… who told you that?",s({expr:'happy'},{expr:'wow'})),
+   ]},
+   {t:"🥶 Ignore Mei forever",ok:false,why:"Mei would never know why, and the friendship would just break. Asking is braver than ignoring. Try again."},
+  ]}),
+ ],done); },
+ y2iris:done=>{ const s=(n,i)=>sc('hall',[['nora',300,250,1,n],['iris',720,270,1,{...i,flip:true}]]); playStory([
+  say(null,"In class, Iris pulls Nora aside, frowning.",s({},{})),
+  say('iris',"Something weird is going on. Opal knows things she shouldn't. She knew my mom's sky-ship was late, and I only told YOU that.",s({expr:'wow'},{expr:'sad'})),
+  say('nora',"I didn't tell anyone! I promise! I only… wrote it down. In a diary.",s({expr:'wow'},{expr:'wow'})),
+  say('iris',"A diary? Nora, what diary?",s({expr:'sad'},{expr:'wow'})),
+  say(null,"For a second, Nora almost tells her everything. Then her bag feels heavy and cold, and the words get stuck in her throat.",s({expr:'sad',arm:'hold'},{expr:'sad'})),
+ ],done); },
+ y2opalFight:done=>{ const s=(n,o)=>sc('bigstairs',[['nora',300,250,1,n],['opal',720,270,1,{...o,flip:true}]]); playStory([
+  say(null,"Under the big staircase, Nora finds Opal with her own little diary. It has a purple ribbon, just like Nora's.",s({expr:'wow'},{expr:'sad',arm:'hold'})),
+  say('nora',"Opal… where did you get that?",s({expr:'wow'},{expr:'wow'})),
+  say('opal',"It's MINE. It's the only friend I've ever had. It tells me everyone's secrets, so nobody can ever hurt me.",s({expr:'sad'},{expr:'sad'})),
+  say('opal',"Nobody likes me anyway. Not at Starfall, not here. Why would they?",s({expr:'sad'},{expr:'sad'})),
+  say(null,"What should Nora say?",s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:"🙄 “Maybe because you read everyone's secrets!”",ok:false,why:"That might be true, but saying it like that only hurts Opal more. Try a kinder way."},
+   {t:"💜 “I think our diaries are lying to both of us.”",ok:true,reply:[
+    say('nora',"Opal… I have one too. And mine lied to me about Mei. I think our diaries are lying to both of us.",s({expr:'sad',arm:'hold'},{expr:'wow'})),
+    say('opal',"No. NO. Mine is the only one who understands me! You're just jealous!",s({expr:'sad'},{expr:'sad'})),
+    say(null,"Opal's diary flares with purple light, and her eyes go cloudy. She raises her wand.",s({expr:'wow'},{expr:'wow',arm:'wand'}),{sfx:'boom'}),
+   ]},
+   {t:"🚪 Walk away and leave her alone",ok:false,why:"Opal really does seem alone. Walking away might leave her stuck with that diary. Try again."},
+  ]}),
+ ],done); },
+ y2duelPre:done=>{ const f=Y2.FOES.opal, s=(e)=>sc('courtyard',[['nora',300,260,1,{arm:'wand',expr:e}]],foeBody(f,'',760,300,.5)); playStory([
+  say('opal',"Duel me, Nora! Right now, in the courtyard. If I win, you stop talking about my diary!",s('wow')),
+  say('prof',"A friendly duel, then. Spells hit the shield, never the student. Begin!",sc('courtyard',[['prof',512,250,1,{arm:'wave'}]])),
+  say('mei',"Nora! Her crystal shield is weak to water spells!",sc('courtyard',[['mei',512,270,1,{expr:'wow',arm:'wave'}]])),
+ ],done); },
+ y2duelPost:done=>playStory([
+  say(null,"Opal's crystal shield cracks like ice on a pond. Her diary tumbles out of her hand, and the cloudiness in her eyes fades.",sc('courtyard',[['nora',300,250,1,{arm:'wand',expr:'wow'}],['opal',720,270,1,{expr:'wow',flip:true}]]),{sfx:'gold'}),
+  say('opal',"What… what was I doing? I didn't want to fight you. It was like someone else was holding my wand.",sc('courtyard',[['nora',300,250,1,{expr:'sad'}],['opal',720,270,1,{expr:'sad',flip:true}]])),
+  say(null,"On the grass, Opal's diary snaps shut by itself. Then it slides away, like a shadow, toward the mountains.",sc('courtyard',[['nora',300,250,1,{expr:'wow'}],['opal',720,270,1,{expr:'wow',flip:true}]],DIARY(512,420,.5)),{sfx:'dissolve'}),
+ ],done),
+ // ---------- Chapter 4
+ y2wick:done=>{ const s=(n,w,x='')=>sc('library',[['nora',300,250,1,n],['wick',720,260,1,w]],x); playStory([
+  say(null,"Nora's heart is pounding. She walks up to Ms. Wick's desk with her bag held tight against her chest.",s({expr:'sad',arm:'hold'},{})),
+  say('diary',"Don't you dare. If you tell, Ember will be taken away and it will be YOUR fault.",s({expr:'sad',arm:'hold'},{},DIARY(512,150,.55))),
+  say(null,"What should Nora do?",s({expr:'sad',arm:'hold'},{}),{choices:[
+   {t:"🫣 Turn around. Maybe the diary is right.",ok:false,why:"When someone tells you to keep a secret from every grown-up who cares about you, that's exactly the time to tell. Try again."},
+   {t:"🗣️ “Ms. Wick, I need help. I've been keeping a secret.”",ok:true,reply:[
+    say('nora',"Ms. Wick… I need help. I found a diary that writes back. It told me to keep secrets, and Ember is sick, and I'm scared.",s({expr:'sad',arm:'hold'},{expr:'wow'})),
+    say('wick',"Oh, Nora. Thank you for telling me. That was the bravest thing you could do. You're not in trouble.",s({expr:'sad'},{expr:'sad'})),
+    say('wick',"May I see it? …Just as I feared. This is a Whisper Diary. A lonely spirit lives inside it and feeds on secrets. The more secrets it gets, the stronger it grows.",s({expr:'wow'},{expr:'wow',arm:'hold'},DIARY(512,150,.55))),
+    say('wick',"It pretends to be a friend. Or even your future self. But real friends never ask you to hide things from the people who love you.",s({expr:'sad'},{expr:'sad'})),
+    say(null,"As soon as the secret is out, the diary's glow flickers and grows dim. Nora feels lighter than she has in weeks.",s({expr:'happy'},{expr:'happy'}),{sfx:'chime'}),
+   ]},
+   {t:"📕 Throw the diary in the lake and say nothing",ok:false,why:"The diary might come back, and Ember still needs help. Getting rid of it secretly doesn't solve the real problem. Try again."},
+  ]}),
+ ],done); },
+ y2gran:done=>{ const s=(n,g)=>sc('gate',[['gran',300,270,1,g],['nora',700,250,1,n]]); playStory([
+  say(null,"Ms. Wick sends an owl, and the very next morning Grandma is at the gate, with her old wand and a very old book.",s({expr:'wow'},{arm:'wave'}),{sfx:'chime'}),
+  say('gran',"Grey-scale fever and a Whisper Diary, all in one term. My poor girl. Why didn't you write to me?",s({expr:'sad'},{expr:'sad'})),
+  say('nora',"The diary said not to. I'm sorry, Grandma. I should have told you right away.",s({expr:'sad'},{expr:'sad'})),
+  say('gran',"You told someone in the end. That's what matters. Now listen. Up on the Five Peaks lives a dragon healer named Saffron. She's my oldest friend's sister.",s({},{expr:'happy'})),
+  say('gran',"She can help you find the moonmoss. But the dragon elder, Granite, will not make it easy. He hasn't trusted a human in twenty years.",s({expr:'wow'},{expr:'sad'})),
+  say('nora',"Twenty years… since Coach Bree lost Thistle in the storm.",s({expr:'wow'},{expr:'wow'})),
+ ],done); },
+ y2bree:done=>{ const s=(n,b)=>sc('field',[['nora',300,250,1,n],['bree',720,250,1,b]],D2(512,180,.45,{who:'thistle',stage:'big',fly:true})); playStory([
+  say(null,"On the dragon field, a huge pink shadow sweeps across the grass. Thistle has come down from the mountains, with Coach Bree on her back!",s({expr:'wow'},{expr:'happy',arm:'wave'}),{sfx:'boom'}),
+  say('bree',"Thistle heard Ember was sick. She'll carry us over the clouds. But Nora, I need to tell you something first.",s({expr:'happy'},{expr:'sad'})),
+  say('bree',"Granite is Thistle's grandfather. He blames me for the storm. If he sees me, he might send us all away.",s({expr:'sad'},{expr:'sad'})),
+  say('nora',"Then we'll tell him the truth. Together. Like you told me on the bridge last year.",s({arm:'wave'},{expr:'wow'})),
+  say('bree',"You've grown up a lot, kid. Alright. Together.",s({expr:'happy'},{expr:'happy',arm:'wave'}),{sfx:'chime'}),
+ ],done); },
+ y2frostPre:done=>{ const f=Y2.FOES.sprite2, s=(e)=>sc('path',[['bree',180,280,.85,{arm:'wand'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.5)); playStory([
+  say(null,"At the foot of the mountains, a gate of ice blocks the path. A Frost Sprite spins on top of it, giggling.",s('wow')),
+  say('bree',"Frost Sprites love to play tricks. Fire spells, Nora, but gently. We just want to get past.",s('happy')),
+ ],done); },
+ y2frostPost:done=>playStory([
+  say(null,"The ice gate melts into a little waterfall. The Frost Sprite bows, a bit wet, and waves them through.",sc('path',[['bree',300,270,.95,{expr:'wow'}],['nora',700,250,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
+  say('nora',"Hold on, Ember. We're coming.",sc('path',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]])),
+ ],done),
+ // ---------- Chapter 5
+ y2journey:done=>{ const s=(n)=>sc('path',[['nora',300,260,1,n]],D2(680,230,.5,{who:'thistle',stage:'big',fly:true})+D2(830,360,.55,{sick:true,expr:'closed'})); playStory([
+  say(null,"Thistle flies so high that the clouds look like a fluffy white floor. Ember is wrapped in Juni's blanket, sleeping in Nora's arms.",s({expr:'wow',arm:'hold'}),{sfx:'chime'}),
+  say(null,"Below them, the Five Peaks rise like giant teeth, covered in snow and pink morning light.",sc('peaks',[['nora',300,260,1,{expr:'wow'}]])),
+  say('nora',"Ember, look. That's your home. You're going to be okay. I promise.",s({expr:'sad',arm:'hold'})),
+ ],done); },
+ y2saffron:done=>{ const s=(n,a,x='')=>sc('hut',[['nora',300,250,1,n],['saffron',720,260,1,a]],x); playStory([
+  say(null,"Halfway up the mountain stands a round little hut, its chimney puffing cinnamon-smelling smoke. A woman with wild orange curls flings open the door.",s({expr:'wow'},{expr:'wow'})),
+  say('saffron',"Well, well! You must be Rose's granddaughter. You have her stubborn chin. I'm Saffron. Bring that poor dragon in by the fire.",s({},{expr:'happy',arm:'wave'})),
+  say('saffron',"Grey-scale fever. It starts when a dragon's heart is cold. Tell me, child, has she been lonely? Or scared?",s({expr:'sad'},{expr:'sad'},D2(512,400,.5,{sick:true,expr:'closed'}))),
+  say('nora',"She was scared when I was scared. I was keeping a big secret, and I stopped playing with her.",s({expr:'sad'},{expr:'sad'})),
+  say('saffron',"Dragons feel what their friends feel. The moonmoss will cure her scales. But your warm heart will cure the rest.",s({expr:'sad'},{expr:'happy'})),
+  say('saffron',"The moss grows in the Elder's garden. You'll have to ask Granite. And Granite… is not a fan of asking.",s({expr:'wow'},{expr:'wow'})),
+ ],done); },
+ y2granite:done=>{ const s=(n,ge,x='')=>sc('cave',[['nora',260,260,1,n]],D2(680,250,.62,{who:'granite',stage:'big',expr:ge})+x); playStory([
+  say(null,"Deep inside the crystal cave, an enormous dragon opens one stone-grey eye. His beard is as white as a waterfall.",s({expr:'wow'},'sad'),{sfx:'boom'}),
+  say('granite',"A HUMAN. And Bree, the one who let go of my granddaughter. Why should I give anything to people who let go?",s({expr:'sad'},'sad')),
+  say(null,"What should Nora do?",s({expr:'sad'},'sad'),{choices:[
+   {t:"😤 “You're mean! Just give us the moss!”",ok:false,why:"Granite's eyes narrow. Shouting at someone who's hurting only makes them hold on tighter. Try again."},
+   {t:"🙇 Listen first, then tell him the truth",ok:true,reply:[
+    say('nora',"Granite, sir… you're right that people make mistakes. I made one too. I kept a secret, and it made Ember sick.",s({expr:'sad'},'sad')),
+    say('bree',"And I let go of Thistle in that storm. I was scared. I've been sorry every single day for twenty years.",sc('cave',[['bree',260,250,1,{expr:'sad'}]],D2(680,250,.62,{who:'granite',stage:'big',expr:'sad'}))),
+    say(null,"Granite is quiet for a very long time. A single tear rolls down his stony cheek, and sizzles on the warm floor.",s({expr:'sad'},'closed')),
+    say('granite',"No human has ever said sorry to me. Not in all my four hundred years. Hmm. Words matter, little writer.",s({expr:'wow'},'happy'),{sfx:'chime'}),
+    say('granite',"But dragon law is dragon law. Read our law on the standing stones. If your heart is true, the stones will let you pass.",s({expr:'wow'},'happy')),
+   ]},
+   {t:"🏃 Sneak past him to the garden",ok:false,why:"Taking the moss behind his back would prove Granite right about humans. Try again."},
+  ]}),
+ ],done); },
+ y2golemPre:done=>{ const f=Y2.FOES.golem2, s=(e)=>sc('council',[['bree',170,280,.85,{arm:'wand'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,300,.5)); playStory([
+  say(null,"As Nora finishes reading the law, the ground shakes. One of the standing stones stands up. It's a Stone Guardian!",s('wow'),{sfx:'boom'}),
+  say('bree',"It's testing us! Water spells wear down stone. Go, Nora!",s('happy')),
+ ],done); },
+ y2golemPost:done=>playStory([
+  say(null,"The Guardian settles back into its place, and bows. Carved on its face, new words glow: The way is open. The heart is true.",sc('council',[['bree',300,270,.95,{expr:'wow'}],['nora',700,250,1,{arm:'wand',expr:'wow'}]]),{sfx:'gold'}),
+  say(null,"But as the sun sets, a cold purple shadow rises over the ridge. A voice Nora knows far too well hisses through the wind.",sc('council',[['nora',512,250,1.05,{expr:'wow'}]],DIARY(780,180,.6)),{sfx:'dissolve'}),
+  say('diary',"You told. You TOLD. Now I'll take every secret on this mountain, and the moss along with it.",sc('council',[['nora',512,250,1.05,{expr:'sad',arm:'wand'}]],DIARY(780,180,.6))),
+ ],done),
+ // ---------- Chapter 6
+ y2truth:done=>{ const s=(n,o={},x='')=>sc('council',[['nora',300,250,1,n],['opal',720,270,1,{...o,flip:true}]],x); playStory([
+  say(null,"Out of the shadows steps someone Nora didn't expect: Opal! She followed them all the way from the academy on her broom.",s({expr:'wow'},{expr:'sad'})),
+  say('opal',"Nora, wait! I know who the Whisper is. I found the diaries first, at Starfall. There were two.",s({expr:'wow'},{expr:'sad'})),
+  say('opal',"I hid one in the Inkwell attic, so it would find you. The diary told me to. It said if you were busy with secrets, people would finally notice ME.",s({expr:'sad'},{expr:'sad'})),
+  say('opal',"I'm so sorry. I was jealous and lonely, and it used that. Just like it used you.",s({expr:'sad'},{expr:'sad'})),
+  say(null,"Above them, both diaries fly together and burst open. A spirit made of purple smoke rises out of them, with one glowing violet eye.",sc('council',[['nora',300,250,1,{expr:'wow',arm:'wand'}],['opal',720,270,1,{expr:'wow',flip:true}]],DIARY(512,180,.7)),{sfx:'boom'}),
+ ],done); },
+ y2opalSorry:done=>{ const s=(n,o)=>sc('hut',[['nora',300,250,1,n],['opal',720,270,1,{...o,flip:true}]]); playStory([
+  say(null,"The spirit vanishes into the dark, for now. In Saffron's hut, Opal sits by the fire, hugging her knees.",s({expr:'sad'},{expr:'sad'})),
+  say('opal',"You must hate me. I wouldn't blame you.",s({expr:'sad'},{expr:'sad'})),
+  say(null,"What should Nora do?",s({expr:'sad'},{expr:'sad'}),{choices:[
+   {t:"😠 “You're right. I'll never forgive you.”",ok:false,why:"Holding on to anger feels strong, but it keeps everyone stuck. Opal told the truth when it was hard. Try again."},
+   {t:"🫂 “I forgive you. Will you help us fix it?”",ok:true,reply:[
+    say('nora',"I don't hate you, Opal. The diary tricked both of us. I forgive you. Will you help us fix it?",s({arm:'wave'},{expr:'wow'})),
+    say('opal',"You… forgive me? Just like that?",s({},{expr:'wow'})),
+    say('nora',"Not just like that. You told the truth, and that was really hard. That's why.",s({expr:'happy'},{expr:'sad'})),
+    say('opal',"Then yes. Yes! And Nora? Last year you said the offer stays open. Is it still open? The lunch table, I mean?",s({expr:'happy'},{expr:'happy'})),
+    say('nora',"It never closed.",s({expr:'happy',arm:'wave'},{expr:'happy',arm:'wave'}),{sfx:'chime'}),
+   ]},
+   {t:"🤐 Say nothing and look away",ok:false,why:"Opal waits and waits. Silence can feel like a wall. Maybe there's a kinder way. Try again."},
+  ]}),
+ ],done); },
+ y2spiritPre:done=>{ const f=Y2.FOES.spirit, s=(e)=>sc('council',[['opal',170,280,.85,{arm:'wand'}],['nora',420,260,1,{arm:'wand',expr:e}]],foeBody(f,'',790,290,.55)); playStory([
+  say(null,"At midnight, the Whisper comes back, bigger than ever, swallowing the stars one by one.",s('wow'),{sfx:'boom'}),
+  say('spirit',"Secretsss… give me your secretsss… nobody will ever know…",s('sad')),
+  say('nora',"No more secrets! Everybody knows everything now. Opal, Bree, Granite, Grandma, Ms. Wick. We have nothing left to hide!",s('happy')),
+  say('opal',"Light spells, Nora! Spirits of secrets hate the light!",s('happy')),
+ ],done); },
+ y2spiritPost:done=>playStory([
+  say(null,"The Whisper shrinks… and shrinks… until it's just a small grey puff with one tired eye.",sc('council',[['nora',512,250,1.05,{arm:'wand',expr:'wow'}]],`<circle cx="760" cy="300" r="26" fill="#d0bfff" filter="url(#glow)"/>`),{sfx:'chime'}),
+  say('spirit',"I… was only lonely. Nobody ever talked to me. Secrets were the only way anyone ever kept me close.",sc('council',[['nora',512,250,1.05,{expr:'sad'}]],`<circle cx="760" cy="300" r="26" fill="#d0bfff" filter="url(#glow)"/>`)),
+  say('nora',"You don't need secrets to have friends. You can stay in a lamp at the academy, like the Shadow Wisp did. We'll talk to you every day.",sc('council',[['nora',512,250,1.05,{arm:'hold',expr:'happy'}]],`<circle cx="700" cy="330" r="20" fill="#fff59d" filter="url(#glow)"/>`),{sfx:'gold'}),
+ ],done),
+ y2pact:done=>{ playStory([
+  say(null,"At sunrise, Granite himself leads them to the moss garden. The moonmoss glows soft blue, like a sky full of tiny stars.",sc('moss',[['nora',300,250,1,{expr:'wow'}]],D2(700,260,.55,{who:'granite',stage:'big',expr:'happy'})),{sfx:'chime'}),
+  say(null,"Nora places a piece of moss on Ember's chest. The grey patches crack… and flake away… and Ember's scales blaze gold again!",sc('moss',[['nora',300,250,1,{expr:'happy',arm:'wave'}]],D2(680,300,.8,{expr:'happy',fly:true})),{sfx:'gold'}),
+  say('ember',"RRR-EEE!!",sc('moss',[['nora',300,250,1,{expr:'happy',arm:'wave'}]],D2(680,280,.8,{expr:'happy',fly:true}))),
+  say('granite',"Little writer. Dragons and humans have not trusted each other for twenty years. Perhaps it is time for a new promise. Written down, so no one forgets.",sc('peaks',[['nora',260,250,1,{expr:'wow'}]],D2(660,250,.6,{who:'granite',stage:'big',expr:'happy'}))),
+  say(null,"So Nora writes the Dragon Pact in her very best cursive, with no tracing at all: Dragons and people will tell the truth, help each other, and never let go.",sc('peaks',[['nora',300,250,1,{arm:'wand',glow:true}]],`<text x="700" y="210" font-family="'TeX Gyre Chorus',cursive" font-size="50" fill="#e9a91c" filter="url(#glow)">The Dragon Pact</text>`),{sfx:'gold'}),
+  say(null,"Everyone signs it. Bree. Thistle, with one careful claw. Opal. Saffron. And last of all, Granite, who signs it twice, just to be sure.",sc('peaks',[['bree',230,250,1,{expr:'happy'}],['opal',480,270,.95,{expr:'happy'}],['saffron',740,260,1,{expr:'happy'}]])),
+  say('bree',"Thistle… I promise I'll never let go again.",sc('peaks',[['bree',300,250,1,{expr:'happy',arm:'wave'}]],D2(680,250,.5,{who:'thistle',stage:'big',expr:'happy'}))),
+  say('thistle',"And I promise to always come back. That is what the pact is for.",sc('peaks',[['bree',300,250,1,{expr:'happy'}]],D2(680,250,.5,{who:'thistle',stage:'big',expr:'closed'})),{sfx:'chime'}),
+ ],done); },
+};
+Y2.RESULT={
+ y2back:['Welcome back to Inkwell!','🏰','Try it today: tell someone one thing that changed about you this year.'],
+ y2opal:['You kept the door open for Opal.','💎','Try it today: invite someone new to play with you.'],
+ y2attic:['You stayed careful with the diary.','📔','Try it today: if a message asks you to keep a secret from grown-ups, tell a grown-up.'],
+ y2sick:['You stayed by Ember\'s side.','🐉','Try it today: check on a pet or a plant and see what it needs.'],
+ y2juni:['You shared your worry.','🌿','Try it today: tell someone one thing you\'re worried about.'],
+ y2night:['Coach Bree knows the cure!','🌙','Try it today: ask for help early, before a problem grows.'],
+ y2mei:['You asked instead of blaming.','💜','Try it today: if you hear something unkind about a friend, ask them first.'],
+ y2iris:['Iris noticed something strange.','👀','Try it today: if a friend seems worried, ask how they are.'],
+ y2opalFight:['You saw Opal was hurting.','💎','Try it today: think of someone who might feel left out, and say hi.'],
+ y2wick:['You told a grown-up. That\'s the bravest spell of all.','🗣️','Try it today: tell a grown-up you trust about anything that feels wrong.'],
+ y2gran:['Grandma has a plan!','👵','Try it today: ask a grandparent about their best friend.'],
+ y2bree:['Thistle will fly you to the Peaks!','🌬️','Try it today: say "together" to a friend when something is hard.'],
+ y2journey:['You reached the Five Peaks!','🏔️','Try it today: look at the sky and find the highest thing you can see.'],
+ y2saffron:['Aunt Saffron will help!','🍵','Try it today: make someone a warm drink and sit with them.'],
+ y2granite:['You listened, and Granite listened back.','🗿','Try it today: when someone is grumpy, listen first before you answer.'],
+ y2truth:['Opal told the truth.','📔','Try it today: telling the truth after a mistake makes things better, not worse.'],
+ y2opalSorry:['You chose to forgive.','🫂','Try it today: forgive someone for something small.'],
+ y2pact:['Ember is healed, and the Dragon Pact is signed!','🐉🤝','Try it today: make a promise to someone in your family, and keep it.'],
+ y2duelPost:['You freed Opal from the diary!'], y2impsPost:['You chased the imps away!'], y2mistPost:['You cleared the grey mist!'], y2frostPost:['The ice gate melted!'], y2golemPost:['The Stone Guardian bowed to you!'], y2spiritPost:['You saved the Whisper, and the mountain!'],
+};
+Y2.TRANS={
+ 'c1:back':()=>[ say(null,"The great hall's WELCOME BACK banner is faded and droopy this year. Professor Quill hands Nora a wand. Your turn, she says. No tracing this time.",sc('hall',[['nora',512,250,1.05,{arm:'wand'}]])) ],
+ 'c1:banner':()=>[ say(null,"While the banner sparkles, Nora notices a girl she's never seen before, sitting all alone by the fountain.",sc('courtyard',[['nora',512,250,1.05,{expr:'wow'}]])) ],
+ 'c1:opal':()=>[ say(null,"Nora can't stop thinking about Opal. To clear her head, she offers to help the new librarian carry books.",sc('library',[['nora',300,250,1,{arm:'hold'}],['wick',720,260,1,{arm:'wave'}]])) ],
+ 'c1:attic':()=>[ say('wick',"Now, could you help me put the labels back on the shelves? My cursive is very curly, I'm afraid. See if you can read it!",sc('library',[['nora',300,250,1,{expr:'happy'}],['wick',720,260,1,{expr:'happy'}]])) ],
+ 'c1:labels':()=>[ say(null,"Just as the last book slides into place, there's a thump from the attic above. Then another. Then giggling.",sc('attic',[['nora',512,250,1.05,{expr:'wow'}]])) ],
+ 'c2:sick':()=>[ say(null,"Nora wraps Ember in every blanket she can find. The diary says words can't help. But Nora remembers last year: kind words hatched an egg.",sc('infirm',[['nora',300,250,1,{arm:'wand'}]],D2(700,330,.7,{sick:true,expr:'closed'}))) ],
+ 'c2:care':()=>[ say(null,"Ember's breathing is calmer now. But she's still grey. Nora needs warming herbs, and the best herbs grow in the greenhouse.",sc('greenhouse',[['nora',512,250,1.05,{}]])) ],
+ 'c2:juni2':()=>[ say(null,"Back in her room, the diary has written page after page of messages. Some of them make Nora's tummy hurt. She makes herself read every one.",sc('room',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],DIARY(800,320,.8))) ],
+ 'c2:diaryRead':()=>[ say(null,"Trust only me. Tell no one. Your friends don't understand. Nora closes the diary. That night she decides to sleep next to Ember in the infirmary.",sc('infirm',[['nora',512,250,1.05,{expr:'sad'}]],D2(760,360,.6,{sick:true,expr:'closed'}))) ],
+ 'c2:night':()=>[ say(null,"By morning, Nora has a plan: find the moonmoss. But first, something strange is happening in the great hall.",sc('hall',[['nora',512,250,1.05,{expr:'wow'}]])) ],
+ 'c3:meiFight':()=>[ say(null,"Nora and Mei's friendship charm, the one they made last year, has cracked down the middle. Maybe the right words can mend it.",sc('common',[['nora',300,250,1,{arm:'wand'}],['mei',720,280,1,{expr:'sad'}]])) ],
+ 'c3:friendW':()=>[ say(null,"The friendship charm glows again. The next morning in class, Iris keeps glancing at Opal, then at Nora, frowning.",sc('hall',[['nora',300,250,1,{}],['iris',720,270,1,{expr:'sad',flip:true}]])) ],
+ 'c3:irisSees':()=>[ say(null,"All through class, little paper notes fly from desk to desk, written in cursive. Iris catches some and slides them to Nora. Read them, she whispers.",sc('hall',[['nora',300,250,1,{expr:'wow'}],['iris',720,270,1,{expr:'wow',flip:true}]])) ],
+ 'c3:notes':()=>[ say(null,"The last note isn't from a student. It's in purple ink, and it says: Opal knows. Under the stairs. Nora goes to find her.",sc('bigstairs',[['nora',512,250,1.05,{expr:'wow'}]],INKNOTE('Under the stairs.',640,160,40))) ],
+ 'c3:opalFight':()=>[],
+ 'c4:wick':()=>[ say(null,"Ms. Wick locks the diary inside a glass box and writes to Grandma that very night.",sc('library',[['wick',300,260,1,{arm:'hold'}],['nora',700,250,1,{expr:'happy'}]])) ],
+ 'c4:granVisit':()=>[ say('gran',"A journey to the Five Peaks takes good packing. Warm socks. Sunleaf tea. And your very best writing hand.",sc('room',[['gran',300,270,1,{expr:'happy'}],['nora',700,250,1,{arm:'hold'}]])) ],
+ 'c4:pack':()=>[ say(null,"Grandma unrolls an old map. The names on it are written in faded, curly cursive. Can you read it, Nora? she asks.",sc('office',[['gran',300,270,1,{}],['nora',700,250,1,{expr:'wow'}]])) ],
+ 'c4:oldMap':()=>[ say(null,"Now Nora knows the way. All they need is something big enough to fly them over the clouds.",sc('field',[['nora',512,250,1.05,{expr:'wow'}]])) ],
+ 'c4:breeFly':()=>[ say(null,"Thistle flies them to the edge of the mountains. But the path up is blocked by a wall of shining ice.",sc('path',[['bree',300,250,1,{expr:'wow'}],['nora',700,250,1,{expr:'wow'}]])) ],
+ 'c5:journey':()=>[ say(null,"Thistle lands on a ledge near a little round hut, with smoke curling out of its chimney.",sc('hut',[['nora',512,250,1.05,{expr:'wow'}]])) ],
+ 'c5:saffron':()=>[ say(null,"The way to Granite's cave is buried in snow. Saffron hands Nora a warm wand. Warm words melt snow, she says. Write your warmest.",sc('snow',[['nora',300,250,1,{arm:'wand'}],['saffron',720,260,1,{arm:'wave'}]])) ],
+ 'c5:warmW':()=>[ say(null,"A path melts through the snow, all the way to a glowing cave. Something enormous is breathing inside.",sc('cave',[['nora',512,250,1.05,{expr:'wow'}]]),{sfx:'boom'}) ],
+ 'c5:granite':()=>[ say(null,"On the high plateau, the standing stones are covered in ancient dragon law, written in big curling cursive.",sc('council',[['nora',512,250,1.05,{expr:'wow'}]])) ],
+ 'c5:law':()=>[ say(null,"As Nora reads the last word out loud, the ground begins to rumble.",sc('council',[['nora',512,250,1.05,{expr:'wow'}]]),{sfx:'boom'}) ],
+ 'c6:truth2':()=>[ say(null,"The spirit flees into the night clouds. Saffron hurries everyone back to the hut to warm up.",sc('hut',[['nora',300,250,1,{expr:'sad'}],['saffron',720,260,1,{expr:'sad'}]])) ],
+ 'c6:opalSorry':()=>[ say('saffron',"Before the spirit comes back, let's wake up the moonmoss. Healing words, both of you. Opal can hold the lantern.",sc('moss',[['opal',300,270,1,{arm:'hold'}],['nora',700,250,1,{arm:'wand'}]])) ],
+ 'c6:mossW':()=>[ say('granite',"The pact is written in the old words. Read them, little writer, so you know what you are promising.",sc('council',[['nora',260,250,1,{expr:'wow'}]],D2(680,250,.6,{who:'granite',stage:'big',expr:'happy'}))) ],
+ 'c6:pactRead':()=>[ say(null,"The stars go dark one by one. The Whisper is back, and it's angry.",sc('council',[['nora',512,250,1.05,{arm:'wand',expr:'wow'}]]),{sfx:'boom'}) ],
+ 'c6:spirit':()=>[],
+};
+Y2.CH_TEXT={
+ 1:{end:()=>[
+   say(null,"That night, Ember snores at the foot of Nora's bed. The diary sits on her desk, glowing softly.",sc('room',[['nora',512,250,1.05,{expr:'closed'}]],DIARY(800,330,.7)+D2(330,420,.5,{expr:'closed'}))),
+   say('diary',"Remember, Nora. Our secret. Only ours.",sc('room',[['nora',512,250,1.05,{expr:'closed'}]],DIARY(800,330,.7))),
+   say(null,"And while Nora sleeps, a few of Ember's golden scales quietly turn grey.",sc('room',[],D2(512,380,.7,{sick:true,expr:'closed'})),{sfx:'dissolve'}) ]},
+ 2:{start:()=>[ say(null,"Ember is sick, and the castle feels colder every day. Nora has never felt so alone, even with her friends all around her.",sc('room',[['nora',512,250,1.05,{expr:'sad'}]])) ],
+    end:()=>[
+   say(null,"Nora lies awake. Bree's words keep coming back: Why didn't you tell anyone?",sc('room',[['nora',512,250,1.05,{expr:'sad'}]])),
+   say('diary',"Because they would ruin everything. Now, let me tell you what your friends REALLY say about you…",sc('room',[['nora',512,250,1.05,{expr:'sad',arm:'hold'}]],DIARY(800,330,.7))) ]},
+ 3:{start:()=>[ say(null,"The diary's whispers are getting louder. And Nora is starting to believe them.",sc('library',[['nora',512,250,1.05,{expr:'sad',arm:'hold'}]],DIARY(800,330,.7))) ],
+    end:()=>[
+   say(null,"In the quiet after the duel, Nora takes out her own diary. For the first time, she sees it clearly: it doesn't sparkle. It shivers, like something hiding.",sc('courtyard',[['nora',512,250,1.05,{arm:'hold',expr:'sad'}]],DIARY(780,330,.7))),
+   say('nora',"No more secrets. Tomorrow, I tell a grown-up. Everything.",sc('courtyard',[['nora',512,250,1.05,{arm:'wand'}]])) ]},
+ 4:{start:()=>[ say(null,"The next morning, Nora walks to the library. Her legs feel wobbly, but she keeps walking.",sc('library',[['nora',512,250,1.05,{expr:'sad',arm:'hold'}]])) ],
+    end:()=>[
+   say(null,"Thistle spreads her great pink wings. Bree climbs on first, then Nora with Ember in her arms, then, at the last second, a quiet passenger nobody notices, hiding behind the tail.",sc('field',[['nora',300,250,1,{arm:'hold'}]],D2(680,250,.55,{who:'thistle',stage:'big',fly:true}))),
+   say(null,"Up, up, up they fly, into the clouds, toward the Five Peaks.",sc('peaks',[],D2(512,250,.5,{who:'thistle',stage:'big',fly:true})),{sfx:'chime'}) ]},
+ 5:{start:()=>[ say(null,"The air is thin and cold, and the wind sings strange songs between the peaks. This is dragon country.",sc('peaks',[['nora',512,250,1.05,{expr:'wow',arm:'hold'}]])) ],
+    end:()=>[
+   say(null,"Nora grips her wand. Behind the stones, someone small steps out of hiding, holding a lantern. It's the quiet passenger from Thistle's tail.",sc('council',[['nora',512,250,1.05,{arm:'wand',expr:'wow'}]])) ]},
+ 6:{start:()=>[ say(null,"The final night on the Five Peaks. The stars are bright, the moss is close, and the Whisper is waiting.",sc('council',[['nora',512,250,1.05,{arm:'wand'}]])) ],
+    end:()=>[
+   say(null,"Back at Inkwell Academy, there's a party in the great hall. Mei, Iris, Sunny, Juni and Lola all shout SURPRISE! Even Wren came, holding a silver pen.",sc('hall',[['mei',150,280,.85,{arm:'wave'}],['iris',330,280,.85,{arm:'wave'}],['nora',512,250,1.05,{glow:true}],['wren',700,280,.85,{arm:'wave'}],['opal',870,280,.85,{arm:'wave'}]]),{sfx:'gold'}),
+   say(null,"In the corner, a little lamp glows soft lavender. Inside, the Whisper is reading a storybook with Lola. It looks happy.",sc('hall',[['lola',512,270,1,{expr:'happy'}]],`<circle cx="700" cy="330" r="22" fill="#d0bfff" filter="url(#glow)"/>`)),
+   say('prof',"Nora, this year you learned to write without tracing. But more importantly, you learned when to speak up.",sc('hall',[['prof',300,250,1,{arm:'wave'}],['nora',700,250,1.05,{glow:true}]])),
+   say('nora',"Secrets that feel heavy aren't meant to be carried alone. And real friends never ask you to.",sc('hall',[['prof',300,250,1,{expr:'happy'}],['nora',700,250,1.05,{arm:'wand',glow:true}]]),{sfx:'gold'}),
+   say(null,"The End of Year Two.",sc('peaks',[['nora',300,260,1,{arm:'wave'}]],D2(640,260,.7,{expr:'happy',fly:true})+D2(860,200,.4,{who:'thistle',stage:'big',fly:true}))) ]},
+};
+// words for Year 2 (practice) — chosen by her joining level as in Year 1
+Y2.POOLS_W={
+ y2warm:['welcome','hello','again','happy','smile','glad','cheer','friends','school','home'],
+ y2care:['warm','rest','safe','soft','calm','hug','sleep','gentle','blanket','cozy','better','heal'],
+ y2friend:['sorry','trust','kind','share','listen','honest','forgive','buddy','laugh','true'],
+ y2journey:['map','socks','boots','tea','scarf','rope','snack','lantern','compass','journey','pack'],
+ y2warmth:['fire','sun','heat','glow','spark','flame','toasty','ember','sunny','candle'],
+ y2heal:['heal','grow','bloom','moss','light','hope','alive','shine','strong','bright'],
+};
+Y2.READ_W={
+ labels:['book','story','magic','dragon','poem','maps','spells','stars','owls','history','music','plants'],
+ diaryRead:['trust me','tell no one','only me','our secret','stay quiet','be careful','I know'],
+ notes:['hello','meet me','lunch','I am sad','be kind','sorry','thank you','who wrote this','help'],
+ oldMap:['north','river','forest','bridge','tower','mountain','valley','cave','lake','peaks'],
+ law:['truth','respect','listen','help','share','courage','honor','friends','promise','never'],
+ pactRead:['dragons','people','tell','truth','help','each','other','never','let','go'],
+};
+
+// ================= YEAR 2 ENGINE =================
+const CH1=CHAPTERS, CHT1=CH_TEXT, Y1_INTRO=INTRO;
+if(!DRAGONS.granite) DRAGONS.granite=Object.assign({},DRAGONS.thistle,{c:'#7c8a7e',wing:'#a9b5aa',horn:'#f1f3f5',belly:'#d8ded9'});
+Object.assign(STORIES,Y2.STORIES); Object.assign(STORY_RESULT,Y2.RESULT); Object.assign(FOES,Y2.FOES);
+Object.assign(ART_BG,{attic:1,infirm:1,path:1,snow:1,cave:1,hut:1,council:1,moss:1});
+Object.assign(BG_FALLBACK,{attic:'library',infirm:'room',path:'stairs',snow:'stairs',cave:'tower',hut:'room',council:'tower',moss:'courtyard'});
+const Y2_TRANS=Y2.TRANS;
+function yearOf(){ return S.year||1; }
+function y1Done(){ return yearOf()===1?!!S.allDone:!!(S.years&&S.years[1]&&S.years[1].allDone); }
+function applyYear(){ const y=yearOf(); CHAPTERS=y===2?Y2.CH:CH1; CH_TEXT=y===2?Y2.CH_TEXT:CHT1; document.body.dataset.year=y; }
+function setYear(y){ S.years=S.years||{}; const cur=yearOf();
+ S.years[cur]={done:S.done,ch:S.ch,view:S.view,chDone:S.chDone,seenT:S.seenT||{},allDone:S.allDone,introSeen:S.introSeen,trial:S.trial};
+ const d=S.years[y]||{done:{},ch:1,view:1,chDone:{},seenT:{},allDone:false,introSeen:false,trial:true};
+ Object.assign(S,{done:d.done,ch:d.ch,view:d.view,chDone:d.chDone,seenT:d.seenT,allDone:d.allDone,introSeen:d.introSeen,trial:(y===2?true:d.trial)}); S.year=y;
+ applyYear(); save(); refreshStars(); spotsKey=''; }
+applyYear();
+// transitions: Year 2 keys are looked up first while in Year 2
+const _afterMission=afterMission;
+afterMission=function(next){ if(yearOf()!==2) return _afterMission(next); const k=lastDoneKey; lastDoneKey=null; S.seenT=S.seenT||{}; const T=k&&Y2_TRANS[k]; if(T&&!S.seenT[k]){ S.seenT[k]=true; save(); const L=T(); if(L.length) return playStory(L,next); } next(); };
+
+// ---------- Year 2 writing: no tracing at first, a faint path only after two fizzles, five words per mission
+const _guideFor=guideFor; guideFor=function(t,i){ return yearOf()===2?'free':_guideFor(t,i); };
+Object.keys(Y2.POOLS_W).forEach(k=>{ POOLS[k]=()=>pickWords([Y2.POOLS_W[k]],5); });
+
+// ---------- reading test: see a cursive word, type what it says
+let R=null;
+function startRead(m,n){ const pool=(Y2.READ_W[m.id]||[]).filter(w=>!(S.readSeen||[]).includes(w)); let items=shuffle(pool).slice(0,5);
+ if(items.length<5){ const extra=shuffle([...new Set((S.seen||[]).filter(w=>w.length>2&&!(S.readSeen||[]).includes(w)))]).slice(0,5-items.length); items=items.concat(extra); }
+ if(!items.length) items=shuffle(Y2.READ_W[m.id]||['magic']).slice(0,5);
+ R={m,n,items,i:0,tries:0,pts:0,good:0}; $('#rdTtl').textContent=`${m.icon} ${m.title} — ${m.goal}`; show('read'); $('#rdFb').textContent=m.intro; Voice.say(m.intro); readItem(); }
+function readItem(){ const w=R.items[R.i]; R.tries=0; $('#rdWord').innerHTML=cursiveSVG(w,{unit:70,color:'#3b2f5c',lines:true,fullLines:true,sw:5}); const inp=$('#rdIn'); inp.value=''; inp.disabled=false; setTimeout(()=>{ try{inp.focus({preventScroll:true});}catch(e){} },300);
+ $('#rdDots').innerHTML=R.items.map((_,k)=>`<i class="${k<R.i?'ok':k===R.i?'cur':''}"></i>`).join(''); $('#rdHint').textContent=''; }
+const normW=s=>s.toLowerCase().replace(/[^a-z ]/g,'').replace(/\s+/g,' ').trim();
+function readCheck(){ if(!R||$('#rdIn').disabled) return; const w=R.items[R.i], v=normW($('#rdIn').value); if(!v){ $('#rdFb').textContent='Type what the cursive says ⌨️'; return; }
+ R.tries++;
+ if(v===normW(w)){ const p=R.tries===1?2:1; R.pts+=p; R.good++; S.readSeen=S.readSeen||[]; S.readSeen.push(w); save(); Snd.sfx('gold'); const c=FX.center($('#rdWord')); FX.burst(c[0],c[1],{n:50,speed:8}); FX.text(c[0],c[1]-30,R.tries===1?'YOU READ IT!':'GOT IT!','#ffd43b',48);
+  $('#rdFb').textContent=(R.tries===1?'Perfect reading! ':'Well done! ')+`“${w}” ✨ +${p}`; Voice.say(w); $('#rdIn').disabled=true; setTimeout(readNext,1500); return; }
+ if(R.tries===1){ Snd.sfx('poof'); $('#rdFb').textContent='Not quite. Look at each letter carefully. Try again!'; $('#rdHint').textContent=`Hint: it starts with “${w[0]}” and has ${w.replace(/ /g,'').length} letters.`; Voice.say('Not quite. Try again!'); $('#rdIn').select(); return; }
+ Snd.sfx('poof'); $('#rdFb').textContent=`It says: “${w}”. Look at it once more, then we go on.`; Voice.say(`It says ${w}.`); S.readSeen=S.readSeen||[]; S.readSeen.push(w); save(); $('#rdIn').disabled=true; setTimeout(readNext,2600); }
+function readNext(){ if(!R) return; R.i++; if(R.i<R.items.length) return readItem(); const m=R.m,n=R.n,st=R.good>=R.items.length?3:R.good>=R.items.length-1?2:1; markDone(n,m,R.pts); resultScreen(m.done,'⭐'.repeat(st)+'☆'.repeat(3-st),`+${R.pts} magic stars · read ${R.good} of ${R.items.length}`,m.tip,n); R=null; }
+const _startMission=startMission;
+startMission=function(m,n=S.view){ if(m.kind==='read'){ Snd.stopMusic(); return startRead(m,n); } return _startMission(m,n); };
+
+// ---------- Year 2 explorable castle map
+const _goMap=goMap;
+goMap=function(){ if(yearOf()!==2) return _goMap(); if(S.trial&&!nextMain(S.view)&&!S.chDone[S.view]) return chapterEnd(S.view); show('map2'); refreshStars(); Snd.startMusic(); renderMap2(); };
+const TREASURE={1:['labels','opal'],2:['care','night'],3:['notes','friendW'],4:['pack','oldMap'],5:['saffron','law'],6:['mossW','opalSorry']};
+const TREASURE_TXT=['a lost silver button','a tiny dragon tooth','a glowing marble','a four-leaf clover','a feather quill','a shiny old coin','a ribbon from Mei','a sticker from Sunny','a pressed flower','a star-shaped stone','a secret note from Lola','a crystal bead'];
+function renderMap2(){ const n=S.view, ch=CH(n), nm=nextMain(n); $('#m2Ttl').textContent=`Year 2 · Chapter ${n} · ${ch.title}`;
+ $('#m2Prev').style.visibility=n>1?'visible':'hidden'; $('#m2Next').style.visibility=n<Math.min(S.ch,CHAPTERS.length)?'visible':'hidden';
+ const box=$('#m2Rooms'); box.innerHTML=''; S.found=S.found||{};
+ ch.missions.forEach((m,i)=>{ const open=isOpen(n,m), done=isDone(n,m.id); const b=document.createElement('button'); b.className='room'+(open?'':' lock')+(done?' done':'')+(m===nm?' next':'')+(m.kind==='mini'?' mini':''); b.dataset.id=m.id;
+  b.innerHTML=`<span class="pic" style="background-image:url(art/bg-${m.bg}.webp)"></span><span class="lbl">${open?m.icon:'🔒'} ${m.name}<small>${m.title||({mini:'Mini game'}[m.kind])||''}</small></span>${done?'<span class="tick">✓</span>':''}${m===nm?`<span class="here">${girl('nora',0,0,1,{arm:'wave',badge:false}).replace(/^/,'<svg viewBox="-160 -120 320 420">')+'</svg>'}</span>`:''}`;
+  b.onclick=()=>{ if(!open){ Snd.sfx('fizz'); $('#m2Msg').textContent='Locked! Finish the glowing room first.'; return; } Snd.sfx('tap'); FX.burst(...FX.center(b),{n:40,speed:7}); setTimeout(()=>startMission(m,n),300); };
+  const tk=`${n}:${m.id}`; if((TREASURE[n]||[]).includes(m.id)&&!S.found[tk]&&(done||open)){ const t=document.createElement('span'); t.className='treasure'; t.textContent='✨'; t.style.left=(20+((i*37)%60))+'%'; t.style.top=(18+((i*23)%40))+'%';
+   t.onclick=e=>{ e.stopPropagation(); S.found[tk]=true; S.stars+=2; save(); refreshStars(); Snd.sfx('gold'); FX.burst(e.clientX,e.clientY,{n:60,speed:9}); const what=TREASURE_TXT[(n*7+i)%TREASURE_TXT.length]; $('#m2Msg').textContent=`You found ${what}! +2 ✨`; Voice.say(`You found ${what}!`); t.remove(); };
+   b.appendChild(t); }
+  box.appendChild(b); });
+ $('#m2Msg').textContent= nm ? `Go to the ${nm.name}! ${nm.icon}   ·   Psst… look for hidden ✨ treasures` : (n<CHAPTERS.length?`Chapter ${n} complete! ▶`:'You finished Year 2! ✨');
+ const cur=box.querySelector('.room.next'); if(cur) setTimeout(()=>cur.scrollIntoView({block:'center',inline:'center',behavior:'smooth'}),200);
+}
+$('#m2Home').onclick=()=>{ Snd.sfx('tap'); show('title'); refreshStars(); };
+$('#m2Prev').onclick=()=>{ if(S.view>1){ S.view--; save(); renderMap2(); Snd.sfx('tap'); } };
+$('#m2Next').onclick=()=>{ if(S.view<Math.min(S.ch,CHAPTERS.length)){ S.view++; save(); renderMap2(); Snd.sfx('tap'); } };
+$('#m2Shop').onclick=()=>openShop('map2');
+$('#m2Friends').onclick=()=>$('#mapFriends').click();
+
+// ---------- Star shop: wands, robes, treats for Ember
+const SHOP={
+ wand:[{id:'gold',n:'Classic Gold',p:0,c:['rgba(255,212,59,.35)','#e9a91c','#fff3bf']},{id:'rose',n:'Rose Quartz',p:15,c:['rgba(255,135,190,.35)','#e64980','#ffdeeb']},{id:'ice',n:'Ice Crystal',p:20,c:['rgba(116,192,252,.35)','#1c7ed6','#e7f5ff']},{id:'ember',n:'Dragon Fire',p:25,c:['rgba(255,146,43,.4)','#e8590c','#fff4e6']},{id:'forest',n:'Forest Leaf',p:25,c:['rgba(105,219,124,.35)','#2b8a3e','#ebfbee']},{id:'star',n:'Starlight',p:35,c:['rgba(208,191,255,.45)','#7048e8','#ffffff']},{id:'rainbow',n:'Rainbow',p:45,c:'rainbow'}],
+ robe:[{id:'purple',n:'Academy Purple',p:0,h:null},{id:'blue',n:'Midnight Blue',p:20,h:220},{id:'green',n:'Forest Green',p:25,h:140},{id:'red',n:'Ruby Red',p:30,h:355},{id:'teal',n:'Ocean Teal',p:30,h:180},{id:'pink',n:'Blossom Pink',p:35,h:325},{id:'gold',n:'Sunshine Gold',p:45,h:45}],
+ treat:[{id:'berry',n:'Glow Berries',p:3,e:'🫐',say:'Ember gobbles them up. Her nose glows blue for a whole minute!'},{id:'cake',n:'Honey Cake',p:4,e:'🍯',say:'Ember licks the honey off her claws, very slowly, very happily.'},{id:'pepper',n:'Spicy Pepper',p:4,e:'🌶️',say:'Ember sneezes a tiny fireball and does a happy loop!'},{id:'cookie',n:'Star Cookie',p:5,e:'🍪',say:'Ember balances the cookie on her nose, then CHOMP!'},{id:'milk',n:'Moon Milk',p:6,e:'🥛',say:'Ember drinks it all and curls up purring like a giant kitten.'}],
+};
+function eq(){ S.equip=S.equip||{wand:'gold',robe:'purple'}; S.owned=S.owned||{wand:{gold:1},robe:{purple:1}}; S.treats=S.treats||{}; return S.equip; }
+function inkColors(){ const w=SHOP.wand.find(x=>x.id===eq().wand)||SHOP.wand[0]; if(w.c!=='rainbow') return w.c; const h=Math.floor(performance.now()/40)%360; return [`hsla(${h},90%,60%,.35)`,`hsl(${h},85%,45%)`,`hsl(${(h+40)%360},100%,92%)`]; }
+// robe recolor: only the purple robe pixels change hue (done once per picture, then cached)
+const ROBE_CACHE={}, ROBE_BUSY={};
+function robeSrc(src){ const r=SHOP.robe.find(x=>x.id===eq().robe); if(!r||r.h===null) return src; const k=src+'|'+r.id; if(ROBE_CACHE[k]) return ROBE_CACHE[k]; if(!ROBE_BUSY[k]){ ROBE_BUSY[k]=1; recolor(src,r.h).then(u=>{ ROBE_CACHE[k]=u; }).catch(()=>{}); } return src; }
+function recolor(src,hue){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>{ try{ const c=document.createElement('canvas'); c.width=im.naturalWidth; c.height=im.naturalHeight; const g=c.getContext('2d'); g.drawImage(im,0,0); const d=g.getImageData(0,0,c.width,c.height), a=d.data;
+  for(let i=0;i<a.length;i+=4){ if(a[i+3]<10) continue; const r=a[i]/255,gg=a[i+1]/255,b=a[i+2]/255, mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), l=(mx+mn)/2, dl=mx-mn; if(dl<.08) continue; const s=dl/(1-Math.abs(2*l-1));
+   let h; if(mx===r) h=60*(((gg-b)/dl)%6); else if(mx===gg) h=60*((b-r)/dl+2); else h=60*((r-gg)/dl+4); if(h<0) h+=360;
+   if(h<235||h>305||s<.12) continue; // only the purple robe
+   const nh=hue, L=hue===45?Math.min(.85,l*1.25):l, S2=Math.min(1,s*(hue===45?1.1:1)); const C=(1-Math.abs(2*L-1))*S2, X=C*(1-Math.abs((nh/60)%2-1)), m=L-C/2; let rr,g2,bb; const hh=nh/60;
+   if(hh<1){rr=C;g2=X;bb=0;} else if(hh<2){rr=X;g2=C;bb=0;} else if(hh<3){rr=0;g2=C;bb=X;} else if(hh<4){rr=0;g2=X;bb=C;} else if(hh<5){rr=X;g2=0;bb=C;} else {rr=C;g2=0;bb=X;}
+   a[i]=(rr+m)*255; a[i+1]=(g2+m)*255; a[i+2]=(bb+m)*255; }
+  g.putImageData(d,0,0); res(c.toDataURL('image/png')); }catch(e){ rej(e); } }; im.onerror=rej; im.src=src; }); }
+function warmRobes(){ ['happy','wow','brave','cast','sad','sleepy','wave'].forEach(p=>{ robeSrc(`art/nora-${p}.webp`); robeSrc(`art/nora2-${p}.webp`); }); }
+let shopFrom='title', shopTab='wand';
+function openShop(from){ shopFrom=from||'title'; eq(); show('shop'); Snd.sfx('tap'); renderShop(); }
+function renderShop(){ eq(); $('#shStars').textContent=S.stars; document.querySelectorAll('#shTabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===shopTab));
+ const box=$('#shItems'); box.innerHTML='';
+ if(shopTab==='nest'){ const love=S.emberLove||0; box.innerHTML=`<div class="nest"><div class="nestArt">${svg(BG('room')+dragon(512,300,1,{expr:'happy'}),'212 40 600 560')}</div><div class="love">${'❤️'.repeat(Math.min(10,love))}${'🤍'.repeat(Math.max(0,10-love))}</div><div id="nestMsg">${love?'Ember loves you this much!':'Feed Ember a treat!'}</div><div class="feed">${SHOP.treat.map(t=>`<button data-id="${t.id}" ${(S.treats[t.id]||0)?'':'disabled'}>${t.e}<small>${t.n} ×${S.treats[t.id]||0}</small></button>`).join('')}</div></div>`;
+  box.querySelectorAll('.feed button').forEach(b=>b.onclick=()=>{ const t=SHOP.treat.find(x=>x.id===b.dataset.id); if(!(S.treats[t.id]>0)) return; S.treats[t.id]--; S.emberLove=(S.emberLove||0)+1; save(); Snd.sfx('gold'); FX.hearts(...FX.center($('.nestArt'))); renderShop(); $('#nestMsg').textContent=t.say; Voice.say(t.say); });
+  return; }
+ SHOP[shopTab].forEach(it=>{ const own=shopTab==='treat'?false:!!(S.owned[shopTab]||{})[it.id], on=shopTab!=='treat'&&S.equip[shopTab]===it.id; const d=document.createElement('div'); d.className='item'+(on?' on':'');
+  let pic='';
+  if(shopTab==='wand'){ const c=it.c==='rainbow'?['','#e64980','']:it.c; pic=`<div class="pic wandPic" style="--ink:${it.c==='rainbow'?'linear-gradient(90deg,#fa5252,#fab005,#40c057,#228be6,#7048e8)':c[1]}"><span class="cur">magic</span></div>`; }
+  else if(shopTab==='robe'){ pic=`<div class="pic robePic" data-h="${it.h===null?'':it.h}"><img src="art/nora-happy.webp" alt=""></div>`; }
+  else pic=`<div class="pic treatPic">${it.e}</div>`;
+  const btn= shopTab==='treat' ? `<button class="btn gold sm buy">${it.p} ✨ Buy</button><small>You have ${S.treats[it.id]||0}</small>` : on ? `<button class="btn ghost sm" disabled>Wearing ✓</button>` : own ? `<button class="btn sm use">Use</button>` : `<button class="btn gold sm buy">${it.p} ✨ Buy</button>`;
+  d.innerHTML=`${pic}<b>${it.n}</b>${btn}`; box.appendChild(d);
+  const buy=d.querySelector('.buy'), use=d.querySelector('.use');
+  if(buy) buy.onclick=()=>{ if(S.stars<it.p){ Snd.sfx('fizz'); $('#shMsg').textContent=`You need ${it.p-S.stars} more ✨. Keep casting spells!`; return; } S.stars-=it.p; if(shopTab==='treat'){ S.treats[it.id]=(S.treats[it.id]||0)+1; $('#shMsg').textContent=`${it.e} ${it.n} bought! Feed it to Ember in Ember's Nest.`; } else { S.owned[shopTab]=S.owned[shopTab]||{}; S.owned[shopTab][it.id]=1; S.equip[shopTab]=it.id; $('#shMsg').textContent=`${it.n} is yours! ✨`; if(shopTab==='robe') warmRobes(); } save(); refreshStars(); Snd.sfx('gold'); FX.burst(...FX.center(d),{n:50,speed:8}); renderShop(); };
+  if(use) use.onclick=()=>{ S.equip[shopTab]=it.id; save(); Snd.sfx('tap'); if(shopTab==='robe') warmRobes(); renderShop(); };
+ });
+ // robe previews recolored in place
+ box.querySelectorAll('.robePic').forEach(p=>{ const h=p.dataset.h; if(h==='') return; recolor('art/nora-happy.webp',+h).then(u=>{ p.querySelector('img').src=u; }).catch(()=>{}); });
+}
+document.querySelectorAll('#shTabs button').forEach(b=>b.onclick=()=>{ shopTab=b.dataset.t; Snd.sfx('tap'); renderShop(); });
+$('#shBack').onclick=()=>{ Snd.sfx('tap'); if(shopFrom==='map2') goMap(); else if(shopFrom==='map') goMap(); else { show('title'); refreshStars(); } };
+$('#shopBtn').onclick=()=>openShop('title');
+
+// ---------- title: choose the year
+function renderYears(){ const b2=$('#y2Btn'), b1=$('#y1Btn'); const ok=y1Done(); b2.disabled=!ok; b2.innerHTML=ok?'📗 Year 2 <small>The Dragon Pact</small>':'🔒 Year 2 <small>Finish Year 1 first</small>'; b1.classList.toggle('on',yearOf()===1); b2.classList.toggle('on',yearOf()===2); }
+$('#y1Btn').onclick=()=>{ if(yearOf()!==1){ setYear(1); Snd.sfx('tap'); } renderYears(); };
+$('#y2Btn').onclick=()=>{ if(!y1Done()) return; if(yearOf()!==2){ setYear(2); Snd.sfx('gold'); FX.burst(...FX.center($('#y2Btn')),{n:60,speed:9}); } renderYears(); };
+const _refreshStars=refreshStars; refreshStars=function(){ _refreshStars(); try{ renderYears(); }catch(e){} try{ $('#m2Stars').textContent=S.stars; }catch(e){} };
+// start button in Year 2: its own opening story (no entrance test)
+const _start=$('#startBtn').onclick;
+$('#startBtn').onclick=function(){ if(yearOf()!==2) return _start.apply(this,arguments); FX.burst(...FX.center($('#startBtn')),{n:60,speed:9}); Snd.init(); try{Snd.ctx.resume();}catch(e){} Snd.sfx('chime');
+ if(!S.introSeen){ playStory([...Y2.INTRO(),say(null,'Year 2: The Dragon Pact',titleCard(1),{sfx:'gold'})],()=>{ S.introSeen=true; save(); goMap(); },{skippable:true}); } else { S.view=Math.min(S.view||1,S.ch,CHAPTERS.length); goMap(); } };
+eq(); warmRobes(); renderYears();
+// test hook: new screens
+const _solve=window.__test.solve; window.__test.solve=()=>{
+ if(current==='read'&&R){ $('#rdIn').value=R.items[R.i]; return readCheck(); }
+ if(current==='map2'){ const m=nextMain(S.view); if(m){ const b=document.querySelector(`#m2Rooms .room[data-id="${m.id}"]`); if(b&&!b.dataset.busy){ b.dataset.busy=1; return startMission(m,S.view); } return; } if(!S.chDone[S.view]) return chapterEnd(S.view); if(S.view<CHAPTERS.length){ S.view++; return renderMap2(); } return; }
+ if(current==='shop') return $('#shBack').click();
+ return _solve(); };
+
+$('#rdGo').onclick=readCheck; $('#rdIn').addEventListener('keydown',e=>{ if(e.key==='Enter') readCheck(); }); $('#rdMap').onclick=()=>{ R=null; goMap(); };
+const _rs2=refreshStars; refreshStars=function(){ _rs2(); try{ $('#rdStars').textContent=S.stars; }catch(e){} };
+
+</script>
+<div id="kaVer" data-v="2.0" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.0 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
