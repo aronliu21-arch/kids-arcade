@@ -57,7 +57,8 @@ window.addEventListener('orientationchange', () => setTimeout(measure, 300));
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id));
   G.screen = id; AU.stop();
-  AU.music(id !== 'scene');
+  AU.music(id !== 'scene' && id !== 'mini');
+  if (id !== 'mini') { M.sid++; if (M.cancel) M.cancel(); M.replay = M.last = null; }
   if (id === 'title') renderTitle();
   if (id === 'map') renderMap();
   if (id === 'journal') renderJournal();
@@ -88,6 +89,7 @@ function renderMap() {
     card.setAttribute('aria-label', LINES['area_' + id].en);
     onTap(card, () => { AU.sfx('tap'); startArea(id); });
   });
+  renderJobs();
 }
 
 /* ---------- scene state ---------- */
@@ -349,7 +351,7 @@ async function clueAction(o) {
     case 'fern': await followPrints(o); AU.sfx('rustle'); leaves(o.x, o.y - o.h * .6, 10); await wobble(o.el, 1.2); showWitness(o); AU.sfx('boing'); break;
     case 'binoculars': break;
   }
-  await wait(900);
+  await wait(350);
   o.done = true; o.el.classList.add('done');
   let ok = false;
   openPanel();
@@ -452,7 +454,7 @@ function hintTick() {
   const idle = Date.now() - G.lastPoke;
   // little twinkles on things you have not tried yet (after a few seconds of looking)
   if (idle > 5000) S.objs.forEach(o => { if (!o.hot && !o.done && !o.tried && o.tw) o.tw.style.display = 'block'; });
-  if (idle < 13000) return;
+  if (idle < 9000) return;
   G.poke(); hintN++;
   const left = S.objs.filter(o => o.act && !o.done);
   if (!left.length) return;
@@ -562,8 +564,7 @@ async function actCount(o) {
   const size = Math.min(w * .8 / Math.min(5, Math.ceil(o.n <= 5 ? o.n : o.n / 2)) / 1.3, h * .22, 130);
   const items = makeItems(b, o.item, o.n, gridPos(o.n, {x: w * .14, y: h * .06, w: w * .8, h: h * .56}, size), size);
   items.forEach((it, i) => anim(it, [{transform: 'scale(0)'}, {transform: 'scale(1)'}], {duration: 400, delay: i * 70, easing: 'cubic-bezier(.3,1.6,.6,1)', fill: 'none'}));
-  AU.say('count_intro_' + o.item, {prompt: true});
-  if (!(await countByTouch(items))) return false;
+  items.forEach(it => it.onpointerdown = ev => { ev.stopPropagation(); ev.preventDefault(); bounce(it); AU.sfx('count'); });
   return await askNumber(b, o.n, 'count_ask_' + o.item, items, h * .66, 'count-' + o.item + '-' + o.n);
 }
 async function actAdd(o) {
@@ -574,9 +575,7 @@ async function actAdd(o) {
   const posL = gridPos(a, {x: w * .12, y: h * .06, w: w * .32, h: h * .34}, size, a > 3 ? 3 : a), posR = gridPos(c, {x: w * .56, y: h * .06, w: w * .32, h: h * .34}, size, c > 3 ? 3 : c);
   const A = makeItems(b, o.item, a, posL, size), B = makeItems(b, o.item, c, posR, size), all = A.concat(B);
   all.forEach(it => it.style.zIndex = 2);
-  await AU.say('add_intro');
-  padL.classList.add('bounce'); A.forEach(bounce); await AU.say('group_' + a);
-  padR.classList.add('bounce'); B.forEach(bounce); await AU.say('more_' + c);
+  padL.classList.add('bounce'); A.forEach(bounce); setTimeout(() => { padR.classList.add('bounce'); B.forEach(bounce); }, 350);
   if (!G.panelOpen) return false;
   // put them in the basket
   const inBas = gridPos(n, {x: w * .2, y: h * .44, w: w * .66, h: h * .22}, size * .9, n > 5 ? Math.ceil(n / 2) : n);
@@ -595,8 +594,7 @@ async function actAdd(o) {
   padL.style.animation = padR.style.animation = 'none';
   const eq = el('div', 'eq', b); eq.style.top = h * .14 + 'px'; eq.innerHTML = a + ' + ' + c + ' = <b>?</b>';
   padL.remove(); padR.remove();
-  AU.say('add_countall', {prompt: true});
-  if (!(await countByTouch(all))) return false;
+  all.forEach(it => it.onpointerdown = ev => { ev.stopPropagation(); ev.preventDefault(); bounce(it); AU.sfx('count'); });
   const ok = await askNumber(b, n, 'add_ask_' + a + '_' + c, all, h * .7, 'add-' + a + '+' + c);
   if (ok) { eq.innerHTML = a + ' + ' + c + ' = <b>' + n + '</b>'; bounce(eq); await AU.say('add_right'); }
   return ok;
@@ -610,7 +608,8 @@ async function actSound(o) {
   anim(big, [{transform: 'scale(.3)', opacity: 0}, {transform: 'scale(1)', opacity: 1}], {duration: 450, easing: 'cubic-bezier(.3,1.6,.6,1)'});
   onTap(big, () => { hop(big); AU.say(S.act.asked ? 'sound_again_' + wit : 'hi_' + wit); });
   await AU.say('hi_' + wit);
-  // teach with a sound we know
+  // teach with a sound we know (only the first time each visit)
+  if (!G.taught) { G.taught = 1;
   const teach = el('div', 'teach', b, '<span class="ltr">' + (zh ? 'ㄎ' : 'L') + '</span><img src="' + IMG(zh ? 'coco' : 'leo') + '">');
   teach.style.left = w * .55 + 'px'; teach.style.top = h * .12 + 'px';
   anim(teach, [{transform: 'scale(0)'}, {transform: 'scale(1)'}], {duration: 400, easing: 'cubic-bezier(.3,1.6,.6,1)'});
@@ -618,6 +617,7 @@ async function actSound(o) {
   if (!(await AU.say('sound_teach'))) { if (!G.panelOpen) return false; }
   if (!G.panelOpen) return false;
   anim(teach, [{transform: 'scale(1)'}, {transform: 'scale(.7) translate(22%,-30%)', opacity: .8}], {duration: 400});
+  }
   // ask
   const ans = zh ? ANIMAL_INFO[wit].zy : ANIMAL_INFO[wit].letter;
   const pool = zh ? Object.keys(LETTERS.zh).filter(x => x !== 'ㄎ' && x !== ans) : EN_LETTERS.filter(x => x !== 'L' && x !== ans);
@@ -654,9 +654,8 @@ async function revealClue() {
   AU.sfx('sparkle');
   await anim(card, [{transform: 'scale(0) rotate(-20deg)'}, {transform: 'scale(1) rotate(0)'}], {duration: 600, easing: 'cubic-bezier(.3,1.5,.6,1)'});
   addCoco(b);
-  await AU.say('clue_look');
   await AU.say(type === 'shadow' ? 'shadow' : type + '_' + S.kase.culprit);
-  await wait(300);
+  await wait(100);
   // fly to the tray
   const slot = $('#tray').children[S.clues.length], r1 = card.getBoundingClientRect(), r2 = slot.getBoundingClientRect();
   await anim(card, [{transform: 'none'}, {transform: 'translate(' + (r2.left + r2.width / 2 - (r1.left + r1.width / 2)) + 'px,' + (r2.top + r2.height / 2 - (r1.top + r1.height / 2)) + 'px) scale(' + r2.width / r1.width + ')'}], {duration: FASTMODE ? 30 : 700, easing: 'ease-in'});
@@ -679,8 +678,7 @@ async function finalCase() {
   const sh = h * .5, sw = Math.min(w * .26, sh * .95);
   const els = sus.map(a => { const s = el('button', 'suspect', lineup, '<img src="' + IMG(ANIMALS[a].img) + '" alt="' + a + '">'); s.style.width = sw + 'px'; s.style.height = sh + 'px'; s.dataset.a = a; return s; });
   addCoco(b);
-  await AU.say('final_intro');
-  for (let i = 0; i < 3; i++) { if (!G.panelOpen) return; cards[i].classList.add('bounce'); await AU.say(CLUE_ORDER[i] === 'shadow' ? 'shadow' : CLUE_ORDER[i] + '_' + k.culprit); }
+  for (let i = 0; i < 3; i++) { if (!G.panelOpen) return; cards[i].classList.add('bounce'); AU.sfx('pop'); await wait(260); }
   AU.say('final_ask', {prompt: true});
   let misses = 0; S.act.correct = k.culprit;
   while (true) {
@@ -711,9 +709,6 @@ async function celebrate() {
   await AU.say('solved_' + k.area + '_' + a);
   // the animal joins the scene
   showCulpritInScene();
-  await AU.say('solved_yay');
-  await AU.say('sticker_' + a);
-  await AU.say('fact_' + a);
   b.classList.remove('celebrate');
   const row = el('div', 'endBtns', b); row.style.top = h * .66 + 'px';
   const again = el('button', 'endBtn again', row, '<svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>');
@@ -721,6 +716,7 @@ async function celebrate() {
   const bookb = el('button', 'endBtn bookb', row, '<img src="' + IMG('lens') + '" style="height:46px">');
   onTap(again, () => startArea(k.area)); onTap(mapb, () => show('map')); onTap(bookb, () => { G.fromScene = k.area; show('journal'); AU.say('journal_open'); });
   S.act = {type: 'end'};
+  await AU.say('sticker_' + a);
   AU.say('play_again', {prompt: true});
 }
 function showCulpritInScene() {
@@ -822,6 +818,10 @@ function bindControls() {
   window.addEventListener('keyup', e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') S.keys = 0; });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { AU.stop(); AU.music(false); } else AU.music(G.screen !== 'scene'); });
   document.addEventListener('gesturestart', e => e.preventDefault());
+  $('#mHome').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.sfx('tap'); show('map'); });
+  $('#mReplay').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); if (M.replay) M.replay(); else if (M.last) msay(M.last[0], M.last[1]); });
+  // a tap cuts a long line short (after it has played a moment), so Milo never has to wait
+  document.addEventListener('pointerdown', e => { if (G.screen === 'scene' && !e.target.closest('.hud')) AU.skip(); }, true);
 }
 
 /* ---------- automated playtest hook (harmless for players) ---------- */
@@ -834,6 +834,9 @@ window.__test = {
   answer: () => { if (S.act && S.act.answer) S.act.answer(); },
   wrong: () => { const o = [...document.querySelectorAll('.opt:not(.no):not(.yes),.suspect:not(.no):not(.yes)')].find(x => (x.dataset.v != null ? x.dataset.v : x.dataset.a) !== (S.act && S.act.correct)); if (o) o.onpointerdown({stopPropagation() {}, preventDefault() {}}); return o && (o.dataset.v || o.dataset.a); },
   db: () => DB,
+  job: id => startJob(id),
+  mini: () => ({screen: G.screen, job: M.job, got: M.got, total: M.job && JOBS[M.job].total, done: !!M.done}),
+  solve: () => M.solve && M.solve(),
 };
 
 /* ---------- boot ---------- */

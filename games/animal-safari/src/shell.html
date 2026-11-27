@@ -31,6 +31,7 @@
       <div class="mapTitle" id="mapTitle"></div>
       <button class="hud" id="mapBook" aria-label="Sticker book"><svg viewBox="0 0 24 24"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-4a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h4z"/></svg></button></div>
     <div class="cards" id="cards"></div>
+    <div class="jobs" id="jobs"></div>
     <img class="mapLeo" src="art/leo.webp" alt=""><img class="mapCoco" src="art/coco_happy.webp" alt="">
   </section>
 
@@ -55,6 +56,18 @@
     <div id="panel" class="panelWrap"><div class="panel"><div class="pBody" id="pBody"></div></div></div>
   </section>
 
+  <!-- zoo jobs (mini games) -->
+  <section id="mini" class="screen">
+    <div id="mBg"></div>
+    <div id="mBody"></div>
+    <div id="mHud">
+      <button class="hud home" id="mHome" aria-label="Map"><svg viewBox="0 0 24 24"><path d="M12 3l10 9h-3v8h-5v-6h-4v6H5v-8H2z"/></svg></button>
+      <div id="mStars"></div>
+      <button class="hud" id="mReplay" aria-label="Say it again"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg></button>
+    </div>
+    <div id="mCap"></div>
+  </section>
+
   <!-- sticker journal -->
   <section id="journal" class="screen">
     <div class="mapHead"><button class="hud home" id="jBack" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -65,7 +78,7 @@
   <div id="settings" class="modal"></div>
   <div id="rotateHint"></div>
 </div>
-<div id="kaVer" data-v="1.0" data-d="2026-11-27">v1.0 · 2026-11-27</div>
+<div id="kaVer" data-v="1.1" data-d="2026-11-27">v1.1 · 2026-11-27</div>
 <script src="../../voice.js"></script>
 <script src="../../kit.js"></script>
 <script src="../../tracker.js"></script>

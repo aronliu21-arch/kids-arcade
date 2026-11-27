@@ -4,7 +4,7 @@ function zhVoice() { // the shared Chinese voice choice (same key as every Kids 
 }
 /* ---------- audio: one narrator at a time, recorded English clips, device voice for Chinese ---------- */
 const AU = (function () {
-  let ac = null, master, sfxG, musG, voxG, src = null, token = 0, musicOn = false, musTimer = 0, speaking = false;
+  let started = 0, ac = null, master, sfxG, musG, voxG, src = null, token = 0, musicOn = false, musTimer = 0, speaking = false;
   const bufs = {}, loading = {};
   const FAST = /[?&]fast=1/.test(location.search);
   function ctx() {
@@ -68,7 +68,7 @@ const AU = (function () {
     stop(); const my = token;
     if (opts.prompt) G.lastPrompt = key;
     G.showBubble(key);
-    speaking = true; G.onSpeak(true, line.v);
+    speaking = true; G.onSpeak(true, line.v); started = Date.now();
     if (FAST) { await wait(40); }
     else if (DB.muted) { await wait(Math.min(3500, 700 + (DB.lang === 'zh' ? line.zh.length * 110 : line.en.length * 40))); }
     else if (DB.lang === 'zh') {
@@ -153,5 +153,5 @@ const AU = (function () {
     play(); musTimer = setInterval(play, beat * 4 * 1000);
   }
   function duck(on) { if (ac && musicOn) musG.gain.setTargetAtTime(on ? .05 : .16, ac.currentTime, .15); }
-  return { unlock, say, seq, raw, stop, sfx, music, preload, load, duck, isSpeaking: () => speaking, FAST };
+  return { skip: () => { if (speaking && Date.now() - started > 1200) stop(); }, unlock, say, seq, raw, stop, sfx, music, preload, load, duck, isSpeaking: () => speaking, FAST };
 })();
