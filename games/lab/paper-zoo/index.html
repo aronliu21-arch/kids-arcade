@@ -99,9 +99,8 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#6b5a50;letter-s
 /* story + find */
 .scene{position:absolute;left:0;right:0;top:calc(var(--topH) + env(safe-area-inset-top));bottom:0;overflow:hidden}
 .sc-zoo{background:#f4ead8 url(art/zoo-bg.webp) center/cover}
-.sc-sav{background:linear-gradient(#ffd8a8 0%,#ffe8c2 48%,#e9c46a 49%,#d9a441 100%)}
-.sc-sav .deco::before{content:"";position:absolute;right:8%;top:8%;width:clamp(60px,12vw,120px);aspect-ratio:1;border-radius:50%;background:#ffb347;box-shadow:0 4px 0 rgba(0,0,0,.08)}
-.sc-sav .deco::after{content:"";position:absolute;left:-5%;right:-5%;top:40%;height:22%;background:radial-gradient(ellipse at 20% 100%,#c9a15a 40%,transparent 41%),radial-gradient(ellipse at 70% 100%,#bf9550 45%,transparent 46%);filter:drop-shadow(0 -3px 0 rgba(0,0,0,.06))}
+.sc-ice{background:#e6f1f8 url(art/ice-bg.webp) center 70%/cover}
+.sc-sav{background:#f3dcb0 url(art/sav-bg.webp) center 70%/cover}
 #scOwl{position:absolute;left:4%;bottom:calc(30% + 10px);font-size:clamp(70px,14vh,130px);filter:drop-shadow(0 5px 3px rgba(0,0,0,.3));animation:bob 2.4s ease-in-out infinite}
 #scAni{position:absolute;left:50%;bottom:30%;height:min(48%,340px);transform:translateX(-50%);filter:drop-shadow(0 8px 5px rgba(0,0,0,.3));display:none}
 #scAni.idle{animation:bob2 2.6s ease-in-out infinite}
@@ -312,7 +311,7 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#6b5a50;letter-s
 const ZY={"洛":"ㄌㄨㄛˋ","明":"ㄇㄧㄥˊ","的":"˙ㄉㄜ","紙":"ㄓˇ","片":"ㄆㄧㄢˋ","動":"ㄉㄨㄥˋ","物":"ㄨˋ","園":"ㄩㄢˊ","大":"ㄉㄚˋ","象":"ㄒㄧㄤˋ","長":"ㄔㄤˊ","頸":"ㄐㄧㄥˇ","鹿":"ㄌㄨˋ","獅":"ㄕ","子":"˙ㄗ","企":"ㄑㄧˋ","鵝":"ㄜˊ","救":"ㄐㄧㄡˋ","援":"ㄩㄢˊ","拍":"ㄆㄞ","照":"ㄓㄠˋ","剪":"ㄐㄧㄢˇ","貼":"ㄊㄧㄝ","相":"ㄒㄧㄤˋ","簿":"ㄅㄨˋ","草":"ㄘㄠˇ","水":"ㄕㄨㄟˇ","冰":"ㄅㄧㄥ","石":"ㄕˊ","頭":"˙ㄊㄡ","樹":"ㄕㄨˋ","好":"ㄏㄠˇ","棒":"ㄅㄤˋ","完":"ㄨㄢˊ","成":"ㄔㄥˊ","小":"ㄒㄧㄠˇ","休":"ㄒㄧㄡ","息":"˙ㄒㄧ","需":"ㄒㄩ","要":"ㄧㄠˋ","我":"ㄨㄛˇ","個":"˙ㄍㄜ","格":"ㄍㄜˊ","和":"ㄏㄢˋ","把":"ㄅㄚˇ","拼":"ㄆㄧㄣ","圖":"ㄊㄨˊ","拼圖":"","有":"ㄧㄡˇ","隻":"ㄓ","幫":"ㄅㄤ","忙":"ㄇㄤˊ","找":"ㄓㄠˇ","出":"ㄔㄨ","最":"ㄗㄨㄟˋ","高":"ㄍㄠ","矮":"ㄞˇ","哪":"ㄋㄚˇ","一":"ㄧ","二":"ㄦˋ","三":"ㄙㄢ","四":"ㄙˋ","五":"ㄨˇ","六":"ㄌㄧㄡˋ","七":"ㄑㄧ","八":"ㄅㄚ","九":"ㄐㄧㄡˇ","十":"ㄕˊ","還":"ㄏㄞˊ","幾":"ㄐㄧˇ","多":"ㄉㄨㄛ","少":"ㄕㄠˇ","吃":"ㄔ","掉":"ㄉㄧㄠˋ","剩":"ㄕㄥˋ","下":"ㄒㄧㄚˋ","魚":"ㄩˊ","鴨":"ㄧㄚ","比":"ㄅㄧˇ","較":"ㄐㄧㄠˋ","邊":"ㄅㄧㄢ","字":"ㄗˋ","是":"ㄕˋ","開":"ㄎㄞ","聲":"ㄕㄥ","音":"ㄧㄣ","第":"ㄉㄧˋ","座":"ㄗㄨㄛˋ","位":"ㄨㄟˋ","車":"ㄔㄜ","滿":"ㄇㄢˇ","了":"˙ㄌㄜ","坐":"ㄗㄨㄛˋ","人":"ㄖㄣˊ","給":"ㄍㄟˇ","來":"ㄌㄞˊ","住":"ㄓㄨˋ","其":"ㄑㄧˊ","他":"ㄊㄚ","都":"ㄉㄡ","用":"ㄩㄥˋ","做":"ㄗㄨㄛˋ","變":"ㄅㄧㄢˋ","成":"ㄔㄥˊ","新":"ㄒㄧㄣ","家":"ㄐㄧㄚ","搬":"ㄅㄢ","進":"ㄐㄧㄣˋ","遊":"ㄧㄡˊ","客":"ㄎㄜˋ","奇":"ㄑㄧˊ","怪":"ㄍㄨㄞˋ","再":"ㄗㄞˋ","次":"ㄘˋ","拿":"ㄋㄚˊ","時":"ㄕˊ","間":"ㄐㄧㄢ","明":"ㄇㄧㄥˊ","天":"ㄊㄧㄢ","見":"ㄐㄧㄢˋ","灰":"ㄏㄨㄟ","色":"ㄙㄜˋ","黑":"ㄏㄟ","白":"ㄅㄞˊ","更":"ㄍㄥˋ","快":"ㄎㄨㄞˋ","樂":"ㄌㄜˋ","寶":"ㄅㄠˇ","貝":"ㄅㄟˋ","猴":"ㄏㄡˊ","熊":"ㄒㄩㄥˊ","貓":"ㄇㄠ","斑":"ㄅㄢ","馬":"ㄇㄚˇ","老":"ㄌㄠˇ","虎":"ㄏㄨˇ","兔":"ㄊㄨˋ","山":"ㄕㄢ","點":"ㄉㄧㄢˇ","按":"ㄢˋ","這":"ㄓㄜˋ","在":"ㄗㄞˋ","哇":"ㄨㄚ","對":"ㄉㄨㄟˋ","再":"ㄗㄞˋ","試":"ㄕˋ","看":"ㄎㄢˋ","答":"ㄉㄚˊ","案":"ㄢˋ","嗎":"˙ㄇㄚ","全":"ㄑㄩㄢˊ","部":"ㄅㄨˋ","救":"ㄐㄧㄡˋ","到":"ㄉㄠˋ","更":"ㄍㄥˋ","多":"ㄉㄨㄛ","會":"ㄏㄨㄟˋ","去":"ㄑㄩˋ","哦":"˙ㄛ","們":"˙ㄇㄣ","要":"ㄧㄠˋ","彩":"ㄘㄞˇ","帶":"ㄉㄞˋ","回":"ㄏㄨㄟˊ","號":"ㄏㄠˋ","能":"ㄋㄥˊ","真":"ㄓㄣ","塊":"ㄎㄨㄞˋ","金":"ㄐㄧㄣ","問":"ㄨㄣˋ","題":"ㄊㄧˊ","打":"ㄉㄚˇ","先":"ㄒㄧㄢ","鎖":"ㄙㄨㄛˇ","讓":"ㄖㄤˋ","睡":"ㄕㄨㄟˋ","覺":"ㄐㄧㄠˋ"};
 Object.assign(ZY,{"橘":"ㄐㄩˊ","黃":"ㄏㄨㄤˊ","歡":"ㄏㄨㄢ","迎":"ㄧㄥˊ","你":"ㄋㄧˇ","我":"ㄨㄛˇ","卡":"ㄎㄚˇ","空":"ㄎㄨㄥ","快":"ㄎㄨㄞˋ","安":"ㄢ","兩":"ㄌㄧㄤˇ","叭":"ㄅㄚ","做":"ㄗㄨㄛˋ","星":"ㄒㄧㄥ","可":"ㄎㄜˇ","以":"ㄧˇ","零":"ㄌㄧㄥˊ","公":"ㄍㄨㄥ","條":"ㄊㄧㄠˊ","押":"ㄧㄚ","韻":"ㄩㄣˋ","什":"ㄕㄣˊ","麼":"˙ㄇㄜ","母":"ㄇㄨˇ","「":"","」":"","太":"ㄊㄞˋ","繼":"ㄐㄧˋ","續":"ㄒㄩˋ","每":"ㄇㄟˇ","不":"ㄅㄨˋ","夠":"ㄍㄡˋ","數":"ㄕㄨˇ","像":"ㄒㄧㄤˋ","樣":"ㄧㄤˋ","共":"ㄍㄨㄥˋ","喜":"ㄒㄧˇ","練":"ㄌㄧㄢˋ","習":"ㄒㄧˊ","得":"˙ㄉㄜ","裡":"ㄌㄧˇ","身":"ㄕㄣ","體":"ㄊㄧˇ","腳":"ㄐㄧㄠˇ","隨":"ㄙㄨㄟˊ","便":"ㄅㄧㄢˋ","配":"ㄆㄟˋ","、":"","存":"ㄘㄨㄣˊ","起":"ㄑㄧˇ","功":"ㄍㄨㄥ","放":"ㄈㄤˋ","探":"ㄊㄢˋ","險":"ㄒㄧㄢˇ","名":"ㄇㄧㄥˊ","喀":"ㄎㄚ","擦":"ㄘㄚ","張":"ㄓㄤ","它":"ㄊㄚ","那":"ㄋㄚˋ"});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-Object.assign(ZY,{"丟":"ㄉㄧㄡ","友":"ㄧㄡˇ","喔":"˙ㄛ","嘻":"ㄒㄧ","想":"ㄒㄧㄤˇ","拖":"ㄊㄨㄛ","換":"ㄏㄨㄢˋ","摸":"ㄇㄛ","朋":"ㄆㄥˊ","派":"ㄆㄞˋ","牠":"ㄊㄚ","癢":"ㄧㄤˇ","舞":"ㄨˇ","餵":"ㄨㄟˋ","上": "ㄕㄤˋ", "中": "ㄓㄨㄥ", "些": "ㄒㄧㄝ", "亮": "ㄌㄧㄤˋ", "候": "˙ㄏㄡ", "傘": "ㄙㄢˇ", "冷": "ㄌㄥˇ", "刷": "ㄕㄨㄚ", "加": "ㄐㄧㄚ", "北": "ㄅㄟˇ", "原": "ㄩㄢˊ", "又": "ㄧㄡˋ", "叢": "ㄘㄨㄥˊ", "叫": "ㄐㄧㄠˋ", "吧": "˙ㄅㄚ", "吹": "ㄔㄨㄟ", "吼": "ㄏㄡˇ", "呼": "ㄏㄨ", "咕": "ㄍㄨ", "哈": "ㄏㄚ", "員": "ㄩㄢˊ", "哭": "ㄎㄨ", "啦": "ㄌㄚ", "喝": "ㄏㄜ", "嘟": "ㄉㄨ", "嘩": "ㄏㄨㄚ", "嚕": "ㄌㄨ", "囉": "ㄌㄨㄛ", "地": "ㄉㄧˋ", "屋": "ㄨ", "巢": "ㄔㄠˊ", "帽": "ㄇㄠˋ", "床": "ㄔㄨㄤˊ", "往": "ㄨㄤˇ", "很": "ㄏㄣˇ", "後": "ㄏㄡˋ", "心": "ㄒㄧㄣ", "排": "ㄆㄞˊ", "提": "ㄊㄧˊ", "文": "ㄨㄣˊ", "方": "ㄈㄤ", "旁": "ㄆㄤˊ", "昨": "ㄗㄨㄛˊ", "晚": "ㄨㄢˇ", "書": "ㄕㄨ", "月": "ㄩㄝˋ", "木": "ㄇㄨˋ", "東": "ㄉㄨㄥ", "果": "ㄍㄨㄛˇ", "極": "ㄐㄧˊ", "機": "ㄐㄧ", "橫": "ㄏㄥˊ", "步": "ㄅㄨˋ", "池": "ㄔˊ", "汽": "ㄑㄧˋ", "泳": "ㄩㄥˇ", "渴": "ㄎㄜˇ", "游": "ㄧㄡˊ", "火": "ㄏㄨㄛˇ", "牙": "ㄧㄚˊ", "狗": "ㄍㄡˇ", "玩": "ㄨㄢˊ", "球": "ㄑㄧㄡˊ", "理": "ㄌㄧˇ", "瓜": "ㄍㄨㄚ", "畫": "ㄏㄨㄚˋ", "盒": "ㄏㄜˊ", "破": "ㄆㄛˋ", "示": "ㄕˋ", "站": "ㄓㄢˋ", "章": "ㄓㄤ", "管": "ㄍㄨㄢˇ", "箱": "ㄒㄧㄤ", "糕": "ㄍㄠ", "紅": "ㄏㄨㄥˊ", "紫": "ㄗˇ", "綠": "ㄌㄩˋ", "聽": "ㄊㄧㄥ", "肚": "ㄉㄨˋ", "花": "ㄏㄨㄚ", "英": "ㄧㄥ", "葉": "ㄧㄝˋ", "著": "˙ㄓㄜ", "蕉": "ㄐㄧㄠ", "藍": "ㄌㄢˊ", "藏": "ㄘㄤˊ", "蘋": "ㄆㄧㄥˊ", "蛋": "ㄉㄢˋ", "被": "ㄅㄟˋ", "西": "ㄒㄧ", "誰": "ㄕㄟˊ", "謝": "ㄒㄧㄝˋ", "讀": "ㄉㄨˊ", "跑": "ㄆㄠˇ", "跟": "ㄍㄣ", "跳": "ㄊㄧㄠˋ", "踏": "ㄊㄚˋ", "過": "ㄍㄨㄛˋ", "遠": "ㄩㄢˇ", "陣": "ㄓㄣˋ", "陽": "ㄧㄤˊ", "雞": "ㄐㄧ", "雨": "ㄩˇ", "雪": "ㄒㄩㄝˇ", "面": "ㄇㄧㄢˋ", "鞋": "ㄒㄧㄝˊ", "風": "ㄈㄥ", "飛": "ㄈㄟ", "餓": "ㄜˋ", "香": "ㄒㄧㄤ", "騎": "ㄑㄧˊ", "鳥": "ㄋㄧㄠˇ", "鷹": "ㄧㄥ", "鼻": "ㄅㄧˊ"});
+Object.assign(ZY,{"世":"ㄕˋ","備":"ㄅㄟˋ","冒":"ㄇㄠˋ","南":"ㄋㄢˊ","印":"ㄧㄣˋ","同":"ㄊㄨㄥˊ","吱":"ㄓ","嗷":"ㄠˊ","嘎":"ㄍㄚ","圍":"ㄨㄟˊ","套":"ㄊㄠˋ","就":"ㄐㄧㄡˋ","巾":"ㄐㄧㄣ","帳":"ㄓㄤˋ","手":"ㄕㄡˇ","抱":"ㄅㄠˋ","搖":"ㄧㄠˊ","擺":"ㄅㄞˇ","暖":"ㄋㄨㄢˇ","林":"ㄌㄧㄣˊ","橇":"ㄑㄧㄠ","泡":"ㄆㄠˋ","洞":"ㄉㄨㄥˋ","海":"ㄏㄞˇ","淇":"ㄑㄧˊ","淋":"ㄌㄧㄣˊ","準":"ㄓㄨㄣˇ","溫":"ㄨㄣ","滑":"ㄏㄨㄚˊ","熱":"ㄖㄜˋ","界":"ㄐㄧㄝˋ","知":"ㄓ","篷":"˙ㄆㄥ","蝦":"ㄒㄧㄚ","豹":"ㄅㄠˋ","走":"ㄗㄡˇ","路":"ㄌㄨˋ","迷":"ㄇㄧˊ","道":"ㄉㄠˋ","魷":"ㄧㄡˊ","丟":"ㄉㄧㄡ","友":"ㄧㄡˇ","喔":"˙ㄛ","嘻":"ㄒㄧ","想":"ㄒㄧㄤˇ","拖":"ㄊㄨㄛ","換":"ㄏㄨㄢˋ","摸":"ㄇㄛ","朋":"ㄆㄥˊ","派":"ㄆㄞˋ","牠":"ㄊㄚ","癢":"ㄧㄤˇ","舞":"ㄨˇ","餵":"ㄨㄟˋ","上": "ㄕㄤˋ", "中": "ㄓㄨㄥ", "些": "ㄒㄧㄝ", "亮": "ㄌㄧㄤˋ", "候": "˙ㄏㄡ", "傘": "ㄙㄢˇ", "冷": "ㄌㄥˇ", "刷": "ㄕㄨㄚ", "加": "ㄐㄧㄚ", "北": "ㄅㄟˇ", "原": "ㄩㄢˊ", "又": "ㄧㄡˋ", "叢": "ㄘㄨㄥˊ", "叫": "ㄐㄧㄠˋ", "吧": "˙ㄅㄚ", "吹": "ㄔㄨㄟ", "吼": "ㄏㄡˇ", "呼": "ㄏㄨ", "咕": "ㄍㄨ", "哈": "ㄏㄚ", "員": "ㄩㄢˊ", "哭": "ㄎㄨ", "啦": "ㄌㄚ", "喝": "ㄏㄜ", "嘟": "ㄉㄨ", "嘩": "ㄏㄨㄚ", "嚕": "ㄌㄨ", "囉": "ㄌㄨㄛ", "地": "ㄉㄧˋ", "屋": "ㄨ", "巢": "ㄔㄠˊ", "帽": "ㄇㄠˋ", "床": "ㄔㄨㄤˊ", "往": "ㄨㄤˇ", "很": "ㄏㄣˇ", "後": "ㄏㄡˋ", "心": "ㄒㄧㄣ", "排": "ㄆㄞˊ", "提": "ㄊㄧˊ", "文": "ㄨㄣˊ", "方": "ㄈㄤ", "旁": "ㄆㄤˊ", "昨": "ㄗㄨㄛˊ", "晚": "ㄨㄢˇ", "書": "ㄕㄨ", "月": "ㄩㄝˋ", "木": "ㄇㄨˋ", "東": "ㄉㄨㄥ", "果": "ㄍㄨㄛˇ", "極": "ㄐㄧˊ", "機": "ㄐㄧ", "橫": "ㄏㄥˊ", "步": "ㄅㄨˋ", "池": "ㄔˊ", "汽": "ㄑㄧˋ", "泳": "ㄩㄥˇ", "渴": "ㄎㄜˇ", "游": "ㄧㄡˊ", "火": "ㄏㄨㄛˇ", "牙": "ㄧㄚˊ", "狗": "ㄍㄡˇ", "玩": "ㄨㄢˊ", "球": "ㄑㄧㄡˊ", "理": "ㄌㄧˇ", "瓜": "ㄍㄨㄚ", "畫": "ㄏㄨㄚˋ", "盒": "ㄏㄜˊ", "破": "ㄆㄛˋ", "示": "ㄕˋ", "站": "ㄓㄢˋ", "章": "ㄓㄤ", "管": "ㄍㄨㄢˇ", "箱": "ㄒㄧㄤ", "糕": "ㄍㄠ", "紅": "ㄏㄨㄥˊ", "紫": "ㄗˇ", "綠": "ㄌㄩˋ", "聽": "ㄊㄧㄥ", "肚": "ㄉㄨˋ", "花": "ㄏㄨㄚ", "英": "ㄧㄥ", "葉": "ㄧㄝˋ", "著": "˙ㄓㄜ", "蕉": "ㄐㄧㄠ", "藍": "ㄌㄢˊ", "藏": "ㄘㄤˊ", "蘋": "ㄆㄧㄥˊ", "蛋": "ㄉㄢˋ", "被": "ㄅㄟˋ", "西": "ㄒㄧ", "誰": "ㄕㄟˊ", "謝": "ㄒㄧㄝˋ", "讀": "ㄉㄨˊ", "跑": "ㄆㄠˇ", "跟": "ㄍㄣ", "跳": "ㄊㄧㄠˋ", "踏": "ㄊㄚˋ", "過": "ㄍㄨㄛˋ", "遠": "ㄩㄢˇ", "陣": "ㄓㄣˋ", "陽": "ㄧㄤˊ", "雞": "ㄐㄧ", "雨": "ㄩˇ", "雪": "ㄒㄩㄝˇ", "面": "ㄇㄧㄢˋ", "鞋": "ㄒㄧㄝˊ", "風": "ㄈㄥ", "飛": "ㄈㄟ", "餓": "ㄜˋ", "香": "ㄒㄧㄤ", "騎": "ㄑㄧˊ", "鳥": "ㄋㄧㄠˇ", "鷹": "ㄧㄥ", "鼻": "ㄅㄧˊ"});
 function zy(s){let o="";for(const ch of String(s)){const z=ZY[ch];o+=z?`<ruby>${ch}<rt>${z}</rt></ruby>`:esc(ch)}return o}
 
 /* ---------- state ---------- */
@@ -333,10 +332,12 @@ const AN={
  elephant:{en:"Elephant",zh:"大象",img:"art/elephant.webp",h:1.0,color:"gray",colorZh:"灰色",tiles:["grass","water","tree"],need:{},card:"#d8ecc7",pieces:[2,2],pre:"Ele",suf:"phant",letter:"E",zyFirst:"ㄉ"},
  giraffe:{en:"Giraffe",zh:"長頸鹿",img:"art/giraffe.webp",h:1.45,color:"yellow",colorZh:"黃色",tiles:["grass","tree","rock"],need:{},card:"#fde9b8",pieces:[2,3],pre:"Gira",suf:"raffe",letter:"G",zyFirst:"ㄔ"},
  lion:{en:"Lion",zh:"獅子",img:"art/lion.webp",h:0.85,color:"orange",colorZh:"橘色",tiles:["grass","rock","water"],need:{},card:"#f9dcc0",pieces:[3,2],pre:"Li",suf:"on",letter:"L",zyFirst:"ㄕ"},
- penguin:{en:"Penguin",zh:"企鵝",img:"art/penguin.webp",h:0.7,color:"black and white",colorZh:"黑白色",tiles:["ice","water"],need:{ice:4,water:2},card:"#dff1fb",pieces:[3,3],pre:"Pen",suf:"guin",letter:"P",zyFirst:"ㄑ"}
+ polarbear:{en:"Polar bear",zh:"北極熊",img:"art/polarbear.webp",h:1.1,color:"white",colorZh:"白色",tiles:["ice","rock","water"],need:{},card:"#9fcbe8",pieces:[3,3],pre:"Polar",suf:"bear",letter:"P",zyFirst:"ㄅ"},
+ seal:{en:"Seal",zh:"海豹",img:"art/seal.webp",h:0.65,color:"gray",colorZh:"灰色",tiles:["water","ice","rock"],need:{},card:"#bfe0f2",pieces:[3,3],pre:"Se",suf:"eal",letter:"S",zyFirst:"ㄏ"},
+ penguin:{en:"Penguin",zh:"企鵝",img:"art/penguin.webp",h:0.7,color:"black and white",colorZh:"黑白色",tiles:["ice","water","rock"],need:{},card:"#dff1fb",pieces:[3,3],pre:"Pen",suf:"guin",letter:"P",zyFirst:"ㄑ"}
 };
 ZY["橘"]="ㄐㄩˊ";ZY["黃"]="ㄏㄨㄤˊ";
-const ORDER=["elephant","giraffe","lion","penguin"];
+const ORDER=["elephant","giraffe","lion","penguin","polarbear","seal"];
 const PL=t=>TILE[t].pl||TILE[t].en;
 const TILE={grass:{em:"🌿",en:"grass",zh:"草"},water:{em:"💧",en:"water",zh:"水"},ice:{em:"❄️",en:"ice",zh:"冰"},rock:{em:"🪨",en:"rock",pl:"rocks",zh:"石頭"},tree:{em:"🌳",en:"tree",pl:"trees",zh:"樹"}};
 const IMG={};ORDER.forEach(k=>{const i=new Image();i.src=AN[k].img;IMG[k]=i});
@@ -409,32 +410,34 @@ $("langBtn").onclick=()=>{S.lang=S.lang==="zh"?"en":"zh";save();updTop();relabel
 $("sndBtn").onclick=()=>{S.snd=!S.snd;save();updTop();if(!S.snd){stopSay();music(false)}};
 $("visBadge").onclick=()=>say(`${S.visitors} visitors came to your zoo!`,`有${S.visitors}個遊客來你的動物園！`);
 ZY["你"]="ㄋㄧˇ";
-function relabel(){const L=(id,en,zh)=>{$(id).querySelector(".lb").innerHTML=T(en,zh)};{const n=nextAnimal();L("rescueBtn",n?"Next: "+AN[n].en:"Ch. 2 soon",n?"下一個："+AN[n].zh:"第二章快來了")}L("safariBtn","Safari","拍照");L("mixBtn","Mix","剪貼");L("albumBtn","Album","相簿");$("habDone").querySelector(".lb").innerHTML=T("Done","完成");
+function relabel(){const L=(id,en,zh)=>{$(id).querySelector(".lb").innerHTML=T(en,zh)};{const n=nextAnimal();L("rescueBtn",n?"Next: "+AN[n].en:"Ch. 3 soon",n?"下一個："+AN[n].zh:"第三章快來了")}L("safariBtn","Safari","拍照");L("mixBtn","Mix","剪貼");L("albumBtn","Album","相簿");$("habDone").querySelector(".lb").innerHTML=T("Done","完成");
  if(cur==="map")renderMap();if(cur==="mix")mixDraw();}
 
 /* ---------- MAP ---------- */
 let wanderIv=null;
-const nextAnimal=()=>CH1.find(k=>!S.rescued.includes(k));
+const SZ={giraffe:.62,penguin:.7,polarbear:.85,seal:.9};
+const nextAnimal=()=>{const a=CH1.find(k=>!S.rescued.includes(k));if(a)return a;if(!S.ch1)return null;return CH2.find(k=>!S.rescued.includes(k))||null};
+const chOf=k=>CH2.includes(k)?2:1;
 function goMap(first){closeQ();show("map",T("My Zoo","我的動物園"));ZY["我"]="ㄨㄛˇ";relabel();renderMap();
  const n=nextAnimal();
  if(S.rescued.length&&!S.playHint){S.playHint=1;save();setTimeout(()=>say("Tap an animal to play with it! Drag it to a friend to play together.","按動物跟牠玩！把牠拖到朋友旁邊，一起玩！"),3800)}
  if(n&&S.rescued.length)setTimeout(()=>say(`Next, let's find the ${AN[n].en.toLowerCase()}! Tap Next.`,`下一個，我們去找${AN[n].zh}！按下一個。`),400);
  ZY["卡"]="ㄎㄚˇ";}
 function renderMap(){const L=$("zooLayer");L.innerHTML="";const W=L.clientWidth,H=L.clientHeight;
- const spots=W>H?{elephant:[.14,.62],giraffe:[.36,.5],lion:[.58,.62],penguin:[.78,.74]}:{elephant:[.2,.5],giraffe:[.5,.42],lion:[.78,.52],penguin:[.5,.62]};
- const base=W>H?Math.min(W*.17,H*.26):Math.min(W*.27,H*.2);
- S.rescued.forEach(k=>{const d=document.createElement("div");d.className="ani";d.dataset.k=k;const w=base*(k==="giraffe"?.62:k==="penguin"?.7:1);d.style.width=w+"px";const [x,y]=spots[k];d.style.left=(x*W-w/2)+"px";d.style.top=(y*H-w*AN[k].h)+"px";d.innerHTML=`<img src="${AN[k].img}" alt="${AN[k].en}">`;attachPlay(d);L.appendChild(d)});
+ const spots=W>H?{elephant:[.12,.6],giraffe:[.29,.5],lion:[.46,.64],penguin:[.63,.76],polarbear:[.78,.6],seal:[.9,.8]}:{elephant:[.2,.5],giraffe:[.5,.42],lion:[.8,.52],penguin:[.22,.68],polarbear:[.52,.64],seal:[.8,.72]};
+ const base=(W>H?Math.min(W*.17,H*.26):Math.min(W*.27,H*.2))*(S.rescued.length>3?.82:1);
+ S.rescued.forEach(k=>{const d=document.createElement("div");d.className="ani";d.dataset.k=k;const w=base*(SZ[k]||1);d.style.width=w+"px";const [x,y]=spots[k];d.style.left=(x*W-w/2)+"px";d.style.top=(y*H-w*AN[k].h)+"px";d.innerHTML=`<img src="${AN[k].img}" alt="${AN[k].en}">`;attachPlay(d);L.appendChild(d)});
  const nv=Math.min(S.visitors,10);const people=["🧒","👧","👦","👩","👨","🧓","👶"];
  for(let i=0;i<nv;i++){const v=document.createElement("div");v.className="vis";v.textContent=people[i%people.length];v.style.left=(Math.random()*90)+"%";v.style.top=(80+Math.random()*8)+"%";L.appendChild(v)}
  const n=nextAnimal();const em=$("emptyMsg");
- if(!S.rescued.length){em.style.display="block";em.innerHTML=T("Your zoo is empty. Tap Next!","動物園空空的，按下一個！")}else if(!n){em.style.display="block";em.innerHTML=T("Savanna done! Chapter 2: the Arctic is coming soon 🐧","大草原完成了！第二章北極快來了🐧")}else em.style.display="none";
+ if(!S.rescued.length){em.style.display="block";em.innerHTML=T("Your zoo is empty. Tap Next!","動物園空空的，按下一個！")}else if(!n){em.style.display="block";em.innerHTML=S.ch2?T("Ice Land done! Chapter 3: the Jungle is coming soon 🐒","冰雪世界完成了！第三章叢林快來了🐒"):T("Great job! Chapter 2 is next ❄️","好棒！下一章是冰雪世界❄️")}else em.style.display="none";
  $("rescueBtn").classList.toggle("dis",!n);$("safariBtn").classList.toggle("dis",S.rescued.length<2);$("mixBtn").classList.toggle("dis",S.rescued.length<2);$("albumBtn").classList.toggle("dis",!S.album.length);
  startWander()}
 ZY["空"]="ㄎㄨㄥ";ZY["快"]="ㄎㄨㄞˋ";
 function startWander(){stopWander();wanderIv=setInterval(()=>{const L=$("zooLayer");const W=L.clientWidth,H=L.clientHeight;if(cur==="map"&&!BALL&&freeEls().length>=2&&Math.random()<.3){animalEvent();}L.querySelectorAll(".ani").forEach(d=>{if(d.dataset.busy||BALL||Math.random()<.5)return;const w=d.offsetWidth;const ox=parseFloat(d.style.left);let nx=ox+(Math.random()-.5)*W*.16;nx=Math.max(4,Math.min(W-w-4,nx));d.classList.toggle("flip",nx<ox);d.style.left=nx+"px"});L.querySelectorAll(".vis").forEach(v=>{v.style.left=(Math.random()*90)+"%"})},3600)}
 function stopWander(){clearInterval(wanderIv);wanderIv=null}
 /* ---------- ZOO PLAY: Milo plays with animals, animals play with each other ---------- */
-const FAV={lion:"🍖",elephant:"🍉",giraffe:"🍃",penguin:"🐟"};
+const FAV={lion:"🍖",elephant:"🍉",giraffe:"🍃",penguin:"🦐",polarbear:"🐟",seal:"🦑"};
 const ZL=()=>$("zooLayer");
 const aniEls=()=>[...ZL().querySelectorAll(".ani")];
 const freeEls=()=>aniEls().filter(d=>!d.dataset.busy);
@@ -508,7 +511,7 @@ function attachPlay(d){let sx,sy,ox,id=null,moved=false;
  d.onpointerup=up;d.onpointercancel=up}
 $("zooLayer").addEventListener("pointerdown",e=>{if(BALL){const r=ZL().getBoundingClientRect();throwBall(e.clientX-r.left,e.clientY-r.top);return}if(!e.target.closest(".ani"))closeAniMenu()});
 
-$("rescueBtn").onclick=()=>{const k=nextAnimal();if(!k){say("The Savanna animals are safe! Chapter 2 is coming soon.","大草原的動物都安全了！第二章快來了。");return}runAnimal(k)};
+$("rescueBtn").onclick=()=>{const k=nextAnimal();if(!k){say("All the animals are safe! Chapter 3 is coming soon.","動物都安全了！第三章快來了。");return}runAnimal(k)};
 ZY["安"]="ㄢ";
 $("safariBtn").onclick=()=>{if(S.rescued.length<2){say("Rescue two animals first!","先救兩隻動物！");return}startSafari()};
 ZY["兩"]="ㄌㄧㄤˇ";
@@ -518,8 +521,8 @@ $("albumBtn").onclick=()=>{if(!S.album.length){say("Take photos on a safari firs
 /* ---------- RESCUE: truck -> puzzle -> habitat ---------- */
 let R=null;
 /* ---------- CHAPTER 1 STORY FLOW: story -> find pieces -> puzzle -> wake -> care -> habitat -> move in ---------- */
-const CH1=["lion","elephant","giraffe"];
-const FOOD={lion:["🍖","snacks","點心"],elephant:["🍉","watermelons","西瓜"],giraffe:["🍃","leaves","葉子"],penguin:["🐟","fish","魚"]};
+const CH1=["lion","elephant","giraffe"],CH2=["penguin","polarbear","seal"];
+const FOOD={lion:["🍖","snacks","點心"],elephant:["🍉","watermelons","西瓜"],giraffe:["🍃","leaves","葉子"],penguin:["🦐","shrimp","蝦子"],polarbear:["🐟","fish","魚"],seal:["🦑","squid","魷魚"]};
 const HOOT={en:"Hoot",zh:"咕咕"};
 const STORY={
  open:[
@@ -532,16 +535,29 @@ const STORY={
  elephant:[{en:"Splash! Something is splashing by the water hole.",zh:"嘩啦！水池旁邊有東西在玩水。",bg:"sav"},
   {en:"It's the elephant's pieces! Let's find them all.",zh:"是大象的拼圖！我們全部找出來。",bg:"sav"}],
  giraffe:[{en:"Look up, Milo! Something is stuck up high.",zh:"洛明，往上看！有東西卡在高高的地方。",bg:"sav"},
-  {en:"The giraffe's pieces! Follow the clues.",zh:"是長頸鹿的拼圖！跟著提示找。",bg:"sav"}]};
+  {en:"The giraffe's pieces! Follow the clues.",zh:"是長頸鹿的拼圖！跟著提示找。",bg:"sav"}],
+ open2:[{en:"Brrr! Hoot and Milo fly far, far away to Ice Land.",zh:"好冷！咕咕和洛明飛到很遠很遠的冰雪世界。",bg:"ice"},
+  {en:"Fun fact: penguins live near the South Pole. Polar bears live near the North Pole!",zh:"你知道嗎？企鵝住在南極，北極熊住在北極！",bg:"ice"},
+  {en:"But the big wind blew them all into one snowy place. Let's help them!",zh:"可是大風把牠們都吹到同一個雪地。我們去幫忙吧！",bg:"ice"}],
+ penguin:[{en:"Squeak squeak! Something is sliding on the ice.",zh:"吱吱！有東西在冰上滑來滑去。",bg:"ice"},
+  {en:"It's the penguin's pieces! Let's find them all.",zh:"是企鵝的拼圖！我們全部找出來。",bg:"ice"}],
+ polarbear:[{en:"Look! Big paw prints in the snow. Someone big is lost!",zh:"看！雪地上有大大的腳印，有大動物迷路了！",bg:"ice"},
+  {en:"The polar bear's pieces are hiding. Follow the clues!",zh:"北極熊的拼圖藏起來了。跟著提示找！",bg:"ice"}],
+ seal:[{en:"Blub blub! Bubbles are coming up from the ice hole.",zh:"咕嚕咕嚕！冰洞裡冒出泡泡。",bg:"ice"},
+  {en:"The seal's pieces! Let's find them.",zh:"是海豹的拼圖！我們去找。",bg:"ice"}]};
 const WAKE={lion:["ROAR! Thank you, Milo! I'm a real lion again!","吼！謝謝洛明！我又變回獅子了！"],
  elephant:["Toot toot! Thank you, Milo! My trunk is back!","嘟嘟！謝謝洛明！我的鼻子回來了！"],
- giraffe:["Hello down there! Thank you, Milo! Now I can see so far!","哈囉！謝謝洛明！我又可以看好遠了！"]};
-const HUNGRY={lion:["I'm so hungry. Can you help me?","我好餓，你可以幫我嗎？"],elephant:["I'm thirsty and hungry. Can you help me?","我又渴又餓，你可以幫我嗎？"],giraffe:["My tummy is rumbling. Can you help me?","我的肚子咕嚕叫，你可以幫我嗎？"]};
+ giraffe:["Hello down there! Thank you, Milo! Now I can see so far!","哈囉！謝謝洛明！我又可以看好遠了！"],
+ penguin:["Squawk! Thank you, Milo! I can waddle again!","嘎嘎！謝謝洛明！我又可以搖搖擺擺走路了！"],
+ polarbear:["Thank you, Milo! Here's a big bear hug!","謝謝洛明！給你一個大熊抱！"],
+ seal:["Arf arf! Thank you, Milo! Clap clap clap!","嗷嗷！謝謝洛明！拍拍手！"]};
+const HUNGRY={lion:["I'm so hungry. Can you help me?","我好餓，你可以幫我嗎？"],elephant:["I'm thirsty and hungry. Can you help me?","我又渴又餓，你可以幫我嗎？"],giraffe:["My tummy is rumbling. Can you help me?","我的肚子咕嚕叫，你可以幫我嗎？"],
+ penguin:["Swimming makes me hungry. Can you help me?","游泳讓我好餓，你可以幫我嗎？"],polarbear:["My big tummy is empty. Can you help me?","我的大肚子空空的，你可以幫我嗎？"],seal:["I want a snack. Can you help me?","我想吃點心，你可以幫我嗎？"]};
 
 /* story player */
 let ST=null;
 function story(beats,onDone){ST={beats,i:0,onDone};show("story",T("Paper Zoo","紙片動物園"));$("qBox").classList.remove("on");stBeat()}
-function stBeat(){const b=ST.beats[ST.i];const sc=$("scene");sc.className="scene "+(b.bg==="sav"?"sc-sav":"sc-zoo");
+function stBeat(){const b=ST.beats[ST.i];const sc=$("scene");sc.className="scene "+(b.bg==="sav"?"sc-sav":b.bg==="ice"?"sc-ice":"sc-zoo");
  const who=b.k?{en:AN[b.k].en,zh:AN[b.k].zh}:HOOT;$("dlgWho").innerHTML=(b.k?`<img src="${AN[b.k].img}" alt="">`:"<span>🦉</span>")+T(who.en,who.zh);
  $("dlgTx").innerHTML=T(b.en,b.zh);$("dlg").style.display="";
  const im=$("scAni");if(b.ani){im.src=AN[b.ani].img;im.style.display="block";im.className=b.fx==="wake"?"wake":"idle"}else im.style.display="none";
@@ -554,14 +570,18 @@ $("dlg").onclick=stNext;
 /* one animal, start to finish */
 function runAnimal(k){R={k};S.cur=k;save();
  const beats=[];if(!S.opened){beats.push(...STORY.open);S.opened=true;save()}
+ if(chOf(k)===2&&!S.opened2){beats.push(...STORY.open2);S.opened2=true;save()}
  beats.push(...STORY[k]);story(beats,()=>startFind(k))}
 
 /* ---------- FIND THE PIECES (clues before the puzzle) ---------- */
-const SPOTS=[{w:"log",em:"🪵",zh:"木頭",where:"木頭旁邊",x:.13,y:.72},{w:"hut",em:"🛖",zh:"小屋",where:"小屋裡面",x:.33,y:.5},{w:"box",em:"📦",zh:"箱子",where:"箱子裡面",x:.55,y:.76},
+const SPOTS1=[{w:"log",em:"🪵",zh:"木頭",where:"木頭旁邊",x:.13,y:.72},{w:"hut",em:"🛖",zh:"小屋",where:"小屋裡面",x:.33,y:.5},{w:"box",em:"📦",zh:"箱子",where:"箱子裡面",x:.55,y:.76},
  {w:"rock",em:"🪨",zh:"石頭",where:"石頭下面",x:.74,y:.55},{w:"tree",em:"🌳",zh:"樹",where:"樹後面",x:.9,y:.72},{w:"nest",em:"🪺",zh:"鳥巢",where:"鳥巢裡面",x:.5,y:.32}];
+const SPOTS2=[{w:"box",em:"📦",zh:"箱子",where:"箱子裡面",x:.13,y:.72},{w:"hut",em:"🛖",zh:"小屋",where:"小屋裡面",x:.33,y:.52},{w:"sled",em:"🛷",zh:"雪橇",where:"雪橇旁邊",x:.55,y:.78},
+ {w:"rock",em:"🪨",zh:"石頭",where:"石頭下面",x:.74,y:.55},{w:"tent",em:"⛺",zh:"帳篷",where:"帳篷裡面",x:.9,y:.74},{w:"ice",em:"🧊",zh:"冰塊",where:"冰塊後面",x:.5,y:.34}];
+let SPOTS=SPOTS1;
 let FD=null;
 function pzSize(){return [[3,2],[3,3],[4,3]][Math.min(2,S.pzDone||0)]}
-function startFind(k){const [c,r]=pzSize();const n=c*r;FD={k,n,found:0,clue:0,clues:3,tries:0,used:[]};show("find",T("Find the pieces","找拼圖"));findLayout();nextClue()}
+function startFind(k){SPOTS=chOf(k)===2?SPOTS2:SPOTS1;$("find").querySelector(".scene").className="scene "+(chOf(k)===2?"sc-ice":"sc-sav");const [c,r]=pzSize();const n=c*r;FD={k,n,found:0,clue:0,clues:3,tries:0,used:[]};show("find",T("Find the pieces","找拼圖"));findLayout();nextClue()}
 function findLayout(){const L=$("findLayer");L.innerHTML="";const W=L.clientWidth,H=L.clientHeight;const sz=Math.max(64,Math.min(W*.13,H*.2,130));
  SPOTS.forEach((s,i)=>{const b=document.createElement("button");b.className="spot";b.dataset.i=i;b.style.width=b.style.height=sz+"px";b.style.fontSize=(sz*.72)+"px";b.style.left=(s.x*W-sz/2)+"px";b.style.top=Math.max(70,s.y*H-sz/2)+"px";b.textContent=s.em;if(FD&&FD.used.includes(i))b.classList.add("done");b.onclick=()=>tapSpot(i,b);L.appendChild(b)});
  $("findCount").innerHTML=`🧩 ${FD?FD.found:0}/${FD?FD.n:0}`}
@@ -587,15 +607,19 @@ function tapSpot(i,b){if(!FD||FD.busy||FD.used.includes(i))return;const skill=FD
 
 /* ---------- WAKE UP + CARE ---------- */
 function wake(k){S.pzDone=(S.pzDone||0)+1;save();
- story([{k,ani:k,fx:"wake",en:WAKE[k][0],zh:WAKE[k][1],bg:"sav"},{k,ani:k,en:HUNGRY[k][0],zh:HUNGRY[k][1],bg:"sav"}],()=>care(k))}
+ story([{k,ani:k,fx:"wake",en:WAKE[k][0],zh:WAKE[k][1],bg:BG(k)},{k,ani:k,en:HUNGRY[k][0],zh:HUNGRY[k][1],bg:BG(k)}],()=>care(k))}
+const BG=k=>chOf(k)===2?"ice":"sav";
 function care(k){const order=shuffle(["read","logic"]).slice(0,1);const skills=["math",order[0],"zh"];let i=0;
  $("dlg").style.display="none";
  const next=()=>{if(i>=skills.length){startHabitat(k);return}const sk=skills[i++];askQ(()=>setTimeout(next,300),{k,skill:sk})};next()}
 
 /* ---------- chapter end ---------- */
-function chapterEnd(){story([{en:"You did it, Milo! All the Savanna animals are home!",zh:"洛明你做到了！大草原的動物都回家了！",bg:"zoo",ani:"lion"},
+function chapterEnd(ch){if(ch===2){story([{en:"Hooray! The Ice Land animals are home, safe and warm!",zh:"好棒！冰雪世界的動物都回家了，又安全又溫暖！",bg:"zoo",ani:"polarbear"},
+ {en:"Listen… monkeys are chattering in a hot, green jungle.",zh:"聽！熱熱的綠色叢林裡，有猴子在吱吱叫。",bg:"zoo"},
+ {en:"Next time: Chapter 3, the Jungle! Play with your animals until then.",zh:"下一次：第三章，叢林！先跟你的動物玩吧！",bg:"zoo"}],()=>{S.ch2=true;save();goMap()});return}
+ story([{en:"You did it, Milo! All the Savanna animals are home!",zh:"洛明你做到了！大草原的動物都回家了！",bg:"zoo",ani:"lion"},
  {en:"Brrr… I hear a little penguin far, far away in the snow.",zh:"好冷…我聽到很遠很遠的雪地裡，有一隻小企鵝。",bg:"zoo"},
- {en:"Next time: Chapter 2, the Arctic! Play with your animals until then.",zh:"下一次：第二章，北極！先跟你的動物玩吧！",bg:"zoo"}],()=>{S.ch1=true;save();goMap()})}
+ {en:"Chapter 2: Ice Land! Tap Next when you're ready.",zh:"第二章：冰雪世界！準備好就按下一個。",bg:"ice"}],()=>{S.ch1=true;save();goMap()})}
 
 ZY["叭"]="ㄅㄚ";
 
@@ -651,7 +675,7 @@ const NUMZ=["零","一","二","三","四","五","六","七","八","九","十","�
 function lvlUp(sk,ok){const L=S.lvl,St=S.st;if(ok){St[sk]=(St[sk]||0)+1;if(St[sk]>=3){L[sk]=Math.min(3,L[sk]+1);St[sk]=0}}else{L[sk]=Math.max(1,L[sk]-1);St[sk]=0}save()}
 const CVC=[["cat","🐱"],["dog","🐶"],["pig","🐷"],["sun","☀️"],["bus","🚌"],["hat","🎩"],["bed","🛏️"],["box","📦"],["fox","🦊"],["bug","🐛"],["hen","🐔"],["web","🕸️"],["map","🗺️"],["pen","🖊️"],["log","🪵"],["van","🚐"],["bat","🦇"],["rat","🐀"],["nut","🥜"],["cup","🥤"],["jet","🛩️"],["mug","☕"],["net","🥅"]];
 const BLEND=[["frog","🐸"],["duck","🦆"],["crab","🦀"],["drum","🥁"],["ship","🚢"],["fish","🐟"],["milk","🥛"],["nest","🪺"],["flag","🚩"],["sock","🧦"],["bell","🔔"],["tent","⛺"],["hand","✋"],["star","⭐"],["clock","🕐"],["truck","🚚"],["plant","🪴"],["snack","🍿"]];
-const ZH1=[["蘋果","🍎"],["香蕉","🍌"],["西瓜","🍉"],["汽車","🚗"],["飛機","✈️"],["小狗","🐶"],["小貓","🐱"],["鞋子","👟"],["帽子","🧢"],["雨傘","☂️"],["書","📖"],["球","⚽"],["花","🌸"],["月亮","🌙"],["太陽","☀️"],["蛋糕","🎂"],["牙刷","🪥"],["床","🛏️"],["火車","🚂"],["雞蛋","🥚"]];
+const ZH1=[["蘋果","🍎"],["香蕉","🍌"],["西瓜","🍉"],["汽車","🚗"],["飛機","✈️"],["小狗","🐶"],["小貓","🐱"],["鞋子","👟"],["帽子","🧢"],["雨傘","☂️"],["書","📖"],["球","⚽"],["花","🌸"],["月亮","🌙"],["太陽","☀️"],["蛋糕","🎂"],["牙刷","🪥"],["床","🛏️"],["火車","🚂"],["雞蛋","🥚"],["雪人","⛄"],["手套","🧤"],["圍巾","🧣"],["冰淇淋","🍦"],["企鵝","🐧"],["魚","🐟"]];
 const ZHACT=[["睡覺","😴"],["跑步","🏃"],["游泳","🏊"],["哭","😭"],["吃東西","😋"],["騎腳踏車","🚴"]];
 const ZHCOL=[["紅色","🔴"],["黃色","🟡"],["綠色","🟢"],["藍色","🔵"],["紫色","🟣"],["橘色","🟠"]];
 const ZH3=[["下雨的時候要用什麼？","☂️",["🧦","🍕"]],["哪一個可以喝？","🥛",["🧱","👟"]],["哪一隻動物會飛？","🐦",["🐶","🐟"]],["哪一個是冷的？","🧊",["🔥","☕"]],["哪一隻動物有長長的鼻子？","🐘",["🐒","🐔"]],["睡覺的時候要用什麼？","🛏️",["🚲","🍳"]],["哪一個可以用來刷牙？","🪥",["🥄","✏️"]],["哪一隻動物住在水裡？","🐟",["🐄","🐒"]],["晚上天空有什麼？","🌙",["🌈","🍎"]],["哪一個可以用來畫畫？","🖍️",["🍌","🧦"]]];
@@ -738,7 +762,7 @@ $("habDone").onclick=()=>{if(!HB)return;const cnt={};HB.slots.forEach(s=>{if(s)c
  toast(T(en,zh),2200);say(en,zh)};
 function finishRescue(k){sfx.yay();confetti(60);S.rescued.push(k);addVisitors(3);save();missionsInRow++;
  toast(`${T("New home!","新家！")}<br><img src="${AN[k].img}" style="height:100px"><br>🧒🧒🧒 +3`,2200);say(`The ${AN[k].en.toLowerCase()} loves its new home! Three visitors came to see it!`,`${AN[k].zh}好喜歡新家！來了三個遊客！`);ZY["喜"]="ㄒㄧˇ";ZY["歡"]="ㄏㄨㄢ";
- HB=null;PZ=null;setTimeout(()=>{goMap();if(!nextAnimal()&&!S.ch1)setTimeout(chapterEnd,2600)},2400)}
+ HB=null;PZ=null;setTimeout(()=>{goMap();if(!S.ch1&&CH1.every(a=>S.rescued.includes(a)))setTimeout(()=>chapterEnd(1),2600);else if(!S.ch2&&CH2.every(a=>S.rescued.includes(a)))setTimeout(()=>chapterEnd(2),2600)},2400)}
 function showBreak(){$("breakT").innerHTML=Tb("Great practice! Time for a break","練習得好棒！休息一下");ZY["練"]="ㄌㄧㄢˋ";ZY["習"]="ㄒㄧˊ";ZY["得"]="˙ㄉㄜ";$("breakOk").innerHTML=Tb("Finish for now","先到這裡");ZY["裡"]="ㄌㄧˇ";$("breakM").classList.add("on");say("Great practice! Time for a break.","練習得好棒！休息一下。")}
 $("breakOk").onclick=()=>{$("breakM").classList.remove("on");show("start")};
 
@@ -773,8 +797,8 @@ function keepMix(){const name=AN[MX.pool[MX.idx[0]]].pre+AN[MX.pool[MX.idx[2]]].
 /* ---------- PHOTO SAFARI ---------- */
 let SF=null;
 function startSafari(){SF={n:0,total:3,qs:[]};show("safari",T("Photo Safari","拍照探險"));ZY["探"]="ㄊㄢˋ";ZY["險"]="ㄒㄧㄢˇ";safLayout();nextSaf()}
-function safLayout(){const L=$("safLayer");L.innerHTML="";const W=L.clientWidth,H=L.clientHeight;const pool=S.rescued;const base=W>H?Math.min(W*.2,H*.28):Math.min(W*.27,H*.2);const xs=shuffle([.12,.36,.6,.84]).slice(0,pool.length);
- pool.forEach((k,i)=>{const d=document.createElement("button");d.className="ani";d.style.background="none";d.dataset.k=k;const w=base*(k==="giraffe"?.6:k==="penguin"?.7:1);d.style.width=w+"px";d.style.left=(xs[i]*W-w/2)+"px";d.style.top=(H*.78-w*AN[k].h)+"px";d.innerHTML=`<img src="${AN[k].img}" alt="${AN[k].en}">`;d.onclick=()=>snap(k,d);L.appendChild(d)})}
+function safLayout(){const L=$("safLayer");L.innerHTML="";const W=L.clientWidth,H=L.clientHeight;const pool=S.rescued;const base=W>H?Math.min(W*.2,H*.28):Math.min(W*.27,H*.2);const xs=shuffle(pool.map((_,i)=>(i+.5)/pool.length));const shrink=pool.length>4?.72:1;
+ pool.forEach((k,i)=>{const d=document.createElement("button");d.className="ani";d.style.background="none";d.dataset.k=k;const w=base*shrink*(SZ[k]||1);d.style.width=w+"px";d.style.left=(xs[i]*W-w/2)+"px";d.style.top=(H*(i%2?.84:.74)-w*AN[k].h)+"px";d.innerHTML=`<img src="${AN[k].img}" alt="${AN[k].en}">`;d.onclick=()=>snap(k,d);L.appendChild(d)})}
 function safQ(){const pool=S.rescued;const t=pick(S.lang==="zh"?["zy","tall","short","color","name"]:["letter","tall","short","color","name"]);const k=pick(pool);const A=AN[k];
  if(t==="tall"){const best=pool.slice().sort((a,b)=>AN[b].h-AN[a].h)[0];return {ans:best,en:"Snap the TALLEST animal!",zh:"拍最高的動物！",t}}
  if(t==="short"){const best=pool.slice().sort((a,b)=>AN[a].h-AN[b].h)[0];return {ans:best,en:"Snap the SHORTEST animal!",zh:"拍最矮的動物！",t}}
@@ -817,6 +841,7 @@ window.__test={
  wrongFind:()=>{if(!FD)return;const i=SPOTS.findIndex((x,i)=>i!==FD.ans&&!FD.used.includes(i));tapSpot(i,$("findLayer").querySelector(`[data-i="${i}"]`))},
  wrongQ:()=>{if(!QA)return;const b=[...$("qAns").children].find(x=>x.dataset.v!==String(QA.q.ans));b.click()},
  go:(w)=>{if(w==="map")goMap();if(w==="rescue")$("rescueBtn").click();if(w==="safari")startSafari();if(w==="mix")startMix();if(w==="album")showAlbum();if(w==="q")askQ(()=>{});if(w==="care")care("lion");if(w==="hab")startHabitat("lion")},
+ ch2:()=>{S.rescued=["lion","elephant","giraffe"];S.opened=true;S.ch1=true;save();goMap()},
  playSetup:()=>{S.rescued=["lion","elephant","giraffe"];goMap()},
  ev:(n)=>{const d=aniEls();({chase:()=>evChase(d[0],d[1]),ball:()=>evBall(d[0],d[1]),friends:()=>evFriends(d[0],d[1]),dance:()=>evDance(d[0]),nap:()=>evNap(d[0])})[n]()},
  setLvl:(o)=>{Object.assign(S.lvl,o);save()},
@@ -824,7 +849,7 @@ window.__test={
 };
 relabel();updTop();
 </script>
-<div id="kaVer" data-v="1.2" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-26</div>
+<div id="kaVer" data-v="1.3" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.3 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
