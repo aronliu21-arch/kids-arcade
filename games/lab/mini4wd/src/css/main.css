@@ -210,3 +210,31 @@ button{font:inherit;cursor:pointer;color:inherit}
   .mrow .btn{min-height:48px;font-size:15px;padding:4px 12px}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition:none!important}}
+/* ---------- Chapter 2 ---------- */
+.c2head{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.c2head #c2Money{background:#ffd43b;border:3px solid var(--ink);border-radius:12px;padding:2px 10px;font-weight:900}
+#c2Car{width:100%;height:150px;background:#e7f5ff;border:3px solid var(--ink);border-radius:14px;flex:none}
+.c2town{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.loc{border:3px solid var(--ink);border-radius:16px;background:#fff;padding:10px;min-height:96px;box-shadow:0 4px 0 var(--ink);display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;cursor:pointer}
+.loc .ic{font-size:36px;line-height:1}.loc small{font-size:12px;font-weight:700;color:#444;text-align:center}
+.loc.off{opacity:.45;filter:grayscale(.8)}
+.c2cal{display:flex;gap:4px;margin-top:10px}.c2cal .dd{flex:1;text-align:center;border:2px solid var(--ink);border-radius:10px;background:#fff;padding:2px;font-size:14px}
+.c2cal .dd b{display:block;font-size:13px}.c2cal .dd.now{background:#ffd43b}
+.c2goal{margin-top:8px;font-weight:700;font-size:14px}
+.c2say{display:flex;gap:10px;align-items:center;margin:4px 0}.c2say img{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top;border:3px solid var(--ink);background:#d0ebff;flex:none}
+.c2say .ic{font-size:48px;line-height:1;flex:none}.c2say b{display:block}
+.c2sub{font-weight:800;color:#555;margin-bottom:4px}
+.c2tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}.c2tabs .btn{min-height:48px;padding:4px 10px;font-size:15px}
+.c2parts,.c2tracks,.c2jobs,.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.c2parts .lbl{grid-column:1/-1;font-weight:900;margin-top:4px}
+.opt .pr{display:block;font-weight:900;margin-top:4px;color:#1864ab}.opt.own{opacity:.6}.opt.off{opacity:.45}.opt .ic{font-size:28px;margin-right:6px}
+.tray{margin-top:8px;padding:8px;border:3px dashed var(--ink);border-radius:14px;background:#fff9db;min-height:56px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tray .chip{font-size:22px;min-height:44px;border:2px solid var(--ink);border-radius:10px;background:#fff;padding:2px 8px}
+.bill{font-size:24px;font-weight:900;text-align:center;margin:6px 0}
+.shelf{display:flex;gap:8px;flex-wrap:wrap}.tro{font-size:40px;text-align:center}.tro small{display:block;font-size:11px}
+@media (max-height:500px),(max-width:600px){
+  #c2Car{height:96px}.loc{min-height:72px;padding:6px}.loc .ic{font-size:28px}.c2town{grid-template-columns:repeat(5,1fr);gap:6px}
+  .c2parts,.c2tracks,.c2jobs,.menu{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+}
+.c2slots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}.c2slots .chip{min-height:44px;border:3px solid var(--ink);border-radius:12px;background:#fff;padding:2px 10px;font:inherit;font-weight:800}
+.c2slots .chip.on{background:#ffd43b}

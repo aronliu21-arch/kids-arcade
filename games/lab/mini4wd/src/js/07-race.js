@@ -5,11 +5,14 @@ function img(n) { if (!IMG[n]) { IMG[n] = new Image(); IMG[n].src = A(n); } retu
 
 var Race = {
   speed: 1,
-  start: function (mode) {
-    var self = this, k = G.kd;
-    this.mode = mode; this.laps = mode === "race" ? 3 : 1; this.over = false; this.t = 0; this.fx = []; this.said = {}; this.camD = 11;
-    this.cars = [{ who: "lucas", car: "c_blue", r: new Racer(k.build, { laps: this.laps, lane: 0 }) }];
-    if (mode === "race") RIVALS.forEach(function (rv, i) { self.cars.push({ who: rv.who, car: rv.car, r: new Racer(rv.build, { laps: self.laps, lane: i + 1 }) }); });
+  // opts (Chapter 2): { track, laps, build, rivals:[{who,col,build}], onDone(res) }
+  start: function (mode, opts) {
+    var self = this, k = G.kd; opts = opts || null; this.opts = opts;
+    setTrack(opts ? opts.track : "classic");
+    this.mode = mode; this.laps = opts && opts.laps ? opts.laps : mode === "race" ? 3 : 1; this.over = false; this.t = 0; this.fx = []; this.said = {}; this.camD = 11;
+    this.cars = [{ who: "lucas", car: "c_blue", col: "blue", build: opts ? opts.build : null, r: new Racer(opts ? opts.build : k.build, { laps: this.laps, lane: 0 }) }];
+    var rv0 = opts ? (opts.rivals || []) : mode === "race" ? RIVALS : [];
+    rv0.forEach(function (rv, i) { self.cars.push({ who: rv.who, car: rv.car || "c_red", col: rv.col, build: opts ? rv.build : null, r: new Racer(rv.build, { laps: self.laps, lane: i + 1 }) }); });
     show("sRace"); this.resize(); this.cam = null; this.camLabel();
     $("#cheer").style.display = "";
     this.tick(["準備好了嗎？", "Ready?"]);
@@ -191,7 +194,7 @@ var Race = {
     var cv = $("#raceCv"), x = cv.getContext("2d"), W = cv.width, H = cv.height, self = this;
     var me = this.cars[0], r = me.r, off0 = (r.lane - 1) * 2.4;
     // follow closer in curves and aim at Lucas's car so it stays on the road in the middle of the screen
-    var inC = segType(r.s) === "C" || segType(r.s - 6) === "C" || segType(r.s + 4) === "C";
+    var inC = isCurve(r.s) || isCurve(r.s - 6) || isCurve(r.s + 4);
     this.camD = (this.camD || 11) + ((inC ? 6.5 : 11) - (this.camD || 11)) * 0.06;
     var camS = r.s - this.camD, cp = trackAt(camS), ahead = trackAt(r.s + 1);
     var ch = Math.atan2(ahead.y - cp.y, ahead.x - cp.x);
@@ -243,6 +246,13 @@ var Race = {
     var X = q[0], Y = q[1], w = 2.2 * s, h = 1.0 * s;
     x.save(); x.lineWidth = Math.max(1, s * 0.08); x.strokeStyle = "#111"; if (!me && q[2] < 8) x.globalAlpha = 0.55;
     x.fillStyle = "rgba(0,0,0,.3)"; x.beginPath(); x.ellipse(X, Y, w * 0.6, h * 0.18, 0, 0, 7); x.fill();
+    if (c.build) { // Chapter 2: layered car art, every part shows
+      var a2 = this.pos(c), q3 = pr(a2.x + Math.cos(a2.h) * 1.5, a2.y + Math.sin(a2.h) * 1.5, a2.z), k2 = 0;
+      if (q3 && q[1] - q3[1] > 0.5) k2 = Math.max(-0.7, Math.min(0.7, (q3[0] - X) / (q[1] - q3[1])));
+      x.save(); x.translate(X, Y); x.transform(1, 0, -k2, 1, 0, 0); var hh = CarArt.draw(x, c.build, "rear", 0, 0, w * 1.05, { col: c.col }); x.restore();
+      if (me) { x.globalAlpha = 1; x.shadowColor = "#ffd43b"; x.shadowBlur = 10; x.fillStyle = "#f76707"; x.font = "900 " + Math.min(H * 0.06, Math.max(12, s * 0.7)) + "px system-ui"; x.textAlign = "center"; x.fillText("Lucas 6", X + k2 * hh * 0.5, Y - hh * 1.1); }
+      x.restore(); return;
+    }
     var rim = img(c.car.replace("c_", "r_"));
     if (rim.complete && rim.naturalWidth) { // ChatGPT rear-view sprite, same style as the title art
       // flatten the steep top-down sprite so the car sits on the road instead of pointing up a hill,
@@ -278,7 +288,7 @@ var Race = {
     x.beginPath(); TRACK.pts.forEach(function (p, i) { var X = mx + (p.x - b[0]) * sc, Y = my + (p.y - b[1]) * sc; i ? x.lineTo(X, Y) : x.moveTo(X, Y); }); x.closePath(); x.strokeStyle = "#868e96"; x.lineWidth = u * 0.9; x.stroke();
     TRACK.hills.forEach(function (h) { x.beginPath(); for (var s = h[0]; s <= h[1]; s += 1) { var p = trackAt(s); x[s === h[0] ? "moveTo" : "lineTo"](mx + (p.x - b[0]) * sc, my + (p.y - b[1]) * sc); } x.strokeStyle = "#e8590c"; x.stroke(); });
     var self = this;
-    this.cars.slice().reverse().forEach(function (c) { var p = self.pos(c); x.fillStyle = { c_blue: "#1c7ed6", c_red: "#e03131", c_green: "#2f9e44" }[c.car]; x.beginPath(); x.arc(mx + (p.x - b[0]) * sc, my + (p.y - b[1]) * sc, u * (c.who === "lucas" ? 1.3 : 1), 0, 7); x.fill(); x.strokeStyle = c.who === "lucas" ? "#ffd43b" : "#111"; x.lineWidth = u * 0.35; x.stroke(); });
+    this.cars.slice().reverse().forEach(function (c) { var p = self.pos(c); x.fillStyle = c.col ? CarArt.COL[c.col].main : { c_blue: "#1c7ed6", c_red: "#e03131", c_green: "#2f9e44" }[c.car]; x.beginPath(); x.arc(mx + (p.x - b[0]) * sc, my + (p.y - b[1]) * sc, u * (c.who === "lucas" ? 1.3 : 1), 0, 7); x.fill(); x.strokeStyle = c.who === "lucas" ? "#ffd43b" : "#111"; x.lineWidth = u * 0.35; x.stroke(); });
   },
   drawIso: function () {
     var cv = $("#raceCv"), x = cv.getContext("2d"), s = this.sc, self = this, b = TRACK.box;
@@ -318,7 +328,8 @@ var Race = {
     function sprite(px, py, pz, alpha) {
       var q = self.P(px, py, pz); x.save(); x.globalAlpha = alpha; x.translate(q[0], q[1]); x.scale(1, self.K); x.rotate(p.h + Math.PI / 2);
       if (me && alpha === 1) { x.shadowColor = "#ffd43b"; x.shadowBlur = 14 * self.sc / 10; }
-      if (im.complete && im.naturalWidth) x.drawImage(im, -w / 2, -hgt / 2, w, hgt); else { x.fillStyle = me ? "#1c7ed6" : "#e03131"; x.fillRect(-w / 2, -hgt / 2, w, hgt); }
+      if (c.build) CarArt.draw(x, c.build, "top", 0, 0, w, { col: c.col, center: true });
+      else if (im.complete && im.naturalWidth) x.drawImage(im, -w / 2, -hgt / 2, w, hgt); else { x.fillStyle = me ? "#1c7ed6" : "#e03131"; x.fillRect(-w / 2, -hgt / 2, w, hgt); }
       x.restore();
     }
     // speed trail: more ghosts and longer when fast
@@ -348,8 +359,9 @@ var Race = {
       $("#aRace").onclick = function () { Read.stop(); go("park"); };
       return;
     }
-    k.races = (k.races || 0) + 1; save();
     var place = this.order().indexOf(this.cars[0]) + 1;
+    if (this.opts && this.opts.onDone) { var od = this.opts.onDone; this.opts = null; return od({ place: me.out ? this.cars.length : place, out: me.out, adv: adv, r: me, time: me.t, order: this.order().map(function (c) { return c.who; }) }); }
+    k.races = (k.races || 0) + 1; save();
     if (place === 1 && !me.out) {
       ovl("<div class='big title-font'>🏆 1ST PLACE!</div><div style='text-align:center'>" + bi("陸晨得到第一名！", "Lucas wins first place!") + "</div><div class='act'><button class='btn red' id='aWin'>" + bi("太棒了", "Awesome") + " ▶</button></div>");
       Read.pair("陸晨得到第一名！", "Lucas wins first place!");

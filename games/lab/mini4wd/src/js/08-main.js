@@ -19,7 +19,14 @@
 
   $("#pLucas").onclick = function () {
     sfx("tap"); $("#jump").classList.remove("on"); pickKid("lucas");
-    var st = G.kd.stage; go(st === "done" ? (G.kd.stage = "shop", G.kd.step = 0, "shop") : st || "shop");
+    var st = G.kd.stage;
+    if (G.kd.ep1) { // Chapter 1 done: pick a chapter
+      ovl("<div class='big title-font'>CHAPTER?</div><div class='act'><button class='btn white' id='ch1'>" + bi("第一章：再玩一次", "Chapter 1: play again") + "</button><button class='btn red' id='ch2'>🏁 " + bi("第二章：做自己的車", "Chapter 2: build your own car") + "</button></div>");
+      $("#ch1").onclick = function () { closeOvl(); G.kd.stage = "shop"; G.kd.step = 0; go("shop"); };
+      $("#ch2").onclick = function () { closeOvl(); go("c2"); };
+      return;
+    }
+    go(st === "done" ? (G.kd.stage = "shop", G.kd.step = 0, "shop") : st || "shop");
   };
   $("#pTester").onclick = function () { sfx("tap"); testerMenu(); };
   $("#bLang").onclick = function () { sfx("tap"); Read.setLang({ both: "zh", zh: "en", en: "both" }[Read.lang]); };

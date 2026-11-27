@@ -11,11 +11,12 @@ function zyHTML(ch, z) {
 function zh(text) {
   return String(text).replace(/[一-鿿]+|[^一-鿿]+/g, function (run) {
     if (!/[一-鿿]/.test(run)) return esc(run);
-    var zs = ZYR[run] ? ZYR[run].split(" ") : null, out = "";
-    for (var i = 0; i < run.length; i++) {
-      var z = zs ? zs[i] : ZYC[run[i]];
-      out += z ? zyHTML(run[i], z) : run[i];
-    }
+    // per-character readings, with known phrases (ZYR) overriding inside longer runs (polyphones like 數學, 銀行)
+    var zs = [], i, k;
+    for (i = 0; i < run.length; i++) zs[i] = ZYC[run[i]];
+    for (k in ZYR) for (i = run.indexOf(k); i >= 0; i = run.indexOf(k, i + 1)) ZYR[k].split(" ").forEach(function (z, j) { zs[i + j] = z; });
+    var out = "";
+    for (i = 0; i < run.length; i++) out += zs[i] ? zyHTML(run[i], zs[i]) : run[i];
     return out;
   });
 }

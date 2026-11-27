@@ -83,7 +83,7 @@ function refreshMenu() {
   $("#lucasSub").innerHTML = sub;
   $("#bRead").innerHTML = (Read.on ? "🔊 " : "🔇 ") + bi("讀出來", "Read aloud");
 }
-var STAGES = [["shop", "故事：模型店", "Story: hobby shop"], ["garage", "組車", "Build the car"], ["test", "測試跑道", "Test run"], ["park", "比賽日", "Race day"], ["race", "第一場比賽", "Race 1"], ["win", "結局", "Ending"]];
+var STAGES = [["shop", "故事：模型店", "Story: hobby shop"], ["garage", "組車", "Build the car"], ["test", "測試跑道", "Test run"], ["park", "比賽日", "Race day"], ["race", "第一場比賽", "Race 1"], ["win", "結局", "Ending"], ["c2", "第二章", "Chapter 2"]];
 function testerMenu() {
   var j = $("#jump");
   j.innerHTML = STAGES.map(function (s) { return "<button class='btn white' data-s='" + s[0] + "'>" + bi(s[1], s[2]) + "</button>"; }).join("");
@@ -129,6 +129,7 @@ function go(stage) {
   else if (stage === "park") playScene("park", function () { go("race"); });
   else if (stage === "race") Race.start("race");
   else if (stage === "win") playScene("win", finishEpisode);
+  else if (stage === "c2") { k.stage = "done"; save(); C2G.start(); }
 }
 function maxSays(adv, buttons) {
   var a = ADVICE[adv];
@@ -143,7 +144,7 @@ function finishEpisode() {
     "<div class='big stars'>" + "⭐".repeat(stars) + "☆".repeat(3 - stars) + "</div>" +
     "<div style='text-align:center'>" + bi("科學問題：" + pts + " / " + max + " 分", "Science quiz: " + pts + " / " + max + " points") + "</div>" +
     "<div class='tip'>💡 " + bi(TIP[0], TIP[1]) + "</div>" +
-    "<div class='tip' style='background:#fff4e6'>🚧 " + bi("下一集：全國大賽，敬請期待！", "Next: Episode 2, the National Race. Coming soon!") + "</div>" +
+    "<div class='tip' style='background:#fff4e6'>🚧 " + bi("第二章開放了：自己做一台車！", "Chapter 2 is open: build your own car!") + "</div>" +
     "<div class='act'><button class='btn blue' id='rHome'>🏠 " + bi("回到選單", "Back to menu") + "</button></div>");
   sfx("win");
   Read.pair(TIP[0], TIP[1]);
