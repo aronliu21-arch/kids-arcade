@@ -119,7 +119,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 .chip.me{border-color:var(--lucas)}
 .ticker{background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:4px 12px;min-height:52px;flex:1;min-width:240px;max-width:640px}
 .ticker .z{font-size:17px}.ticker .e{font-size:14px}
-#cheer{font-size:20px}
+#cheer{font-size:20px}#camBtn{font-size:15px;padding:4px 12px}
 #count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:min(30vw,200px);color:var(--yel);-webkit-text-stroke:5px var(--ink);text-shadow:8px 8px 0 var(--red)}
 /* ---------- result / overlay ---------- */
 .ovl{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:40;padding:16px;overflow:auto}
@@ -157,7 +157,8 @@ button{font:inherit;cursor:pointer;color:inherit}
   #sRace .rwrap{padding-top:6px;flex-direction:row;flex-wrap:wrap;align-content:flex-start}
   #raceCv{height:calc(100vh - 14px);flex:none;width:64vw;max-width:64vw}
   .hud{width:auto;flex:1;flex-direction:column;align-items:stretch;padding-top:52px}
-  .ticker{min-width:0}
+  .ticker{min-width:0;flex:none;min-height:0;padding:3px 8px}.ticker .z{font-size:14px}.ticker .e{font-size:12px}
+  #cheer{font-size:17px;min-height:48px;padding:4px 8px}#camBtn{font-size:13px;min-height:48px;padding:2px 8px}.hud{gap:5px}
   #sMenu .wrap{padding-top:16px}.logo .l1{font-size:44px}
   .prof{min-height:0;flex-direction:row;width:auto}.prof img{width:64px;height:64px}.prof.tester .ic{font-size:44px;line-height:64px}
 }

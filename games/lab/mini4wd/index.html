@@ -127,7 +127,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 .chip.me{border-color:var(--lucas)}
 .ticker{background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:4px 12px;min-height:52px;flex:1;min-width:240px;max-width:640px}
 .ticker .z{font-size:17px}.ticker .e{font-size:14px}
-#cheer{font-size:20px}
+#cheer{font-size:20px}#camBtn{font-size:15px;padding:4px 12px}
 #count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:min(30vw,200px);color:var(--yel);-webkit-text-stroke:5px var(--ink);text-shadow:8px 8px 0 var(--red)}
 /* ---------- result / overlay ---------- */
 .ovl{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:40;padding:16px;overflow:auto}
@@ -165,7 +165,8 @@ button{font:inherit;cursor:pointer;color:inherit}
   #sRace .rwrap{padding-top:6px;flex-direction:row;flex-wrap:wrap;align-content:flex-start}
   #raceCv{height:calc(100vh - 14px);flex:none;width:64vw;max-width:64vw}
   .hud{width:auto;flex:1;flex-direction:column;align-items:stretch;padding-top:52px}
-  .ticker{min-width:0}
+  .ticker{min-width:0;flex:none;min-height:0;padding:3px 8px}.ticker .z{font-size:14px}.ticker .e{font-size:12px}
+  #cheer{font-size:17px;min-height:48px;padding:4px 8px}#camBtn{font-size:13px;min-height:48px;padding:2px 8px}.hud{gap:5px}
   #sMenu .wrap{padding-top:16px}.logo .l1{font-size:44px}
   .prof{min-height:0;flex-direction:row;width:auto}.prof img{width:64px;height:64px}.prof.tester .ic{font-size:44px;line-height:64px}
 }
@@ -278,6 +279,7 @@ button{font:inherit;cursor:pointer;color:inherit}
     <span class="chip" id="hLap"></span><span id="hPos"></span>
     <div class="ticker" id="ticker"></div>
     <button class="btn red" id="cheer">📣 加油 Go!</button>
+    <button class="btn white" id="camBtn"></button>
   </div>
   <div id="count"></div>
 </div></section>
@@ -1043,7 +1045,7 @@ var Race = {
     this.mode = mode; this.laps = mode === "race" ? 3 : 1; this.over = false; this.t = 0; this.fx = []; this.said = {};
     this.cars = [{ who: "lucas", car: "c_blue", r: new Racer(k.build, { laps: this.laps, lane: 0 }) }];
     if (mode === "race") RIVALS.forEach(function (rv, i) { self.cars.push({ who: rv.who, car: rv.car, r: new Racer(rv.build, { laps: self.laps, lane: i + 1 }) }); });
-    show("sRace"); this.resize();
+    show("sRace"); this.resize(); this.cam = null; this.camLabel();
     $("#cheer").style.display = "";
     this.tick(["準備好了嗎？", "Ready?"]);
     this.hud(); this.draw();
@@ -1200,7 +1202,104 @@ var Race = {
     var st = trackAt(0);
     for (var i = 0; i < 8; i++) for (var j = 0; j < 2; j++) { var c = this.P(st.x - 0.5 + j * 0.5, st.y - 3.8 + i * 0.95, this.TH); x.fillStyle = (i + j) % 2 ? "#111" : "#fff"; x.fillRect(c[0], c[1], 0.5, 0.95 * this.K); }
   },
+  /* ---------- cameras: "auto" picks the best view, or the kid picks chase / 2.5D ---------- */
+  camMode: "auto", CAMS: { auto: ["🎥", "自動鏡頭", "Auto cam"], chase: ["🏎", "追車鏡頭", "Chase cam"], iso: ["🗺", "俯視鏡頭", "Top view"] },
+  camLabel: function () { var c = this.CAMS[this.camMode]; $("#camBtn").innerHTML = c[0] + " " + bi(c[1], c[2]); },
+  pickCam: function () {
+    var me = this.cars[0], r = me.r, now = this.t || 0;
+    if (r.out) return "iso";
+    if (this.camMode !== "auto") return this.camMode;
+    var want = "iso", s = ((r.s % TRACK.len) + TRACK.len) % TRACK.len;
+    TRACK.hills.forEach(function (h) { if (s > h[0] - 14 && s < h[1] + 4) want = "chase"; });
+    if (now < 3) want = "chase";                       // dramatic start
+    if (r.scraping) want = "iso";                       // see the rollers on the wall
+    if (want !== this.cam && now - (this.camT || -9) < 2.2) return this.cam; // no flicker
+    return want;
+  },
   draw: function () {
+    var cam = this.pickCam();
+    if (cam !== this.cam) { this.cam = cam; this.camT = this.t || 0; this.flash = 1; }
+    if (cam === "chase") this.drawChase(); else this.drawIso();
+    if (this.flash > 0) { var cv = $("#raceCv"), x = cv.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = "rgba(255,255,255," + this.flash * 0.8 + ")"; x.fillRect(0, 0, cv.width, cv.height); this.flash -= 0.12; }
+  },
+  drawChase: function () {
+    var cv = $("#raceCv"), x = cv.getContext("2d"), W = cv.width, H = cv.height, self = this;
+    var me = this.cars[0], r = me.r, off0 = (r.lane - 1) * 2.4;
+    var camS = r.s - 11, cp = trackAt(camS), ahead = trackAt(camS + 5);
+    var ch = Math.atan2(ahead.y - cp.y, ahead.x - cp.x);
+    var cx = cp.x + Math.cos(cp.h + Math.PI / 2) * off0 * 0.6, cy = cp.y + Math.sin(cp.h + Math.PI / 2) * off0 * 0.6;
+    var mz = 0; for (var zs = camS; zs <= r.s; zs += 0.5) mz = Math.max(mz, this.zAt(zs)); var cz = mz + this.TH + 2.8, slope = (this.zAt(camS + 8) - this.zAt(camS)) / 8, frac = Math.min(1, r.v / (this.vmax || 30));
+    var F = W * (0.85 - frac * 0.18), hor = H * 0.4, co = Math.cos(ch), si = Math.sin(ch);
+    // aim the camera so Lucas's car stays at the same spot: the whole world tilts on hills
+    var lp = this.pos(me), lf = (lp.x - cx) * co + (lp.y - cy) * si;
+    if (lf > 1) hor = Math.max(-H * 0.8, Math.min(H * 0.75, H * 0.74 + (lp.z - cz) / lf * F));
+    this.hor = hor;
+    function pr(wx, wy, wz) { var dx = wx - cx, dy = wy - cy, f = dx * co + dy * si, rr2 = -dx * si + dy * co; if (f < 0.4) return null; return [W / 2 + rr2 / f * F, hor - (wz - cz) / f * F, f]; }
+    function edge(p, o, z) { return pr(p.x + Math.cos(p.h + Math.PI / 2) * o, p.y + Math.sin(p.h + Math.PI / 2) * o, z); }
+    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
+    var sky = x.createLinearGradient(0, 0, 0, hor); sky.addColorStop(0, "rgba(116,192,252,.35)"); sky.addColorStop(1, "rgba(208,235,255,.6)");
+    x.fillStyle = sky; x.fillRect(0, 0, W, Math.max(0, hor));
+    x.fillStyle = "#2f9e44"; x.fillRect(0, hor, W, H - hor);
+    function quad(a, b, c, d, col) { if (!a || !b || !c || !d) return; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.lineTo(c[0], c[1]); x.lineTo(d[0], d[1]); x.closePath(); x.fillStyle = col; x.fill(); }
+    // track from far to near (painter): crests hide what is behind them
+    var DRAW = 70, STEP = 0.7, segs = [];
+    for (var d = DRAW; d >= 0; d -= STEP) segs.push(camS + d);
+    var carsAt = this.cars.map(function (c) { return { c: c, s: c.r.s }; });
+    for (var i = 0; i < segs.length - 1; i++) {
+      var sF = segs[i], sN = segs[i + 1], pF = trackAt(sF), pN = trackAt(sN), zF = this.zAt(sF) + this.TH, zN = this.zAt(sN) + this.TH;
+      var band = Math.floor(sN / 1.4) % 2, up = zF > zN + 0.01, dn = zN > zF + 0.01;
+      // pillars under the ramp
+      if ((zF > 1.2) && Math.floor(sF / 3) !== Math.floor(sN / 3)) [-3.8, 3.8].forEach(function (o) { var t = edge(pF, o, zF - 0.3), g = edge(pF, o, 0); if (t && g) { x.fillStyle = "#868e96"; var w = Math.max(2, 0.5 / t[2] * F); x.fillRect(t[0] - w / 2, t[1], w, g[1] - t[1]); } });
+      // side walls
+      [[-3.8, -4.2], [3.8, 4.2]].forEach(function (o) {
+        quad(edge(pF, o[0], zF), edge(pN, o[0], zN), edge(pN, o[0], zN - self.TH - (zN > 0.95 ? zN - self.TH : 0)), edge(pF, o[0], zF - self.TH - (zF > 0.95 ? zF - self.TH : 0)), "#a61e1e");
+        quad(edge(pF, o[0], zF + 0.7), edge(pN, o[0], zN + 0.7), edge(pN, o[0], zN), edge(pF, o[0], zF), band ? "#e03131" : "#fff");
+      });
+      // road with rushing stripes (they fly past faster when the car is fast)
+      quad(edge(pF, -3.8, zF), edge(pN, -3.8, zN), edge(pN, 3.8, zN), edge(pF, 3.8, zF), band ? (up ? "#fff4e6" : dn ? "#ebfbee" : "#f8f9fa") : (up ? "#ffe8cc" : dn ? "#d3f9d8" : "#e9ecef"));
+      [[-2.4, "#a5d8ff"], [0, "#ffc9c9"], [2.4, "#ffec99"]].forEach(function (L) { quad(edge(pF, L[0] - 0.55, zF), edge(pN, L[0] - 0.55, zN), edge(pN, L[0] + 0.55, zN), edge(pF, L[0] + 0.55, zF), L[1]); });
+      if (band && (up || dn) && Math.floor(sN / 1.4) % 4 === 1) { var a = edge(pN, 0, zN); if (a && a[2] > 5) { var sz = Math.min(H * 0.08, 1.2 / a[2] * F); x.fillStyle = up ? "#e8590c" : "#2f9e44"; x.font = "900 " + sz + "px system-ui"; x.textAlign = "center"; x.fillText(up ? "▲" : "▼", a[0], a[1]); } }
+      // cars whose position is in this slice
+      carsAt.forEach(function (o) { var cs = o.s; if (cs <= sF && cs > sN) self.chaseCar(x, o.c, pr, F); });
+    }
+    if (r.s <= segs[segs.length - 1]) this.chaseCar(x, me, pr, F);
+    // speed lines at the edges
+    if (frac > 0.3) { x.strokeStyle = "rgba(255,255,255," + (frac - 0.2) * 0.7 + ")"; x.lineWidth = Math.max(1, W / 400);
+      for (var k = 0; k < 14 * frac; k++) { var ang = Math.random() * Math.PI * 2, r0 = W * (0.35 + Math.random() * 0.1), r1 = r0 + W * 0.15 * frac; x.beginPath(); x.moveTo(W / 2 + Math.cos(ang) * r0, hor + Math.sin(ang) * r0 * 0.6); x.lineTo(W / 2 + Math.cos(ang) * r1, hor + Math.sin(ang) * r1 * 0.6); x.stroke(); } }
+    this.chaseHud(x, W, H, frac, r);
+  },
+  chaseCar: function (x, c, pr, F) {
+    var H = $("#raceCv").height;
+    var me = c.who === "lucas", p = this.pos(c), q = pr(p.x, p.y, p.z); if (!q || (!me && q[2] < 4)) return;
+    var s = (me ? 1.15 : 1) / q[2] * F, col = { c_blue: "#1c7ed6", c_red: "#e03131", c_green: "#2f9e44" }[c.car] || "#1c7ed6";
+    var X = q[0], Y = q[1], w = 2.2 * s, h = 1.0 * s;
+    x.save(); x.lineWidth = Math.max(1, s * 0.08); x.strokeStyle = "#111"; if (!me && q[2] < 8) x.globalAlpha = 0.55;
+    x.fillStyle = "rgba(0,0,0,.3)"; x.beginPath(); x.ellipse(X, Y, w * 0.6, h * 0.18, 0, 0, 7); x.fill();
+    x.fillStyle = "#212529"; [-1, 1].forEach(function (k) { x.fillRect(X + k * w * 0.36 - w * 0.13, Y - h * 0.55, w * 0.26, h * 0.55); x.strokeRect(X + k * w * 0.36 - w * 0.13, Y - h * 0.55, w * 0.26, h * 0.55); });
+    x.fillStyle = col; x.beginPath(); x.moveTo(X - w * 0.3, Y - h * 0.3); x.lineTo(X + w * 0.3, Y - h * 0.3); x.lineTo(X + w * 0.22, Y - h * 0.95); x.lineTo(X - w * 0.22, Y - h * 0.95); x.closePath(); x.fill(); x.stroke();
+    x.fillRect(X - w * 0.42, Y - h * 1.2, w * 0.84, h * 0.18); x.strokeRect(X - w * 0.42, Y - h * 1.2, w * 0.84, h * 0.18); // rear wing
+    x.fillStyle = "#ffd43b"; x.fillRect(X - w * 0.18, Y - h * 0.5, w * 0.12, h * 0.1); x.fillRect(X + w * 0.06, Y - h * 0.5, w * 0.12, h * 0.1);
+    if (me) { x.shadowColor = "#ffd43b"; x.shadowBlur = 10; x.fillStyle = "#f76707"; x.font = "900 " + Math.min(H * 0.06, Math.max(12, s * 0.7)) + "px system-ui"; x.textAlign = "center"; x.fillText("Lucas 6", X, Y - h * 1.5); }
+    x.restore();
+  },
+  chaseHud: function (x, W, H, frac, r) {
+    var u = Math.min(W, H * 1.6) / 100, hp = r.out ? -1 : hillPhase(r.s);
+    // big speed meter
+    var bx = u * 3, by = H - u * 9, bw = u * 30, bh = u * 3.2;
+    x.fillStyle = "#fff"; x.strokeStyle = "#111"; x.lineWidth = u * 0.4; rr(x, bx, by, bw, bh, bh / 2); x.fill(); x.stroke();
+    x.fillStyle = frac > 0.7 ? "#2f9e44" : frac > 0.4 ? "#fab005" : "#e8590c"; rr(x, bx + u * 0.4, by + u * 0.4, Math.max(bh, (bw - u * 0.8) * frac), bh - u * 0.8, (bh - u * 0.8) / 2); x.fill();
+    x.fillStyle = "#fff"; x.font = "900 " + u * 2.6 + "px system-ui"; x.textAlign = "left"; x.lineWidth = u * 0.6; x.strokeStyle = "#111";
+    var t = hp >= 0 && hp < 0.5 ? "⬆ 上坡變慢 Uphill: slower" : hp >= 0.5 ? "⬇ 下坡變快 Downhill: faster!" : "⚡ 速度 Speed";
+    x.strokeText(t, bx, by - u * 1.2); x.fillText(t, bx, by - u * 1.2);
+    // mini map with every car
+    var b = TRACK.box, mw = u * 24, mh = mw * (b[3] - b[1]) / (b[2] - b[0]), mx = W - mw - u * 3, my = u * 3, sc = mw / (b[2] - b[0]);
+    x.fillStyle = "rgba(255,255,255,.85)"; x.strokeStyle = "#111"; x.lineWidth = u * 0.3; rr(x, mx - u, my - u, mw + 2 * u, mh + 2 * u, u); x.fill(); x.stroke();
+    x.beginPath(); TRACK.pts.forEach(function (p, i) { var X = mx + (p.x - b[0]) * sc, Y = my + (p.y - b[1]) * sc; i ? x.lineTo(X, Y) : x.moveTo(X, Y); }); x.closePath(); x.strokeStyle = "#868e96"; x.lineWidth = u * 0.9; x.stroke();
+    TRACK.hills.forEach(function (h) { x.beginPath(); for (var s = h[0]; s <= h[1]; s += 1) { var p = trackAt(s); x[s === h[0] ? "moveTo" : "lineTo"](mx + (p.x - b[0]) * sc, my + (p.y - b[1]) * sc); } x.strokeStyle = "#e8590c"; x.stroke(); });
+    var self = this;
+    this.cars.slice().reverse().forEach(function (c) { var p = self.pos(c); x.fillStyle = { c_blue: "#1c7ed6", c_red: "#e03131", c_green: "#2f9e44" }[c.car]; x.beginPath(); x.arc(mx + (p.x - b[0]) * sc, my + (p.y - b[1]) * sc, u * (c.who === "lucas" ? 1.3 : 1), 0, 7); x.fill(); x.strokeStyle = c.who === "lucas" ? "#ffd43b" : "#111"; x.lineWidth = u * 0.35; x.stroke(); });
+  },
+  drawIso: function () {
     var cv = $("#raceCv"), x = cv.getContext("2d"), s = this.sc, self = this, b = TRACK.box;
     this.label = label;
     x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height);
@@ -1288,6 +1387,7 @@ function rr(x, X, Y, W, H, R) { x.beginPath(); x.moveTo(X + R, Y); x.arcTo(X + W
 /* ===== Boot: title intro, menu, buttons, test hook ===== */
 (function () {
   Read.on = !(DB.settings && DB.settings.readOff);
+  Race.camMode = (DB.settings && DB.settings.cam) || "auto";
   Read.lang = (DB.settings && DB.settings.lang) || "both"; $("#bLang").textContent = Read.LANGS[Read.lang][0];
   $("#logo2").innerHTML = zh("四驅小隊"); $("#logo3").innerHTML = zh("四驅小隊");
   $("#rotHint").innerHTML = "Turn your phone sideways ↻ " + zh("橫著拿手機");
@@ -1322,6 +1422,7 @@ function rr(x, X, Y, W, H, R) { x.beginPath(); x.moveTo(X + R, Y); x.arcTo(X + W
   $("#dNext").onclick = function (e) { e.stopPropagation(); storyNext(); };
   $("#dlg").onclick = storyNext;
   $("#dSay").onclick = function (e) { e.stopPropagation(); var ln = SCENES[Story.key].lines[Story.i]; Read.pair(ln[1], ln[2], CAST[ln[0]].pitch); };
+  $("#camBtn").onclick = function () { sfx("tap"); Race.camMode = { auto: "chase", chase: "iso", iso: "auto" }[Race.camMode]; DB.settings = DB.settings || {}; DB.settings.cam = Race.camMode; DB.save(); Race.camLabel(); Race.camT = -9; var c = Race.CAMS[Race.camMode]; Read.pair(c[1], c[2]); };
   $("#cheer").onclick = function () {
     sfx("pop"); var c = Race.cars && Race.cars[0];
     if (c) { var p = Race.pos(c); Race.fx.push({ x: p.x, y: p.y - 2, vx: 0, vy: -6, life: 0.6 }); }
@@ -1352,6 +1453,6 @@ window.__test = {
   }
 };
 </script>
-<div id="kaVer" data-v="1.5" data-d="2026-11-27">v1.5 · 2026-11-27</div>
+<div id="kaVer" data-v="1.6" data-d="2026-11-27">v1.6 · 2026-11-27</div>
 </body>
 </html>

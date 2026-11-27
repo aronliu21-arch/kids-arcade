@@ -1,6 +1,7 @@
 /* ===== Boot: title intro, menu, buttons, test hook ===== */
 (function () {
   Read.on = !(DB.settings && DB.settings.readOff);
+  Race.camMode = (DB.settings && DB.settings.cam) || "auto";
   Read.lang = (DB.settings && DB.settings.lang) || "both"; $("#bLang").textContent = Read.LANGS[Read.lang][0];
   $("#logo2").innerHTML = zh("四驅小隊"); $("#logo3").innerHTML = zh("四驅小隊");
   $("#rotHint").innerHTML = "Turn your phone sideways ↻ " + zh("橫著拿手機");
@@ -35,6 +36,7 @@
   $("#dNext").onclick = function (e) { e.stopPropagation(); storyNext(); };
   $("#dlg").onclick = storyNext;
   $("#dSay").onclick = function (e) { e.stopPropagation(); var ln = SCENES[Story.key].lines[Story.i]; Read.pair(ln[1], ln[2], CAST[ln[0]].pitch); };
+  $("#camBtn").onclick = function () { sfx("tap"); Race.camMode = { auto: "chase", chase: "iso", iso: "auto" }[Race.camMode]; DB.settings = DB.settings || {}; DB.settings.cam = Race.camMode; DB.save(); Race.camLabel(); Race.camT = -9; var c = Race.CAMS[Race.camMode]; Read.pair(c[1], c[2]); };
   $("#cheer").onclick = function () {
     sfx("pop"); var c = Race.cars && Race.cars[0];
     if (c) { var p = Race.pos(c); Race.fx.push({ x: p.x, y: p.y - 2, vx: 0, vy: -6, life: 0.6 }); }
