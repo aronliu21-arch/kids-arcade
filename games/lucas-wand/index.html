@@ -280,6 +280,8 @@ h1,h2,h3{margin:0}
 #read .rdBlanks{font:700 clamp(28px,6vw,46px)/1.2 "Chalkboard SE","Comic Sans MS",system-ui,sans-serif;letter-spacing:.18em;color:#3b2f5c;margin-top:8px;text-align:center}
 #playTarget .hearBtn{font-size:.45em;display:block;margin:0 auto 4px}
 #playTarget .blanks{font-size:.5em;display:block;letter-spacing:.08em}
+.rdHard{display:inline-block;margin:4px 0 2px;padding:2px 10px;border-radius:999px;background:#fff3bf;color:#e67700;font-weight:800;font-size:14px}
+.rdBlanks .rdOk{color:#2b8a3e;font-weight:900}
 </style>
 </head>
 <body>
@@ -2590,6 +2592,15 @@ Y2.READ_W={
  law:['truth','respect','listen','help','share','courage','honor','friends','promise','never'],
  pactRead:['dragons','people','tell','truth','help','each','other','never','let','go'],
 };
+// v1.3: two harder "challenge" words per test (longer words, tricky spellings)
+Y2.READ_HARD={
+ labels:['library','castle','science','treasure','creature','journey','knight','wizard','alphabet','question'],
+ diaryRead:['whisper','secret','careful','because','believe','friendship','listening','mystery'],
+ notes:['tomorrow','birthday','surprise','favorite','together','different','welcome','yesterday'],
+ oldMap:['island','compass','southern','eastern','waterfall','straight','journey','meadow'],
+ law:['honest','gentle','brave','protect','kindness','forgive','promise','trusted'],
+ pactRead:['forever','dragon','another','people','remember','between','always','castle'],
+};
 
 // ================= YEAR 2 ENGINE =================
 const CH1=CHAPTERS, CHT1=CH_TEXT, Y1_INTRO=INTRO;
@@ -2617,18 +2628,18 @@ Object.keys(Y2.POOLS_W).forEach(k=>{ POOLS[k]=()=>pickWords([Y2.POOLS_W[k]],5); 
 
 // ---------- spelling test: hear a word, type how it is spelled
 let R=null;
-function startRead(m,n){ const pool=(Y2.READ_W[m.id]||[]).filter(w=>!(S.readSeen||[]).includes(w)); let items=shuffle(pool).slice(0,5);
+function startRead(m,n){ const pool=(Y2.READ_W[m.id]||[]).filter(w=>!(S.readSeen||[]).includes(w)); const hard=shuffle((Y2.READ_HARD[m.id]||[]).filter(w=>!(S.readSeen||[]).includes(w)&&!pool.includes(w))).slice(0,2); let items=shuffle(pool).slice(0,5-hard.length).concat(hard);
  if(items.length<5){ const extra=shuffle([...new Set((S.seen||[]).filter(w=>w.length>2&&!(S.readSeen||[]).includes(w)))]).slice(0,5-items.length); items=items.concat(extra); }
  if(!items.length) items=shuffle(Y2.READ_W[m.id]||['magic']).slice(0,5);
  R={m,n,items,i:0,tries:0,pts:0,good:0}; $('#rdTtl').textContent=`${m.icon} ${m.title} — ${m.goal}`; show('read'); $('#rdFb').textContent=m.intro; Voice.say(m.intro); readItem(); }
-function readItem(){ const w=R.items[R.i]; R.tries=0; $('#rdWord').innerHTML=`<div style="text-align:center"><button class="hearBig" type="button" aria-label="Hear the word">🔊</button><div class="rdBlanks">${w.split('').map(c=>c===' '?'&nbsp;':'_').join(' ')}</div></div>`; $('#rdWord').querySelector('.hearBig').onclick=()=>Voice.say(w); setTimeout(()=>{ if(R&&R.items[R.i]===w) Voice.say(`${w}. Spell ${w}.`); },R.i===0?2200:350); const inp=$('#rdIn'); inp.value=''; inp.disabled=false; setTimeout(()=>{ try{inp.focus({preventScroll:true});}catch(e){} },300);
+function readItem(){ const w=R.items[R.i]; R.tries=0; $('#rdWord').innerHTML=`<div style="text-align:center"><button class="hearBig" type="button" aria-label="Hear the word">🔊</button>${(Y2.READ_HARD[R.m.id]||[]).includes(w)?'<div class="rdHard">⚡ Challenge word</div>':''}<div class="rdBlanks">${w.split('').map(c=>c===' '?'&nbsp;':'_').join(' ')}</div></div>`; $('#rdWord').querySelector('.hearBig').onclick=()=>Voice.say(w); setTimeout(()=>{ if(R&&R.items[R.i]===w) Voice.say(`${w}. Spell ${w}.`); },R.i===0?2200:350); const inp=$('#rdIn'); inp.value=''; inp.disabled=false; setTimeout(()=>{ try{inp.focus({preventScroll:true});}catch(e){} },300);
  $('#rdDots').innerHTML=R.items.map((_,k)=>`<i class="${k<R.i?'ok':k===R.i?'cur':''}"></i>`).join(''); $('#rdHint').textContent=''; }
 const normW=s=>s.toLowerCase().replace(/[^a-z ]/g,'').replace(/\s+/g,' ').trim();
 function readCheck(){ if(!R||$('#rdIn').disabled) return; const w=R.items[R.i], v=normW($('#rdIn').value); if(!v){ $('#rdFb').textContent='Type the word you hear ⌨️ (tap 🔊 to hear it again)'; return; }
  R.tries++;
  if(v===normW(w)){ const p=R.tries===1?2:1; R.pts+=p; R.good++; S.readSeen=S.readSeen||[]; S.readSeen.push(w); save(); Snd.sfx('gold'); const c=FX.center($('#rdWord')); FX.burst(c[0],c[1],{n:50,speed:8}); FX.text(c[0],c[1]-30,R.tries===1?'SPELLED IT!':'GOT IT!','#ffd43b',48);
   $('#rdFb').textContent=(R.tries===1?'Perfect spelling! ':'Well done! ')+`“${w}” ✨ +${p}`; Voice.say(w); $('#rdIn').disabled=true; setTimeout(readNext,1500); return; }
- if(R.tries===1){ Snd.sfx('poof'); $('#rdFb').textContent='Not quite. Listen again and say each sound slowly. Try again!'; $('#rdHint').textContent=`Hint: it starts with “${w[0]}” and has ${w.replace(/ /g,'').length} letters.`; Voice.say(`Not quite. Listen again. ${w}.`); $('#rdIn').select(); return; }
+ if(R.tries===1){ Snd.sfx('poof'); $('#rdFb').textContent='Not quite. Listen again and say each sound slowly. Try again!'; $('#rdHint').textContent=`Hint: it starts with “${w[0]}” and has ${w.replace(/ /g,'').length} letters. Green letters are right!`; const tv=$('#rdIn').value.toLowerCase(); $('#rdWord').querySelector('.rdBlanks').innerHTML=w.split('').map((c,k)=>c===' '?'&nbsp;':(k===0||tv[k]===c.toLowerCase())?`<b class="rdOk">${c}</b>`:'_').join(' '); Voice.say(`Not quite. Listen again. ${w}.`); $('#rdIn').select(); return; }
  Snd.sfx('poof'); $('#rdWord').querySelector('.rdBlanks').textContent=w; $('#rdFb').textContent=`It is spelled: ${w.split('').join('-')}. Look at it once more, then we go on.`; Voice.say(`${w} is spelled ${w.split('').filter(c=>c!==' ').join(', ')}.`); S.readSeen=S.readSeen||[]; S.readSeen.push(w); save(); $('#rdIn').disabled=true; setTimeout(readNext,2600); }
 function readNext(){ if(!R) return; R.i++; if(R.i<R.items.length) return readItem(); const m=R.m,n=R.n,st=R.good>=R.items.length?3:R.good>=R.items.length-1?2:1; markDone(n,m,R.pts); resultScreen(m.done,'⭐'.repeat(st)+'☆'.repeat(3-st),`+${R.pts} magic stars · spelled ${R.good} of ${R.items.length}`,m.tip,n); R=null; }
 const _startMission=startMission;
@@ -2724,7 +2735,7 @@ $('#rdGo').onclick=readCheck; $('#rdIn').addEventListener('keydown',e=>{ if(e.ke
 const _rs2=refreshStars; refreshStars=function(){ _rs2(); try{ $('#rdStars').textContent=S.stars; }catch(e){} };
 
 </script>
-<div id="kaVer" data-v="1.2" data-d="2026-11-27" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-27</div>
+<div id="kaVer" data-v="1.3" data-d="2026-11-27" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.3 · 2026-11-27</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>

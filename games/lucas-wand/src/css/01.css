@@ -273,3 +273,5 @@ h1,h2,h3{margin:0}
 #read .rdBlanks{font:700 clamp(28px,6vw,46px)/1.2 "Chalkboard SE","Comic Sans MS",system-ui,sans-serif;letter-spacing:.18em;color:#3b2f5c;margin-top:8px;text-align:center}
 #playTarget .hearBtn{font-size:.45em;display:block;margin:0 auto 4px}
 #playTarget .blanks{font-size:.5em;display:block;letter-spacing:.08em}
+.rdHard{display:inline-block;margin:4px 0 2px;padding:2px 10px;border-radius:999px;background:#fff3bf;color:#e67700;font-weight:800;font-size:14px}
+.rdBlanks .rdOk{color:#2b8a3e;font-weight:900}
