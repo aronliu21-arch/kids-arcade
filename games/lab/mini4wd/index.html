@@ -1036,7 +1036,7 @@ var Tune = {
 /* ===== Race: 3/4-view track on a canvas (hill rises, speed trails). The build decides everything; Lucas cheers. ===== */
 var IMG = {};
 function img(n) { if (!IMG[n]) { IMG[n] = new Image(); IMG[n].src = A(n); } return IMG[n]; }
-["c_blue", "c_red", "c_green"].forEach(img);
+["c_blue", "c_red", "c_green", "r_blue", "r_red", "r_green"].forEach(img);
 
 var Race = {
   speed: 1,
@@ -1275,6 +1275,13 @@ var Race = {
     var X = q[0], Y = q[1], w = 2.2 * s, h = 1.0 * s;
     x.save(); x.lineWidth = Math.max(1, s * 0.08); x.strokeStyle = "#111"; if (!me && q[2] < 8) x.globalAlpha = 0.55;
     x.fillStyle = "rgba(0,0,0,.3)"; x.beginPath(); x.ellipse(X, Y, w * 0.6, h * 0.18, 0, 0, 7); x.fill();
+    var rim = img(c.car.replace("c_", "r_"));
+    if (rim.complete && rim.naturalWidth) { // ChatGPT rear-view sprite, same style as the title art
+      var rw = w * 1.05, rh = rw * rim.naturalHeight / rim.naturalWidth;
+      x.drawImage(rim, X - rw / 2, Y - rh * 0.92, rw, rh);
+      if (me) { x.globalAlpha = 1; x.shadowColor = "#ffd43b"; x.shadowBlur = 10; x.fillStyle = "#f76707"; x.font = "900 " + Math.min(H * 0.06, Math.max(12, s * 0.7)) + "px system-ui"; x.textAlign = "center"; x.fillText("Lucas 6", X, Y - rh * 1.02); }
+      x.restore(); return;
+    }
     x.fillStyle = "#212529"; [-1, 1].forEach(function (k) { x.fillRect(X + k * w * 0.36 - w * 0.13, Y - h * 0.55, w * 0.26, h * 0.55); x.strokeRect(X + k * w * 0.36 - w * 0.13, Y - h * 0.55, w * 0.26, h * 0.55); });
     x.fillStyle = col; x.beginPath(); x.moveTo(X - w * 0.3, Y - h * 0.3); x.lineTo(X + w * 0.3, Y - h * 0.3); x.lineTo(X + w * 0.22, Y - h * 0.95); x.lineTo(X - w * 0.22, Y - h * 0.95); x.closePath(); x.fill(); x.stroke();
     x.fillRect(X - w * 0.42, Y - h * 1.2, w * 0.84, h * 0.18); x.strokeRect(X - w * 0.42, Y - h * 1.2, w * 0.84, h * 0.18); // rear wing
@@ -1453,6 +1460,6 @@ window.__test = {
   }
 };
 </script>
-<div id="kaVer" data-v="1.6" data-d="2026-11-27">v1.6 · 2026-11-27</div>
+<div id="kaVer" data-v="1.7" data-d="2026-11-27">v1.7 · 2026-11-27</div>
 </body>
 </html>
