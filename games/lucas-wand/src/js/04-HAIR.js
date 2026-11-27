@@ -8,13 +8,13 @@ const DEFS=`<defs>
 <filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 <radialGradient id="warm"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".9"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient>
 </defs>`;
-const NORA_DIM={happy:[315,495],wow:[189,500],brave:[267,501],cast:[320,491],sad:[241,510],sleepy:[245,504],wave:[337,506]};
+const NORA_DIM={happy:[305,510],wow:[218,510],brave:[252,510],cast:[350,510],sad:[209,510],sleepy:[234,510],wave:[278,510]};
 const FOE_ART={blob:[261,244,300],imps:[271,231,280],crystal:[217,247,320],golem:[337,326,360]};
 const DRAGON_ART={ember:[244,304,250],thistle:[295,357,300]};
-const FRIEND_ART={mei:[105,190,300],iris:[113,190,300],lola:[133,193,305],wren:[121,192,305],bree:[108,242,360],gran:[109,225,345],prof:[144,247,370]};
-const FRIEND_EMO={'mei-sad':[159,285],'iris-sad':[157,283],'lola-sad':[171,277],'wren-sad':[151,284],'bree-sad':[149,315],'gran-sad':[150,310],'mei-wow':[168,287],'iris-wow':[188,286],'lola-wow':[172,279],'wren-wow':[152,284],'bree-wow':[190,316],'gran-wow':[174,310]};
-// Lucas's own AI portraits (and boy versions of Sunny and Jun) are still to be made: until then he is drawn in code.
-const LUCAS_ART=false;
+const FRIEND_ART={mei:[105,190,300],sunny:[197,300,300],juni:[190,300,300],iris:[113,190,300],lola:[133,193,305],wren:[121,192,305],bree:[108,242,360],gran:[109,225,345],prof:[144,247,370]};
+const FRIEND_EMO={'sunny-sad':[126,285],'sunny-wow':[177,285],'juni-sad':[135,285],'juni-wow':[179,285],'mei-sad':[159,285],'iris-sad':[157,283],'lola-sad':[171,277],'wren-sad':[151,284],'bree-sad':[149,315],'gran-sad':[150,310],'mei-wow':[168,287],'iris-wow':[188,286],'lola-wow':[172,279],'wren-wow':[152,284],'bree-wow':[190,316],'gran-wow':[174,310]};
+// Lucas's own watercolor portraits (Gemini, 2026-11-27).
+const LUCAS_ART=true;
 const Y2ART={nora:{},f:{},femo:{},drag:{},foe:{}}; // filled in by the Year 2 art
 function y2(){ return (S&&S.year)===2; }
 function fArt(who){ if((y2()||!FRIEND_ART[who])&&Y2ART.f[who]) return [Y2ART.f[who],'f2-']; if(FRIEND_ART[who]) return [FRIEND_ART[who],'f-']; return null; }
