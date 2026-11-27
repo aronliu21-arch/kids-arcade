@@ -47,6 +47,7 @@ h1,h2,h3{margin:0}
 #title.mag{background:#140f2e;color:#fff;overflow:hidden;justify-content:flex-end;padding-bottom:max(18px,env(safe-area-inset-bottom))}
 #title.mag>*{position:relative;z-index:2}
 #title.mag #tBg{position:absolute;inset:-4%;z-index:0;background:#1b1440 url(art/bg-title.webp) center 30%/cover no-repeat;animation:tDrift 28s ease-in-out infinite alternate}
+body[data-year="2"] #title.mag #tBg{background-image:url(art/bg-title2.webp)}
 #title.mag #tShade{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at 50% 30%,transparent 30%,#0b0820aa 100%),linear-gradient(to bottom,transparent 45%,#120c2ccc 78%,#120c2c 100%);pointer-events:none}
 #title.mag #tFx{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
 @keyframes tDrift{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.1) translate(-1.5%,1%)}}

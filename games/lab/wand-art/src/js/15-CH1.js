@@ -22,7 +22,7 @@ const CH1=CHAPTERS, CHT1=CH_TEXT, Y1_INTRO=INTRO;
 if(!DRAGONS.granite) DRAGONS.granite=Object.assign({},DRAGONS.thistle,{c:'#7c8a7e',wing:'#a9b5aa',horn:'#f1f3f5',belly:'#d8ded9'});
 Object.assign(STORIES,Y2.STORIES); Object.assign(STORY_RESULT,Y2.RESULT); Object.assign(FOES,Y2.FOES);
 // Year 2 places use the closest painted background until their own pictures are made
-Object.assign(BG_ALIAS,{attic:'library',infirm:'common',path:'peaks',snow:'peaks',cave:'tower',hut:'common',council:'peaks',moss:'greenhouse'});
+Object.assign(ART_BG,{attic:1,infirm:1,path:1,snow:1,cave:1,hut:1,council:1,moss:1});
 Object.assign(BG_FALLBACK,{attic:'library',infirm:'room',path:'stairs',snow:'stairs',cave:'tower',hut:'room',council:'tower',moss:'courtyard'});
 const Y2_TRANS=Y2.TRANS;
 function yearOf(){ return S.year||1; }

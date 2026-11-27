@@ -54,6 +54,7 @@ h1,h2,h3{margin:0}
 #title.mag{background:#140f2e;color:#fff;overflow:hidden;justify-content:flex-end;padding-bottom:max(18px,env(safe-area-inset-bottom))}
 #title.mag>*{position:relative;z-index:2}
 #title.mag #tBg{position:absolute;inset:-4%;z-index:0;background:#1b1440 url(art/bg-title.webp) center 30%/cover no-repeat;animation:tDrift 28s ease-in-out infinite alternate}
+body[data-year="2"] #title.mag #tBg{background-image:url(art/bg-title2.webp)}
 #title.mag #tShade{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at 50% 30%,transparent 30%,#0b0820aa 100%),linear-gradient(to bottom,transparent 45%,#120c2ccc 78%,#120c2c 100%);pointer-events:none}
 #title.mag #tFx{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
 @keyframes tDrift{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.1) translate(-1.5%,1%)}}
@@ -2571,7 +2572,7 @@ const CH1=CHAPTERS, CHT1=CH_TEXT, Y1_INTRO=INTRO;
 if(!DRAGONS.granite) DRAGONS.granite=Object.assign({},DRAGONS.thistle,{c:'#7c8a7e',wing:'#a9b5aa',horn:'#f1f3f5',belly:'#d8ded9'});
 Object.assign(STORIES,Y2.STORIES); Object.assign(STORY_RESULT,Y2.RESULT); Object.assign(FOES,Y2.FOES);
 // Year 2 places use the closest painted background until their own pictures are made
-Object.assign(BG_ALIAS,{attic:'library',infirm:'common',path:'peaks',snow:'peaks',cave:'tower',hut:'common',council:'peaks',moss:'greenhouse'});
+Object.assign(ART_BG,{attic:1,infirm:1,path:1,snow:1,cave:1,hut:1,council:1,moss:1});
 Object.assign(BG_FALLBACK,{attic:'library',infirm:'room',path:'stairs',snow:'stairs',cave:'tower',hut:'room',council:'tower',moss:'courtyard'});
 const Y2_TRANS=Y2.TRANS;
 function yearOf(){ return S.year||1; }
@@ -2700,7 +2701,7 @@ $('#rdGo').onclick=readCheck; $('#rdIn').addEventListener('keydown',e=>{ if(e.ke
 const _rs2=refreshStars; refreshStars=function(){ _rs2(); try{ $('#rdStars').textContent=S.stars; }catch(e){} };
 
 </script>
-<div id="kaVer" data-v="2.1" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.1 · 2026-11-26</div>
+<div id="kaVer" data-v="2.2" data-d="2026-11-27" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.2 · 2026-11-27</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
