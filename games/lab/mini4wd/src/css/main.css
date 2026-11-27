@@ -25,7 +25,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 #sTitle .logo{position:absolute;left:0;right:0;top:4%;text-align:center;pointer-events:none;opacity:0}
 .logo .l1{display:inline-block;font-size:clamp(40px,9vw,96px);color:var(--yel);-webkit-text-stroke:3px var(--ink);text-shadow:5px 5px 0 var(--red),9px 9px 0 var(--ink);transform:rotate(-4deg)}
 .logo .l2{display:block;font-size:clamp(20px,3.6vw,40px);color:#fff;-webkit-text-stroke:1.5px var(--ink);text-shadow:3px 3px 0 var(--ink);margin-top:6px}
-.logo .l2 .zy{color:#fff;-webkit-text-stroke:0}
+.logo .l2 .zy{color:#fff;-webkit-text-stroke:0;text-shadow:1px 1px 0 var(--ink)}
 #tapStart{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);font-size:26px;padding:12px 30px;animation:pulse 1.2s infinite}
 @keyframes pulse{50%{transform:translateX(-50%) scale(1.07)}}
 #sTitle.play .key{animation:kb 4.2s ease-out forwards}
