@@ -18,6 +18,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 /* top bar */
 #bar{position:fixed;top:8px;right:8px;z-index:50;display:flex;gap:8px}
 #bar .btn{min-height:48px;min-width:48px;padding:4px 10px;font-size:20px;background:#fff}
+#bLang{font-size:16px!important;font-weight:900}
 /* ---------- title ---------- */
 #sTitle{background:#000}
 #sTitle .key{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -167,7 +168,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 .gpart{display:none}.prof .nm,.prof .sub .z{white-space:nowrap}
 @media (max-height:500px),(max-width:600px){
   .gwrap{overflow:hidden;padding:8px 8px 8px}
-  .ghead{margin:0 128px 6px 0;width:auto;min-height:48px;gap:8px;font-size:14px}
+  .ghead{margin:0 196px 6px 0;width:auto;min-height:48px;gap:8px;font-size:14px}
   .gmain{flex:1;min-height:0;align-items:stretch;gap:8px}
   .side{overflow:hidden}
   .gmain .card{display:flex;flex-direction:column;overflow:hidden;padding:10px 12px;box-shadow:0 4px 0 var(--ink)}
@@ -197,7 +198,7 @@ button{font:inherit;cursor:pointer;color:inherit}
   .stats{padding:5px 8px;font-size:12px}.stat{grid-template-columns:1fr;gap:1px;margin:2px 0}.stat .bar{height:10px}
   .quiz .ans{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
   .ovl .who img{width:64px;height:64px}
-  #sMenu .wrap{padding:8px 140px 8px 16px;gap:8px;justify-content:center}
+  #sMenu .wrap{padding:8px 200px 8px 16px;gap:8px;justify-content:center}
   #sMenu .logo .l1{font-size:34px}#sMenu .logo .l2{font-size:18px;margin-top:2px}
   .profiles{gap:10px;flex-wrap:nowrap}.prof{padding:6px 12px}.prof .nm{font-size:18px}
   .mrow .btn{min-height:48px;font-size:15px;padding:4px 12px}

@@ -30,8 +30,16 @@ function A(name) { return "assets/" + name + ".webp"; }
 /* Read-aloud through the shared Dino World voice */
 var Read = {
   on: true,
+  lang: "both", // "both" | "zh" | "en": which language the voice reads
+  LANGS: { both: ["中+EN", "中文和英文", "Chinese and English"], zh: ["中文", "只讀中文", "Chinese only"], en: ["EN", "只讀英文", "English only"] },
+  setLang: function (l) {
+    this.lang = l; DB.settings = DB.settings || {}; DB.settings.lang = l; DB.save();
+    $("#bLang").textContent = this.LANGS[l][0];
+    var t = this.LANGS[l]; this.pair(t[1], t[2]);
+  },
   pair: function (z, e, pitch, onEnd) {
     if (!this.on || !window.KAVoice) { if (onEnd) onEnd(); return; }
+    if (this.lang === "zh" && z) e = ""; else if (this.lang === "en" && e) z = "";
     try { KAVoice.stop(); KAVoice.sayParts([[e, "en-US"], [z, "zh-TW"]].filter(function (p) { return p[0]; }), { pitch: pitch || 1, onEnd: onEnd }); } catch (x) { if (onEnd) onEnd(); }
   },
   stop: function () { try { window.KAVoice && KAVoice.stop(); } catch (x) {} }

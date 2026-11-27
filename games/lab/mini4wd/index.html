@@ -26,6 +26,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 /* top bar */
 #bar{position:fixed;top:8px;right:8px;z-index:50;display:flex;gap:8px}
 #bar .btn{min-height:48px;min-width:48px;padding:4px 10px;font-size:20px;background:#fff}
+#bLang{font-size:16px!important;font-weight:900}
 /* ---------- title ---------- */
 #sTitle{background:#000}
 #sTitle .key{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -175,7 +176,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 .gpart{display:none}.prof .nm,.prof .sub .z{white-space:nowrap}
 @media (max-height:500px),(max-width:600px){
   .gwrap{overflow:hidden;padding:8px 8px 8px}
-  .ghead{margin:0 128px 6px 0;width:auto;min-height:48px;gap:8px;font-size:14px}
+  .ghead{margin:0 196px 6px 0;width:auto;min-height:48px;gap:8px;font-size:14px}
   .gmain{flex:1;min-height:0;align-items:stretch;gap:8px}
   .side{overflow:hidden}
   .gmain .card{display:flex;flex-direction:column;overflow:hidden;padding:10px 12px;box-shadow:0 4px 0 var(--ink)}
@@ -205,7 +206,7 @@ button{font:inherit;cursor:pointer;color:inherit}
   .stats{padding:5px 8px;font-size:12px}.stat{grid-template-columns:1fr;gap:1px;margin:2px 0}.stat .bar{height:10px}
   .quiz .ans{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
   .ovl .who img{width:64px;height:64px}
-  #sMenu .wrap{padding:8px 140px 8px 16px;gap:8px;justify-content:center}
+  #sMenu .wrap{padding:8px 200px 8px 16px;gap:8px;justify-content:center}
   #sMenu .logo .l1{font-size:34px}#sMenu .logo .l2{font-size:18px;margin-top:2px}
   .profiles{gap:10px;flex-wrap:nowrap}.prof{padding:6px 12px}.prof .nm{font-size:18px}
   .mrow .btn{min-height:48px;font-size:15px;padding:4px 12px}
@@ -216,6 +217,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 <body>
 <div id="bar">
   <button class="btn" id="bHome" aria-label="Home" style="display:none">🏠</button>
+  <button class="btn" id="bLang" aria-label="Voice language">中+EN</button>
   <button class="btn" id="bSound" aria-label="Sound">🔊</button>
 </div>
 
@@ -562,8 +564,16 @@ function A(name) { return "assets/" + name + ".webp"; }
 /* Read-aloud through the shared Dino World voice */
 var Read = {
   on: true,
+  lang: "both", // "both" | "zh" | "en": which language the voice reads
+  LANGS: { both: ["中+EN", "中文和英文", "Chinese and English"], zh: ["中文", "只讀中文", "Chinese only"], en: ["EN", "只讀英文", "English only"] },
+  setLang: function (l) {
+    this.lang = l; DB.settings = DB.settings || {}; DB.settings.lang = l; DB.save();
+    $("#bLang").textContent = this.LANGS[l][0];
+    var t = this.LANGS[l]; this.pair(t[1], t[2]);
+  },
   pair: function (z, e, pitch, onEnd) {
     if (!this.on || !window.KAVoice) { if (onEnd) onEnd(); return; }
+    if (this.lang === "zh" && z) e = ""; else if (this.lang === "en" && e) z = "";
     try { KAVoice.stop(); KAVoice.sayParts([[e, "en-US"], [z, "zh-TW"]].filter(function (p) { return p[0]; }), { pitch: pitch || 1, onEnd: onEnd }); } catch (x) { if (onEnd) onEnd(); }
   },
   stop: function () { try { window.KAVoice && KAVoice.stop(); } catch (x) {} }
@@ -1273,6 +1283,7 @@ function rr(x, X, Y, W, H, R) { x.beginPath(); x.moveTo(X + R, Y); x.arcTo(X + W
 /* ===== Boot: title intro, menu, buttons, test hook ===== */
 (function () {
   Read.on = !(DB.settings && DB.settings.readOff);
+  Read.lang = (DB.settings && DB.settings.lang) || "both"; $("#bLang").textContent = Read.LANGS[Read.lang][0];
   $("#logo2").innerHTML = zh("四驅小隊"); $("#logo3").innerHTML = zh("四驅小隊");
   $("#rotHint").innerHTML = "Turn your phone sideways ↻ " + zh("橫著拿手機");
   $("#bSound").textContent = KAKit.muted() ? "🔇" : "🔊";
@@ -1292,6 +1303,7 @@ function rr(x, X, Y, W, H, R) { x.beginPath(); x.moveTo(X + R, Y); x.arcTo(X + W
     var st = G.kd.stage; go(st === "done" ? (G.kd.stage = "shop", G.kd.step = 0, "shop") : st || "shop");
   };
   $("#pTester").onclick = function () { sfx("tap"); testerMenu(); };
+  $("#bLang").onclick = function () { sfx("tap"); Read.setLang({ both: "zh", zh: "en", en: "both" }[Read.lang]); };
   $("#bVoice").onclick = function () { try { KAVoice.picker(); } catch (e) {} };
   $("#bRead").onclick = function () { Read.on = !Read.on; DB.settings = DB.settings || {}; DB.settings.readOff = !Read.on; DB.save(); if (!Read.on) Read.stop(); refreshMenu(); };
   $("#bReset").onclick = function () {
@@ -1335,6 +1347,6 @@ window.__test = {
   }
 };
 </script>
-<div id="kaVer" data-v="1.2" data-d="2026-11-26">v1.2 · 2026-11-26</div>
+<div id="kaVer" data-v="1.3" data-d="2026-11-27">v1.3 · 2026-11-27</div>
 </body>
 </html>

@@ -1,6 +1,7 @@
 /* ===== Boot: title intro, menu, buttons, test hook ===== */
 (function () {
   Read.on = !(DB.settings && DB.settings.readOff);
+  Read.lang = (DB.settings && DB.settings.lang) || "both"; $("#bLang").textContent = Read.LANGS[Read.lang][0];
   $("#logo2").innerHTML = zh("四驅小隊"); $("#logo3").innerHTML = zh("四驅小隊");
   $("#rotHint").innerHTML = "Turn your phone sideways ↻ " + zh("橫著拿手機");
   $("#bSound").textContent = KAKit.muted() ? "🔇" : "🔊";
@@ -20,6 +21,7 @@
     var st = G.kd.stage; go(st === "done" ? (G.kd.stage = "shop", G.kd.step = 0, "shop") : st || "shop");
   };
   $("#pTester").onclick = function () { sfx("tap"); testerMenu(); };
+  $("#bLang").onclick = function () { sfx("tap"); Read.setLang({ both: "zh", zh: "en", en: "both" }[Read.lang]); };
   $("#bVoice").onclick = function () { try { KAVoice.picker(); } catch (e) {} };
   $("#bRead").onclick = function () { Read.on = !Read.on; DB.settings = DB.settings || {}; DB.settings.readOff = !Read.on; DB.save(); if (!Read.on) Read.stop(); refreshMenu(); };
   $("#bReset").onclick = function () {
