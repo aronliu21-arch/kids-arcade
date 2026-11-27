@@ -1022,13 +1022,15 @@ const BGS={
 const ART_BG={room:1,gate:1,library:1,hall:1,courtyard:1,stairs:1,tower:1,runehall:1,common:1,home:1,bigstairs:1,greenhouse:1,bridge:1,shadowgate:1,cellar:1,office:1,field:1,peaks:1};
 const MISSION_BG={rune:'runehall',caps:'runehall',roost:'greenhouse',chain:'bridge',flight:'field',home:'common',restore:'library',song:'room',courage:'hall'};
 const BG_FALLBACK={runehall:'hall',common:'room',home:'room',bigstairs:'hall',greenhouse:'courtyard',bridge:'stairs',shadowgate:'tower',cellar:'library',office:'library',field:'courtyard',peaks:'stairs'};
-function BG(k){ return BGS[BGS[k]?k:BG_FALLBACK[k]]()+(ART_BG[k]?`<image href="art/bg-${k}.webp" x="-24" y="-16" width="1072" height="670" preserveAspectRatio="xMidYMid slice"/>`:''); }
+const BG_ALIAS={};
+function bgKey(k){ return BG_ALIAS[k]||k; }
+function BG(k){ k=bgKey(k); return BGS[BGS[k]?k:BG_FALLBACK[k]]()+(ART_BG[k]?`<image href="art/bg-${k}.webp" x="-24" y="-16" width="1072" height="670" preserveAspectRatio="xMidYMid slice"/>`:''); }
 function sceneSVG(bg,chars,extra=''){ return svg(BG(bg)+chars.map(c=>girl(...c)).join('')+extra); }
 
 // ============ dragons (original designs) ============
 const DRAGONS={ember:{c:'#ffa94d',belly:'#fff3bf',wing:'#ffd8a8',horn:'#e8590c'},thistle:{c:'#e599f7',belly:'#fff0f6',wing:'#f3d9fa',horn:'#9c36b5'},dawn:{c:'#ffd43b',belly:'#fff9db',wing:'#ffec99',horn:'#f08c00'}};
 function dragon(x,y,s,o={}){ const d=DRAGONS[o.who||'ember'], st=o.stage||'baby', k=s*(st==='big'?1.6:st==='young'?1:.72);
- const dw=o.who||'ember'; const dk=y2()?(dw==='ember'&&o.sick?'ember2-sick':dw==='ember'?'ember2':dw):dw; const DA=(y2()&&Y2ART.drag[dk])||DRAGON_ART[dw]; const dsrc=(y2()&&Y2ART.drag[dk])?`art/d-${dk}.webp`:`art/d-${dw}.webp`; if(st!=='egg'&&DA){ const [iw,ih,h]=DA, w=h*iw/ih; return `<g transform="translate(${x},${y}) scale(${o.flip?-k:k},${k})"><ellipse cx="0" cy="184" rx="${w*.3}" ry="10" fill="#000" opacity="${o.fly?.08:.16}"/><g${o.fly?' transform="translate(0,-30)"':''}><image href="${dsrc}" x="${-w/2}" y="${184-h}" width="${w}" height="${h}"/></g></g>`; }
+ const dw=o.who||'ember'; const dk=(dw==='granite')?((o.expr==='happy'||o.expr==='closed')?'granite-happy':'granite'):y2()?(dw==='ember'&&o.sick?'ember2-sick':dw==='ember'?'ember2':dw):dw; const DA=((y2()||dw==='granite')&&Y2ART.drag[dk])||DRAGON_ART[dw]; const dsrc=((y2()||dw==='granite')&&Y2ART.drag[dk])?`art/d-${dk}.webp`:`art/d-${dw}.webp`; if(st!=='egg'&&DA){ const [iw,ih,h]=DA, w=h*iw/ih; return `<g transform="translate(${x},${y}) scale(${o.flip?-k:k},${k})"><ellipse cx="0" cy="184" rx="${w*.3}" ry="10" fill="#000" opacity="${o.fly?.08:.16}"/><g${o.fly?' transform="translate(0,-30)"':''}><image href="${dsrc}" x="${-w/2}" y="${184-h}" width="${w}" height="${h}"/></g></g>`; }
  if(st==='egg'){ const crack=o.crack?`<path d="M-40 -10l18 14 14-20 16 18 16-16 16 12" stroke="#7a4520" stroke-width="5" fill="none"/>`:'';
   return `<g transform="translate(${x},${y}) scale(${s})" filter="url(#soft)"><ellipse cx="0" cy="40" rx="110" ry="120" fill="url(#warm)"/><ellipse cx="0" cy="0" rx="62" ry="80" fill="#ffd8a8"/><circle cx="-20" cy="-30" r="10" fill="#ffa94d"/><circle cx="22" cy="5" r="13" fill="#ffa94d"/><circle cx="-14" cy="35" r="8" fill="#ffa94d"/><ellipse cx="-22" cy="-46" rx="12" ry="18" fill="#fff" opacity=".5"/>${crack}</g>`; }
  const ex=o.expr||'happy', wingUp=o.fly?-1:1;
@@ -2564,10 +2566,12 @@ Y2.READ_W={
 };
 
 // ================= YEAR 2 ENGINE =================
+Object.assign(Y2ART.nora,{"happy": [241, 381], "wow": [167, 382], "brave": [214, 379], "cast": [267, 373], "sad": [165, 355], "sleepy": [178, 354], "wave": [212, 356]}); Object.assign(Y2ART.f,{"mei": [122, 251, 318], "iris": [109, 250, 318], "sunny": [176, 250, 318], "juni": [131, 230, 318], "lola": [168, 240, 323], "wren": [103, 233, 323], "bree": [129, 282, 382], "gran": [122, 254, 366], "prof": [163, 274, 392], "opal": [169, 260, 315], "saffron": [170, 276, 365], "wick": [132, 285, 370]}); Object.assign(Y2ART.femo,{"mei-sad": [122, 251], "iris-sad": [110, 251], "sunny-sad": [178, 250], "juni-sad": [133, 230], "lola-sad": [166, 245], "wren-sad": [103, 233], "bree-sad": [129, 282], "gran-sad": [122, 254], "prof-sad": [163, 274], "mei-wow": [122, 251], "iris-wow": [132, 251], "sunny-wow": [178, 251], "juni-wow": [132, 230], "lola-wow": [168, 240], "wren-wow": [103, 233], "bree-wow": [129, 283], "gran-wow": [123, 254], "prof-wow": [163, 274], "opal-sad": [124, 260], "opal-wow": [166, 261], "saffron-sad": [122, 271], "saffron-wow": [166, 272], "wick-sad": [93, 280], "wick-wow": [128, 281]}); Object.assign(Y2ART.drag,{"ember2": [317, 357, 280], "ember2-sick": [287, 345, 265], "granite": [394, 382, 330], "granite-happy": [403, 384, 330]}); Object.assign(Y2ART.foe,{"spirit": [371, 258, 230]});
 const CH1=CHAPTERS, CHT1=CH_TEXT, Y1_INTRO=INTRO;
 if(!DRAGONS.granite) DRAGONS.granite=Object.assign({},DRAGONS.thistle,{c:'#7c8a7e',wing:'#a9b5aa',horn:'#f1f3f5',belly:'#d8ded9'});
 Object.assign(STORIES,Y2.STORIES); Object.assign(STORY_RESULT,Y2.RESULT); Object.assign(FOES,Y2.FOES);
-Object.assign(ART_BG,{attic:1,infirm:1,path:1,snow:1,cave:1,hut:1,council:1,moss:1});
+// Year 2 places use the closest painted background until their own pictures are made
+Object.assign(BG_ALIAS,{attic:'library',infirm:'common',path:'peaks',snow:'peaks',cave:'tower',hut:'common',council:'peaks',moss:'greenhouse'});
 Object.assign(BG_FALLBACK,{attic:'library',infirm:'room',path:'stairs',snow:'stairs',cave:'tower',hut:'room',council:'tower',moss:'courtyard'});
 const Y2_TRANS=Y2.TRANS;
 function yearOf(){ return S.year||1; }
@@ -2615,7 +2619,7 @@ function renderMap2(){ const n=S.view, ch=CH(n), nm=nextMain(n); $('#m2Ttl').tex
  $('#m2Prev').style.visibility=n>1?'visible':'hidden'; $('#m2Next').style.visibility=n<Math.min(S.ch,CHAPTERS.length)?'visible':'hidden';
  const box=$('#m2Rooms'); box.innerHTML=''; S.found=S.found||{};
  ch.missions.forEach((m,i)=>{ const open=isOpen(n,m), done=isDone(n,m.id); const b=document.createElement('button'); b.className='room'+(open?'':' lock')+(done?' done':'')+(m===nm?' next':'')+(m.kind==='mini'?' mini':''); b.dataset.id=m.id;
-  b.innerHTML=`<span class="pic" style="background-image:url(art/bg-${m.bg}.webp)"></span><span class="lbl">${open?m.icon:'🔒'} ${m.name}<small>${m.title||({mini:'Mini game'}[m.kind])||''}</small></span>${done?'<span class="tick">✓</span>':''}${m===nm?`<span class="here">${girl('nora',0,0,1,{arm:'wave',badge:false}).replace(/^/,'<svg viewBox="-160 -120 320 420">')+'</svg>'}</span>`:''}`;
+  b.innerHTML=`<span class="pic" style="background-image:url(art/bg-${bgKey(m.bg)}.webp)"></span><span class="lbl">${open?m.icon:'🔒'} ${m.name}<small>${m.title||({mini:'Mini game'}[m.kind])||''}</small></span>${done?'<span class="tick">✓</span>':''}${m===nm?`<span class="here">${girl('nora',0,0,1,{arm:'wave',badge:false}).replace(/^/,'<svg viewBox="-160 -120 320 420">')+'</svg>'}</span>`:''}`;
   b.onclick=()=>{ if(!open){ Snd.sfx('fizz'); $('#m2Msg').textContent='Locked! Finish the glowing room first.'; return; } Snd.sfx('tap'); FX.burst(...FX.center(b),{n:40,speed:7}); setTimeout(()=>startMission(m,n),300); };
   const tk=`${n}:${m.id}`; if((TREASURE[n]||[]).includes(m.id)&&!S.found[tk]&&(done||open)){ const t=document.createElement('span'); t.className='treasure'; t.textContent='✨'; t.style.left=(20+((i*37)%60))+'%'; t.style.top=(18+((i*23)%40))+'%';
    t.onclick=e=>{ e.stopPropagation(); S.found[tk]=true; S.stars+=2; save(); refreshStars(); Snd.sfx('gold'); FX.burst(e.clientX,e.clientY,{n:60,speed:9}); const what=TREASURE_TXT[(n*7+i)%TREASURE_TXT.length]; $('#m2Msg').textContent=`You found ${what}! +2 ✨`; Voice.say(`You found ${what}!`); t.remove(); };
@@ -2633,7 +2637,7 @@ $('#m2Friends').onclick=()=>$('#mapFriends').click();
 // ---------- Star shop: wands, robes, treats for Ember
 const SHOP={
  wand:[{id:'gold',n:'Classic Gold',p:0,c:['rgba(255,212,59,.35)','#e9a91c','#fff3bf']},{id:'rose',n:'Rose Quartz',p:15,c:['rgba(255,135,190,.35)','#e64980','#ffdeeb']},{id:'ice',n:'Ice Crystal',p:20,c:['rgba(116,192,252,.35)','#1c7ed6','#e7f5ff']},{id:'ember',n:'Dragon Fire',p:25,c:['rgba(255,146,43,.4)','#e8590c','#fff4e6']},{id:'forest',n:'Forest Leaf',p:25,c:['rgba(105,219,124,.35)','#2b8a3e','#ebfbee']},{id:'star',n:'Starlight',p:35,c:['rgba(208,191,255,.45)','#7048e8','#ffffff']},{id:'rainbow',n:'Rainbow',p:45,c:'rainbow'}],
- robe:[{id:'purple',n:'Academy Purple',p:0,h:null},{id:'blue',n:'Midnight Blue',p:20,h:220},{id:'green',n:'Forest Green',p:25,h:140},{id:'red',n:'Ruby Red',p:30,h:355},{id:'teal',n:'Ocean Teal',p:30,h:180},{id:'pink',n:'Blossom Pink',p:35,h:325},{id:'gold',n:'Sunshine Gold',p:45,h:45}],
+ robe:[{id:'purple',n:'School Robe',p:0,h:null},{id:'blue',n:'Midnight Blue',p:20,h:220},{id:'green',n:'Forest Green',p:25,h:140},{id:'red',n:'Ruby Red',p:30,h:355},{id:'teal',n:'Ocean Teal',p:30,h:180},{id:'pink',n:'Blossom Pink',p:35,h:325},{id:'gold',n:'Sunshine Gold',p:45,h:45}],
  treat:[{id:'berry',n:'Glow Berries',p:3,e:'🫐',say:'Ember gobbles them up. Her nose glows blue for a whole minute!'},{id:'cake',n:'Honey Cake',p:4,e:'🍯',say:'Ember licks the honey off her claws, very slowly, very happily.'},{id:'pepper',n:'Spicy Pepper',p:4,e:'🌶️',say:'Ember sneezes a tiny fireball and does a happy loop!'},{id:'cookie',n:'Star Cookie',p:5,e:'🍪',say:'Ember balances the cookie on her nose, then CHOMP!'},{id:'milk',n:'Moon Milk',p:6,e:'🥛',say:'Ember drinks it all and curls up purring like a giant kitten.'}],
 };
 function eq(){ S.equip=S.equip||{wand:'gold',robe:'purple'}; S.owned=S.owned||{wand:{gold:1},robe:{purple:1}}; S.treats=S.treats||{}; return S.equip; }
@@ -2644,7 +2648,7 @@ function robeSrc(src){ const r=SHOP.robe.find(x=>x.id===eq().robe); if(!r||r.h==
 function recolor(src,hue){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>{ try{ const c=document.createElement('canvas'); c.width=im.naturalWidth; c.height=im.naturalHeight; const g=c.getContext('2d'); g.drawImage(im,0,0); const d=g.getImageData(0,0,c.width,c.height), a=d.data;
   for(let i=0;i<a.length;i+=4){ if(a[i+3]<10) continue; const r=a[i]/255,gg=a[i+1]/255,b=a[i+2]/255, mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), l=(mx+mn)/2, dl=mx-mn; if(dl<.08) continue; const s=dl/(1-Math.abs(2*l-1));
    let h; if(mx===r) h=60*(((gg-b)/dl)%6); else if(mx===gg) h=60*((b-r)/dl+2); else h=60*((r-gg)/dl+4); if(h<0) h+=360;
-   if(h<235||h>305||s<.12) continue; // only the purple robe
+   if((src.includes('nora2-')?(h<195||h>240):(h<235||h>305))||s<.12) continue; // only the robe
    const nh=hue, L=hue===45?Math.min(.85,l*1.25):l, S2=Math.min(1,s*(hue===45?1.1:1)); const C=(1-Math.abs(2*L-1))*S2, X=C*(1-Math.abs((nh/60)%2-1)), m=L-C/2; let rr,g2,bb; const hh=nh/60;
    if(hh<1){rr=C;g2=X;bb=0;} else if(hh<2){rr=X;g2=C;bb=0;} else if(hh<3){rr=0;g2=C;bb=X;} else if(hh<4){rr=0;g2=X;bb=C;} else if(hh<5){rr=X;g2=0;bb=C;} else {rr=C;g2=0;bb=X;}
    a[i]=(rr+m)*255; a[i+1]=(g2+m)*255; a[i+2]=(bb+m)*255; }
@@ -2696,7 +2700,7 @@ $('#rdGo').onclick=readCheck; $('#rdIn').addEventListener('keydown',e=>{ if(e.ke
 const _rs2=refreshStars; refreshStars=function(){ _rs2(); try{ $('#rdStars').textContent=S.stars; }catch(e){} };
 
 </script>
-<div id="kaVer" data-v="2.0" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.0 · 2026-11-26</div>
+<div id="kaVer" data-v="2.1" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.1 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
