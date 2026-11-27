@@ -82,6 +82,20 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#6b5a50;letter-s
 #qAns .pbtn.yes{background:#b2f2bb}
 @keyframes wig{25%{transform:rotate(-6deg) scale(1.08)}75%{transform:rotate(6deg) scale(1.08)}}
 #qWhy{min-height:24px;font-weight:700;margin-top:8px;color:#5c4033}
+/* zoo play */
+#aniMenu{position:absolute;z-index:30;display:none;gap:8px;padding:8px;border:3px solid #8b6a4a}
+#aniMenu.on{display:flex}
+#aniMenu .pbtn{flex-direction:column;gap:0;min-width:64px;min-height:64px;padding:4px 6px;font-size:14px}
+#aniMenu .pbtn .em{font-size:30px}
+#aniMenu .food{font-size:38px;min-width:70px}
+#ballHint{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--topH) + env(safe-area-inset-top) + 8px);z-index:30;display:none;align-items:center;gap:10px;padding:6px 8px 6px 16px;font-size:clamp(17px,2.4vw,22px);font-weight:800;white-space:nowrap}
+#ballHint.on{display:flex}#ballHint .pbtn{min-height:48px;min-width:48px;background:#69a84f;color:#fff}
+.zball{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;font-size:40px;line-height:44px;text-align:center;pointer-events:none;z-index:8;filter:drop-shadow(0 4px 2px rgba(0,0,0,.3))}
+.zball::before{content:"⚽"}
+.zfx{position:absolute;transform:translateX(-50%);font-size:30px;pointer-events:none;z-index:9;white-space:nowrap;animation:zup 1.6s ease-out forwards}
+.zfx.big{font-size:44px}
+@keyframes zup{0%{opacity:0;translate:0 10px}20%{opacity:1}100%{opacity:0;translate:0 -70px}}
+.ani.held{z-index:12;transition:none!important}.ani.held img{scale:1.1}
 /* story + find */
 .scene{position:absolute;left:0;right:0;top:calc(var(--topH) + env(safe-area-inset-top));bottom:0;overflow:hidden}
 .sc-zoo{background:#f4ead8 url(art/zoo-bg.webp) center/cover}
@@ -155,7 +169,7 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#6b5a50;letter-s
 .modal .paper{padding:20px;text-align:center;width:min(460px,94vw)}
 .modal input{font:inherit;font-size:24px;width:150px;padding:8px;border-radius:10px;border:2px solid #b49a80;text-align:center}
 #rotHint{position:absolute;left:50%;bottom:calc(6px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:45;font-size:13px;padding:4px 12px;display:none;pointer-events:none;white-space:nowrap}
-@media (orientation:portrait) and (max-width:600px){#rotHint{display:block}.prompt{left:8px;right:8px;transform:none;max-width:none;font-size:17px;padding:6px 10px}.mapBtns{bottom:calc(34px + env(safe-area-inset-bottom))}}
+@media (orientation:portrait) and (max-width:600px){#rotHint{display:block}.prompt{left:8px;right:8px;transform:none;max-width:none;font-size:17px;padding:6px 10px}.mapBtns{bottom:calc(34px + env(safe-area-inset-bottom));gap:6px}.mapBtns .pbtn.big{min-height:50px;font-size:16px;padding:4px 8px;flex:1 1 40%}.mapBtns .pbtn .em{font-size:22px}.empty{font-size:15px;padding:6px 12px}}
 @media (max-height:420px){#start .card{transform:translate(-50%,-50%);padding:8px 14px 10px}#start .stick{height:64px}#start h1{font-size:26px;margin:2px 0}#start .row{margin-top:6px}#start .small{display:none}:root{--topH:50px}.pbtn{min-height:50px;font-size:17px}.pbtn .em{font-size:24px}.pbtn.big{min-height:56px;font-size:20px}.top .pbtn{min-height:42px}.prompt{padding:4px 12px;top:4px}#qAns .pbtn{min-height:62px;font-size:28px;min-width:76px}#qVis{margin:2px 0 6px}#qCard{padding:8px}#habPal .pbtn{min-width:66px;min-height:66px}#habPal .pbtn .em{font-size:26px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -199,6 +213,8 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#6b5a50;letter-s
       <button class="pbtn big" id="mixBtn"><span class="em">✂️</span><span class="lb"></span></button>
       <button class="pbtn big" id="albumBtn"><span class="em">📒</span><span class="lb"></span></button>
     </div>
+    <div id="aniMenu" class="paper"></div>
+    <div id="ballHint" class="paper"></div>
     <div id="truck">🚚<img id="truckAni" alt=""></div>
   </section>
 
@@ -296,7 +312,7 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#6b5a50;letter-s
 const ZY={"洛":"ㄌㄨㄛˋ","明":"ㄇㄧㄥˊ","的":"˙ㄉㄜ","紙":"ㄓˇ","片":"ㄆㄧㄢˋ","動":"ㄉㄨㄥˋ","物":"ㄨˋ","園":"ㄩㄢˊ","大":"ㄉㄚˋ","象":"ㄒㄧㄤˋ","長":"ㄔㄤˊ","頸":"ㄐㄧㄥˇ","鹿":"ㄌㄨˋ","獅":"ㄕ","子":"˙ㄗ","企":"ㄑㄧˋ","鵝":"ㄜˊ","救":"ㄐㄧㄡˋ","援":"ㄩㄢˊ","拍":"ㄆㄞ","照":"ㄓㄠˋ","剪":"ㄐㄧㄢˇ","貼":"ㄊㄧㄝ","相":"ㄒㄧㄤˋ","簿":"ㄅㄨˋ","草":"ㄘㄠˇ","水":"ㄕㄨㄟˇ","冰":"ㄅㄧㄥ","石":"ㄕˊ","頭":"˙ㄊㄡ","樹":"ㄕㄨˋ","好":"ㄏㄠˇ","棒":"ㄅㄤˋ","完":"ㄨㄢˊ","成":"ㄔㄥˊ","小":"ㄒㄧㄠˇ","休":"ㄒㄧㄡ","息":"˙ㄒㄧ","需":"ㄒㄩ","要":"ㄧㄠˋ","我":"ㄨㄛˇ","個":"˙ㄍㄜ","格":"ㄍㄜˊ","和":"ㄏㄢˋ","把":"ㄅㄚˇ","拼":"ㄆㄧㄣ","圖":"ㄊㄨˊ","拼圖":"","有":"ㄧㄡˇ","隻":"ㄓ","幫":"ㄅㄤ","忙":"ㄇㄤˊ","找":"ㄓㄠˇ","出":"ㄔㄨ","最":"ㄗㄨㄟˋ","高":"ㄍㄠ","矮":"ㄞˇ","哪":"ㄋㄚˇ","一":"ㄧ","二":"ㄦˋ","三":"ㄙㄢ","四":"ㄙˋ","五":"ㄨˇ","六":"ㄌㄧㄡˋ","七":"ㄑㄧ","八":"ㄅㄚ","九":"ㄐㄧㄡˇ","十":"ㄕˊ","還":"ㄏㄞˊ","幾":"ㄐㄧˇ","多":"ㄉㄨㄛ","少":"ㄕㄠˇ","吃":"ㄔ","掉":"ㄉㄧㄠˋ","剩":"ㄕㄥˋ","下":"ㄒㄧㄚˋ","魚":"ㄩˊ","鴨":"ㄧㄚ","比":"ㄅㄧˇ","較":"ㄐㄧㄠˋ","邊":"ㄅㄧㄢ","字":"ㄗˋ","是":"ㄕˋ","開":"ㄎㄞ","聲":"ㄕㄥ","音":"ㄧㄣ","第":"ㄉㄧˋ","座":"ㄗㄨㄛˋ","位":"ㄨㄟˋ","車":"ㄔㄜ","滿":"ㄇㄢˇ","了":"˙ㄌㄜ","坐":"ㄗㄨㄛˋ","人":"ㄖㄣˊ","給":"ㄍㄟˇ","來":"ㄌㄞˊ","住":"ㄓㄨˋ","其":"ㄑㄧˊ","他":"ㄊㄚ","都":"ㄉㄡ","用":"ㄩㄥˋ","做":"ㄗㄨㄛˋ","變":"ㄅㄧㄢˋ","成":"ㄔㄥˊ","新":"ㄒㄧㄣ","家":"ㄐㄧㄚ","搬":"ㄅㄢ","進":"ㄐㄧㄣˋ","遊":"ㄧㄡˊ","客":"ㄎㄜˋ","奇":"ㄑㄧˊ","怪":"ㄍㄨㄞˋ","再":"ㄗㄞˋ","次":"ㄘˋ","拿":"ㄋㄚˊ","時":"ㄕˊ","間":"ㄐㄧㄢ","明":"ㄇㄧㄥˊ","天":"ㄊㄧㄢ","見":"ㄐㄧㄢˋ","灰":"ㄏㄨㄟ","色":"ㄙㄜˋ","黑":"ㄏㄟ","白":"ㄅㄞˊ","更":"ㄍㄥˋ","快":"ㄎㄨㄞˋ","樂":"ㄌㄜˋ","寶":"ㄅㄠˇ","貝":"ㄅㄟˋ","猴":"ㄏㄡˊ","熊":"ㄒㄩㄥˊ","貓":"ㄇㄠ","斑":"ㄅㄢ","馬":"ㄇㄚˇ","老":"ㄌㄠˇ","虎":"ㄏㄨˇ","兔":"ㄊㄨˋ","山":"ㄕㄢ","點":"ㄉㄧㄢˇ","按":"ㄢˋ","這":"ㄓㄜˋ","在":"ㄗㄞˋ","哇":"ㄨㄚ","對":"ㄉㄨㄟˋ","再":"ㄗㄞˋ","試":"ㄕˋ","看":"ㄎㄢˋ","答":"ㄉㄚˊ","案":"ㄢˋ","嗎":"˙ㄇㄚ","全":"ㄑㄩㄢˊ","部":"ㄅㄨˋ","救":"ㄐㄧㄡˋ","到":"ㄉㄠˋ","更":"ㄍㄥˋ","多":"ㄉㄨㄛ","會":"ㄏㄨㄟˋ","去":"ㄑㄩˋ","哦":"˙ㄛ","們":"˙ㄇㄣ","要":"ㄧㄠˋ","彩":"ㄘㄞˇ","帶":"ㄉㄞˋ","回":"ㄏㄨㄟˊ","號":"ㄏㄠˋ","能":"ㄋㄥˊ","真":"ㄓㄣ","塊":"ㄎㄨㄞˋ","金":"ㄐㄧㄣ","問":"ㄨㄣˋ","題":"ㄊㄧˊ","打":"ㄉㄚˇ","先":"ㄒㄧㄢ","鎖":"ㄙㄨㄛˇ","讓":"ㄖㄤˋ","睡":"ㄕㄨㄟˋ","覺":"ㄐㄧㄠˋ"};
 Object.assign(ZY,{"橘":"ㄐㄩˊ","黃":"ㄏㄨㄤˊ","歡":"ㄏㄨㄢ","迎":"ㄧㄥˊ","你":"ㄋㄧˇ","我":"ㄨㄛˇ","卡":"ㄎㄚˇ","空":"ㄎㄨㄥ","快":"ㄎㄨㄞˋ","安":"ㄢ","兩":"ㄌㄧㄤˇ","叭":"ㄅㄚ","做":"ㄗㄨㄛˋ","星":"ㄒㄧㄥ","可":"ㄎㄜˇ","以":"ㄧˇ","零":"ㄌㄧㄥˊ","公":"ㄍㄨㄥ","條":"ㄊㄧㄠˊ","押":"ㄧㄚ","韻":"ㄩㄣˋ","什":"ㄕㄣˊ","麼":"˙ㄇㄜ","母":"ㄇㄨˇ","「":"","」":"","太":"ㄊㄞˋ","繼":"ㄐㄧˋ","續":"ㄒㄩˋ","每":"ㄇㄟˇ","不":"ㄅㄨˋ","夠":"ㄍㄡˋ","數":"ㄕㄨˇ","像":"ㄒㄧㄤˋ","樣":"ㄧㄤˋ","共":"ㄍㄨㄥˋ","喜":"ㄒㄧˇ","練":"ㄌㄧㄢˋ","習":"ㄒㄧˊ","得":"˙ㄉㄜ","裡":"ㄌㄧˇ","身":"ㄕㄣ","體":"ㄊㄧˇ","腳":"ㄐㄧㄠˇ","隨":"ㄙㄨㄟˊ","便":"ㄅㄧㄢˋ","配":"ㄆㄟˋ","、":"","存":"ㄘㄨㄣˊ","起":"ㄑㄧˇ","功":"ㄍㄨㄥ","放":"ㄈㄤˋ","探":"ㄊㄢˋ","險":"ㄒㄧㄢˇ","名":"ㄇㄧㄥˊ","喀":"ㄎㄚ","擦":"ㄘㄚ","張":"ㄓㄤ","它":"ㄊㄚ","那":"ㄋㄚˋ"});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-Object.assign(ZY,{"上": "ㄕㄤˋ", "中": "ㄓㄨㄥ", "些": "ㄒㄧㄝ", "亮": "ㄌㄧㄤˋ", "候": "˙ㄏㄡ", "傘": "ㄙㄢˇ", "冷": "ㄌㄥˇ", "刷": "ㄕㄨㄚ", "加": "ㄐㄧㄚ", "北": "ㄅㄟˇ", "原": "ㄩㄢˊ", "又": "ㄧㄡˋ", "叢": "ㄘㄨㄥˊ", "叫": "ㄐㄧㄠˋ", "吧": "˙ㄅㄚ", "吹": "ㄔㄨㄟ", "吼": "ㄏㄡˇ", "呼": "ㄏㄨ", "咕": "ㄍㄨ", "哈": "ㄏㄚ", "員": "ㄩㄢˊ", "哭": "ㄎㄨ", "啦": "ㄌㄚ", "喝": "ㄏㄜ", "嘟": "ㄉㄨ", "嘩": "ㄏㄨㄚ", "嚕": "ㄌㄨ", "囉": "ㄌㄨㄛ", "地": "ㄉㄧˋ", "屋": "ㄨ", "巢": "ㄔㄠˊ", "帽": "ㄇㄠˋ", "床": "ㄔㄨㄤˊ", "往": "ㄨㄤˇ", "很": "ㄏㄣˇ", "後": "ㄏㄡˋ", "心": "ㄒㄧㄣ", "排": "ㄆㄞˊ", "提": "ㄊㄧˊ", "文": "ㄨㄣˊ", "方": "ㄈㄤ", "旁": "ㄆㄤˊ", "昨": "ㄗㄨㄛˊ", "晚": "ㄨㄢˇ", "書": "ㄕㄨ", "月": "ㄩㄝˋ", "木": "ㄇㄨˋ", "東": "ㄉㄨㄥ", "果": "ㄍㄨㄛˇ", "極": "ㄐㄧˊ", "機": "ㄐㄧ", "橫": "ㄏㄥˊ", "步": "ㄅㄨˋ", "池": "ㄔˊ", "汽": "ㄑㄧˋ", "泳": "ㄩㄥˇ", "渴": "ㄎㄜˇ", "游": "ㄧㄡˊ", "火": "ㄏㄨㄛˇ", "牙": "ㄧㄚˊ", "狗": "ㄍㄡˇ", "玩": "ㄨㄢˊ", "球": "ㄑㄧㄡˊ", "理": "ㄌㄧˇ", "瓜": "ㄍㄨㄚ", "畫": "ㄏㄨㄚˋ", "盒": "ㄏㄜˊ", "破": "ㄆㄛˋ", "示": "ㄕˋ", "站": "ㄓㄢˋ", "章": "ㄓㄤ", "管": "ㄍㄨㄢˇ", "箱": "ㄒㄧㄤ", "糕": "ㄍㄠ", "紅": "ㄏㄨㄥˊ", "紫": "ㄗˇ", "綠": "ㄌㄩˋ", "聽": "ㄊㄧㄥ", "肚": "ㄉㄨˋ", "花": "ㄏㄨㄚ", "英": "ㄧㄥ", "葉": "ㄧㄝˋ", "著": "˙ㄓㄜ", "蕉": "ㄐㄧㄠ", "藍": "ㄌㄢˊ", "藏": "ㄘㄤˊ", "蘋": "ㄆㄧㄥˊ", "蛋": "ㄉㄢˋ", "被": "ㄅㄟˋ", "西": "ㄒㄧ", "誰": "ㄕㄟˊ", "謝": "ㄒㄧㄝˋ", "讀": "ㄉㄨˊ", "跑": "ㄆㄠˇ", "跟": "ㄍㄣ", "跳": "ㄊㄧㄠˋ", "踏": "ㄊㄚˋ", "過": "ㄍㄨㄛˋ", "遠": "ㄩㄢˇ", "陣": "ㄓㄣˋ", "陽": "ㄧㄤˊ", "雞": "ㄐㄧ", "雨": "ㄩˇ", "雪": "ㄒㄩㄝˇ", "面": "ㄇㄧㄢˋ", "鞋": "ㄒㄧㄝˊ", "風": "ㄈㄥ", "飛": "ㄈㄟ", "餓": "ㄜˋ", "香": "ㄒㄧㄤ", "騎": "ㄑㄧˊ", "鳥": "ㄋㄧㄠˇ", "鷹": "ㄧㄥ", "鼻": "ㄅㄧˊ"});
+Object.assign(ZY,{"丟":"ㄉㄧㄡ","友":"ㄧㄡˇ","喔":"˙ㄛ","嘻":"ㄒㄧ","想":"ㄒㄧㄤˇ","拖":"ㄊㄨㄛ","換":"ㄏㄨㄢˋ","摸":"ㄇㄛ","朋":"ㄆㄥˊ","派":"ㄆㄞˋ","牠":"ㄊㄚ","癢":"ㄧㄤˇ","舞":"ㄨˇ","餵":"ㄨㄟˋ","上": "ㄕㄤˋ", "中": "ㄓㄨㄥ", "些": "ㄒㄧㄝ", "亮": "ㄌㄧㄤˋ", "候": "˙ㄏㄡ", "傘": "ㄙㄢˇ", "冷": "ㄌㄥˇ", "刷": "ㄕㄨㄚ", "加": "ㄐㄧㄚ", "北": "ㄅㄟˇ", "原": "ㄩㄢˊ", "又": "ㄧㄡˋ", "叢": "ㄘㄨㄥˊ", "叫": "ㄐㄧㄠˋ", "吧": "˙ㄅㄚ", "吹": "ㄔㄨㄟ", "吼": "ㄏㄡˇ", "呼": "ㄏㄨ", "咕": "ㄍㄨ", "哈": "ㄏㄚ", "員": "ㄩㄢˊ", "哭": "ㄎㄨ", "啦": "ㄌㄚ", "喝": "ㄏㄜ", "嘟": "ㄉㄨ", "嘩": "ㄏㄨㄚ", "嚕": "ㄌㄨ", "囉": "ㄌㄨㄛ", "地": "ㄉㄧˋ", "屋": "ㄨ", "巢": "ㄔㄠˊ", "帽": "ㄇㄠˋ", "床": "ㄔㄨㄤˊ", "往": "ㄨㄤˇ", "很": "ㄏㄣˇ", "後": "ㄏㄡˋ", "心": "ㄒㄧㄣ", "排": "ㄆㄞˊ", "提": "ㄊㄧˊ", "文": "ㄨㄣˊ", "方": "ㄈㄤ", "旁": "ㄆㄤˊ", "昨": "ㄗㄨㄛˊ", "晚": "ㄨㄢˇ", "書": "ㄕㄨ", "月": "ㄩㄝˋ", "木": "ㄇㄨˋ", "東": "ㄉㄨㄥ", "果": "ㄍㄨㄛˇ", "極": "ㄐㄧˊ", "機": "ㄐㄧ", "橫": "ㄏㄥˊ", "步": "ㄅㄨˋ", "池": "ㄔˊ", "汽": "ㄑㄧˋ", "泳": "ㄩㄥˇ", "渴": "ㄎㄜˇ", "游": "ㄧㄡˊ", "火": "ㄏㄨㄛˇ", "牙": "ㄧㄚˊ", "狗": "ㄍㄡˇ", "玩": "ㄨㄢˊ", "球": "ㄑㄧㄡˊ", "理": "ㄌㄧˇ", "瓜": "ㄍㄨㄚ", "畫": "ㄏㄨㄚˋ", "盒": "ㄏㄜˊ", "破": "ㄆㄛˋ", "示": "ㄕˋ", "站": "ㄓㄢˋ", "章": "ㄓㄤ", "管": "ㄍㄨㄢˇ", "箱": "ㄒㄧㄤ", "糕": "ㄍㄠ", "紅": "ㄏㄨㄥˊ", "紫": "ㄗˇ", "綠": "ㄌㄩˋ", "聽": "ㄊㄧㄥ", "肚": "ㄉㄨˋ", "花": "ㄏㄨㄚ", "英": "ㄧㄥ", "葉": "ㄧㄝˋ", "著": "˙ㄓㄜ", "蕉": "ㄐㄧㄠ", "藍": "ㄌㄢˊ", "藏": "ㄘㄤˊ", "蘋": "ㄆㄧㄥˊ", "蛋": "ㄉㄢˋ", "被": "ㄅㄟˋ", "西": "ㄒㄧ", "誰": "ㄕㄟˊ", "謝": "ㄒㄧㄝˋ", "讀": "ㄉㄨˊ", "跑": "ㄆㄠˇ", "跟": "ㄍㄣ", "跳": "ㄊㄧㄠˋ", "踏": "ㄊㄚˋ", "過": "ㄍㄨㄛˋ", "遠": "ㄩㄢˇ", "陣": "ㄓㄣˋ", "陽": "ㄧㄤˊ", "雞": "ㄐㄧ", "雨": "ㄩˇ", "雪": "ㄒㄩㄝˇ", "面": "ㄇㄧㄢˋ", "鞋": "ㄒㄧㄝˊ", "風": "ㄈㄥ", "飛": "ㄈㄟ", "餓": "ㄜˋ", "香": "ㄒㄧㄤ", "騎": "ㄑㄧˊ", "鳥": "ㄋㄧㄠˇ", "鷹": "ㄧㄥ", "鼻": "ㄅㄧˊ"});
 function zy(s){let o="";for(const ch of String(s)){const z=ZY[ch];o+=z?`<ruby>${ch}<rt>${z}</rt></ruby>`:esc(ch)}return o}
 
 /* ---------- state ---------- */
@@ -349,7 +365,7 @@ function rec(o){try{if(window.KA&&KA.answer)KA.answer(o)}catch(e){}}
 
 /* ---------- screens / layout ---------- */
 let cur="start";
-function show(id,title){document.querySelectorAll(".scr").forEach(s=>s.classList.toggle("on",s.id===id));cur=id;$("top").style.display=id==="start"?"none":"flex";$("ttl").innerHTML=title?`<span>${title}</span>`:"";if(id!=="map")stopWander();updTop()}
+function show(id,title){if(id!=="map"){try{closeAniMenu();endBall()}catch(e){}}document.querySelectorAll(".scr").forEach(s=>s.classList.toggle("on",s.id===id));cur=id;$("top").style.display=id==="start"?"none":"flex";$("ttl").innerHTML=title?`<span>${title}</span>`:"";if(id!=="map")stopWander();updTop()}
 function rotHint(){const m=matchMedia("(orientation:portrait) and (max-width:600px)").matches;$("rotHint").style.display=(m&&cur!=="start")?"block":"none"}
 function updTop(){rotHint();$("visN").textContent=S.visitors;$("langBtn").textContent=S.lang==="zh"?"EN":"中";$("sndBtn").textContent=S.snd?"🔊":"🔇"}
 function setH(){const h=window.innerHeight;document.documentElement.style.setProperty("--appH",h+"px");window.scrollTo(0,0)}
@@ -401,12 +417,13 @@ let wanderIv=null;
 const nextAnimal=()=>CH1.find(k=>!S.rescued.includes(k));
 function goMap(first){closeQ();show("map",T("My Zoo","我的動物園"));ZY["我"]="ㄨㄛˇ";relabel();renderMap();
  const n=nextAnimal();
+ if(S.rescued.length&&!S.playHint){S.playHint=1;save();setTimeout(()=>say("Tap an animal to play with it! Drag it to a friend to play together.","按動物跟牠玩！把牠拖到朋友旁邊，一起玩！"),3800)}
  if(n&&S.rescued.length)setTimeout(()=>say(`Next, let's find the ${AN[n].en.toLowerCase()}! Tap Next.`,`下一個，我們去找${AN[n].zh}！按下一個。`),400);
  ZY["卡"]="ㄎㄚˇ";}
 function renderMap(){const L=$("zooLayer");L.innerHTML="";const W=L.clientWidth,H=L.clientHeight;
  const spots=W>H?{elephant:[.14,.62],giraffe:[.36,.5],lion:[.58,.62],penguin:[.78,.74]}:{elephant:[.2,.5],giraffe:[.5,.42],lion:[.78,.52],penguin:[.5,.62]};
- const base=Math.min(W*.17,H*.26);
- S.rescued.forEach(k=>{const d=document.createElement("div");d.className="ani";d.dataset.k=k;const w=base*(k==="giraffe"?.62:k==="penguin"?.7:1);d.style.width=w+"px";const [x,y]=spots[k];d.style.left=(x*W-w/2)+"px";d.style.top=(y*H-w*AN[k].h)+"px";d.innerHTML=`<img src="${AN[k].img}" alt="${AN[k].en}">`;d.onclick=()=>{if(cur==="safari")return;sfx.pop();const im=d.querySelector("img");im.classList.remove("hop");void im.offsetWidth;im.classList.add("hop");say(`${AN[k].en}!`,AN[k].zh)};L.appendChild(d)});
+ const base=W>H?Math.min(W*.17,H*.26):Math.min(W*.27,H*.2);
+ S.rescued.forEach(k=>{const d=document.createElement("div");d.className="ani";d.dataset.k=k;const w=base*(k==="giraffe"?.62:k==="penguin"?.7:1);d.style.width=w+"px";const [x,y]=spots[k];d.style.left=(x*W-w/2)+"px";d.style.top=(y*H-w*AN[k].h)+"px";d.innerHTML=`<img src="${AN[k].img}" alt="${AN[k].en}">`;attachPlay(d);L.appendChild(d)});
  const nv=Math.min(S.visitors,10);const people=["🧒","👧","👦","👩","👨","🧓","👶"];
  for(let i=0;i<nv;i++){const v=document.createElement("div");v.className="vis";v.textContent=people[i%people.length];v.style.left=(Math.random()*90)+"%";v.style.top=(80+Math.random()*8)+"%";L.appendChild(v)}
  const n=nextAnimal();const em=$("emptyMsg");
@@ -414,8 +431,83 @@ function renderMap(){const L=$("zooLayer");L.innerHTML="";const W=L.clientWidth,
  $("rescueBtn").classList.toggle("dis",!n);$("safariBtn").classList.toggle("dis",S.rescued.length<2);$("mixBtn").classList.toggle("dis",S.rescued.length<2);$("albumBtn").classList.toggle("dis",!S.album.length);
  startWander()}
 ZY["空"]="ㄎㄨㄥ";ZY["快"]="ㄎㄨㄞˋ";
-function startWander(){stopWander();wanderIv=setInterval(()=>{const L=$("zooLayer");const W=L.clientWidth,H=L.clientHeight;L.querySelectorAll(".ani").forEach(d=>{if(Math.random()<.5)return;const w=d.offsetWidth;const ox=parseFloat(d.style.left);let nx=ox+(Math.random()-.5)*W*.16;nx=Math.max(4,Math.min(W-w-4,nx));d.classList.toggle("flip",nx<ox);d.style.left=nx+"px"});L.querySelectorAll(".vis").forEach(v=>{v.style.left=(Math.random()*90)+"%"})},3600)}
+function startWander(){stopWander();wanderIv=setInterval(()=>{const L=$("zooLayer");const W=L.clientWidth,H=L.clientHeight;if(cur==="map"&&!BALL&&freeEls().length>=2&&Math.random()<.3){animalEvent();}L.querySelectorAll(".ani").forEach(d=>{if(d.dataset.busy||BALL||Math.random()<.5)return;const w=d.offsetWidth;const ox=parseFloat(d.style.left);let nx=ox+(Math.random()-.5)*W*.16;nx=Math.max(4,Math.min(W-w-4,nx));d.classList.toggle("flip",nx<ox);d.style.left=nx+"px"});L.querySelectorAll(".vis").forEach(v=>{v.style.left=(Math.random()*90)+"%"})},3600)}
 function stopWander(){clearInterval(wanderIv);wanderIv=null}
+/* ---------- ZOO PLAY: Milo plays with animals, animals play with each other ---------- */
+const FAV={lion:"🍖",elephant:"🍉",giraffe:"🍃",penguin:"🐟"};
+const ZL=()=>$("zooLayer");
+const aniEls=()=>[...ZL().querySelectorAll(".ani")];
+const freeEls=()=>aniEls().filter(d=>!d.dataset.busy);
+function aniSound(k){if(!S.snd)return;const a=ac();if(!a)return;const t=a.currentTime;const o=a.createOscillator(),g=a.createGain();
+ const P={lion:["sawtooth",140,70,.7,.09],elephant:["square",380,760,.6,.06],giraffe:["triangle",260,330,.5,.14],penguin:["square",900,1300,.25,.05]}[k]||["triangle",400,600,.3,.1];
+ o.type=P[0];o.frequency.setValueAtTime(P[1],t);o.frequency.exponentialRampToValueAtTime(P[2],t+P[3]);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(P[4],t+.04);g.gain.exponentialRampToValueAtTime(.001,t+P[3]+.1);o.connect(g).connect(a.destination);o.start(t);o.stop(t+P[3]+.15)}
+function ctr(d){return {x:parseFloat(d.style.left)+d.offsetWidth/2,y:parseFloat(d.style.top)+d.offsetHeight}}
+function moveTo(d,x,ms){const W=ZL().clientWidth,w=d.offsetWidth;const nx=Math.max(4,Math.min(W-w-4,x-w/2));const ox=parseFloat(d.style.left);if(Math.abs(nx-ox)>2)d.classList.toggle("flip",nx<ox);
+ d.style.transition=`left ${ms}ms ease-in-out`;d.style.left=nx+"px";clearTimeout(d._mt);d._mt=setTimeout(()=>d.style.transition="",ms+30)}
+function face(d,x){const c=ctr(d);d.classList.toggle("flip",x<c.x)}
+function hopEl(d,n=1){const im=d.querySelector("img");im.animate([{translate:"0 0"},{translate:"0 -22%"},{translate:"0 0"}],{duration:420,iterations:n,easing:"ease-out"})}
+function floatFx(d,html,big){const c=ctr(d);const e=document.createElement("div");e.className="zfx"+(big?" big":"");e.innerHTML=html;e.style.left=c.x+"px";e.style.top=(parseFloat(d.style.top))+"px";ZL().appendChild(e);setTimeout(()=>e.remove(),1700)}
+function busy(ds,ms){ds.forEach(d=>d.dataset.busy=1);setTimeout(()=>ds.forEach(d=>delete d.dataset.busy),ms)}
+const T2=(en,zh)=>S.lang==="zh"?zy(zh):esc(en);
+
+/* animal + animal */
+function evChase(a,b){busy([a,b],5200);const W=ZL().clientWidth;aniSound(a.dataset.k);floatFx(a,"💨");
+ [0,1600,3200].forEach((t,i)=>setTimeout(()=>{const tx=(i%2? W*.15 : W*.85)+(Math.random()-.5)*W*.1;moveTo(b,tx,1100);setTimeout(()=>moveTo(a,tx+(i%2?60:-60),1200),220)},t));
+ setTimeout(()=>{hopEl(a,2);hopEl(b,2);floatFx(b,"😆")},4700)}
+function evBall(a,b){busy([a,b],5600);const ca=ctr(a),cb=ctr(b);moveTo(b,(ca.x+cb.x)/2+(cb.x>ca.x?1:-1)*Math.min(260,Math.abs(cb.x-ca.x)/2),900);
+ setTimeout(()=>{const ball=document.createElement("div");ball.className="zball";ZL().appendChild(ball);let from=a,to=b;
+  const pass=i=>{if(i>=4){ball.remove();return}const p=ctr(from),q=ctr(to);face(from,q.x);face(to,p.x);hopEl(from);sfx.pop();
+   ball.animate([{left:p.x+"px",top:(p.y-40)+"px"},{left:(p.x+q.x)/2+"px",top:(Math.min(p.y,q.y)-150)+"px"},{left:q.x+"px",top:(q.y-40)+"px"}],{duration:900,easing:"ease-in-out",fill:"forwards"}).onfinish=()=>{[from,to]=[to,from];pass(i+1)}};pass(0)},1000)}
+function evFriends(a,b){busy([a,b],4200);const cb=ctr(b);moveTo(a,cb.x+(ctr(a).x<cb.x?-1:1)*(b.offsetWidth*.6),1400);
+ setTimeout(()=>{face(a,cb.x);face(b,ctr(a).x);floatFx(a,"❤️");floatFx(b,"💕");hopEl(a);setTimeout(()=>hopEl(b),200);aniSound(b.dataset.k)},1500)}
+function evDance(lead){const ds=freeEls().concat(lead&&lead.dataset.busy?[lead]:[]);busy(ds,3600);ds.forEach((d,i)=>{setTimeout(()=>{floatFx(d,"🎵");d.querySelector("img").animate([{rotate:"0deg"},{rotate:"-12deg"},{rotate:"12deg"},{rotate:"0deg"}],{duration:600,iterations:4})},i*180)});
+ const notes=[523,659,784,659,523,784,880,784];notes.forEach((f,i)=>tone(f,.18,"triangle",.12,i*.32))}
+function evNap(a){busy([a],4500);floatFx(a,"💤",1);setTimeout(()=>floatFx(a,"💤",1),1500);a.querySelector("img").animate([{rotate:"0deg"},{rotate:"-6deg"},{rotate:"-6deg"},{rotate:"0deg"}],{duration:4000})}
+function animalEvent(a,b){const fr=freeEls();if(!a){if(fr.length<1)return;a=pick(fr)}if(!b){const o=fr.filter(d=>d!==a);b=o.length?pick(o):null}
+ const ev=b?pick(["chase","ball","friends","chase","ball","nap"]):"nap";
+ if(ev==="chase")evChase(a,b);else if(ev==="ball")evBall(a,b);else if(ev==="friends")evFriends(a,b);else evNap(a)}
+
+/* Milo + animal */
+let PLAYK=null,BALL=null;
+function closeAniMenu(){$("aniMenu").classList.remove("on");$("aniMenu").dataset.mode=""}
+function openAniMenu(d){if(BALL)return;const k=d.dataset.k;PLAYK=d;aniSound(k);hopEl(d);say(`${AN[k].en}!`,AN[k].zh);
+ const m=$("aniMenu");m.innerHTML="";m.dataset.mode="main";
+ [["🍽️","Feed","餵"],["✋","Pet","摸摸"],["⚽","Ball","球"],["🎵","Dance","跳舞"]].forEach(([em,en,zh],i)=>{const b=document.createElement("button");b.className="pbtn";b.innerHTML=`<span class="em">${em}</span><span>${T2(en,zh)}</span>`;b.onclick=e=>{e.stopPropagation();[feedMenu,petAni,ballMode,()=>{closeAniMenu();evDance(PLAYK);say("Dance party!","跳舞派對！")}][i]()};m.appendChild(b)});
+ placeMenu(d)}
+function placeMenu(d){const m=$("aniMenu");m.classList.add("on");const L=ZL().getBoundingClientRect(),c=ctr(d);const mw=m.offsetWidth,mh=m.offsetHeight;
+ let x=c.x-mw/2,y=parseFloat(d.style.top)-mh-6;if(y<6)y=c.y+6;x=Math.max(6,Math.min(L.width-mw-6,x));y=Math.min(L.height-mh-6,y);m.style.left=x+"px";m.style.top=(y+L.top-$("map").getBoundingClientRect().top)+"px"}
+function feedMenu(){const k=PLAYK.dataset.k;const m=$("aniMenu");m.innerHTML="";m.dataset.mode="feed";
+ const foods=shuffle([FAV[k],...shuffle(Object.values(FAV).filter(f=>f!==FAV[k])).slice(0,2)]);
+ foods.forEach(f=>{const b=document.createElement("button");b.className="pbtn food";b.textContent=f;b.onclick=e=>{e.stopPropagation();feed(f,b)};m.appendChild(b)});
+ say(`What does the ${AN[k].en.toLowerCase()} eat?`,`${AN[k].zh}吃什麼？`);placeMenu(PLAYK)}
+function feed(f,b){const d=PLAYK,k=d.dataset.k;const c=ctr(d);const br=b.getBoundingClientRect(),lr=ZL().getBoundingClientRect();
+ const e=document.createElement("div");e.className="zfx big";e.textContent=f;ZL().appendChild(e);
+ e.animate([{left:(br.left-lr.left+br.width/2)+"px",top:(br.top-lr.top)+"px"},{left:c.x+"px",top:(parseFloat(d.style.top)+d.offsetHeight*.3)+"px",scale:.4}],{duration:600,fill:"forwards"}).onfinish=()=>e.remove();
+ if(f===FAV[k]){closeAniMenu();busy([d],2000);setTimeout(()=>{sfx.yay();hopEl(d,2);floatFx(d,"😋 ❤️");say("Yum yum! Thank you!","好好吃！謝謝！")},620)}
+ else{setTimeout(()=>{sfx.no();d.querySelector("img").animate([{translate:"0 0"},{translate:"-8% 0"},{translate:"8% 0"},{translate:"0 0"}],{duration:500});floatFx(d,"🙅");say("No thanks! Try another one.","不要這個！換一個。")},620)}}
+function petAni(){closeAniMenu();const d=PLAYK;busy([d],2200);sfx.pop();aniSound(d.dataset.k);d.querySelector("img").animate([{scale:"1 1"},{scale:"1.12 .9"},{scale:".95 1.08"},{scale:"1 1"}],{duration:500,iterations:2});
+ [0,300,600].forEach(t=>setTimeout(()=>floatFx(d,pick(["❤️","💛","💕"])),t));say("Hee hee! That tickles!","嘻嘻！好癢喔！")}
+function ballMode(){closeAniMenu();BALL={n:0,el:document.createElement("div")};BALL.el.className="zball";const c=ctr(PLAYK);BALL.el.style.left=c.x+"px";BALL.el.style.top=(c.y-30)+"px";ZL().appendChild(BALL.el);
+ $("ballHint").classList.add("on");$("emptyMsg").style.visibility="hidden";$("ballHint").innerHTML=`⚽ ${T2("Tap the grass to throw the ball!","按草地丟球！")} <button class="pbtn" id="ballDone">✔</button>`;$("ballDone").onclick=e=>{e.stopPropagation();endBall()};
+ say("Tap the grass to throw the ball!","按草地丟球！")}
+function throwBall(x,y){if(!BALL||BALL.flying)return;const L=ZL();const H=L.clientHeight;y=Math.max(H*.42,Math.min(H*.86,y));const b=BALL.el;BALL.flying=true;sfx.pop();
+ const sx=parseFloat(b.style.left),sy=parseFloat(b.style.top);b.animate([{left:sx+"px",top:sy+"px"},{left:(sx+x)/2+"px",top:(Math.min(sy,y)-120)+"px"},{left:x+"px",top:y+"px"}],{duration:700,easing:"ease-out"}).onfinish=()=>{b.style.left=x+"px";b.style.top=y+"px";BALL.flying=false};
+ const runners=[PLAYK,...aniEls().filter(d=>d!==PLAYK&&!d.dataset.busy&&Math.random()<.45)];
+ runners.forEach((d,i)=>{busy([d],2300);setTimeout(()=>moveTo(d,x+(i?(i%2?-1:1)*70*i:0),900+i*250),250)});
+ setTimeout(()=>{hopEl(PLAYK,2);floatFx(PLAYK,"⚽ 😄");aniSound(PLAYK.dataset.k)},1250);
+ BALL.n++;if(BALL.n>=8)setTimeout(endBall,2200)}
+function endBall(){if(!BALL)return;BALL.el.remove();BALL=null;$("ballHint").classList.remove("on");$("emptyMsg").style.visibility="";say("Good game!","玩得好開心！")}
+
+/* tap = menu, drag onto a friend = they play */
+function attachPlay(d){let sx,sy,ox,id=null,moved=false;
+ d.onpointerdown=e=>{if(cur!=="map"||BALL)return;e.stopPropagation();id=e.pointerId;try{d.setPointerCapture(id)}catch(_){}sx=e.clientX;sy=e.clientY;ox=parseFloat(d.style.left);moved=false;d.style.transition="none"};
+ d.onpointermove=e=>{if(e.pointerId!==id)return;const dx=e.clientX-sx;if(!moved&&Math.hypot(dx,e.clientY-sy)<10)return;if(!moved){moved=true;closeAniMenu();d.classList.add("held")}d.style.left=Math.max(0,Math.min(ZL().clientWidth-d.offsetWidth,ox+dx))+"px"};
+ const up=e=>{if(e.pointerId!==id)return;id=null;d.classList.remove("held");d.style.transition="";
+  if(!moved){openAniMenu(d);return}const c=ctr(d);const near=aniEls().filter(o=>o!==d).sort((p,q)=>Math.abs(ctr(p).x-c.x)-Math.abs(ctr(q).x-c.x))[0];
+  if(near&&Math.abs(ctr(near).x-c.x)<Math.max(120,d.offsetWidth)){delete d.dataset.busy;delete near.dataset.busy;say("They want to play!","牠們想一起玩！");animalEvent(d,near)}else{hopEl(d);aniSound(d.dataset.k)}};
+ d.onpointerup=up;d.onpointercancel=up}
+$("zooLayer").addEventListener("pointerdown",e=>{if(BALL){const r=ZL().getBoundingClientRect();throwBall(e.clientX-r.left,e.clientY-r.top);return}if(!e.target.closest(".ani"))closeAniMenu()});
+
 $("rescueBtn").onclick=()=>{const k=nextAnimal();if(!k){say("The Savanna animals are safe! Chapter 2 is coming soon.","大草原的動物都安全了！第二章快來了。");return}runAnimal(k)};
 ZY["安"]="ㄢ";
 $("safariBtn").onclick=()=>{if(S.rescued.length<2){say("Rescue two animals first!","先救兩隻動物！");return}startSafari()};
@@ -725,12 +817,14 @@ window.__test={
  wrongFind:()=>{if(!FD)return;const i=SPOTS.findIndex((x,i)=>i!==FD.ans&&!FD.used.includes(i));tapSpot(i,$("findLayer").querySelector(`[data-i="${i}"]`))},
  wrongQ:()=>{if(!QA)return;const b=[...$("qAns").children].find(x=>x.dataset.v!==String(QA.q.ans));b.click()},
  go:(w)=>{if(w==="map")goMap();if(w==="rescue")$("rescueBtn").click();if(w==="safari")startSafari();if(w==="mix")startMix();if(w==="album")showAlbum();if(w==="q")askQ(()=>{});if(w==="care")care("lion");if(w==="hab")startHabitat("lion")},
+ playSetup:()=>{S.rescued=["lion","elephant","giraffe"];goMap()},
+ ev:(n)=>{const d=aniEls();({chase:()=>evChase(d[0],d[1]),ball:()=>evBall(d[0],d[1]),friends:()=>evFriends(d[0],d[1]),dance:()=>evDance(d[0]),nap:()=>evNap(d[0])})[n]()},
  setLvl:(o)=>{Object.assign(S.lvl,o);save()},
  reset:()=>{try{localStorage.removeItem(SKEY)}catch(e){}Object.assign(S,load())}
 };
 relabel();updTop();
 </script>
-<div id="kaVer" data-v="1.1" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-26</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-26" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-26</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>
