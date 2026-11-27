@@ -13,7 +13,7 @@ Art (ChatGPT image generation, style A "retro sports anime") lives in `assets/*.
 - `js/04-audio.js` Music anthem, Engine whine, beep
 - `js/05-ui.js` DB/profiles, show(), menu, tester jump, story player, go() flow, finishEpisode
 - `js/06-garage.js` renderStats, Garage (build steps + quiz), Demos (motor, circuit, gears, tires, rollers, air), Tune
-- `js/07-race.js` Race (3/4-view canvas: raised hill via zAt/P projection, static track layer, speed trails + meters, events, commentary, finish/advice)
+- `js/07-race.js` Race: drawIso (2.5D view: raised hill via zAt/P, static track layer, speed trails), drawChase (chase cam; camD follows closer in curves, aims at Lucas's car), chaseCar (assets/r_*.webp rear sprites, flattened 0.6 + sheared along road), pickCam/camMode (Auto/Chase/Top), chaseHud (mini-map), events, commentary, finish/advice
 - `js/08-main.js` boot, buttons, window.__test hook
 
 Balance: only turbo + power gears + soft tires + rollers + sleek beats Rex; no rollers always courses out.

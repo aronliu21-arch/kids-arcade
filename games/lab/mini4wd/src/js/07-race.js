@@ -7,7 +7,7 @@ var Race = {
   speed: 1,
   start: function (mode) {
     var self = this, k = G.kd;
-    this.mode = mode; this.laps = mode === "race" ? 3 : 1; this.over = false; this.t = 0; this.fx = []; this.said = {};
+    this.mode = mode; this.laps = mode === "race" ? 3 : 1; this.over = false; this.t = 0; this.fx = []; this.said = {}; this.camD = 11;
     this.cars = [{ who: "lucas", car: "c_blue", r: new Racer(k.build, { laps: this.laps, lane: 0 }) }];
     if (mode === "race") RIVALS.forEach(function (rv, i) { self.cars.push({ who: rv.who, car: rv.car, r: new Racer(rv.build, { laps: self.laps, lane: i + 1 }) }); });
     show("sRace"); this.resize(); this.cam = null; this.camLabel();
@@ -190,7 +190,10 @@ var Race = {
   drawChase: function () {
     var cv = $("#raceCv"), x = cv.getContext("2d"), W = cv.width, H = cv.height, self = this;
     var me = this.cars[0], r = me.r, off0 = (r.lane - 1) * 2.4;
-    var camS = r.s - 11, cp = trackAt(camS), ahead = trackAt(camS + 5);
+    // follow closer in curves and aim at Lucas's car so it stays on the road in the middle of the screen
+    var inC = segType(r.s) === "C" || segType(r.s - 6) === "C" || segType(r.s + 4) === "C";
+    this.camD = (this.camD || 11) + ((inC ? 6.5 : 11) - (this.camD || 11)) * 0.06;
+    var camS = r.s - this.camD, cp = trackAt(camS), ahead = trackAt(r.s + 1);
     var ch = Math.atan2(ahead.y - cp.y, ahead.x - cp.x);
     var cx = cp.x + Math.cos(cp.h + Math.PI / 2) * off0 * 0.6, cy = cp.y + Math.sin(cp.h + Math.PI / 2) * off0 * 0.6;
     var mz = 0; for (var zs = camS; zs <= r.s; zs += 0.5) mz = Math.max(mz, this.zAt(zs)); var cz = mz + this.TH + 2.8, slope = (this.zAt(camS + 8) - this.zAt(camS)) / 8, frac = Math.min(1, r.v / (this.vmax || 30));
@@ -242,8 +245,14 @@ var Race = {
     x.fillStyle = "rgba(0,0,0,.3)"; x.beginPath(); x.ellipse(X, Y, w * 0.6, h * 0.18, 0, 0, 7); x.fill();
     var rim = img(c.car.replace("c_", "r_"));
     if (rim.complete && rim.naturalWidth) { // ChatGPT rear-view sprite, same style as the title art
-      var rw = w * 1.05, rh = rw * rim.naturalHeight / rim.naturalWidth;
-      x.drawImage(rim, X - rw / 2, Y - rh * 0.92, rw, rh);
+      // flatten the steep top-down sprite so the car sits on the road instead of pointing up a hill,
+      // and lean its top along the road direction so it follows curves
+      var rw = w * 1.05, rh = rw * rim.naturalHeight / rim.naturalWidth * 0.6;
+      var a = this.pos(c), hd = a.h, q2 = pr(a.x + Math.cos(hd) * 1.5, a.y + Math.sin(hd) * 1.5, a.z), k = 0;
+      if (q2 && q[1] - q2[1] > 0.5) k = Math.max(-0.7, Math.min(0.7, (q2[0] - X) / (q[1] - q2[1])));
+      x.save(); x.translate(X, Y); x.transform(1, 0, -k, 1, 0, 0);
+      x.drawImage(rim, -rw / 2, -rh * 0.92, rw, rh); x.restore();
+      X += k * rh * 0.5;
       if (me) { x.globalAlpha = 1; x.shadowColor = "#ffd43b"; x.shadowBlur = 10; x.fillStyle = "#f76707"; x.font = "900 " + Math.min(H * 0.06, Math.max(12, s * 0.7)) + "px system-ui"; x.textAlign = "center"; x.fillText("Lucas 6", X, Y - rh * 1.02); }
       x.restore(); return;
     }
