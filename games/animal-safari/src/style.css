@@ -331,3 +331,6 @@ body.portrait .kAn{max-width:31%}
 .bigStar{position:absolute;left:50%;top:14%;margin-left:-.5em;font-size:clamp(110px,26vmin,220px);line-height:1;color:#ffd43b;text-shadow:0 6px 0 #e8a91c,0 10px 24px rgba(0,0,0,.3)}
 @media (max-height:420px){#mBody{top:calc(max(6px,var(--safeT)) + 64px)}#mCap{top:calc(max(6px,var(--safeT)) + 30px);font-size:13px;max-width:calc(100% - 140px)}#mStars i{width:24px;height:24px;font-size:22px}}
 @media (prefers-reduced-motion:reduce){.eyes,.fxp{animation:none!important}}
+
+/* v1.3: new sharp backgrounds already have foreground plants */
+#fg{display:none}
