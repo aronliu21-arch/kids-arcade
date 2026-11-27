@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>四驅小隊 Mini 4WD Racers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+<style>:root{--blue:#1c7ed6;--red:#e03131;--yel:#ffd43b;--ink:#111;--lucas:#f76707;--card:#fffdf5;--bg:#0b2a55}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:600 16px/1.35 system-ui,-apple-system,"PingFang TC","Heiti TC",sans-serif;overflow:hidden}
+button{font:inherit;cursor:pointer;color:inherit}
+ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#555;letter-spacing:0}
+.bi{display:inline-flex;flex-direction:column;align-items:inherit;line-height:1.15}.bi .z{font-weight:900}.bi .e{font-size:.78em;opacity:.85;font-weight:700}
+.title-font{font-family:Bangers,Impact,"Arial Black",sans-serif;letter-spacing:1px}
+.scr{position:fixed;inset:0;display:none;overflow:hidden}.scr.on{display:block}
+/* comic buttons */
+.btn{min-height:52px;min-width:52px;padding:8px 18px;border:3px solid var(--ink);border-radius:14px;background:var(--yel);box-shadow:0 5px 0 var(--ink);font-weight:900;font-size:18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center;transition:transform .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn.blue{background:var(--blue);color:#fff}.btn.red{background:var(--red);color:#fff}.btn.white{background:#fff}.btn.green{background:#2f9e44;color:#fff}
+.btn.blue rt,.btn.red rt,.btn.green rt{color:#e7f5ff}
+.btn[disabled]{opacity:.45;pointer-events:none}
+/* top bar */
+#bar{position:fixed;top:8px;right:8px;z-index:50;display:flex;gap:8px}
+#bar .btn{min-height:48px;min-width:48px;padding:4px 10px;font-size:20px;background:#fff}
+/* ---------- title ---------- */
+#sTitle{background:#000}
+#sTitle .key{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#sTitle .rays{position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg at 50% 50%,#fff3 0 6deg,#0000 6deg 14deg);opacity:0;pointer-events:none}
+#sTitle .logo{position:absolute;left:0;right:0;top:4%;text-align:center;pointer-events:none;opacity:0}
+.logo .l1{display:inline-block;font-size:clamp(40px,9vw,96px);color:var(--yel);-webkit-text-stroke:3px var(--ink);text-shadow:5px 5px 0 var(--red),9px 9px 0 var(--ink);transform:rotate(-4deg)}
+.logo .l2{display:block;font-size:clamp(20px,3.6vw,40px);color:#fff;-webkit-text-stroke:1.5px var(--ink);text-shadow:3px 3px 0 var(--ink);margin-top:6px}
+.logo .l2 rt{color:#fff;-webkit-text-stroke:0}
+#tapStart{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);font-size:26px;padding:12px 30px;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{transform:translateX(-50%) scale(1.07)}}
+#sTitle.play .key{animation:kb 4.2s ease-out forwards}
+#sTitle.play .rays{animation:rays 4.2s linear forwards}
+#sTitle.play .logo{animation:slam .5s 1.4s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes kb{from{transform:scale(1.35) translateX(6%)}to{transform:scale(1) translateX(0)}}
+@keyframes rays{0%{opacity:0;transform:rotate(0)}30%{opacity:.9}100%{opacity:.25;transform:rotate(40deg)}}
+@keyframes slam{from{opacity:0;transform:scale(3)}to{opacity:1;transform:scale(1)}}
+#sTitle.done .logo{opacity:1}
+/* ---------- menu ---------- */
+#sMenu{background:url(assets/key.webp) center/cover;overflow:auto}
+#sMenu .wrap{min-height:100%;background:linear-gradient(#0b2a55cc,#0b2a55ee);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:64px 16px 40px}
+#sMenu .logo{opacity:1;position:static;text-align:center}
+.profiles{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.prof{width:200px;min-height:210px;border:4px solid var(--ink);border-radius:20px;background:#fff;box-shadow:0 7px 0 var(--ink);padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.prof img{width:120px;height:120px;object-fit:cover;object-position:top;border-radius:50%;border:4px solid var(--lucas);background:#ffe8cc;box-shadow:0 0 18px #ffd43b}
+.prof .nm{font-size:22px;font-weight:900;color:#fff;background:var(--lucas);border:2px solid var(--ink);border-radius:999px;padding:0 14px}
+.prof.tester .nm{background:#5f3dc4}.prof.tester .ic{font-size:72px;line-height:120px}
+.prof .sub{font-size:14px;text-align:center}
+.mrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.jump{display:none;gap:8px;flex-wrap:wrap;justify-content:center;max-width:720px}.jump.on{display:flex}
+.jump .btn{font-size:15px;min-height:48px}
+/* ---------- story ---------- */
+#sStory .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.por{position:absolute;bottom:0;height:min(78vh,560px);max-width:48vw;object-fit:contain;object-position:bottom;transition:transform .3s,filter .3s,opacity .3s;opacity:0;filter:drop-shadow(0 0 0 #000)}
+.por.L{left:2%}.por.R{right:2%;transform:scaleX(-1)}
+.por.on{opacity:1}.por.dim{filter:brightness(.55) saturate(.6)}
+.por.L.talk{transform:translateY(-8px)}.por.R.talk{transform:scaleX(-1) translateY(-8px)}
+.por.hero{filter:drop-shadow(0 0 10px #ffd43b) drop-shadow(0 0 3px #ffd43b)}
+.dlg{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:min(940px,calc(100% - 24px));background:var(--card);border:4px solid var(--ink);border-radius:18px;box-shadow:0 6px 0 var(--ink);padding:12px 16px 12px;display:flex;flex-direction:column;gap:4px;z-index:5}
+.dlg .nm{position:absolute;top:-20px;left:18px;font-weight:900;color:#fff;border:3px solid var(--ink);border-radius:10px;padding:0 12px;font-size:17px}
+.dlg .nm:empty{display:none}
+.dlg .zh{font-size:22px;font-weight:900;margin-top:6px}.dlg .en{font-size:17px;color:#333}
+.dlg .ctl{display:flex;gap:10px;justify-content:flex-end}
+.dlg.narr{background:#212529;color:#fff}.dlg.narr .en{color:#dee2e6}.dlg.narr rt{color:#adb5bd}
+/* ---------- garage ---------- */
+#sGarage,#sTune{background:#1b3a63 url(assets/bg_shop.webp) center/cover}
+.gwrap{position:absolute;inset:0;background:#0b2a55d9;display:flex;flex-direction:column;overflow:auto;padding:64px 12px 16px}
+.ghead{color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 auto 10px;width:min(1100px,100%)}
+.ghead .step{background:var(--yel);color:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:2px 12px;font-weight:900}
+.gmain{display:flex;gap:14px;width:min(1100px,100%);margin:0 auto;align-items:flex-start}
+.side{width:260px;flex:none;display:flex;flex-direction:column;gap:10px}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px}
+.slot{aspect-ratio:1;border:2px dashed #adb5bd;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#f1f3f5}
+.slot img{width:86%;height:86%;object-fit:contain}.slot.in{border:2px solid var(--blue);background:#e7f5ff}.slot.cur{border:3px solid var(--lucas);animation:blink 1s infinite}
+@keyframes blink{50%{background:#fff4e6}}
+.stats{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px 10px;font-size:13px}
+.stat{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:6px;margin:4px 0}
+.stat .bar{height:14px;border:2px solid var(--ink);border-radius:8px;background:#e9ecef;overflow:hidden}
+.stat .bar i{display:block;height:100%;background:linear-gradient(90deg,#4dabf7,#1c7ed6);transition:width .5s}
+.stat.warn .bar i{background:#e03131}
+.card{flex:1;background:var(--card);border:4px solid var(--ink);border-radius:20px;box-shadow:0 7px 0 var(--ink);padding:14px 16px;min-width:0}
+.card .top{display:flex;gap:14px;align-items:center}
+.card .pimg{width:150px;height:150px;object-fit:contain;flex:none;filter:drop-shadow(3px 4px 0 #0003)}
+.card h2{margin:0;font-size:30px}.card h2 .e{font-size:20px}
+.box{border:3px solid var(--ink);border-radius:14px;padding:8px 12px;margin-top:10px;display:flex;gap:10px;align-items:flex-start}
+.box .lab{flex:none;font-size:22px}
+.box.what{background:#e7f5ff}.box.sci{background:#fff9db}
+.box .txt{flex:1}.box .txt .z{font-size:19px;font-weight:900;display:block}.box .txt .e{font-size:15px;display:block;margin-top:2px}
+.say{flex:none;min-height:44px;min-width:44px;border:2px solid var(--ink);border-radius:50%;background:#fff;font-size:18px}
+.demo{margin-top:10px;border:3px solid var(--ink);border-radius:14px;background:#f8f9fa;padding:10px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.demo svg,.demo canvas{max-width:100%;height:auto}
+.picks{margin-top:10px}.picks .lbl{font-weight:900;margin-bottom:6px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{border:3px solid var(--ink);border-radius:14px;background:#fff;padding:10px;text-align:left;min-height:64px;box-shadow:0 4px 0 var(--ink)}
+.opt.sel{background:#d0ebff;outline:4px solid var(--blue)}
+.opt .z{font-size:18px}.opt small{display:block;font-weight:600;font-size:13px;margin-top:4px;color:#333}
+.act{display:flex;justify-content:flex-end;gap:10px;margin-top:12px;flex-wrap:wrap}
+/* quiz */
+.quiz{margin-top:4px}.quiz .qq{font-size:20px;margin:6px 0 10px}
+.quiz .ans{display:grid;gap:10px}
+.quiz .ans .btn{justify-content:flex-start;background:#fff;font-size:17px;text-align:left}
+.quiz .ans .btn.ok{background:#b2f2bb}.quiz .ans .btn.no{background:#ffc9c9;opacity:.7}
+.quiz .fb{margin-top:10px;font-weight:900;min-height:24px}
+.stars{color:#f59f00;font-size:22px;letter-spacing:2px}
+/* gear demo */
+.spin{transform-box:fill-box;transform-origin:center;animation:rot linear infinite}
+.spin.rev{animation-direction:reverse}
+@keyframes rot{to{transform:rotate(360deg)}}
+.motorimg{width:120px;transition:transform .2s}.motorimg.go{animation:shake .08s infinite}
+@keyframes shake{50%{transform:translate(1px,-1px) rotate(1deg)}}
+.flow{stroke-dasharray:6 10;animation:flow .6s linear infinite}@keyframes flow{to{stroke-dashoffset:-16}}
+/* ---------- race ---------- */
+#sRace{background:#2b8a3e url(assets/bg_park.webp) center/cover}
+#sRace .rwrap{position:absolute;inset:0;background:#0b2a5599;display:flex;flex-direction:column;align-items:center;padding:60px 8px 8px;gap:6px}
+#raceCv{flex:1;min-height:0;width:100%;max-width:1200px;touch-action:none}
+.hud{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;width:min(1200px,100%)}
+.chip{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:3px 10px;font-weight:900;font-size:15px}
+.chip.me{border-color:var(--lucas)}
+.ticker{background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:4px 12px;min-height:52px;flex:1;min-width:240px;max-width:640px}
+.ticker .z{font-size:17px}.ticker .e{font-size:14px}
+#cheer{font-size:20px}
+#count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:min(30vw,200px);color:var(--yel);-webkit-text-stroke:5px var(--ink);text-shadow:8px 8px 0 var(--red)}
+/* ---------- result / overlay ---------- */
+.ovl{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:40;padding:16px;overflow:auto}
+.ovl.on{display:flex}
+.ovl .card{max-width:640px;flex:none;width:100%;margin:auto}
+.ovl .who{display:flex;gap:12px;align-items:center}
+.ovl .who img{width:96px;height:96px;object-fit:cover;object-position:top;border-radius:50%;border:3px solid var(--ink);background:#d0ebff;flex:none}
+.big{font-size:44px;text-align:center;margin:4px 0}
+.tip{background:#ebfbee;border:3px solid var(--ink);border-radius:14px;padding:10px 12px;margin-top:10px}
+#rotHint{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);background:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 12px;font-size:13px;z-index:60;display:none;pointer-events:none}
+@media (orientation:portrait) and (max-width:600px){#rotHint{display:block}}
+/* ---------- small screens ---------- */
+@media (max-width:760px){
+  .gmain{flex-direction:column}.side{width:100%;flex-direction:row}.slots{flex:1;grid-template-columns:repeat(7,1fr)}.stats{flex:1}
+  .card .pimg{width:96px;height:96px}.card h2{font-size:24px}
+  .opts{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  .side{flex-direction:column}
+  .por{height:40vh;max-width:62vw;bottom:230px}
+  .dlg{bottom:44px}
+  .stats{display:grid;grid-template-columns:1fr 1fr;column-gap:10px}.stats>b{grid-column:1/-1}.stat{grid-template-columns:1fr;gap:2px}
+  .gwrap{padding-bottom:48px}
+  #sRace .rwrap{padding-bottom:44px}
+  .dlg .zh{font-size:19px}.dlg .en{font-size:15px}
+  .prof{width:160px;min-height:190px}.prof img{width:96px;height:96px}
+}
+@media (max-height:440px){
+  .gwrap{padding-top:58px}.side{width:220px}.slots{grid-template-columns:repeat(4,1fr)}
+  .gmain{flex-direction:row}.side{flex-direction:column}
+  .card .pimg{width:84px;height:84px}.card h2{font-size:22px}
+  .por{height:86vh;max-width:34vw}
+  .dlg{bottom:6px;padding:8px 12px;width:min(940px,calc(100% - 30vw))}.dlg .zh{font-size:17px}.dlg .en{font-size:14px}
+  .dlg .ctl .btn{min-height:44px}
+  #sRace .rwrap{padding-top:6px;flex-direction:row;flex-wrap:wrap;align-content:flex-start}
+  #raceCv{height:calc(100vh - 14px);flex:none;width:64vw;max-width:64vw}
+  .hud{width:auto;flex:1;flex-direction:column;align-items:stretch;padding-top:52px}
+  .ticker{min-width:0}
+  #sMenu .wrap{padding-top:16px}.logo .l1{font-size:44px}
+  .prof{min-height:0;flex-direction:row;width:auto}.prof img{width:64px;height:64px}.prof.tester .ic{font-size:44px;line-height:64px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="bar">
+  <button class="btn" id="bHome" aria-label="Home" style="display:none">🏠</button>
+  <button class="btn" id="bSound" aria-label="Sound">🔊</button>
+</div>
+
+<section id="sTitle" class="scr on">
+  <img class="key" src="assets/key.webp" alt="">
+  <div class="rays"></div>
+  <div class="logo"><span class="l1 title-font">MINI 4WD RACERS</span><span class="l2 title-font" id="logo2"></span></div>
+  <button class="btn red" id="tapStart">▶ Tap to start</button>
+</section>
+
+<section id="sMenu" class="scr"><div class="wrap">
+  <div class="logo"><span class="l1 title-font">MINI 4WD RACERS</span><span class="l2 title-font" id="logo3"></span></div>
+  <div class="profiles">
+    <button class="prof" id="pLucas"><img src="assets/p_lucas.webp" alt=""><span class="nm">Lucas 6</span><span class="sub" id="lucasSub"></span></button>
+    <button class="prof tester" id="pTester"><span class="ic">🧪</span><span class="nm">Tester</span><span class="sub">Jump to any part · 不存檔 no saving</span></button>
+  </div>
+  <div class="jump" id="jump"></div>
+  <div class="mrow">
+    <button class="btn white" id="bVoice">🗣 聲音 Voice</button>
+    <button class="btn white" id="bRead"></button>
+    <button class="btn white" id="bReset">Reset records</button>
+  </div>
+</div></section>
+
+<section id="sStory" class="scr">
+  <img class="bg" alt="">
+  <img class="por L" alt=""><img class="por R" alt="">
+  <div class="dlg" id="dlg">
+    <div class="nm"></div><div class="zh"></div><div class="en"></div>
+    <div class="ctl"><button class="btn white" id="dSay" aria-label="Read again">🔊</button><button class="btn blue" id="dNext">▶</button></div>
+  </div>
+</section>
+
+<section id="sGarage" class="scr"><div class="gwrap">
+  <div class="ghead"><span class="step" id="gStep"></span><span id="gTitle"></span></div>
+  <div class="gmain">
+    <div class="side"><div class="slots" id="slots"></div><div class="stats" id="stats"></div></div>
+    <div class="card" id="gCard"></div>
+  </div>
+</div></section>
+
+<section id="sTune" class="scr"><div class="gwrap">
+  <div class="ghead"><span class="step">🔧</span><span id="tTitle"></span></div>
+  <div class="gmain">
+    <div class="side"><div class="stats" id="tStats"></div></div>
+    <div class="card" id="tCard"></div>
+  </div>
+</div></section>
+
+<section id="sRace" class="scr"><div class="rwrap">
+  <canvas id="raceCv"></canvas>
+  <div class="hud">
+    <span class="chip" id="hLap"></span><span id="hPos"></span>
+    <div class="ticker" id="ticker"></div>
+    <button class="btn red" id="cheer">📣 加油 Go!</button>
+  </div>
+  <div id="count"></div>
+</div></section>
+
+<div class="ovl" id="ovl"><div class="card" id="ovlCard"></div></div>
+<div id="rotHint">Turn your phone sideways ↻ 橫著拿手機</div>
+
+<script src="../../../kit.js"></script>
+<script src="../../../voice.js"></script>
+<script>/* GENERATED by build.py from the Chinese text in src/js. Do not edit by hand. */
+var ZYC={"一":"ㄧ","推":"ㄊㄨㄟ","拉":"ㄌㄚ","就":"ㄐㄧㄡˋ","轉":"ㄓㄨㄢˇ","起":"ㄑㄧˇ","來":"ㄌㄞˊ","了":"˙ㄌㄜ","般":"ㄅㄢ","馬":"ㄇㄚˇ","達":"ㄉㄚˊ","三":"ㄙㄢ","圈":"ㄑㄩㄢ","決":"ㄐㄩㄝˊ","勝":"ㄕㄥˋ","負":"ㄈㄨˋ","上":"ㄕㄤˋ","坡":"ㄆㄛ","力":"ㄌㄧˋ","氣":"ㄑㄧˋ","很":"ㄏㄣˇ","有":"ㄧㄡˇ","才":"ㄘㄞˊ","得":"ㄉㄜˊ","動":"ㄉㄨㄥˋ","沒":"ㄇㄟˊ","變":"ㄅㄧㄢˋ","好":"ㄏㄠˇ","慢":"ㄇㄢˋ","輸":"ㄕㄨ","下":"ㄒㄧㄚˋ","個":"ㄍㄜˋ","零":"ㄌㄧㄥˊ","件":"ㄐㄧㄢˋ","站":"ㄓㄢˋ","集":"ㄐㄧˊ","星":"ㄒㄧㄥ","期":"ㄑㄧˊ","公":"ㄍㄨㄥ","園":"ㄩㄢˊ","社":"ㄕㄜˋ","區":"ㄑㄩ","盃":"ㄅㄟ","比":"ㄅㄧˇ","賽":"ㄙㄞˋ","次":"ㄘˋ","我":"ㄨㄛˇ","也":"ㄧㄝˇ","要":"ㄧㄠˋ","換":"ㄏㄨㄢˋ","量":"ㄌㄧㄤˋ","齒":"ㄔˇ","輪":"ㄌㄨㄣˊ","不":"ㄅㄨˋ","只":"ㄓˇ","是":"ㄕˋ","快":"ㄎㄨㄞˋ","喔":"ㄛ","會":"ㄏㄨㄟˋ","脫":"ㄊㄨㄛ","軌":"ㄍㄨㄟˇ","裝":"ㄓㄨㄤ","學":"ㄒㄩㄝˊ","組":"ㄗㄨˇ","車":"ㄔㄜ","但":"ㄉㄢˋ","彎":"ㄨㄢ","道":"ㄉㄠˋ","較":"ㄐㄧㄠˋ","難":"ㄋㄢˊ","控":"ㄎㄨㄥˋ","制":"ㄓˋ","你":"ㄋㄧˇ","第":"ㄉㄧˋ","嗎":"˙ㄇㄚ","誰":"ㄕㄟˊ","的":"˙ㄉㄜ","在":"ㄗㄞˋ","又":"ㄧㄡˋ","穩":"ㄨㄣˇ","帥":"ㄕㄨㄞˋ","贏":"ㄧㄥˊ","倒":"ㄉㄠˋ","著":"˙ㄓㄜ","停":"ㄊㄧㄥˊ","先":"ㄒㄧㄢ","測":"ㄘㄜˋ","試":"ㄕˋ","跑":"ㄆㄠˇ","看":"ㄎㄢˋ","全":"ㄑㄩㄢˊ","國":"ㄍㄨㄛˊ","大":"ㄉㄚˋ","兩":"ㄌㄧㄤˇ","小":"ㄒㄧㄠˇ","差":"ㄔㄚˋ","多":"ㄉㄨㄛ","開":"ㄎㄞ","始":"ㄕˇ","再":"ㄗㄞˋ","冰":"ㄅㄧㄥ","塊":"ㄎㄨㄞˋ","分":"ㄈㄣ","去":"ㄑㄩˋ","加":"ㄐㄧㄚ","油":"ㄧㄡˊ","叫":"ㄐㄧㄠˋ","做":"ㄗㄨㄛˋ","什":"ㄕㄣˊ","麼":"˙ㄇㄜ","空":"ㄎㄨㄥ","阻":"ㄗㄨˇ","電":"ㄉㄧㄢˋ","路":"ㄌㄨˋ","可":"ㄎㄜˇ","危":"ㄨㄟ","險":"ㄒㄧㄢˇ","最":"ㄗㄨㄟˋ","直":"ㄓˊ","線":"ㄒㄧㄢˋ","夠":"ㄍㄡˋ","名":"ㄇㄧㄥˊ","哇":"˙ㄨㄚ","哎":"ㄞ","呀":"ㄧㄚ","哪":"ㄋㄚˇ","容":"ㄖㄨㄥˊ","易":"ㄧˋ","滑":"ㄏㄨㄚˊ","種":"ㄓㄨㄥˇ","胎":"ㄊㄞ","抓":"ㄓㄨㄚ","地":"ㄉㄧˋ","哼":"ㄏㄥ","四":"ㄙˋ","驅":"ㄑㄩ","隊":"ㄉㄨㄟˋ","回":"ㄏㄨㄟˊ","到":"ㄉㄠˋ","選":"ㄒㄩㄢˇ","單":"ㄉㄢ","斷":"ㄉㄨㄢˋ","掉":"ㄉㄧㄠˋ","家":"ㄐㄧㄚ","太":"ㄊㄞˋ","棒":"ㄅㄤˋ","它":"ㄊㄚ","們":"˙ㄇㄣ","自":"ㄗˋ","己":"ㄐㄧˇ","安":"ㄢ","導":"ㄉㄠˇ","擦":"ㄘㄚ","牆":"ㄑㄧㄤˊ","子":"˙ㄗ","角":"ㄐㄧㄠˇ","靠":"ㄎㄠˋ","滾":"ㄍㄨㄣˇ","帶":"ㄉㄞˋ","斌":"ㄅㄧㄣ","幫":"ㄅㄤ","底":"ㄉㄧˇ","盤":"ㄆㄢˊ","骨":"ㄍㄨˇ","架":"ㄐㄧㄚˋ","用":"ㄩㄥˋ","輕":"ㄑㄧㄥ","硬":"ㄧㄥˋ","塑":"ㄙㄨˋ","膠":"ㄐㄧㄠ","時":"ㄕˊ","想":"ㄒㄧㄤˇ","往":"ㄨㄤˇ","外":"ㄨㄞˋ","飛":"ㄈㄟ","後":"ㄏㄡˋ","待":"ㄉㄞˋ","續":"ㄒㄩˋ","堅":"ㄐㄧㄢ","固":"ㄍㄨˋ","慣":"ㄍㄨㄢˋ","性":"ㄒㄧㄥˋ","藍":"ㄌㄢˊ","色":"ㄙㄜˋ","閃":"ㄕㄢˇ","吧":"˙ㄅㄚ","阿":"ㄚ","凱":"ㄎㄞˇ","喜":"ㄒㄧˇ","歡":"ㄏㄨㄢ","研":"ㄧㄢˊ","究":"ㄐㄧㄡ","為":"ㄨㄟˋ","紅":"ㄏㄨㄥˊ","火":"ㄏㄨㄛˇ","焰":"ㄧㄢˋ","號":"ㄏㄠˋ","世":"ㄕˋ","界":"ㄐㄧㄝˋ","責":"ㄗㄜˊ","還":"ㄏㄞˊ","所":"ㄙㄨㄛˇ","以":"ㄧˇ","緊":"ㄐㄧㄣˇ","速":"ㄙㄨˋ","都":"ㄉㄡ","面":"ㄇㄧㄢˋ","把":"ㄅㄚˇ","玩":"ㄨㄢˊ","具":"ㄐㄩˋ","放":"ㄈㄤˋ","板":"ㄅㄢˇ","跟":"ㄍㄣ","毯":"ㄊㄢˇ","接":"ㄐㄧㄝ","按":"ㄢˋ","東":"ㄉㄨㄥ","西":"ㄒㄧ","重":"ㄓㄨㄥˋ","衝":"ㄔㄨㄥ","刺":"ㄘˋ","或":"ㄏㄨㄛˋ","流":"ㄌㄧㄡˊ","型":"ㄒㄧㄥˊ","殼":"ㄎㄜˊ","出":"ㄔㄨ","斜":"ㄒㄧㄝˊ","故":"ㄍㄨˋ","事":"ㄕˋ","敬":"ㄐㄧㄥˋ","請":"ㄑㄧㄥˇ","新":"ㄒㄧㄣ","手":"ㄕㄡˇ","冒":"ㄇㄠˋ","方":"ㄈㄤ","六":"ㄌㄧㄡˋ","午":"ㄨˇ","能":"ㄋㄥˊ","源":"ㄩㄢˊ","定":"ㄉㄧㄥˋ","高":"ㄍㄠ","度":"ㄉㄨˋ","點":"ㄉㄧㄢˇ","照":"ㄓㄠˋ","原":"ㄩㄢˊ","向":"ㄒㄧㄤˋ","走":"ㄗㄡˇ","前":"ㄑㄧㄢˊ","模":"ㄇㄛˊ","店":"ㄉㄧㄢˋ","橫":"ㄏㄥˊ","拿":"ㄋㄚˊ","機":"ㄐㄧ","迎":"ㄧㄥˊ","正":"ㄓㄥˋ","確":"ㄑㄩㄝˋ","答":"ㄉㄚˊ","案":"ㄢˋ","這":"ㄓㄜˋ","裡":"ㄌㄧˇ","每":"ㄇㄟˇ","忙":"ㄇㄤˊ","日":"ㄖˋ","水":"ㄕㄨㄟˇ","完":"ㄨㄢˊ","讓":"ㄖㄤˋ","過":"ㄍㄨㄛˋ","準":"ㄓㄨㄣˇ","備":"ㄅㄟˋ","然":"ㄖㄢˊ","相":"ㄒㄧㄤ","信":"ㄒㄧㄣˋ","清":"ㄑㄧㄥ","楚":"ㄔㄨˇ","怎":"ㄗㄣˇ","碰":"ㄆㄥˋ","磁":"ㄘˊ","鐵":"ㄊㄧㄝˇ","科":"ㄎㄜ","問":"ㄨㄣˋ","題":"ㄊㄧˊ","撞":"ㄓㄨㄤˋ","順":"ㄕㄨㄣˋ","場":"ㄔㄤˇ","成":"ㄔㄥˊ","對":"ㄉㄨㄟˋ","結":"ㄐㄧㄝˊ","局":"ㄐㄩˊ","繼":"ㄐㄧˋ","誕":"ㄉㄢˋ","生":"ㄕㄥ","啊":"˙ㄚ","終":"ㄓㄨㄥ","池":"ㄔˊ","台":"ㄊㄞˊ","爬":"ㄆㄚˊ","調":"ㄉㄧㄠˋ","整":"ㄓㄥˇ","謝":"ㄒㄧㄝˋ","讀":"ㄉㄨˊ","乖":"ㄍㄨㄞ","越":"ㄩㄝˋ","候":"ㄏㄡˋ","保":"ㄅㄠˇ","護":"ㄏㄨˋ","軟":"ㄖㄨㄢˇ","橡":"ㄒㄧㄤˋ","摩":"ㄇㄛˊ","需":"ㄒㄩ","住":"ㄓㄨˋ","磨":"ㄇㄛˊ","更":"ㄍㄥˋ","條":"ㄊㄧㄠˊ","和":"ㄏㄜˊ","盒":"ㄏㄜˊ","給":"ㄍㄟˇ","通":"ㄊㄨㄥ","吃":"ㄔ","那":"ㄋㄚˋ","陸":"ㄌㄨˋ","晨":"ㄔㄣˊ","進":"ㄐㄧㄣˋ","領":"ㄌㄧㄥˇ","雷":"ㄌㄟˊ","克":"ㄎㄜˋ","斯":"ㄙ","存":"ㄘㄨㄣˊ","風":"ㄈㄥ","樣":"ㄧㄤˋ","麥":"ㄇㄞˋ","叔":"ㄕㄨ","黃":"ㄏㄨㄤˊ","橘":"ㄐㄩˊ","關":"ㄍㄨㄢ","傳":"ㄔㄨㄢˊ","鿿":"ㄒㄧㄥˋ"};
+var ZYR={"你贏不了的":"ㄋㄧˇ ㄧㄥˊ ㄅㄨˋ ㄌㄧㄠˇ ˙ㄉㄜ"};
+/* ===== Story, parts and science content (all bilingual) ===== */
+var CAST = {
+  lucas: { zh: "陸晨", en: "Lucas", img: "p_lucas", col: "#f76707", pitch: 1.25 },
+  kai:   { zh: "阿凱", en: "Kai", img: "p_kai", col: "#2f9e44", pitch: 1.0 },
+  benny: { zh: "小斌", en: "Benny", img: "p_benny", col: "#f59f00", pitch: 1.4 },
+  max:   { zh: "麥叔叔", en: "Uncle Max", img: "p_max", col: "#1864ab", pitch: 0.8 },
+  rex:   { zh: "雷克斯", en: "Rex", img: "p_rex", col: "#e03131", pitch: 1.05 },
+  narr:  { zh: "", en: "", img: "", col: "#495057", pitch: 1.0 }
+};
+
+/* Story scenes. Each line: [who, zh, en]. */
+var SCENES = {
+  shop: { bg: "bg_shop", lines: [
+    ["narr", "星期六下午，陸晨走進了齒輪模型店。", "Saturday afternoon. Lucas walks into the Gear Up Hobby Shop."],
+    ["max", "歡迎！你是第一次來嗎？", "Welcome! Is this your first time here?"],
+    ["lucas", "哇！好多小車！它們會自己跑嗎？", "Whoa! So many little cars! Do they run by themselves?"],
+    ["max", "這是四驅車。裡面有馬達跟電池，放上跑道就會衝出去！", "These are Mini 4WD cars. A motor and batteries inside make them zoom down the track!"],
+    ["kai", "不只是快喔。每一個零件都很重要。", "It's not just about speed. Every part matters."],
+    ["lucas", "你是誰？", "Who are you?"],
+    ["kai", "我是阿凱。我最喜歡研究車子為什麼會跑。", "I'm Kai. I love figuring out WHY cars go."],
+    ["max", "下星期公園有社區盃比賽。陸晨，要不要自己組一台車？", "There's a Neighborhood Cup race in the park next week. Lucas, want to build your own car?"],
+    ["lucas", "要！我要組全世界最快的車！", "Yes! I'll build the fastest car in the world!"],
+    ["max", "好！這盒給你。我們一個零件一個零件來。", "Great! This kit is yours. Let's go one part at a time."]
+  ]},
+  test: { bg: "bg_shop", lines: [
+    ["max", "組好了！先在測試跑道跑一圈看看。", "All built! Let's try one lap on the test track."],
+    ["kai", "看清楚喔：上坡、彎道，車子哪裡變慢？", "Watch closely: on the hill and in the curves, where does the car slow down?"]
+  ]},
+  park: { bg: "bg_park", lines: [
+    ["narr", "比賽日！公園的社區盃開始了！", "Race day! The Neighborhood Cup in the park is starting!"],
+    ["benny", "加油！加油！哇，你的車好帥！", "Go, go, go! Whoa, your car looks so cool!"],
+    ["lucas", "謝謝！你是誰？", "Thanks! Who are you?"],
+    ["benny", "我是小斌！我還沒有車，可是我最會加油了！", "I'm Benny! I don't have a car yet, but I'm the best cheerer!"],
+    ["rex", "哼，新手。我的紅色火焰號裝了最快的齒輪，你贏不了的。", "Hmph, a beginner. My Red Blaze has the fastest gears. You can't win."],
+    ["kai", "最快的齒輪不一定最好，要看跑道。", "The fastest gear isn't always the best. It depends on the track."],
+    ["max", "這條跑道有一個上坡和四個彎道。三圈決勝負！", "This track has one hill and four curves. Three laps to win!"]
+  ]},
+  win: { bg: "bg_park", lines: [
+    ["lucas", "我贏了！每一個零件都有幫忙！", "I won! Every single part helped!"],
+    ["rex", "哼……上坡輸了。下次我也要換力量齒輪。", "Hmph... I lost on the hill. Next time I'm getting power gears too."],
+    ["kai", "陸晨，你的車在彎道又快又穩。我們組一隊吧！", "Lucas, your car was fast AND steady in the curves. Let's make a team!"],
+    ["benny", "我也要！我負責加油，也要學組車！", "Me too! I'll cheer, and I'll learn to build!"],
+    ["lucas", "好！我們就叫藍色閃電隊！下一站：全國大賽，然後是世界大賽！", "Yes! We're Team Blue Bolt! Next stop: the national race, then the World Series!"],
+    ["narr", "第一集完。待續……", "End of Episode 1. To be continued..."]
+  ]}
+};
+
+/* Garage build steps. pick = a choice the kid makes (changes the car). */
+var PARTS = [
+  { id: "chassis", img: "x_chassis", zh: "底盤", en: "Chassis",
+    what: ["底盤是車子的骨架，所有零件都裝在上面。", "The chassis is the car's skeleton. Every part attaches to it."],
+    sci: ["底盤用又輕又硬的塑膠做的。車子越輕，馬達越容易推動它。", "It's made of light, stiff plastic. The lighter the car, the easier it is for the motor to push it."],
+    demo: null,
+    q: { zh: "為什麼底盤要輕？", en: "Why should the chassis be light?",
+      a: [["輕的車比較容易加速", "A light car speeds up more easily"], ["輕的車比較好看", "Light cars look nicer"], ["輕的車不需要電池", "Light cars don't need batteries"]],
+      why: ["推輕的東西比推重的東西容易，所以輕的車加速比較快。", "Pushing something light is easier than pushing something heavy, so a light car speeds up faster."] } },
+  { id: "motor", img: "x_motor", zh: "馬達", en: "Motor",
+    what: ["馬達把電變成轉動，讓輪子轉起來。", "The motor turns electricity into spinning, and that turns the wheels."],
+    sci: ["馬達裡面有磁鐵跟線圈。電流過線圈，線圈也變成磁鐵，一推一拉就轉起來了！", "Inside are magnets and a coil of wire. Electricity turns the coil into a magnet too. Push, pull, spin!"],
+    demo: "motor",
+    pick: { key: "motor", zh: "選一個馬達", en: "Choose a motor", opts: [
+      { v: "normal", zh: "一般馬達", en: "Normal motor", d: ["穩穩的，比較好控制。", "Steady and easy to control."] },
+      { v: "turbo", zh: "衝刺馬達", en: "Turbo motor", d: ["轉得更快！但是彎道比較難控制。", "Spins faster! But harder to handle in curves."] }] },
+    q: { zh: "馬達把什麼變成轉動？", en: "The motor turns what into spinning?",
+      a: [["電", "Electricity"], ["水", "Water"], ["風", "Wind"]],
+      why: ["電流讓線圈變成磁鐵，磁鐵一推一拉就轉動。", "Electric current makes the coil a magnet, and magnets push and pull to spin it."] } },
+  { id: "battery", img: "x_battery", zh: "電池", en: "Batteries",
+    what: ["電池存著電，是車子的能量來源。", "Batteries store electricity. They are the car's energy."],
+    sci: ["電要走一個完整的圈圈，叫做電路。圈圈斷掉，電就停了。", "Electricity must travel around a full loop called a circuit. Break the loop and it stops."],
+    demo: "circuit",
+    q: { zh: "電路斷掉了，馬達會怎樣？", en: "If the circuit loop is broken, what does the motor do?",
+      a: [["停下來", "It stops"], ["轉更快", "It spins faster"], ["倒著轉", "It spins backward"]],
+      why: ["電只能在完整的圈圈裡流動。圈圈斷了，電流就停了。", "Electricity can only flow around a complete loop. Break it and the current stops."] } },
+  { id: "gears", img: "x_gears", zh: "齒輪", en: "Gears",
+    what: ["齒輪把馬達的轉動傳到輪子。", "Gears pass the motor's spin to the wheels."],
+    sci: ["小齒輪帶大齒輪：轉得慢，可是力氣大。兩個齒輪大小差不多：轉得快，可是力氣小。", "A small gear turning a big gear: slower, but stronger. Gears closer in size: faster, but weaker."],
+    demo: "gears",
+    pick: { key: "gear", zh: "選一組齒輪", en: "Choose a gear set", opts: [
+      { v: "speed", zh: "速度齒輪", en: "Speed gears", d: ["最高速度很快！上坡沒力。", "Great top speed! Weak on hills."] },
+      { v: "power", zh: "力量齒輪", en: "Power gears", d: ["上坡很有力，最高速度慢一點。", "Strong on hills, a little less top speed."] }] },
+    q: { zh: "要爬上坡，哪一種齒輪比較好？", en: "Which gears help a car climb a hill?",
+      a: [["力量齒輪", "Power gears"], ["速度齒輪", "Speed gears"], ["不要齒輪", "No gears"]],
+      why: ["小齒輪帶大齒輪，轉得慢但是力氣大，上坡才推得動。", "A small gear turning a big gear is slow but strong, so it can push the car up a hill."] } },
+  { id: "tires", img: "x_tires", zh: "輪胎", en: "Tires",
+    what: ["輪胎讓車子抓住跑道。", "Tires let the car grip the track."],
+    sci: ["輪胎跟跑道磨來磨去的力量叫做摩擦力，就是抓地力。軟橡膠摩擦力大，硬塑膠容易滑。", "The rubbing force between tire and track is called friction. That's grip! Soft rubber grips; hard plastic slides."],
+    demo: "tires",
+    pick: { key: "tire", zh: "選輪胎", en: "Choose tires", opts: [
+      { v: "hard", zh: "硬輪胎", en: "Hard tires", d: ["直線快一點點，彎道很滑。", "A tiny bit faster on straights, slippery in curves."] },
+      { v: "soft", zh: "軟輪胎", en: "Soft tires", d: ["抓地力好，彎道很穩。", "Good grip, steady in curves."] }] },
+    q: { zh: "哪一種輪胎抓地力比較好？", en: "Which tire grips better?",
+      a: [["軟橡膠", "Soft rubber"], ["硬塑膠", "Hard plastic"], ["冰塊", "Ice"]],
+      why: ["軟橡膠跟跑道的摩擦力比較大，所以抓得比較緊。", "Soft rubber has more friction with the track, so it holds on tighter."] } },
+  { id: "rollers", img: "x_rollers", zh: "導輪", en: "Rollers",
+    what: ["導輪裝在車子的四個角，碰到跑道的牆就會轉。", "Rollers sit at the car's corners and roll along the track wall."],
+    sci: ["車子轉彎時，會想一直往前直直衝，這叫做慣性。導輪靠著牆，幫車子轉彎，不會脫軌。", "In a curve the car wants to keep going straight. That's called inertia. Rollers lean on the wall so the car turns instead of flying out."],
+    demo: "rollers",
+    pick: { key: "roller", zh: "要裝導輪嗎？", en: "Add rollers?", opts: [
+      { v: "yes", zh: "裝導輪", en: "Add rollers", d: ["靠著牆，安全轉彎。", "Leans on the wall and turns safely."] },
+      { v: "no", zh: "不要裝", en: "No rollers", d: ["比較輕……可是很危險！", "Lighter... but risky!"] }] },
+    q: { zh: "車子在彎道想一直往前直走，這叫什麼？", en: "In a curve, the car wants to keep going straight. What is that called?",
+      a: [["慣性", "Inertia"], ["重力", "Gravity"], ["磁力", "Magnetism"]],
+      why: ["會動的東西想一直照原來的方向走，這就是慣性。", "Moving things want to keep going the same way. That's inertia."] } },
+  { id: "body", img: "x_body", zh: "車殼", en: "Body shell",
+    what: ["車殼保護裡面的零件。", "The body shell protects the parts inside."],
+    sci: ["車子跑的時候，空氣會往後推它，叫做空氣阻力。流線型的車殼讓空氣滑過去。", "When the car runs, air pushes back on it. That's air resistance, or drag. A sleek shape lets the air slide past."],
+    demo: "air",
+    pick: { key: "body", zh: "選車殼", en: "Choose a body", opts: [
+      { v: "sleek", zh: "流線型", en: "Sleek", d: ["空氣滑過去，跑得快。", "Air slides past. Faster!"] },
+      { v: "boxy", zh: "方塊型", en: "Boxy", d: ["很堅固，可是空氣推得比較多。", "Tough, but the air pushes back more."] }] },
+    q: { zh: "空氣往後推車子，叫做什麼？", en: "Air pushing back on a moving car is called what?",
+      a: [["空氣阻力", "Air resistance"], ["電流", "Electric current"], ["磁力", "Magnetism"]],
+      why: ["車子往前衝，要推開前面的空氣，空氣就往後推車子。", "The car has to push air out of the way, so the air pushes back on the car."] } }
+];
+
+/* Starting build: before the kid picks anything */
+var DEFAULT_BUILD = { motor: "normal", gear: "speed", tire: "hard", roller: "no", body: "boxy" };
+
+/* Opponents in race 1 */
+var RIVALS = [
+  { who: "rex", car: "c_red", build: { motor: "turbo", gear: "speed", tire: "soft", roller: "yes", body: "sleek" } },
+  { who: "kai", car: "c_green", build: { motor: "normal", gear: "power", tire: "soft", roller: "yes", body: "boxy" } }
+];
+
+var TIP = ["在家試試看：把玩具車放在地板跟地毯上推一推，哪一個比較容易滑？那就是摩擦力！",
+  "Try it at home: push a toy car on the hard floor and then on a rug. Which one rolls farther? That's friction!"];
+
+/* Uncle Max's advice after a run: [zh, en] */
+var ADVICE = {
+  crash: ["哎呀，脫軌了！彎道時車子想往外飛。裝上導輪，讓它靠著牆轉彎。", "Oops, course out! In a curve the car wants to fly outward. Add rollers so it can lean on the wall."],
+  hill: ["上坡變好慢。試試力量齒輪：小齒輪帶大齒輪，力氣比較大。", "It slowed way down on the hill. Try power gears: a small gear turning a big one is stronger."],
+  grip: ["彎道太滑了，速度掉很多。軟輪胎的摩擦力比較大。", "Too slippery in the curves, it lost lots of speed. Soft tires have more friction."],
+  slow: ["很穩！可是直線不夠快。換衝刺馬達或流線型車殼試試。", "Nice and steady! But not fast enough on the straights. Try the turbo motor or a sleek body."],
+  good: ["跑得太棒了！又快又穩，準備比賽吧！", "Awesome run! Fast and steady. You're ready to race!"]
+};
+/* ===== Car physics (simple, kid-explainable) and the track ===== */
+var PHYS = {
+  motor: { normal: { v: 1.0, t: 1.0 }, turbo: { v: 1.25, t: 1.15 } },
+  gear: { speed: { top: 1.1, tq: 0.8 }, power: { top: 1.0, tq: 1.3 } },
+  tire: { hard: { grip: 0.75, roll: 1.03 }, soft: { grip: 1.1, roll: 1.0 } },
+  body: { sleek: 1.04, boxy: 0.96 },
+  roller: { yes: 1.35, no: 1.0 },
+  CRASH_NO_ROLLERS: 9,   // without rollers, faster than this in a curve = course out
+  CURVE: 10.2,           // curve speed limit with rollers = CURVE * grip * 1.35
+  BASE: 15
+};
+function carStats(b) {
+  var m = PHYS.motor[b.motor], g = PHYS.gear[b.gear], t = PHYS.tire[b.tire];
+  var top = PHYS.BASE * m.v * g.top * t.roll * PHYS.body[b.body];
+  var torque = m.t * g.tq;
+  return {
+    top: top,
+    accel: 9 * torque,
+    hill: Math.min(1, 0.75 * torque),
+    curve: b.roller === "yes" ? PHYS.CURVE * t.grip * PHYS.roller.yes : PHYS.CRASH_NO_ROLLERS,
+    rollers: b.roller === "yes"
+  };
+}
+/* 0..1 bars for the stats panel */
+function carBars(b) {
+  var s = carStats(b);
+  return { speed: Math.min(1, (s.top - 12) / 12), hill: (s.hill - 0.6) / 0.4, grip: b.roller === "yes" ? Math.min(1, (s.curve - 7) / 9) : 0.05, safe: s.rollers ? 1 : 0 };
+}
+
+/* Track: a rounded rectangle with a hill on the bottom straight. Units are "track units". */
+var TRACK = (function () {
+  var segs = [["S", 36], ["C", 11], ["S", 14], ["C", 11], ["S", 6], ["H", 24], ["S", 6], ["C", 11], ["S", 14], ["C", 11]];
+  var pts = [], x = 0, y = 0, h = 0, s = 0, STEP = 0.25, hills = [], curves = [];
+  pts.push({ x: x, y: y, h: h, s: 0, type: "S" });
+  segs.forEach(function (g) {
+    var t = g[0], len = t === "C" ? Math.PI / 2 * g[1] : g[1], n = Math.round(len / STEP), s0 = s;
+    for (var i = 0; i < n; i++) {
+      if (t === "C") h += (Math.PI / 2) / n;
+      x += Math.cos(h) * STEP; y += Math.sin(h) * STEP; s += STEP;
+      pts.push({ x: x, y: y, h: h, s: s, type: t });
+    }
+    if (t === "H") hills.push([s0, s]);
+    if (t === "C") curves.push([s0, s]);
+  });
+  var minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+  pts.forEach(function (p) { minX = Math.min(minX, p.x); minY = Math.min(minY, p.y); maxX = Math.max(maxX, p.x); maxY = Math.max(maxY, p.y); });
+  return { pts: pts, len: s, hills: hills, curves: curves, box: [minX, minY, maxX, maxY], step: STEP };
+})();
+function trackAt(s) {
+  s = ((s % TRACK.len) + TRACK.len) % TRACK.len;
+  var i = Math.min(TRACK.pts.length - 1, Math.round(s / TRACK.step));
+  return TRACK.pts[i];
+}
+function segType(s) { return trackAt(s).type; }
+function hillPhase(s) { // 0..1 along the hill, or -1
+  s = ((s % TRACK.len) + TRACK.len) % TRACK.len;
+  for (var i = 0; i < TRACK.hills.length; i++) { var h = TRACK.hills[i]; if (s >= h[0] && s <= h[1]) return (s - h[0]) / (h[1] - h[0]); }
+  return -1;
+}
+
+/* One racer. step(dt) advances it; events are pushed to ev[] for commentary. */
+function Racer(build, opts) {
+  this.b = build; this.st = carStats(build); this.s = opts.start || 0; this.v = 0;
+  this.lap = 0; this.done = false; this.out = false; this.t = 0; this.lane = opts.lane || 0;
+  this.laps = opts.laps; this.log = { hillSlow: 0, curveSlow: 0, scrape: 0 }; this.ev = [];
+  this.outPos = null;
+}
+Racer.prototype.step = function (dt) {
+  if (this.done || this.out) { if (this.out && this.outPos) { var o = this.outPos; o.x += o.vx * dt; o.y += o.vy * dt; o.rot += o.spin * dt; o.z += o.vz * dt; o.vz -= 30 * dt; if (o.z < 0) { o.z = 0; o.vx *= 0.9; o.vy *= 0.9; o.spin *= 0.9; o.vz = 0; } } return; }
+  this.t += dt;
+  var st = this.st, type = segType(this.s), target = st.top, hp = hillPhase(this.s);
+  if (hp >= 0 && hp < 0.5) { target = st.top * st.hill; }
+  if (type === "C") {
+    if (this.v > st.curve) {
+      if (!st.rollers) { this.crash(); return; }
+      this.log.curveSlow += (this.v - st.curve) * dt; this.log.scrape += dt;
+      this.v = Math.max(st.curve, this.v - 45 * dt);
+      if (!this.scraping) { this.scraping = true; this.ev.push("scrape"); }
+    } else this.scraping = false;
+    target = Math.min(target, st.curve);
+  } else this.scraping = false;
+  if (hp >= 0 && hp < 0.5 && this.v > target) { this.log.hillSlow += (this.v - target) * dt; this.v = Math.max(target, this.v - 14 * dt); }
+  else if (this.v < target) this.v = Math.min(target, this.v + st.accel * dt * (1 - this.v / (st.top * 1.05)) * 2.2);
+  else if (type !== "C") this.v = Math.max(target, this.v - 10 * dt);
+  if (hp >= 0.5 && hp <= 1) this.v = Math.min(st.top * 1.08, this.v + 6 * dt); // downhill boost
+  var before = this.s;
+  this.s += this.v * dt;
+  if (Math.floor(this.s / TRACK.len) > Math.floor(before / TRACK.len)) {
+    this.lap++; this.ev.push("lap");
+    if (this.lap >= this.laps) { this.done = true; this.ev.push("finish"); }
+  }
+};
+Racer.prototype.crash = function () {
+  this.out = true; this.ev.push("crash");
+  var p = trackAt(this.s), sp = this.v;
+  this.outPos = { x: p.x, y: p.y, rot: p.h, vx: Math.cos(p.h) * sp, vy: Math.sin(p.h) * sp, spin: 9, z: 0, vz: 12 };
+};
+/* Run a whole race instantly (for advice, tests and tuning) */
+function simulate(build, laps) {
+  var r = new Racer(build, { laps: laps || 1 }), n = 0;
+  while (!r.done && !r.out && n < 20000) { r.step(1 / 60); n++; }
+  return r;
+}
+function advise(r) {
+  if (r.out) return "crash";
+  var b = r.b;
+  if (b.gear === "speed" && r.log.hillSlow > 6) return "hill";
+  if (b.tire === "hard") return "grip";
+  if (b.motor === "normal" || b.body === "boxy") return "slow";
+  if (b.gear === "speed") return "hill";
+  return "good";
+}
+/* ===== Bilingual text helpers: Chinese with zhuyin ruby + English ===== */
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+function zh(text) {
+  return String(text).replace(/[一-鿿]+|[^一-鿿]+/g, function (run) {
+    if (!/[一-鿿]/.test(run)) return esc(run);
+    var zs = ZYR[run] ? ZYR[run].split(" ") : null, out = "";
+    for (var i = 0; i < run.length; i++) {
+      var z = zs ? zs[i] : ZYC[run[i]];
+      out += z ? "<ruby>" + run[i] + "<rt>" + z + "</rt></ruby>" : run[i];
+    }
+    return out;
+  });
+}
+/* A two-line label: Chinese (with zhuyin) over English */
+function bi(z, e, cls) { return "<span class='bi " + (cls || "") + "'><span class='z'>" + zh(z) + "</span><span class='e'>" + esc(e) + "</span></span>"; }
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.random() * (i + 1) | 0, t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function A(name) { return "assets/" + name + ".webp"; }
+
+/* Read-aloud through the shared Dino World voice */
+var Read = {
+  on: true,
+  pair: function (z, e, pitch, onEnd) {
+    if (!this.on || !window.KAVoice) { if (onEnd) onEnd(); return; }
+    try { KAVoice.stop(); KAVoice.sayParts([[e, "en-US"], [z, "zh-TW"]].filter(function (p) { return p[0]; }), { pitch: pitch || 1, onEnd: onEnd }); } catch (x) { if (onEnd) onEnd(); }
+  },
+  stop: function () { try { window.KAVoice && KAVoice.stop(); } catch (x) {} }
+};
+/* ===== Music (synth anthem on title/menu) and race sounds. Web Audio only. ===== */
+var Music = (function () {
+  var ac, master, timer = null, playing = false, step = 0, next = 0;
+  // A bright, heroic loop in C: melody (scale degrees), chords per bar
+  var BPM = 150, Q = 60 / BPM / 2; // eighth notes
+  var MEL = [7, 9, 10, 12, 12, -1, 10, 12, 14, 12, 10, 9, 7, -1, 5, 7, 9, 9, 10, 9, 7, 5, 4, -1, 2, 4, 5, 7, 9, 10, 12, -1,
+             12, 12, 14, 12, 10, 12, 14, 16, 17, 16, 14, 12, 10, 9, 10, -1, 9, 10, 12, 10, 9, 7, 5, 4, 5, 7, 9, 7, 7, -1, -1, -1];
+  var CH = [[0, 4, 7], [5, 9, 12], [7, 11, 14], [0, 4, 7], [9, 12, 16], [5, 9, 12], [7, 11, 14], [0, 4, 7]];
+  var SC = [0, 2, 4, 5, 7, 9, 11];
+  function hz(semi) { return 261.63 * Math.pow(2, semi / 12); }
+  function deg(d) { var o = Math.floor(d / 7); return SC[((d % 7) + 7) % 7] + 12 * o; }
+  function note(f, t, d, type, v) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g).connect(master); o.start(t); o.stop(t + d + 0.05);
+  }
+  function drum(t, kick) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.frequency.setValueAtTime(kick ? 140 : 300, t); o.frequency.exponentialRampToValueAtTime(kick ? 45 : 120, t + 0.12);
+    g.gain.setValueAtTime(kick ? 0.5 : 0.12, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+    o.connect(g).connect(master); o.start(t); o.stop(t + 0.2);
+  }
+  function tick() {
+    while (next < ac.currentTime + 0.2) {
+      var i = step % MEL.length, bar = Math.floor(i / 8) % CH.length;
+      if (MEL[i] >= 0) note(hz(deg(MEL[i])), next, Q * 1.6, "square", 0.05);
+      if (i % 8 === 0) CH[bar].forEach(function (c) { note(hz(c - 12), next, Q * 7.5, "sawtooth", 0.025); });
+      if (i % 2 === 0) note(hz(CH[bar][0] - 24), next, Q * 1.2, "triangle", 0.18);
+      if (i % 4 === 0) drum(next, true); else if (i % 4 === 2) drum(next, false);
+      next += Q; step++;
+    }
+  }
+  return {
+    start: function () {
+      if (playing || KAKit.muted()) return; ac = KAKit.ac(); if (!ac) return;
+      master = ac.createGain(); master.gain.value = 0.0001; master.connect(ac.destination);
+      master.gain.exponentialRampToValueAtTime(0.7, ac.currentTime + 0.6);
+      next = ac.currentTime + 0.05; playing = true; timer = setInterval(tick, 50);
+    },
+    stop: function () {
+      if (!playing) return; playing = false; clearInterval(timer);
+      var m = master; try { m.gain.cancelScheduledValues(ac.currentTime); m.gain.setValueAtTime(m.gain.value, ac.currentTime); m.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.8); } catch (e) {}
+      setTimeout(function () { try { m.disconnect(); } catch (e) {} }, 1000);
+    },
+    get playing() { return playing; }
+  };
+})();
+
+/* Little motor whine that follows Lucas's car speed */
+var Engine = (function () {
+  var ac, o, o2, g, f;
+  return {
+    start: function () {
+      if (o || KAKit.muted()) return; ac = KAKit.ac(); if (!ac) return;
+      o = ac.createOscillator(); o2 = ac.createOscillator(); g = ac.createGain(); f = ac.createBiquadFilter();
+      o.type = "sawtooth"; o2.type = "square"; f.type = "lowpass"; f.frequency.value = 1400; g.gain.value = 0.0001;
+      o.connect(f); o2.connect(f); f.connect(g).connect(ac.destination); o.start(); o2.start();
+    },
+    set: function (v) { if (!o) return; var t = ac.currentTime; o.frequency.setTargetAtTime(180 + v * 38, t, 0.05); o2.frequency.setTargetAtTime(90 + v * 19, t, 0.05); g.gain.setTargetAtTime(v > 0.2 ? 0.035 : 0.0001, t, 0.08); },
+    stop: function () { if (!o) return; try { g.gain.setTargetAtTime(0.0001, ac.currentTime, 0.05); var a = o, b = o2; setTimeout(function () { a.stop(); b.stop(); }, 300); } catch (e) {} o = null; }
+  };
+})();
+function sfx(n) { KAKit.sfx(n); }
+function beep(f, d) {
+  if (KAKit.muted()) return; var ac = KAKit.ac(); if (!ac) return;
+  var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
+  o.type = "square"; o.frequency.value = f; g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.connect(g).connect(ac.destination); o.start(t); o.stop(t + d + 0.02);
+}
+/* ===== Screens, profiles, story player, overlays ===== */
+var DB = KAKit.store("mini4wd", { kids: {} });
+var BEST = { motor: "turbo", gear: "power", tire: "soft", roller: "yes", body: "sleek" };
+var G = { kid: null, kd: null, tester: false };
+
+function freshKid() { return { stage: "shop", step: 0, build: JSON.parse(JSON.stringify(DEFAULT_BUILD)), points: 0, quizDone: {}, ep1: false, races: 0, settings: {} }; }
+function save() { if (!G.tester) DB.save(); }
+function pickKid(kid) {
+  G.tester = kid === "tester";
+  if (G.tester) { G.kd = freshKid(); G.kid = "tester"; return; }
+  DB.kids = DB.kids || {};
+  if (!DB.kids[kid]) DB.kids[kid] = freshKid();
+  G.kid = kid; G.kd = DB.kids[kid];
+}
+
+var CUR = "sTitle";
+function show(id) {
+  $$(".scr").forEach(function (s) { s.classList.toggle("on", s.id === id); });
+  CUR = id;
+  var home = id !== "sTitle" && id !== "sMenu";
+  $("#bHome").style.display = home ? "" : "none";
+  if (home) Music.stop(); else Music.start();
+  if (id !== "sRace") Engine.stop();
+}
+
+/* ---------- overlay ---------- */
+function ovl(html) { $("#ovlCard").innerHTML = html; $("#ovl").classList.add("on"); $("#ovl").scrollTop = 0; }
+function closeOvl() { $("#ovl").classList.remove("on"); }
+
+/* ---------- menu ---------- */
+function refreshMenu() {
+  var k = DB.kids && DB.kids.lucas;
+  var sub = !k ? bi("新的冒險！", "A new adventure!") : k.ep1 ? bi("第一集完成 ⭐", "Episode 1 done ⭐") : bi("繼續", "Continue");
+  $("#lucasSub").innerHTML = sub;
+  $("#bRead").innerHTML = (Read.on ? "🔊 " : "🔇 ") + bi("讀出來", "Read aloud");
+}
+var STAGES = [["shop", "故事：模型店", "Story: hobby shop"], ["garage", "組車", "Build the car"], ["test", "測試跑道", "Test run"], ["park", "比賽日", "Race day"], ["race", "第一場比賽", "Race 1"], ["win", "結局", "Ending"]];
+function testerMenu() {
+  var j = $("#jump");
+  j.innerHTML = STAGES.map(function (s) { return "<button class='btn white' data-s='" + s[0] + "'>" + bi(s[1], s[2]) + "</button>"; }).join("");
+  j.classList.add("on");
+  $$("button", j).forEach(function (b) { b.onclick = function () { sfx("tap"); pickKid("tester"); if (b.dataset.s !== "shop" && b.dataset.s !== "garage") G.kd.build = JSON.parse(JSON.stringify(BEST)); go(b.dataset.s); }; });
+}
+
+/* ---------- story ---------- */
+var Story = { key: null, i: 0, done: null };
+function playScene(key, done) {
+  Story.key = key; Story.i = 0; Story.done = done;
+  var sc = SCENES[key];
+  $("#sStory .bg").src = A(sc.bg);
+  $$(".por").forEach(function (p) { p.classList.remove("on", "talk", "dim", "hero"); p.removeAttribute("src"); });
+  show("sStory");
+  storyLine();
+}
+function storyLine() {
+  var sc = SCENES[Story.key], ln = sc.lines[Story.i], who = ln[0], c = CAST[who];
+  var L = $(".por.L"), R = $(".por.R"), d = $("#dlg");
+  if (who === "lucas") { L.src = A(c.img); L.classList.add("on", "hero"); }
+  else if (who !== "narr") { if (R.dataset.who !== who) { R.src = A(c.img); R.dataset.who = who; } R.classList.add("on"); }
+  L.classList.toggle("talk", who === "lucas"); R.classList.toggle("talk", who !== "lucas" && who !== "narr");
+  L.classList.toggle("dim", who !== "lucas" && who !== "narr"); R.classList.toggle("dim", who === "lucas");
+  d.classList.toggle("narr", who === "narr");
+  var nm = $(".nm", d); nm.innerHTML = who === "narr" ? "" : zh(c.zh) + " " + esc(c.en); nm.style.background = c.col;
+  $(".zh", d).innerHTML = zh(ln[1]); $(".en", d).textContent = ln[2];
+  Read.pair(ln[1], ln[2], c.pitch);
+}
+function storyNext() {
+  Read.stop(); sfx("tap");
+  var sc = SCENES[Story.key];
+  if (++Story.i >= sc.lines.length) { var f = Story.done; Story.done = null; if (f) f(); return; }
+  storyLine();
+}
+
+/* ---------- flow ---------- */
+function go(stage) {
+  var k = G.kd; k.stage = stage; save(); closeOvl();
+  if (stage === "shop") playScene("shop", function () { k.step = 0; go("garage"); });
+  else if (stage === "garage") Garage.start(k.step || 0, function () { go("test"); });
+  else if (stage === "test") playScene("test", function () { Race.start("practice"); });
+  else if (stage === "park") playScene("park", function () { go("race"); });
+  else if (stage === "race") Race.start("race");
+  else if (stage === "win") playScene("win", finishEpisode);
+}
+function maxSays(adv, buttons) {
+  var a = ADVICE[adv];
+  ovl("<div class='who'><img src='" + A("p_max") + "' alt=''><div>" + bi(a[0], a[1]) + "</div></div><div class='act'>" + buttons + "</div>");
+  Read.pair(a[0], a[1], CAST.max.pitch);
+}
+function finishEpisode() {
+  var k = G.kd; k.ep1 = true; k.stage = "done"; save();
+  var pts = k.points || 0, max = PARTS.length * 2, stars = pts >= max - 1 ? 3 : pts >= max - 5 ? 2 : 1;
+  ovl("<div class='big title-font'>EPISODE 1 CLEAR!</div>" +
+    "<div style='text-align:center'>" + bi("第一集完成！藍色閃電隊誕生了！", "Episode 1 complete! Team Blue Bolt is born!") + "</div>" +
+    "<div class='big stars'>" + "⭐".repeat(stars) + "☆".repeat(3 - stars) + "</div>" +
+    "<div style='text-align:center'>" + bi("科學問題：" + pts + " / " + max + " 分", "Science quiz: " + pts + " / " + max + " points") + "</div>" +
+    "<div class='tip'>💡 " + bi(TIP[0], TIP[1]) + "</div>" +
+    "<div class='tip' style='background:#fff4e6'>🚧 " + bi("下一集：全國大賽，敬請期待！", "Next: Episode 2, the National Race. Coming soon!") + "</div>" +
+    "<div class='act'><button class='btn blue' id='rHome'>🏠 " + bi("回到選單", "Back to menu") + "</button></div>");
+  sfx("win");
+  Read.pair(TIP[0], TIP[1]);
+  $("#rHome").onclick = function () { closeOvl(); Read.stop(); refreshMenu(); show("sMenu"); };
+}
+/* ===== Garage: build the car part by part, with demos, choices and a quiz ===== */
+function renderStats(el, b) {
+  var s = carBars(b), rows = [
+    ["最高速度", "Top speed", s.speed], ["上坡力氣", "Hill power", s.hill], ["彎道抓地", "Curve grip", s.grip], ["安全", "Safety", s.safe]];
+  el.innerHTML = "<b>" + bi("你的車", "Your car") + "</b>" + rows.map(function (r) {
+    var v = Math.max(0.04, Math.min(1, r[2]));
+    return "<div class='stat" + (v < 0.3 ? " warn" : "") + "'><span>" + bi(r[0], r[1]) + "</span><span class='bar'><i style='width:" + (v * 100).toFixed(0) + "%'></i></span></div>";
+  }).join("");
+}
+function pickHTML(p, b, chosen) {
+  return "<div class='picks'><div class='lbl'>" + bi(p.zh, p.en) + "</div><div class='opts'>" + p.opts.map(function (o) {
+    return "<button class='opt" + (chosen && b[p.key] === o.v ? " sel" : "") + "' data-k='" + p.key + "' data-v='" + o.v + "'>" + bi(o.zh, o.en) + "<small>" + zh(o.d[0]) + "<br>" + esc(o.d[1]) + "</small></button>";
+  }).join("") + "</div></div>";
+}
+function gearSVG(teeth, r) {
+  var d = "", n = teeth * 2;
+  for (var i = 0; i < n; i++) {
+    var a0 = (i / n) * Math.PI * 2, a1 = ((i + 1) / n) * Math.PI * 2, rr = i % 2 ? r : r + 7;
+    d += (i ? "L" : "M") + (Math.cos(a0) * rr).toFixed(1) + " " + (Math.sin(a0) * rr).toFixed(1) + "L" + (Math.cos(a1) * rr).toFixed(1) + " " + (Math.sin(a1) * rr).toFixed(1);
+  }
+  return d + "Z";
+}
+
+var Garage = {
+  start: function (step, done) { this.step = step; this.done = done; show("sGarage"); this.render(); },
+  slots: function () {
+    var st = this.step;
+    $("#slots").innerHTML = PARTS.map(function (p, i) { return "<div class='slot" + (i < st ? " in" : i === st ? " cur" : "") + "' title='" + p.en + "'>" + (i < st ? "<img src='" + A(p.img) + "' alt=''>" : "") + "</div>"; }).join("");
+    renderStats($("#stats"), G.kd.build);
+  },
+  render: function () {
+    var p = PARTS[this.step], k = G.kd, self = this;
+    this.picked = !p.pick; this.demoOk = p.demo !== "circuit";
+    $("#gStep").textContent = (this.step + 1) + " / " + PARTS.length;
+    $("#gTitle").innerHTML = bi("組裝你的四驅車", "Build your Mini 4WD");
+    this.slots();
+    var c = $("#gCard");
+    c.innerHTML = "<div class='top'><img class='pimg' src='" + A(p.img) + "' alt=''><h2>" + bi(p.zh, p.en) + "</h2></div>" +
+      "<div class='box what'><span class='lab'>🔧</span><span class='txt'>" + bi(p.what[0], p.what[1]) + "</span><button class='say' data-r='what'>🔊</button></div>" +
+      "<div class='box sci'><span class='lab'>🔬</span><span class='txt'>" + bi(p.sci[0], p.sci[1]) + "</span><button class='say' data-r='sci'>🔊</button></div>" +
+      (p.demo ? "<div class='demo' id='demo'></div>" : "") +
+      (p.pick ? pickHTML(p.pick, k.build, false) : "") +
+      "<div class='act'><button class='btn blue' id='gInstall'>🔧 " + bi("裝上去", "Install") + " ▶</button></div>";
+    $$(".say", c).forEach(function (b) { b.onclick = function () { var t = p[b.dataset.r]; Read.pair(t[0], t[1]); }; });
+    $$(".opt", c).forEach(function (b) {
+      b.onclick = function () {
+        sfx("pop"); k.build[b.dataset.k] = b.dataset.v; self.picked = true; save();
+        $$(".opt", c).forEach(function (o) { o.classList.toggle("sel", o === b); });
+        renderStats($("#stats"), k.build); if (self.onPick) self.onPick(b.dataset.v); self.gate();
+      };
+    });
+    $("#gInstall").onclick = function () { sfx("tap"); Read.stop(); self.quiz(); };
+    this.onPick = null;
+    if (p.demo) Demos[p.demo]($("#demo"), this);
+    this.gate();
+    $("#sGarage .gwrap").scrollTop = 0;
+    Read.pair(p.what[0], p.what[1]);
+  },
+  gate: function () { var b = $("#gInstall"); if (b) b.disabled = !(this.picked && this.demoOk); },
+  quiz: function () {
+    var p = PARTS[this.step], q = p.q, k = G.kd, self = this, tries = 0;
+    var ans = shuffle(q.a.map(function (a, i) { return { a: a, ok: i === 0 }; }));
+    $("#gCard").innerHTML = "<div class='top'><img class='pimg' src='" + A(p.img) + "' alt=''><h2>" + bi("科學問題", "Science question") + "</h2></div>" +
+      "<div class='quiz'><div class='qq'>" + bi(q.zh, q.en) + " <button class='say' id='qSay'>🔊</button></div><div class='ans'>" +
+      ans.map(function (x, i) { return "<button class='btn' data-i='" + i + "'>" + bi(x.a[0], x.a[1]) + "</button>"; }).join("") +
+      "</div><div class='fb' id='qFb'></div><div class='act' id='qAct'></div></div>";
+    $("#qSay").onclick = function () { Read.pair(q.zh, q.en); };
+    Read.pair(q.zh, q.en);
+    $$(".ans .btn", $("#gCard")).forEach(function (b) {
+      b.onclick = function () {
+        var x = ans[+b.dataset.i]; tries++;
+        if (x.ok) {
+          b.classList.add("ok"); sfx("ding");
+          var pts = KAKit.score(tries);
+          if (!k.quizDone[p.id]) { k.points = (k.points || 0) + pts; k.quizDone[p.id] = pts; }
+          self.after(tries === 1 ? ["答對了！⭐⭐", "Correct! ⭐⭐"] : ["答對了！⭐", "Correct! ⭐"], q.why);
+        } else {
+          b.classList.add("no"); b.disabled = true; sfx("buzz");
+          if (tries >= 2) {
+            $$(".ans .btn", $("#gCard")).forEach(function (o) { if (ans[+o.dataset.i].ok) o.classList.add("ok"); });
+            if (!k.quizDone[p.id]) k.quizDone[p.id] = -1;
+            self.after(["正確答案在這裡：", "Here's the right answer:"], q.why);
+          } else { $("#qFb").innerHTML = bi("再試一次！", "Try again!"); Read.pair("再試一次！", "Try again!"); }
+        }
+      };
+    });
+  },
+  after: function (head, why) {
+    var self = this;
+    $$(".ans .btn", $("#gCard")).forEach(function (o) { o.disabled = true; });
+    $("#qFb").innerHTML = bi(head[0], head[1]) + "<div class='tip'>" + bi(why[0], why[1]) + "</div>";
+    Read.pair(head[0] + why[0], head[1] + " " + why[1]);
+    var last = this.step === PARTS.length - 1;
+    $("#qAct").innerHTML = "<button class='btn blue' id='qNext'>" + (last ? bi("車子組好了！", "Car complete!") : bi("下一個零件", "Next part")) + " ▶</button>";
+    $("#qNext").onclick = function () {
+      if (this.disabled) return; this.disabled = true; Read.stop(); sfx("pop"); self.step++; G.kd.step = self.step; save();
+      if (self.step >= PARTS.length) { self.slots(); sfx("win"); setTimeout(self.done, 400); } else self.render();
+    };
+  }
+};
+
+/* ---------- little science demos ---------- */
+var Demos = {
+  motor: function (el) {
+    el.innerHTML = "<img class='motorimg' src='" + A("x_motor") + "' alt=''>" +
+      "<svg viewBox='0 0 120 120' width='110'><circle cx='60' cy='60' r='50' fill='#fff' stroke='#111' stroke-width='3'/><g class='spin' id='mRot' style='animation-play-state:paused;animation-duration:.4s'><rect x='52' y='14' width='16' height='92' rx='6' fill='#e03131' stroke='#111' stroke-width='2'/><text x='60' y='30' text-anchor='middle' font-size='14' font-weight='900' fill='#fff'>N</text><text x='60' y='100' text-anchor='middle' font-size='14' font-weight='900' fill='#fff'>S</text></g></svg>" +
+      "<button class='btn' id='mGo'>⚡ " + bi("通電", "Power on") + "</button>";
+    var on = false;
+    $("#mGo").onclick = function () {
+      on = !on; $(".motorimg", el).classList.toggle("go", on); $("#mRot").style.animationPlayState = on ? "running" : "paused";
+      if (on) { beep(220, 0.25); beep(330, 0.4); }
+    };
+  },
+  circuit: function (el, g) {
+    el.innerHTML = "<svg viewBox='0 0 320 170' width='320'>" +
+      "<path d='M60 50 V20 H130' stroke='#111' stroke-width='5' fill='none'/><path d='M190 20 H260 V50' stroke='#111' stroke-width='5' fill='none'/><path d='M60 120 V150 H260 V120' stroke='#111' stroke-width='5' fill='none'/>" +
+      "<path id='cFlow' d='M60 50 V20 H260 V50 M260 120 V150 H60 V120' stroke='#ffd43b' stroke-width='4' fill='none' class='flow' style='display:none'/>" +
+      "<rect x='35' y='50' width='50' height='70' rx='8' fill='#1c7ed6' stroke='#111' stroke-width='3'/><text x='60' y='92' text-anchor='middle' font-size='26'>⚡</text><text x='60' y='46' text-anchor='middle' font-size='14' font-weight='900'>+</text>" +
+      "<circle cx='260' cy='85' r='34' fill='#dee2e6' stroke='#111' stroke-width='3'/><g class='spin' id='cFan' style='animation-play-state:paused;animation-duration:.35s'><path d='M260 85 L260 58 L270 62 Z M260 85 L287 85 L283 95 Z M260 85 L260 112 L250 108 Z M260 85 L233 85 L237 75 Z' fill='#e03131' stroke='#111' stroke-width='2'/></g>" +
+      "<circle cx='130' cy='20' r='6' fill='#111'/><circle cx='190' cy='20' r='6' fill='#111'/>" +
+      "<line id='cSw' x1='130' y1='20' x2='182' y2='-8' stroke='#f76707' stroke-width='8' stroke-linecap='round' style='transition:all .25s'/>" +
+      "<rect x='110' y='-14' width='100' height='60' fill='transparent' id='cHit' style='cursor:pointer'/></svg>" +
+      "<div id='cTxt' style='min-width:200px'>" + bi("點橘色開關，把電路接起來！", "Tap the orange switch to close the circuit!") + "</div>";
+    var svg = $("svg", el); svg.setAttribute("style", "overflow:visible");
+    var closed = false;
+    function flip() {
+      closed = !closed; var sw = $("#cSw");
+      sw.setAttribute("x2", closed ? 190 : 182); sw.setAttribute("y2", closed ? 20 : -8);
+      $("#cFlow").style.display = closed ? "" : "none"; $("#cFan").style.animationPlayState = closed ? "running" : "paused";
+      $("#cTxt").innerHTML = closed ? bi("電路接通了！電流流動，馬達轉起來了！", "The circuit is closed! Current flows and the motor spins!") : bi("電路斷掉了，馬達停了。", "The circuit is broken. The motor stops.");
+      sfx(closed ? "ding" : "tap");
+      if (closed) { g.demoOk = true; g.gate(); }
+    }
+    $("#cHit").onclick = flip; $("#cSw").onclick = flip;
+    g.flipCircuit = function () { if (!closed) flip(); };
+  },
+  gears: function (el, g) {
+    function draw(v) {
+      var power = v === "power", big = power ? 22 : 14, small = 9, ratio = big / small, R = big * 3, r = small * 3;
+      el.innerHTML = "<svg viewBox='0 0 260 150' width='280'><g transform='translate(" + (70) + ",75)'><path class='spin' style='animation-duration:1s' d='" + gearSVG(small, r) + "' fill='#ffd43b' stroke='#111' stroke-width='2'/><circle r='4' fill='#111'/></g>" +
+        "<g transform='translate(" + (70 + r + R + 7) + ",75)'><path class='spin rev' style='animation-duration:" + ratio + "s' d='" + gearSVG(big, R) + "' fill='" + (power ? "#e03131" : "#1c7ed6") + "' stroke='#111' stroke-width='2'/><circle r='5' fill='#111'/><rect x='-3' y='-" + R + "' width='6' height='" + (R - 6) + "' fill='#fff' class='spin rev' style='animation-duration:" + ratio + "s;transform-origin:3px " + R + "px'/></g></svg>" +
+        "<div style='min-width:180px'>" + (power ? bi("小帶大：慢慢轉，力氣大！", "Small turns big: slow and strong!") : bi("大小差不多：轉很快，力氣小。", "Close in size: fast but weaker.")) + "<br><small>" + bi("黃色是馬達的齒輪", "Yellow = the motor's gear") + "</small></div>";
+    }
+    draw(G.kd.build.gear); g.onPick = draw;
+  },
+  tires: function (el) {
+    el.innerHTML = "<div style='display:flex;gap:16px;flex-wrap:wrap;justify-content:center'>" +
+      ["hard", "soft"].map(function (t) {
+        return "<div style='text-align:center'><svg viewBox='0 0 160 110' width='150'><polygon points='5,100 155,100 155,30' fill='" + (t === "hard" ? "#c5f6fa" : "#d8f5a2") + "' stroke='#111' stroke-width='3'/>" +
+          "<g id='tr_" + t + "' style='transition:transform 1.4s ease-in'><g transform='translate(128,26) rotate(-25)'><circle r='14' fill='" + (t === "hard" ? "#adb5bd" : "#212529") + "' stroke='#111' stroke-width='3'/><circle r='5' fill='#1c7ed6'/></g></g></svg><br>" +
+          (t === "hard" ? bi("硬塑膠", "Hard plastic") : bi("軟橡膠", "Soft rubber")) + "</div>";
+      }).join("") + "</div><button class='btn' id='tGo'>▶ " + bi("放在斜坡上", "Put on the ramp") + "</button>";
+    $("#tGo").onclick = function () {
+      sfx("tap");
+      $("#tr_hard").style.transform = "translate(0,0)"; $("#tr_soft").style.transform = "translate(0,0)";
+      setTimeout(function () { $("#tr_hard").style.transform = "translate(-104px,48px)"; $("#tr_soft").style.transform = "translate(-10px,5px)"; }, 60);
+    };
+  },
+  rollers: function (el, g) {
+    el.innerHTML = "<canvas id='rCv' width='300' height='190' style='width:300px'></canvas><div style='min-width:180px'><div id='rTxt'>" + bi("按測試，看看車子怎麼轉彎。", "Press Test to see how the car turns.") + "</div><div class='act' style='justify-content:flex-start'>" +
+      "<button class='btn' id='rTog'></button><button class='btn blue' id='rGo'>▶ " + bi("測試", "Test") + "</button></div></div>";
+    var cv = $("#rCv"), x = cv.getContext("2d"), img = new Image(), withR = G.kd.build.roller === "yes", raf = 0;
+    img.src = A("c_blue");
+    function lab() { $("#rTog").innerHTML = withR ? "✅ " + bi("有導輪", "Rollers on") : "❌ " + bi("沒導輪", "No rollers"); }
+    function scene(cx, cy, ang, msg) {
+      x.clearRect(0, 0, 300, 190); x.fillStyle = "#2b8a3e"; x.fillRect(0, 0, 300, 190);
+      x.lineWidth = 34; x.strokeStyle = "#dee2e6"; x.beginPath(); x.moveTo(0, 150); x.lineTo(150, 150); x.arc(150, 70, 80, Math.PI / 2, 0, true); x.lineTo(230, 0); x.stroke();
+      x.lineWidth = 4; x.strokeStyle = "#e03131"; x.beginPath(); x.moveTo(0, 167); x.lineTo(150, 167); x.arc(150, 70, 97, Math.PI / 2, 0, true); x.lineTo(247, 0); x.stroke();
+      if (cx != null) { x.save(); x.translate(cx, cy); x.rotate(ang + Math.PI / 2); x.drawImage(img, -10, -15, 20, 30); x.restore(); }
+      if (msg) { x.font = "900 28px system-ui"; x.fillStyle = "#ffd43b"; x.strokeStyle = "#111"; x.lineWidth = 5; x.strokeText(msg, 160, 110); x.fillText(msg, 160, 110); }
+    }
+    scene(20, 150, 0);
+    function run() {
+      cancelAnimationFrame(raf); var t = 0, crashed = false, px = 0, py = 0, pa = 0;
+      (function f() {
+        t += 1 / 60; var s = t * 160;
+        if (s < 150) { px = s; py = 150; pa = 0; }
+        else if (withR) { var a = Math.min(Math.PI / 2, (s - 150) / 80); px = 150 + Math.sin(a) * 80; py = 70 + Math.cos(a) * 80; pa = -a; if (a >= Math.PI / 2) { py = 70 - (s - 150 - 80 * Math.PI / 2); px = 230; } }
+        else { crashed = true; px = s; py = 150 - (s - 150) * 0.15; pa = (s - 150) / 20; }
+        scene(px, py, pa, crashed && s > 220 ? "脫軌!" : "");
+        if (s < 420) raf = requestAnimationFrame(f);
+        else $("#rTxt").innerHTML = withR ? bi("導輪靠著牆滾，車子乖乖轉彎了！", "The rollers roll along the wall, and the car turns!") : bi("沒有導輪，車子照慣性直直衝出去了！", "No rollers: inertia sends the car straight off the track!");
+        if (crashed && s > 160 && s < 168) sfx("buzz");
+      })();
+    }
+    lab();
+    $("#rTog").onclick = function () { withR = !withR; lab(); sfx("tap"); };
+    $("#rGo").onclick = run;
+  },
+  air: function (el, g) {
+    function draw(v) {
+      var sleek = v !== "boxy";
+      el.innerHTML = "<svg viewBox='0 0 260 110' width='280'>" +
+        [25, 45, 65, 85].map(function (y, i) { return "<path class='flow' d='M0 " + y + (sleek ? " C100 " + y + " 120 " + (y < 55 ? y - 15 : y + 12) + " 260 " + y : " H95 " + (y < 55 ? "q12 -14 0 -22" : "q12 14 0 22")) + "' stroke='#4dabf7' stroke-width='3' fill='none' style='animation-duration:" + (sleek ? .5 : 1.2) + "s'/>"; }).join("") +
+        (sleek ? "<path d='M100 75 L200 75 L220 60 L150 40 Z' fill='#1c7ed6' stroke='#111' stroke-width='3'/>" : "<rect x='100' y='35' width='90' height='42' rx='4' fill='#868e96' stroke='#111' stroke-width='3'/>") +
+        "<circle cx='125' cy='80' r='10' fill='#111'/><circle cx='185' cy='80' r='10' fill='#111'/></svg><div style='min-width:160px'>" +
+        (sleek ? bi("空氣順順地滑過去。", "Air slides smoothly past.") : bi("空氣撞到車子，往後推！", "Air crashes into the car and pushes back!")) + "</div>";
+    }
+    draw(G.kd.build.body); g.onPick = draw;
+  }
+};
+
+/* ---------- tune screen: change choices any time, see the stats move ---------- */
+var Tune = {
+  open: function (done, label) {
+    show("sTune");
+    $("#tTitle").innerHTML = bi("調整你的車", "Tune your car");
+    var k = G.kd, picks = PARTS.filter(function (p) { return p.pick; });
+    $("#tCard").innerHTML = picks.map(function (p) { return "<div style='display:flex;gap:10px;align-items:center'><img src='" + A(p.img) + "' alt='' style='width:54px;height:54px;object-fit:contain'>" + pickHTML(p.pick, k.build, true).replace("class='picks'", "class='picks' style='flex:1'") + "</div>"; }).join("") +
+      "<div class='act'><button class='btn red' id='tGo'>🏁 " + bi(label ? label[0] : "去比賽", label ? label[1] : "Race!") + " ▶</button></div>";
+    renderStats($("#tStats"), k.build);
+    $$(".opt", $("#tCard")).forEach(function (b) {
+      b.onclick = function () {
+        sfx("pop"); k.build[b.dataset.k] = b.dataset.v; save();
+        $$(".opt[data-k='" + b.dataset.k + "']", $("#tCard")).forEach(function (o) { o.classList.toggle("sel", o === b); });
+        renderStats($("#tStats"), k.build);
+      };
+    });
+    $("#tGo").onclick = function () { sfx("tap"); done(); };
+    $("#sTune .gwrap").scrollTop = 0;
+  }
+};
+/* ===== Race: top-down track on a canvas. The build decides everything; Lucas cheers. ===== */
+var IMG = {};
+function img(n) { if (!IMG[n]) { IMG[n] = new Image(); IMG[n].src = A(n); } return IMG[n]; }
+["c_blue", "c_red", "c_green"].forEach(img);
+
+var Race = {
+  speed: 1,
+  start: function (mode) {
+    var self = this, k = G.kd;
+    this.mode = mode; this.laps = mode === "race" ? 3 : 1; this.over = false; this.t = 0; this.fx = []; this.said = {};
+    this.cars = [{ who: "lucas", car: "c_blue", r: new Racer(k.build, { laps: this.laps, lane: 0 }) }];
+    if (mode === "race") RIVALS.forEach(function (rv, i) { self.cars.push({ who: rv.who, car: rv.car, r: new Racer(rv.build, { laps: self.laps, lane: i + 1 }) }); });
+    show("sRace"); this.resize();
+    $("#cheer").style.display = "";
+    this.tick(["準備好了嗎？", "Ready?"]);
+    this.hud(); this.draw();
+    this.countdown();
+  },
+  countdown: function () {
+    var self = this, n = 3, el = $("#count");
+    (function c() {
+      if (CUR !== "sRace") return;
+      if (n > 0) { el.textContent = n; beep(440, 0.15); n--; setTimeout(c, Race.speed > 1 ? 80 : 800); }
+      else { el.textContent = "GO!"; beep(880, 0.4); Engine.start(); setTimeout(function () { el.textContent = ""; }, 600); self.last = performance.now(); self.loop(); }
+    })();
+  },
+  loop: function () {
+    var self = this;
+    if (CUR !== "sRace") return;
+    var now = performance.now(), dt = Math.min(0.05, (now - this.last) / 1000) * this.speed; this.last = now;
+    var steps = Math.ceil(dt / (1 / 60)), h = dt / steps;
+    for (var i = 0; i < steps; i++) this.cars.forEach(function (c) { c.r.step(h); });
+    this.t += dt;
+    this.events();
+    this.draw(); this.hud();
+    var me = this.cars[0].r;
+    Engine.set(me.out || me.done ? 0 : me.v / me.st.top * 10);
+    var allDone = this.cars.every(function (c) { return c.r.done || c.r.out; });
+    if ((me.done || me.out) && !this.endAt) this.endAt = this.t + (this.mode === "race" && !me.out ? 4 : 1.6);
+    if (this.endAt && (this.t > this.endAt || (allDone && this.t > this.endAt - 3))) return this.finish();
+    requestAnimationFrame(function () { self.loop(); });
+  },
+  order: function () {
+    return this.cars.slice().sort(function (a, b) {
+      var A1 = a.r, B1 = b.r;
+      if (A1.out !== B1.out) return A1.out ? 1 : -1;
+      if (A1.done && B1.done) return A1.t - B1.t;
+      if (A1.done !== B1.done) return A1.done ? -1 : 1;
+      return B1.s - A1.s;
+    });
+  },
+  tick: function (t) { $("#ticker").innerHTML = bi(t[0], t[1]); },
+  events: function () {
+    var self = this, me = this.cars[0].r;
+    this.cars.forEach(function (c) {
+      var ev = c.r.ev; c.r.ev = [];
+      ev.forEach(function (e) {
+        if (c.who !== "lucas") return;
+        if (e === "crash") { self.tick(["脫軌了！車子衝出跑道！", "Course out! The car flew off the track!"]); sfx("buzz"); Engine.stop(); }
+        if (e === "scrape" && !self.said.scrape) { self.said.scrape = 1; self.tick(["導輪擦著牆轉彎！", "The rollers grind along the wall in the curve!"]); }
+        if (e === "lap" && !c.r.done) self.tick(["第 " + (c.r.lap + 1) + " 圈！", "Lap " + (c.r.lap + 1) + "!"]);
+        if (e === "finish") { self.tick(["衝過終點！", "Across the finish line!"]); sfx("win"); }
+      });
+      if (c.r.st && (c.r.scraping) && Math.random() < 0.5) { var p = self.pos(c); self.fx.push({ x: p.x, y: p.y, vx: (Math.random() - .5) * 8, vy: (Math.random() - .5) * 8, life: 0.4 }); }
+    });
+    if (!me.out && !me.done) {
+      var hp = hillPhase(me.s);
+      if (hp >= 0 && hp < 0.5 && !this.said["hill" + me.lap]) {
+        this.said["hill" + me.lap] = 1;
+        this.tick(me.b.gear === "power" ? ["上坡！力量齒輪推上去了！", "The hill! Power gears push right up!"] : ["上坡！速度齒輪好吃力……", "The hill! Speed gears are struggling..."]);
+      }
+      if (this.mode === "race") {
+        var lead = this.order()[0];
+        if (lead.who !== this.leader) { if (this.leader) this.tick(lead.who === "lucas" ? ["陸晨領先了！", "Lucas takes the lead!"] : [CAST[lead.who].zh + "領先！", CAST[lead.who].en + " is in front!"]); this.leader = lead.who; }
+      }
+    }
+  },
+  hud: function () {
+    var me = this.cars[0].r;
+    $("#hLap").innerHTML = bi("第 " + Math.min(this.laps, me.lap + 1) + " / " + this.laps + " 圈", "Lap " + Math.min(this.laps, me.lap + 1) + " / " + this.laps);
+    if (this.mode !== "race") { $("#hPos").innerHTML = "<span class='chip me'>" + bi("測試跑道", "Test run") + "</span>"; return; }
+    $("#hPos").innerHTML = this.order().map(function (c, i) { return "<span class='chip" + (c.who === "lucas" ? " me" : "") + "'>" + (i + 1) + ". " + CAST[c.who].en + "</span>"; }).join(" ");
+  },
+  resize: function () {
+    var cv = $("#raceCv"), r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
+    cv.width = Math.max(10, r.width * d); cv.height = Math.max(10, r.height * d);
+    var b = TRACK.box, m = 7, W = b[2] - b[0] + m * 2, H = b[3] - b[1] + m * 2;
+    this.sc = Math.min(cv.width / W, cv.height / H);
+    this.ox = (cv.width - W * this.sc) / 2 - (b[0] - m) * this.sc; this.oy = (cv.height - H * this.sc) / 2 - (b[1] - m) * this.sc;
+  },
+  pos: function (c) {
+    var r = c.r;
+    if (r.out && r.outPos) return { x: r.outPos.x, y: r.outPos.y, h: r.outPos.rot, z: r.outPos.z };
+    var p = trackAt(r.s), off = (r.lane - 1) * 2.4;
+    return { x: p.x + Math.cos(p.h + Math.PI / 2) * off, y: p.y + Math.sin(p.h + Math.PI / 2) * off, h: p.h, z: 0 };
+  },
+  draw: function () {
+    var cv = $("#raceCv"), x = cv.getContext("2d"), s = this.sc, self = this;
+    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height);
+    x.setTransform(s, 0, 0, s, this.ox, this.oy);
+    var b = TRACK.box;
+    x.fillStyle = "#2f9e44"; x.strokeStyle = "#111"; x.lineWidth = 0.4;
+    rr(x, b[0] - 6, b[1] - 6, b[2] - b[0] + 12, b[3] - b[1] + 12, 4); x.fill(); x.stroke();
+    function path(off) {
+      x.beginPath();
+      TRACK.pts.forEach(function (p, i) { var px = p.x + Math.cos(p.h + Math.PI / 2) * off, py = p.y + Math.sin(p.h + Math.PI / 2) * off; i ? x.lineTo(px, py) : x.moveTo(px, py); });
+      x.closePath();
+    }
+    x.lineJoin = "round";
+    path(0); x.strokeStyle = "#111"; x.lineWidth = 9; x.stroke();
+    path(0); x.strokeStyle = "#e03131"; x.lineWidth = 8.4; x.stroke();
+    path(0); x.strokeStyle = "#f1f3f5"; x.lineWidth = 7.6; x.stroke();
+    [-1.2, 1.2].forEach(function (o) { path(o); x.strokeStyle = "#adb5bd"; x.lineWidth = 0.25; x.stroke(); });
+    [-2.4, 0, 2.4].forEach(function (o, i) { path(o); x.strokeStyle = ["#d0ebff", "#ffe3e3", "#fff3bf"][i]; x.lineWidth = 1.6; x.stroke(); });
+    // hill
+    TRACK.hills.forEach(function (h) {
+      for (var sx = h[0]; sx < h[1]; sx += 1.2) {
+        var ph = (sx - h[0]) / (h[1] - h[0]), p = trackAt(sx), up = ph < 0.5;
+        x.save(); x.translate(p.x, p.y); x.rotate(p.h);
+        x.fillStyle = "rgba(240,140,0," + (0.15 + Math.sin(ph * Math.PI) * 0.45) + ")"; x.fillRect(-0.6, -3.8, 1.2, 7.6);
+        if (Math.round((sx - h[0]) / 1.2) % 3 === 0) { x.strokeStyle = "#7c3a00"; x.lineWidth = 0.3; x.beginPath(); x.moveTo(up ? -0.4 : 0.4, -1.5); x.lineTo(up ? 0.4 : -0.4, 0); x.lineTo(up ? -0.4 : 0.4, 1.5); x.stroke(); }
+        x.restore();
+      }
+      var m = trackAt((h[0] + h[1]) / 2);
+      label(x, m.x, m.y + 7, "⛰ 上坡 HILL", "#7c3a00");
+    });
+    // start line
+    var st = trackAt(0);
+    for (var i = 0; i < 8; i++) for (var j = 0; j < 2; j++) { x.fillStyle = (i + j) % 2 ? "#111" : "#fff"; x.fillRect(st.x - 0.5 + j * 0.5, st.y - 3.8 + i * 0.95, 0.5, 0.95); }
+    // cars (Lucas last so he's on top)
+    this.cars.slice().reverse().forEach(function (c) {
+      var p = self.pos(c), me = c.who === "lucas", hp = c.r.out ? -1 : hillPhase(c.r.s);
+      var sz = (me ? 1.15 : 1) * (1 + (hp >= 0 ? Math.sin(hp * Math.PI) * 0.3 : 0) + (p.z || 0) * 0.08);
+      var im = img(c.car), w = 2.1 * sz, hgt = w * (im.naturalHeight / (im.naturalWidth || 1) || 1.4);
+      x.save(); x.translate(p.x, p.y); x.rotate(p.h + Math.PI / 2);
+      if (me) { x.shadowColor = "#ffd43b"; x.shadowBlur = 14 * s / 10; }
+      if (im.complete && im.naturalWidth) x.drawImage(im, -w / 2, -hgt / 2, w, hgt); else { x.fillStyle = me ? "#1c7ed6" : "#e03131"; x.fillRect(-w / 2, -hgt / 2, w, hgt); }
+      x.restore();
+      if (me) label(x, p.x, p.y - 3.2 - (p.z || 0) * 0.3, "Lucas 6", "#f76707", true);
+    });
+    // sparks
+    this.fx = this.fx.filter(function (f) { f.life -= 1 / 60; f.x += f.vx / 60; f.y += f.vy / 60; x.fillStyle = "rgba(255,212,59," + Math.max(0, f.life * 2.5) + ")"; x.beginPath(); x.arc(f.x, f.y, 0.35, 0, 7); x.fill(); return f.life > 0; });
+    if (this.cars[0].r.out) label(x, (b[0] + b[2]) / 2, (b[1] + b[3]) / 2, "COURSE OUT! 脫軌!", "#e03131", true, 2.4);
+    function label(x, lx, ly, t, col, badge, size) {
+      x.save(); x.font = "900 " + (size || 1.3) + "px system-ui,sans-serif"; x.textAlign = "center"; x.textBaseline = "middle";
+      if (badge) { var w = x.measureText(t).width + 1; x.fillStyle = col; rr(x, lx - w / 2, ly - 0.9 * (size || 1.3) / 1.3, w, 1.8 * (size || 1.3) / 1.3, 0.8); x.fill(); x.strokeStyle = "#111"; x.lineWidth = 0.2; x.stroke(); x.fillStyle = "#fff"; }
+      else x.fillStyle = col;
+      x.fillText(t, lx, ly); x.restore();
+    }
+  },
+  finish: function () {
+    var self = this, k = G.kd, me = this.cars[0].r;
+    if (this.over) return; this.over = true; Engine.stop();
+    $("#cheer").style.display = "none";
+    var adv = advise(me);
+    if (this.mode === "practice") {
+      maxSays(adv, (adv === "good" ? "" : "<button class='btn blue' id='aTune'>🔧 " + bi("調整車子", "Tune the car") + "</button>") +
+        "<button class='btn " + (adv === "good" ? "red" : "white") + "' id='aRace'>🏁 " + bi("去比賽", "Go to the race") + " ▶</button>" +
+        (adv === "good" ? "" : "<button class='btn white' id='aAgain'>🔁 " + bi("再測一次", "Test again") + "</button>"));
+      if ($("#aTune")) $("#aTune").onclick = function () { Read.stop(); closeOvl(); Tune.open(function () { Race.start("practice"); }, ["測試看看", "Test it"]); };
+      if ($("#aAgain")) $("#aAgain").onclick = function () { Read.stop(); closeOvl(); Race.start("practice"); };
+      $("#aRace").onclick = function () { Read.stop(); go("park"); };
+      return;
+    }
+    k.races = (k.races || 0) + 1; save();
+    var place = this.order().indexOf(this.cars[0]) + 1;
+    if (place === 1 && !me.out) {
+      ovl("<div class='big title-font'>🏆 1ST PLACE!</div><div style='text-align:center'>" + bi("陸晨得到第一名！", "Lucas wins first place!") + "</div><div class='act'><button class='btn red' id='aWin'>" + bi("太棒了", "Awesome") + " ▶</button></div>");
+      Read.pair("陸晨得到第一名！", "Lucas wins first place!");
+      sfx("win");
+      $("#aWin").onclick = function () { Read.stop(); go("win"); };
+    } else {
+      if (adv === "good") adv = "hill";
+      var head = me.out ? ["脫軌了，沒有跑完。", "Course out, the car didn't finish."] : ["第 " + place + " 名！", "Place: " + place + "!"];
+      maxSays(adv, "<button class='btn blue' id='aTune'>🔧 " + bi("調整再比一次", "Tune and race again") + "</button>");
+      $("#ovlCard").insertAdjacentHTML("afterbegin", "<div class='big'>" + bi(head[0], head[1]) + "</div>");
+      $("#aTune").onclick = function () { Read.stop(); closeOvl(); Tune.open(function () { go("race"); }, ["再比一次", "Race again"]); };
+    }
+  }
+};
+function rr(x, X, Y, W, H, R) { x.beginPath(); x.moveTo(X + R, Y); x.arcTo(X + W, Y, X + W, Y + H, R); x.arcTo(X + W, Y + H, X, Y + H, R); x.arcTo(X, Y + H, X, Y, R); x.arcTo(X, Y, X + W, Y, R); x.closePath(); }
+/* ===== Boot: title intro, menu, buttons, test hook ===== */
+(function () {
+  Read.on = !(DB.settings && DB.settings.readOff);
+  $("#logo2").innerHTML = zh("四驅小隊"); $("#logo3").innerHTML = zh("四驅小隊");
+  $("#rotHint").innerHTML = "Turn your phone sideways ↻ " + zh("橫著拿手機");
+  $("#bSound").textContent = KAKit.muted() ? "🔇" : "🔊";
+
+  var t = $("#sTitle"), introT = null;
+  function toMenu() { clearTimeout(introT); t.classList.remove("play"); t.classList.add("done"); refreshMenu(); show("sMenu"); }
+  $("#tapStart").onclick = function (e) {
+    e.stopPropagation(); KAKit.ac(); Music.start();
+    $("#tapStart").style.display = "none";
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return toMenu();
+    t.classList.add("play"); introT = setTimeout(toMenu, 4300);
+  };
+  t.onclick = function () { if (t.classList.contains("play")) toMenu(); };
+
+  $("#pLucas").onclick = function () {
+    sfx("tap"); $("#jump").classList.remove("on"); pickKid("lucas");
+    var st = G.kd.stage; go(st === "done" ? (G.kd.stage = "shop", G.kd.step = 0, "shop") : st || "shop");
+  };
+  $("#pTester").onclick = function () { sfx("tap"); testerMenu(); };
+  $("#bVoice").onclick = function () { try { KAVoice.picker(); } catch (e) {} };
+  $("#bRead").onclick = function () { Read.on = !Read.on; DB.settings = DB.settings || {}; DB.settings.readOff = !Read.on; DB.save(); if (!Read.on) Read.stop(); refreshMenu(); };
+  $("#bReset").onclick = function () {
+    KAKit.resetGate({ kids: ["lucas"], onReset: function (list) { list.forEach(function (k) { if (DB.kids) delete DB.kids[k]; }); DB.save(); refreshMenu(); } });
+  };
+  $("#bHome").onclick = function () { Read.stop(); closeOvl(); Engine.stop(); refreshMenu(); show("sMenu"); };
+  $("#bSound").onclick = function () {
+    var m = !KAKit.muted(); KAKit.muted(m); $("#bSound").textContent = m ? "🔇" : "🔊";
+    if (m) { Music.stop(); Engine.stop(); Read.stop(); } else if (CUR === "sMenu" || CUR === "sTitle") Music.start();
+  };
+  $("#dNext").onclick = function (e) { e.stopPropagation(); storyNext(); };
+  $("#dlg").onclick = storyNext;
+  $("#dSay").onclick = function (e) { e.stopPropagation(); var ln = SCENES[Story.key].lines[Story.i]; Read.pair(ln[1], ln[2], CAST[ln[0]].pitch); };
+  $("#cheer").onclick = function () {
+    sfx("pop"); var c = Race.cars && Race.cars[0];
+    if (c) { var p = Race.pos(c); Race.fx.push({ x: p.x, y: p.y - 2, vx: 0, vy: -6, life: 0.6 }); }
+    var lines = [["衝啊！藍色閃電！", "Go, Blue Bolt!"], ["加油！加油！", "Go, go, go!"], ["相信你的車！", "Trust your car!"]];
+    Race.tick(lines[Math.random() * lines.length | 0]);
+  };
+  addEventListener("resize", function () { if (CUR === "sRace") { Race.resize(); Race.draw(); } });
+  ["p_lucas", "p_max", "p_kai", "bg_shop"].forEach(function (n) { new Image().src = A(n); });
+})();
+
+/* Expose for automated playtests. Harmless for players. */
+window.__test = {
+  state: function () { return { screen: CUR, stage: G.kd && G.kd.stage, step: Garage.step, ovl: $("#ovl").classList.contains("on"), points: G.kd && G.kd.points, done: !!(G.kd && G.kd.ep1) }; },
+  solve: function () {
+    if ($("#ovl").classList.contains("on")) { var b = $("#ovlCard .act .btn:last-child"); if ($("#aRace") && (G.kd.build.roller === "no")) b = $("#aTune") || b; (b || $("#ovlCard .btn")).click(); return; }
+    if (CUR === "sTitle") return $("#tapStart").click();
+    if (CUR === "sMenu") return $("#pLucas").click();
+    if (CUR === "sStory") return storyNext();
+    if (CUR === "sTune") { Object.keys(BEST).forEach(function (k) { var o = $("#tCard .opt[data-k='" + k + "'][data-v='" + BEST[k] + "']"); if (o) o.click(); }); return $("#tGo").click(); }
+    if (CUR === "sGarage") {
+      var nx = $("#qNext"); if (nx) return nx.click();
+      var q = $$(".ans .btn", $("#gCard")); if (q.length) { var p = PARTS[Garage.step]; q.forEach(function (bt) { if (bt.textContent.indexOf(p.q.a[0][1]) >= 0) bt.click(); }); return; }
+      var p2 = PARTS[Garage.step]; if (p2.pick) { var o2 = $("#gCard .opt[data-v='" + BEST[p2.pick.key] + "']"); if (o2) o2.click(); }
+      if (Garage.flipCircuit) { Garage.flipCircuit(); Garage.flipCircuit = null; }
+      return $("#gInstall").click();
+    }
+    if (CUR === "sRace") Race.speed = 8;
+  }
+};
+</script>
+<div id="kaVer" data-v="1.0" data-d="2026-11-26">v1.0 · 2026-11-26</div>
+</body>
+</html>

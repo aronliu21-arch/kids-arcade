@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>四驅小隊 Mini 4WD Racers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+<style>/*@inc css/main.css*/</style>
+</head>
+<body>
+<div id="bar">
+  <button class="btn" id="bHome" aria-label="Home" style="display:none">🏠</button>
+  <button class="btn" id="bSound" aria-label="Sound">🔊</button>
+</div>
+
+<section id="sTitle" class="scr on">
+  <img class="key" src="assets/key.webp" alt="">
+  <div class="rays"></div>
+  <div class="logo"><span class="l1 title-font">MINI 4WD RACERS</span><span class="l2 title-font" id="logo2"></span></div>
+  <button class="btn red" id="tapStart">▶ Tap to start</button>
+</section>
+
+<section id="sMenu" class="scr"><div class="wrap">
+  <div class="logo"><span class="l1 title-font">MINI 4WD RACERS</span><span class="l2 title-font" id="logo3"></span></div>
+  <div class="profiles">
+    <button class="prof" id="pLucas"><img src="assets/p_lucas.webp" alt=""><span class="nm">Lucas 6</span><span class="sub" id="lucasSub"></span></button>
+    <button class="prof tester" id="pTester"><span class="ic">🧪</span><span class="nm">Tester</span><span class="sub">Jump to any part · 不存檔 no saving</span></button>
+  </div>
+  <div class="jump" id="jump"></div>
+  <div class="mrow">
+    <button class="btn white" id="bVoice">🗣 聲音 Voice</button>
+    <button class="btn white" id="bRead"></button>
+    <button class="btn white" id="bReset">Reset records</button>
+  </div>
+</div></section>
+
+<section id="sStory" class="scr">
+  <img class="bg" alt="">
+  <img class="por L" alt=""><img class="por R" alt="">
+  <div class="dlg" id="dlg">
+    <div class="nm"></div><div class="zh"></div><div class="en"></div>
+    <div class="ctl"><button class="btn white" id="dSay" aria-label="Read again">🔊</button><button class="btn blue" id="dNext">▶</button></div>
+  </div>
+</section>
+
+<section id="sGarage" class="scr"><div class="gwrap">
+  <div class="ghead"><span class="step" id="gStep"></span><span id="gTitle"></span></div>
+  <div class="gmain">
+    <div class="side"><div class="slots" id="slots"></div><div class="stats" id="stats"></div></div>
+    <div class="card" id="gCard"></div>
+  </div>
+</div></section>
+
+<section id="sTune" class="scr"><div class="gwrap">
+  <div class="ghead"><span class="step">🔧</span><span id="tTitle"></span></div>
+  <div class="gmain">
+    <div class="side"><div class="stats" id="tStats"></div></div>
+    <div class="card" id="tCard"></div>
+  </div>
+</div></section>
+
+<section id="sRace" class="scr"><div class="rwrap">
+  <canvas id="raceCv"></canvas>
+  <div class="hud">
+    <span class="chip" id="hLap"></span><span id="hPos"></span>
+    <div class="ticker" id="ticker"></div>
+    <button class="btn red" id="cheer">📣 加油 Go!</button>
+  </div>
+  <div id="count"></div>
+</div></section>
+
+<div class="ovl" id="ovl"><div class="card" id="ovlCard"></div></div>
+<div id="rotHint">Turn your phone sideways ↻ 橫著拿手機</div>
+
+<script src="../../../kit.js"></script>
+<script src="../../../voice.js"></script>
+<script>/*@inc js/00-zy.js js/01-data.js js/02-sim.js js/03-text.js js/04-audio.js js/05-ui.js js/06-garage.js js/07-race.js js/08-main.js*/</script>
+<div id="kaVer" data-v="1.0" data-d="2026-11-26">v1.0 · 2026-11-26</div>
+</body>
+</html>
