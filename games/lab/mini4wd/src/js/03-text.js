@@ -1,12 +1,20 @@
 /* ===== Bilingual text helpers: Chinese with zhuyin ruby + English ===== */
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+/* Taiwan textbook zhuyin: a vertical column to the RIGHT of the character, tone mark to the right of the column, light tone ˙ on top */
+function zyHTML(ch, z) {
+  var light = z.charAt(0) === "˙", tone = "";
+  if (light) z = z.slice(1);
+  if (/[ˊˇˋ]$/.test(z)) { tone = z.slice(-1); z = z.slice(0, -1); }
+  var col = (light ? "<i class='zl'>˙</i>" : "") + z.split("").map(function (c) { return "<i>" + c + "</i>"; }).join("");
+  return "<span class='zc'>" + ch + "<span class='zy' aria-hidden='true'><span class='zb'>" + col + "</span>" + (tone ? "<span class='zt'>" + tone + "</span>" : "") + "</span></span>";
+}
 function zh(text) {
   return String(text).replace(/[一-鿿]+|[^一-鿿]+/g, function (run) {
     if (!/[一-鿿]/.test(run)) return esc(run);
     var zs = ZYR[run] ? ZYR[run].split(" ") : null, out = "";
     for (var i = 0; i < run.length; i++) {
       var z = zs ? zs[i] : ZYC[run[i]];
-      out += z ? "<ruby>" + run[i] + "<rt>" + z + "</rt></ruby>" : run[i];
+      out += z ? zyHTML(run[i], z) : run[i];
     }
     return out;
   });

@@ -10,7 +10,10 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:600 16px/1.35 system-ui,-apple-system,"PingFang TC","Heiti TC",sans-serif;overflow:hidden}
 button{font:inherit;cursor:pointer;color:inherit}
-ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#555;letter-spacing:0}
+.zc{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .1em 0 0;line-height:1.15}
+.zy{display:inline-flex;align-items:center;font-size:.5em;line-height:.98;font-weight:700;color:#555;margin-left:.1em;letter-spacing:0;font-style:normal}
+.zb{display:inline-flex;flex-direction:column;align-items:center}.zb i{font-style:normal;display:block}.zb .zl{line-height:.6}
+.zt{margin-left:.04em;align-self:center;font-size:1.35em;font-weight:900;line-height:1}
 .bi{display:inline-flex;flex-direction:column;align-items:inherit;line-height:1.15}.bi .z{font-weight:900}.bi .e{font-size:.78em;opacity:.85;font-weight:700}
 .title-font{font-family:Bangers,Impact,"Arial Black",sans-serif;letter-spacing:1px}
 .scr{position:fixed;inset:0;display:none;overflow:hidden}.scr.on{display:block}
@@ -18,7 +21,7 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#555;letter-spac
 .btn{min-height:52px;min-width:52px;padding:8px 18px;border:3px solid var(--ink);border-radius:14px;background:var(--yel);box-shadow:0 5px 0 var(--ink);font-weight:900;font-size:18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center;transition:transform .08s}
 .btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
 .btn.blue{background:var(--blue);color:#fff}.btn.red{background:var(--red);color:#fff}.btn.white{background:#fff}.btn.green{background:#2f9e44;color:#fff}
-.btn.blue rt,.btn.red rt,.btn.green rt{color:#e7f5ff}
+.btn.blue .zy,.btn.red .zy,.btn.green .zy{color:#e7f5ff}
 .btn[disabled]{opacity:.45;pointer-events:none}
 /* top bar */
 #bar{position:fixed;top:8px;right:8px;z-index:50;display:flex;gap:8px}
@@ -30,7 +33,7 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#555;letter-spac
 #sTitle .logo{position:absolute;left:0;right:0;top:4%;text-align:center;pointer-events:none;opacity:0}
 .logo .l1{display:inline-block;font-size:clamp(40px,9vw,96px);color:var(--yel);-webkit-text-stroke:3px var(--ink);text-shadow:5px 5px 0 var(--red),9px 9px 0 var(--ink);transform:rotate(-4deg)}
 .logo .l2{display:block;font-size:clamp(20px,3.6vw,40px);color:#fff;-webkit-text-stroke:1.5px var(--ink);text-shadow:3px 3px 0 var(--ink);margin-top:6px}
-.logo .l2 rt{color:#fff;-webkit-text-stroke:0}
+.logo .l2 .zy{color:#fff;-webkit-text-stroke:0}
 #tapStart{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);font-size:26px;padding:12px 30px;animation:pulse 1.2s infinite}
 @keyframes pulse{50%{transform:translateX(-50%) scale(1.07)}}
 #sTitle.play .key{animation:kb 4.2s ease-out forwards}
@@ -65,7 +68,7 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#555;letter-spac
 .dlg .nm:empty{display:none}
 .dlg .zh{font-size:22px;font-weight:900;margin-top:6px}.dlg .en{font-size:17px;color:#333}
 .dlg .ctl{display:flex;gap:10px;justify-content:flex-end}
-.dlg.narr{background:#212529;color:#fff}.dlg.narr .en{color:#dee2e6}.dlg.narr rt{color:#adb5bd}
+.dlg.narr{background:#212529;color:#fff}.dlg.narr .en{color:#dee2e6}.dlg.narr .zy{color:#adb5bd}
 /* ---------- garage ---------- */
 #sGarage,#sTune{background:#1b3a63 url(assets/bg_shop.webp) center/cover}
 .gwrap{position:absolute;inset:0;background:#0b2a55d9;display:flex;flex-direction:column;overflow:auto;padding:64px 12px 16px}
@@ -163,6 +166,49 @@ ruby{ruby-position:over}rt{font-size:.5em;font-weight:600;color:#555;letter-spac
   .ticker{min-width:0}
   #sMenu .wrap{padding-top:16px}.logo .l1{font-size:44px}
   .prof{min-height:0;flex-direction:row;width:auto}.prof img{width:64px;height:64px}.prof.tester .ic{font-size:44px;line-height:64px}
+}
+/* ---------- phones: everything fits on one screen, long cards page with ◀ ▶ instead of scrolling ---------- */
+.pgnav{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:8px}
+.pgnav .pgd{flex:1;text-align:center;font-weight:900;color:#555}
+.pgnav .act{margin:0}
+.pgnav .btn{min-height:48px;padding:4px 14px}
+.gpart{display:none}.prof .nm,.prof .sub .z{white-space:nowrap}
+@media (max-height:500px),(max-width:600px){
+  .gwrap{overflow:hidden;padding:8px 8px 8px}
+  .ghead{margin:0 128px 6px 0;width:auto;min-height:48px;gap:8px;font-size:14px}
+  .gmain{flex:1;min-height:0;align-items:stretch;gap:8px}
+  .side{overflow:hidden}
+  .gmain .card{display:flex;flex-direction:column;overflow:hidden;padding:10px 12px;box-shadow:0 4px 0 var(--ink)}
+  .gmain .card>.top{display:none}.gfull{display:none}.gpart{display:inline-flex;font-size:18px}
+  .card .pimg{width:56px;height:56px}.card h2{font-size:21px}.card .top{gap:10px}
+  .box{margin-top:8px;padding:6px 10px}.box .txt .z{font-size:17px}.box .txt .e{font-size:14px}
+  .demo{margin-top:8px;padding:6px}.picks{margin-top:8px}.opt{min-height:52px;padding:8px}.opt .z{font-size:16px}.opt small{font-size:12px}
+  .quiz .qq{font-size:18px;margin:4px 0 8px}.quiz .ans{gap:8px}.quiz .ans .btn{font-size:16px;min-height:48px;padding:6px 12px}
+  .quiz .fb{margin-top:6px}.tip{margin-top:6px;padding:8px 10px}
+  .act{margin-top:8px}
+  .ovl{padding:8px;overflow:hidden}
+  .ovl .card{max-height:100%;display:flex;flex-direction:column;overflow:hidden;padding:10px 14px}
+  .big{font-size:32px}
+}
+@media (max-width:600px){
+  .gwrap{padding-bottom:40px}
+  .side .slots{display:none}
+  .gmain .card{flex:1;min-height:0}
+  .stats{padding:4px 8px;font-size:12px}.stat{margin:1px 0}
+}
+@media (max-height:500px){
+  .side{width:150px}.side .slots{display:none}
+  .opts{grid-template-columns:1fr 1fr}#tCard img{display:none}#tCard .picks{margin-top:4px}
+  .demo svg,.demo canvas,.demo img{max-height:120px;width:auto!important;flex:none}
+  .demo .act{margin-top:6px;gap:6px;flex-wrap:nowrap}.demo .act .btn,.demo>.btn{font-size:14px;padding:4px 10px;min-height:48px}.demo{flex-wrap:nowrap}.demo>div:not([style*=flex]){flex:1 1 160px;min-width:0!important}.demo>div[style*=flex]{flex-wrap:nowrap!important}
+  .box{margin-top:6px;padding:4px 8px}.box .txt .z{font-size:16px}.box .txt .e{font-size:13px}
+  .stats{padding:5px 8px;font-size:12px}.stat{grid-template-columns:1fr;gap:1px;margin:2px 0}.stat .bar{height:10px}
+  .quiz .ans{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .ovl .who img{width:64px;height:64px}
+  #sMenu .wrap{padding:8px 140px 8px 16px;gap:8px;justify-content:center}
+  #sMenu .logo .l1{font-size:34px}#sMenu .logo .l2{font-size:18px;margin-top:2px}
+  .profiles{gap:10px;flex-wrap:nowrap}.prof{padding:6px 12px}.prof .nm{font-size:18px}
+  .mrow .btn{min-height:48px;font-size:15px;padding:4px 12px}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition:none!important}}
 </style>
@@ -486,13 +532,21 @@ function advise(r) {
 }
 /* ===== Bilingual text helpers: Chinese with zhuyin ruby + English ===== */
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+/* Taiwan textbook zhuyin: a vertical column to the RIGHT of the character, tone mark to the right of the column, light tone ˙ on top */
+function zyHTML(ch, z) {
+  var light = z.charAt(0) === "˙", tone = "";
+  if (light) z = z.slice(1);
+  if (/[ˊˇˋ]$/.test(z)) { tone = z.slice(-1); z = z.slice(0, -1); }
+  var col = (light ? "<i class='zl'>˙</i>" : "") + z.split("").map(function (c) { return "<i>" + c + "</i>"; }).join("");
+  return "<span class='zc'>" + ch + "<span class='zy' aria-hidden='true'><span class='zb'>" + col + "</span>" + (tone ? "<span class='zt'>" + tone + "</span>" : "") + "</span></span>";
+}
 function zh(text) {
   return String(text).replace(/[一-鿿]+|[^一-鿿]+/g, function (run) {
     if (!/[一-鿿]/.test(run)) return esc(run);
     var zs = ZYR[run] ? ZYR[run].split(" ") : null, out = "";
     for (var i = 0; i < run.length; i++) {
       var z = zs ? zs[i] : ZYC[run[i]];
-      out += z ? "<ruby>" + run[i] + "<rt>" + z + "</rt></ruby>" : run[i];
+      out += z ? zyHTML(run[i], z) : run[i];
     }
     return out;
   });
@@ -610,7 +664,56 @@ function show(id) {
 }
 
 /* ---------- overlay ---------- */
-function ovl(html) { $("#ovlCard").innerHTML = html; $("#ovl").classList.add("on"); $("#ovl").scrollTop = 0; }
+function ovl(html) { $("#ovlCard").innerHTML = html; $("#ovl").classList.add("on"); $("#ovl").scrollTop = 0; setTimeout(function () { Pager.fit($("#ovlCard")); }, 0); }
+
+/* ---------- Pager: on phones, split a too-tall card into pages (◀ ▶) instead of scrolling ---------- */
+var FIT = window.matchMedia("(max-height:500px),(max-width:600px)");
+var Pager = {
+  fit: function (card, opt) {
+    opt = opt || {}; card.__opt = opt;
+    var keep = opt.keep ? (card.__pg || 0) : 0;
+    var nav = card.querySelector(".pgnav"), act = card.__act;
+    if (nav) { if (act && act.__home) { act.__home.insertBefore(act, act.__next || null); act.style.display = ""; } nav.remove(); }
+    var blocks = opt.blocks ? opt.blocks() : $$(":scope > *", card).filter(function (b) { return !b.classList.contains("act"); });
+    act = opt.act ? opt.act() : card.querySelector(":scope > .act");
+    blocks.forEach(function (b) { b.style.display = ""; b.style.zoom = ""; });
+    card.classList.remove("paged"); card.__pages = null; card.__act = null;
+    if (!FIT.matches) return;
+    $$("img", card).forEach(function (im) { if (!im.complete) im.addEventListener("load", function () { if (card.__opt === opt) Pager.fit(card, Object.assign({}, opt, { keep: true, find: null })); }, { once: true }); });
+    if (card.scrollHeight <= card.clientHeight + 2) return;
+    nav = document.createElement("div"); nav.className = "pgnav";
+    nav.innerHTML = "<button class='btn white pgp' aria-label='Back'>◀</button><span class='pgd'></span><button class='btn blue pgn'>" + bi("下一頁", "Next") + " ▶</button>";
+    if (act) { act.__home = act.parentNode; act.__next = act.nextSibling; nav.appendChild(act); card.__act = act; }
+    card.appendChild(nav); card.classList.add("paged");
+    var cs = getComputedStyle(card);
+    var avail = card.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - nav.offsetHeight - 10;
+    var pages = [[]], h = 0;
+    blocks.forEach(function (b) {
+      var bs = getComputedStyle(b), bh = b.getBoundingClientRect().height + parseFloat(bs.marginTop) + parseFloat(bs.marginBottom);
+      if (bh > avail) b.style.zoom = Math.max(0.55, avail / bh).toFixed(3), bh = avail;
+      if (h + bh > avail && pages[pages.length - 1].length) { pages.push([]); h = 0; }
+      pages[pages.length - 1].push(b); h += bh;
+    });
+    card.__pages = pages;
+    var self = this;
+    $(".pgp", nav).onclick = function () { sfx("tap"); self.go(card, card.__pg - 1); };
+    $(".pgn", nav).onclick = function () { sfx("tap"); self.go(card, card.__pg + 1); };
+    var start = opt.find ? pages.findIndex(function (pg) { return pg.indexOf(opt.find()) >= 0; }) : keep;
+    this.go(card, start < 0 ? 0 : start);
+  },
+  go: function (card, i) {
+    var pages = card.__pages; if (!pages) return;
+    i = Math.max(0, Math.min(pages.length - 1, i)); card.__pg = i;
+    pages.forEach(function (pg, j) { pg.forEach(function (b) { b.style.display = j === i ? "" : "none"; }); });
+    var nav = card.querySelector(".pgnav"), last = i === pages.length - 1;
+    $(".pgp", nav).style.visibility = i ? "" : "hidden";
+    $(".pgn", nav).style.display = last ? "none" : "";
+    if (card.__act) card.__act.style.display = last ? "" : "none";
+    $(".pgd", nav).textContent = pages.length > 1 ? (i + 1) + " / " + pages.length : "";
+  },
+  refit: function () { $$(".card").forEach(function (c) { if (c.offsetParent || c.closest(".ovl.on")) Pager.fit(c, Object.assign({}, c.__opt || {}, { keep: true, find: null })); }); }
+};
+addEventListener("resize", function () { clearTimeout(Pager.t); Pager.t = setTimeout(Pager.refit, 150); });
 function closeOvl() { $("#ovl").classList.remove("on"); }
 
 /* ---------- menu ---------- */
@@ -720,7 +823,7 @@ var Garage = {
     var p = PARTS[this.step], k = G.kd, self = this;
     this.picked = !p.pick; this.demoOk = p.demo !== "circuit";
     $("#gStep").textContent = (this.step + 1) + " / " + PARTS.length;
-    $("#gTitle").innerHTML = bi("組裝你的四驅車", "Build your Mini 4WD");
+    $("#gTitle").innerHTML = "<span class='gfull'>" + bi("組裝你的四驅車", "Build your Mini 4WD") + "</span><span class='gpart'>" + bi(p.zh, p.en) + "</span>";
     this.slots();
     var c = $("#gCard");
     c.innerHTML = "<div class='top'><img class='pimg' src='" + A(p.img) + "' alt=''><h2>" + bi(p.zh, p.en) + "</h2></div>" +
@@ -742,6 +845,7 @@ var Garage = {
     if (p.demo) Demos[p.demo]($("#demo"), this);
     this.gate();
     $("#sGarage .gwrap").scrollTop = 0;
+    Pager.fit(c);
     Read.pair(p.what[0], p.what[1]);
   },
   gate: function () { var b = $("#gInstall"); if (b) b.disabled = !(this.picked && this.demoOk); },
@@ -753,6 +857,8 @@ var Garage = {
       ans.map(function (x, i) { return "<button class='btn' data-i='" + i + "'>" + bi(x.a[0], x.a[1]) + "</button>"; }).join("") +
       "</div><div class='fb' id='qFb'></div><div class='act' id='qAct'></div></div>";
     $("#qSay").onclick = function () { Read.pair(q.zh, q.en); };
+    $("#gTitle .gpart").innerHTML = bi("科學問題：" + p.zh, "Science question: " + p.en);
+    Pager.fit($("#gCard"), { blocks: function () { return [$("#gCard .top"), $("#gCard .qq"), $("#gCard .ans"), $("#qFb")]; }, act: function () { return $("#qAct"); } });
     Read.pair(q.zh, q.en);
     $$(".ans .btn", $("#gCard")).forEach(function (b) {
       b.onclick = function () {
@@ -768,7 +874,7 @@ var Garage = {
             $$(".ans .btn", $("#gCard")).forEach(function (o) { if (ans[+o.dataset.i].ok) o.classList.add("ok"); });
             if (!k.quizDone[p.id]) k.quizDone[p.id] = -1;
             self.after(["正確答案在這裡：", "Here's the right answer:"], q.why);
-          } else { $("#qFb").innerHTML = bi("再試一次！", "Try again!"); Read.pair("再試一次！", "Try again!"); }
+          } else { $("#qFb").innerHTML = bi("再試一次！", "Try again!"); Pager.fit($("#gCard"), { blocks: function () { return [$("#gCard .top"), $("#gCard .qq"), $("#gCard .ans"), $("#qFb")]; }, act: function () { return $("#qAct"); }, find: function () { return $("#gCard .ans"); } }); Read.pair("再試一次！", "Try again!"); }
         }
       };
     });
@@ -784,6 +890,7 @@ var Garage = {
       if (this.disabled) return; this.disabled = true; Read.stop(); sfx("pop"); self.step++; G.kd.step = self.step; save();
       if (self.step >= PARTS.length) { self.slots(); sfx("win"); setTimeout(self.done, 400); } else self.render();
     };
+    Pager.fit($("#gCard"), { blocks: function () { return [$("#gCard .top"), $("#gCard .qq"), $("#gCard .ans"), $("#qFb")]; }, act: function () { return $("#qAct"); }, find: function () { return $("#qFb"); } });
   }
 };
 
@@ -906,6 +1013,7 @@ var Tune = {
     });
     $("#tGo").onclick = function () { sfx("tap"); done(); };
     $("#sTune .gwrap").scrollTop = 0;
+    Pager.fit($("#tCard"));
   }
 };
 /* ===== Race: top-down track on a canvas. The build decides everything; Lucas cheers. ===== */
@@ -1154,6 +1262,6 @@ window.__test = {
   }
 };
 </script>
-<div id="kaVer" data-v="1.0" data-d="2026-11-26">v1.0 · 2026-11-26</div>
+<div id="kaVer" data-v="1.1" data-d="2026-11-26">v1.1 · 2026-11-26</div>
 </body>
 </html>

@@ -24,7 +24,56 @@ function show(id) {
 }
 
 /* ---------- overlay ---------- */
-function ovl(html) { $("#ovlCard").innerHTML = html; $("#ovl").classList.add("on"); $("#ovl").scrollTop = 0; }
+function ovl(html) { $("#ovlCard").innerHTML = html; $("#ovl").classList.add("on"); $("#ovl").scrollTop = 0; setTimeout(function () { Pager.fit($("#ovlCard")); }, 0); }
+
+/* ---------- Pager: on phones, split a too-tall card into pages (◀ ▶) instead of scrolling ---------- */
+var FIT = window.matchMedia("(max-height:500px),(max-width:600px)");
+var Pager = {
+  fit: function (card, opt) {
+    opt = opt || {}; card.__opt = opt;
+    var keep = opt.keep ? (card.__pg || 0) : 0;
+    var nav = card.querySelector(".pgnav"), act = card.__act;
+    if (nav) { if (act && act.__home) { act.__home.insertBefore(act, act.__next || null); act.style.display = ""; } nav.remove(); }
+    var blocks = opt.blocks ? opt.blocks() : $$(":scope > *", card).filter(function (b) { return !b.classList.contains("act"); });
+    act = opt.act ? opt.act() : card.querySelector(":scope > .act");
+    blocks.forEach(function (b) { b.style.display = ""; b.style.zoom = ""; });
+    card.classList.remove("paged"); card.__pages = null; card.__act = null;
+    if (!FIT.matches) return;
+    $$("img", card).forEach(function (im) { if (!im.complete) im.addEventListener("load", function () { if (card.__opt === opt) Pager.fit(card, Object.assign({}, opt, { keep: true, find: null })); }, { once: true }); });
+    if (card.scrollHeight <= card.clientHeight + 2) return;
+    nav = document.createElement("div"); nav.className = "pgnav";
+    nav.innerHTML = "<button class='btn white pgp' aria-label='Back'>◀</button><span class='pgd'></span><button class='btn blue pgn'>" + bi("下一頁", "Next") + " ▶</button>";
+    if (act) { act.__home = act.parentNode; act.__next = act.nextSibling; nav.appendChild(act); card.__act = act; }
+    card.appendChild(nav); card.classList.add("paged");
+    var cs = getComputedStyle(card);
+    var avail = card.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - nav.offsetHeight - 10;
+    var pages = [[]], h = 0;
+    blocks.forEach(function (b) {
+      var bs = getComputedStyle(b), bh = b.getBoundingClientRect().height + parseFloat(bs.marginTop) + parseFloat(bs.marginBottom);
+      if (bh > avail) b.style.zoom = Math.max(0.55, avail / bh).toFixed(3), bh = avail;
+      if (h + bh > avail && pages[pages.length - 1].length) { pages.push([]); h = 0; }
+      pages[pages.length - 1].push(b); h += bh;
+    });
+    card.__pages = pages;
+    var self = this;
+    $(".pgp", nav).onclick = function () { sfx("tap"); self.go(card, card.__pg - 1); };
+    $(".pgn", nav).onclick = function () { sfx("tap"); self.go(card, card.__pg + 1); };
+    var start = opt.find ? pages.findIndex(function (pg) { return pg.indexOf(opt.find()) >= 0; }) : keep;
+    this.go(card, start < 0 ? 0 : start);
+  },
+  go: function (card, i) {
+    var pages = card.__pages; if (!pages) return;
+    i = Math.max(0, Math.min(pages.length - 1, i)); card.__pg = i;
+    pages.forEach(function (pg, j) { pg.forEach(function (b) { b.style.display = j === i ? "" : "none"; }); });
+    var nav = card.querySelector(".pgnav"), last = i === pages.length - 1;
+    $(".pgp", nav).style.visibility = i ? "" : "hidden";
+    $(".pgn", nav).style.display = last ? "none" : "";
+    if (card.__act) card.__act.style.display = last ? "" : "none";
+    $(".pgd", nav).textContent = pages.length > 1 ? (i + 1) + " / " + pages.length : "";
+  },
+  refit: function () { $$(".card").forEach(function (c) { if (c.offsetParent || c.closest(".ovl.on")) Pager.fit(c, Object.assign({}, c.__opt || {}, { keep: true, find: null })); }); }
+};
+addEventListener("resize", function () { clearTimeout(Pager.t); Pager.t = setTimeout(Pager.refit, 150); });
 function closeOvl() { $("#ovl").classList.remove("on"); }
 
 /* ---------- menu ---------- */

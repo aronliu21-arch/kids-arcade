@@ -32,7 +32,7 @@ var Garage = {
     var p = PARTS[this.step], k = G.kd, self = this;
     this.picked = !p.pick; this.demoOk = p.demo !== "circuit";
     $("#gStep").textContent = (this.step + 1) + " / " + PARTS.length;
-    $("#gTitle").innerHTML = bi("組裝你的四驅車", "Build your Mini 4WD");
+    $("#gTitle").innerHTML = "<span class='gfull'>" + bi("組裝你的四驅車", "Build your Mini 4WD") + "</span><span class='gpart'>" + bi(p.zh, p.en) + "</span>";
     this.slots();
     var c = $("#gCard");
     c.innerHTML = "<div class='top'><img class='pimg' src='" + A(p.img) + "' alt=''><h2>" + bi(p.zh, p.en) + "</h2></div>" +
@@ -54,6 +54,7 @@ var Garage = {
     if (p.demo) Demos[p.demo]($("#demo"), this);
     this.gate();
     $("#sGarage .gwrap").scrollTop = 0;
+    Pager.fit(c);
     Read.pair(p.what[0], p.what[1]);
   },
   gate: function () { var b = $("#gInstall"); if (b) b.disabled = !(this.picked && this.demoOk); },
@@ -65,6 +66,8 @@ var Garage = {
       ans.map(function (x, i) { return "<button class='btn' data-i='" + i + "'>" + bi(x.a[0], x.a[1]) + "</button>"; }).join("") +
       "</div><div class='fb' id='qFb'></div><div class='act' id='qAct'></div></div>";
     $("#qSay").onclick = function () { Read.pair(q.zh, q.en); };
+    $("#gTitle .gpart").innerHTML = bi("科學問題：" + p.zh, "Science question: " + p.en);
+    Pager.fit($("#gCard"), { blocks: function () { return [$("#gCard .top"), $("#gCard .qq"), $("#gCard .ans"), $("#qFb")]; }, act: function () { return $("#qAct"); } });
     Read.pair(q.zh, q.en);
     $$(".ans .btn", $("#gCard")).forEach(function (b) {
       b.onclick = function () {
@@ -80,7 +83,7 @@ var Garage = {
             $$(".ans .btn", $("#gCard")).forEach(function (o) { if (ans[+o.dataset.i].ok) o.classList.add("ok"); });
             if (!k.quizDone[p.id]) k.quizDone[p.id] = -1;
             self.after(["正確答案在這裡：", "Here's the right answer:"], q.why);
-          } else { $("#qFb").innerHTML = bi("再試一次！", "Try again!"); Read.pair("再試一次！", "Try again!"); }
+          } else { $("#qFb").innerHTML = bi("再試一次！", "Try again!"); Pager.fit($("#gCard"), { blocks: function () { return [$("#gCard .top"), $("#gCard .qq"), $("#gCard .ans"), $("#qFb")]; }, act: function () { return $("#qAct"); }, find: function () { return $("#gCard .ans"); } }); Read.pair("再試一次！", "Try again!"); }
         }
       };
     });
@@ -96,6 +99,7 @@ var Garage = {
       if (this.disabled) return; this.disabled = true; Read.stop(); sfx("pop"); self.step++; G.kd.step = self.step; save();
       if (self.step >= PARTS.length) { self.slots(); sfx("win"); setTimeout(self.done, 400); } else self.render();
     };
+    Pager.fit($("#gCard"), { blocks: function () { return [$("#gCard .top"), $("#gCard .qq"), $("#gCard .ans"), $("#qFb")]; }, act: function () { return $("#qAct"); }, find: function () { return $("#qFb"); } });
   }
 };
 
@@ -218,5 +222,6 @@ var Tune = {
     });
     $("#tGo").onclick = function () { sfx("tap"); done(); };
     $("#sTune .gwrap").scrollTop = 0;
+    Pager.fit($("#tCard"));
   }
 };
