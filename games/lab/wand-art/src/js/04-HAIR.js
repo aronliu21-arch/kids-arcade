@@ -14,7 +14,7 @@ const DRAGON_ART={ember:[244,304,250],thistle:[295,357,300]};
 const FRIEND_ART={mei:[105,190,300],iris:[113,190,300],sunny:[148,191,300],juni:[113,189,300],lola:[133,193,305],wren:[121,192,305],bree:[108,242,360],gran:[109,225,345],prof:[144,247,370]};
 const FRIEND_EMO={'mei-sad':[159,285],'iris-sad':[157,283],'sunny-sad':[200,286],'juni-sad':[157,276],'lola-sad':[171,277],'wren-sad':[151,284],'bree-sad':[149,315],'gran-sad':[150,310],'mei-wow':[168,287],'iris-wow':[188,286],'sunny-wow':[204,288],'juni-wow':[158,277],'lola-wow':[172,279],'wren-wow':[152,284],'bree-wow':[190,316],'gran-wow':[174,310]};
 const Y2ART={nora:{},f:{},femo:{},drag:{},foe:{}}; // filled in by the Year 2 art
-function y2(){ return (S&&S.year)===2; }
+function y2(){ return ((S&&S.year)||1)>=2; }
 function fArt(who){ if((y2()||!FRIEND_ART[who])&&Y2ART.f[who]) return [Y2ART.f[who],'f2-']; if(FRIEND_ART[who]) return [FRIEND_ART[who],'f-']; return null; }
 function fEmo(key){ const w0=key.split('-')[0]; if((y2()||!FRIEND_ART[w0])&&Y2ART.f[w0]) return Y2ART.femo[key]?[Y2ART.femo[key],'f2-']:null; return FRIEND_EMO[key]?[FRIEND_EMO[key],'f-']:null; }
 function girl(who,x,y,s,o={}){

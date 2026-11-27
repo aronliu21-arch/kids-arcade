@@ -39,15 +39,18 @@ async function shieldFail(){ const c=FX.center($('#padHost')), t=FX.center($('#p
 async function battleHit(stars){ const f=M.mon; const kind=M.phase===2; const elk=kind?'light':ELEM_OF[M.word], el=kind?{e:'💌',n:'Kindness'}:ELEM[elk];
  const weak=kind||elk===f.weak, crit=stars===3; M.casts++;
  const t=await spellSequence(elk,el.e,crit);
- let dmg=(weak?2:1)+(crit?1:0); if(kind) dmg=f.hp; f.hp=Math.max(0,f.hp-dmg);
+ let dmg=(weak?2:1)+(crit?1:0); if(f.armor&&!kind){ dmg=1; setTimeout(()=>FX.text(t[0],t[1]+50,'TOO STRONG!','#adb5bd',34),240); } if(kind) dmg=f.hp; f.hp=Math.max(0,f.hp-dmg);
+ // keep at least minCasts spells per battle by draining HP slower, never by refilling it
+ if(!kind&&M.phase===1){ const fl=Math.max(0,(f.minCasts||5)-M.casts); if(f.hp<fl){ dmg=Math.max(1,dmg-(fl-f.hp)); f.hp=fl; } }
  FX.signature(elk,t[0],t[1],weak||crit); Snd.sfx('boom'); if(weak) setTimeout(()=>Snd.sfx('light'),120);
  const art=$('#playArt'); art.innerHTML=foeSVG(f,'hurt'); art.classList.remove('hit'); void art.offsetWidth; art.classList.add('hit'); if(elk==='ice'){ art.classList.add('frozen'); setTimeout(()=>art.classList.remove('frozen'),1100); }
  FX.shake(art,weak?22:12,500); if(weak||crit) FX.shake($('#play'),10,420); drawHP();
  if(!kind){ FX.text(t[0],t[1]-30,'-'+dmg,weak?'#ffd43b':'#fff',weak?72:56); if(crit) setTimeout(()=>FX.text(t[0],t[1]-100,'CRITICAL!','#ff922b',44),120); if(weak) setTimeout(()=>FX.text(t[0],t[1]+50,'SUPER EFFECTIVE!','#ff6fa8',34),240); }
  const msg=kind?'Your kind words reach her…':weak?`Super effective! ${el.e} ${el.n} hits for ${dmg}!`:`${el.e} Hit for ${dmg}! Try ${ELEM[f.weak].n.toLowerCase()} for more!`; showFb(msg); Voice.say(kind?'Your kind words reach her.':crit?'Critical hit!':weak?'Super effective!':'Hit!');
  await sleep(1400); art.classList.remove('hit'); art.innerHTML=foeSVG(f);
- if(f.hp>0&&M.phase===1&&S.done['c2:flight']&&M.casts%2===0){ await emberBreath(f); }
- if(f.hp<=0&&M.phase===1&&M.casts<5){ f.hp=1; drawHP(); const m=`${f.name} is still standing! Keep casting!`; FX.text(t[0],t[1]-60,'STILL STANDING!','#ffd43b',40); showFb(m); Voice.say(m); await sleep(1100); }
+ if(f.hp-1>=Math.max(1,(f.minCasts||5)-M.casts)&&M.phase===1&&S.done['c2:flight']&&M.casts%2===0){ await emberBreath(f); }
+ if(f.hp>0&&typeof battleHook==='function'){ await battleHook(f); }
+ if(f.hp<=0&&M.phase===1&&M.casts<(f.minCasts||5)){ f.hp=1; drawHP(); const m=`${f.name} is still standing! Keep casting!`; FX.text(t[0],t[1]-60,'STILL STANDING!','#ffd43b',40); showFb(m); Voice.say(m); await sleep(1100); }
  if(f.hp>0&&M.phase===1&&M.casts%2===0) M.defend=true;
  if(f.hp<=0){ if(f.final&&M.phase===1){ return wrenPhase2(); } if(f.final&&M.phase===2&&FINAL.some(x=>!S.seen.includes(x))){ f.hp=1; drawHP(); return dealCards(false); } return battleWin(); }
  dealCards(false);

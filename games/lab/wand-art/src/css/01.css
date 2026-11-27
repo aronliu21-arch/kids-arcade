@@ -267,3 +267,11 @@ body[data-year="2"] #title.mag #tBg{background-image:url(art/bg-title2.webp)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .fade{animation:fin .5s ease both}@keyframes fin{from{opacity:0}}
 .float{animation:flt 3s ease-in-out infinite}@keyframes flt{50%{transform:translateY(-10px)}}
+
+/* Year 3 */
+body[data-year="3"] #title.mag #tBg{background-image:url(art/bg-title2.webp)}
+#y3Timer{display:none;position:relative;height:22px;border-radius:11px;background:rgba(0,0,0,.35);overflow:hidden;margin:4px 0;min-width:160px}
+#y3Timer i{position:absolute;left:0;top:0;bottom:0;width:100%;background:#40c057;transition:width .1s linear}
+#y3Timer span{position:relative;display:block;text-align:center;font:700 14px/22px Poppins,system-ui;color:#fff;text-shadow:0 1px 2px #000}
+.y3forged{position:relative;display:inline-block}
+.y3forged b{position:absolute;right:-6px;top:-8px;transform:rotate(12deg);border:3px solid #e03131;color:#e03131;border-radius:8px;padding:0 8px;font:800 16px Poppins,system-ui;background:rgba(255,255,255,.75)}

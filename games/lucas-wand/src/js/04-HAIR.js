@@ -16,7 +16,7 @@ const FRIEND_EMO={'sunny-sad':[126,285],'sunny-wow':[177,285],'juni-sad':[135,28
 // Lucas's own watercolor portraits (Gemini, 2026-11-27).
 const LUCAS_ART=true;
 const Y2ART={nora:{},f:{},femo:{},drag:{},foe:{}}; // filled in by the Year 2 art
-function y2(){ return (S&&S.year)===2; }
+function y2(){ return ((S&&S.year)||1)>=2; }
 function fArt(who){ if((y2()||!FRIEND_ART[who])&&Y2ART.f[who]) return [Y2ART.f[who],'f2-']; if(FRIEND_ART[who]) return [FRIEND_ART[who],'f-']; return null; }
 function fEmo(key){ const w0=key.split('-')[0]; if((y2()||!FRIEND_ART[w0])&&Y2ART.f[w0]) return Y2ART.femo[key]?[Y2ART.femo[key],'f2-']:null; return FRIEND_EMO[key]?[FRIEND_EMO[key],'f-']:null; }
 function girl(who,x,y,s,o={}){

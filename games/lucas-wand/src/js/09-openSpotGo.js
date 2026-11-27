@@ -51,14 +51,14 @@ function spellHidden(t){ return pad.guide==='free'&&t.replace(/ /g,'').length>1;
 function showTarget(t){ const el=$('#playTarget'); if(spellHidden(t)){ el.innerHTML=`<button class="hearBtn" type="button" aria-label="Hear the word">🔊</button> <span class="blanks">${t.split('').map(c=>c===' '?'&nbsp;&nbsp;':'_').join(' ')}</span>`; el.querySelector('.hearBtn').onclick=e=>{ e.stopPropagation(); Voice.say(t); }; } else el.textContent=t; }
 function guidePrompt(t){ const g=pad.guide; if(g==='free') return t.replace(/ /g,'').length>1?'🔊 Spell it yourself!':'✍️ Write it yourself!'; if(g==='faint') return '✨ Follow the faint path'; return null; }
 function loadItem(){ { const h=document.getElementById('hpMe'); if(h) h.style.display='none'; } const t=M.items[M.i]; M.tries=0; pad.pen=false; pad.guide=guideFor(t,M.i); pad.set(t);
- if(!M.battle&&t.replace(/ /g,'').length>1&&(S.joinOK||0)<6) setTimeout(()=>{ if(M&&M.items[M.i]===t&&!pad.hasInk()){ showFb('👀 Watch the quill write it'); Voice.say('Watch the quill. One letter at a time, from the top. Then you try.'); pad.playDemo().then(()=>hideFb()); } },700);
+ if(!M.battle&&!(M.m&&M.m.clue)&&t.replace(/ /g,'').length>1&&(S.joinOK||0)<6) setTimeout(()=>{ if(M&&M.items[M.i]===t&&!pad.hasInk()){ showFb('👀 Watch the quill write it'); Voice.say('Watch the quill. One letter at a time, from the top. Then you try.'); pad.playDemo().then(()=>hideFb()); } },700);
  const isWord=t.length>1, cap=t.length===1&&t===t.toUpperCase();
  $('#playPrompt').textContent=t.includes(' ')?'Write the courage words':t.length===2?'Trace the two letters':isWord?'Trace the word':'Trace the rune'; { const gp=guidePrompt(t); if(gp) $('#playPrompt').textContent=gp; }
  showTarget(t);
  $('#playArt').innerHTML=svg(BG(MISSION_BG[M.m&&M.m.id]||'hall')+girl('nora',480,300,1.3,{arm:'wand'}),'232 100 520 520');
  $('#penBadge').textContent='✏️ Use the Pencil for a bonus star!';
  $('#playDots').innerHTML=M.items.map((_,k)=>`<i class="${k<M.i?'ok':k===M.i?'cur':''}"></i>`).join('');
- setTimeout(()=>Voice.say(spellHidden(t)?`${t}. Spell ${t}.`:isWord?`Write ${t}.`:`Trace ${cap?'capital':'lowercase'} ${t}.`),M.i===0?2600:200);
+ if(!(M.m&&M.m.clue)) setTimeout(()=>Voice.say(spellHidden(t)?`${t}. Spell ${t}.`:isWord?`Write ${t}.`:`Trace ${cap?'capital':'lowercase'} ${t}.`),M.i===0?2600:200);
 }
 $('#padClear').onclick=()=>{ Snd.sfx('tap'); pad.clear(); hideFb(); };
 $('#padShow').onclick=async()=>{ if(pad.demo) return; pad.clear(); hideFb(); await pad.playDemo(); };
@@ -77,8 +77,8 @@ async function cast(){
   const msg=(r.stars===3?'Perfect spell! ':r.stars===2?'Strong spell! ':'The spell worked! ')+'✨'.repeat(r.stars)+(p===2?'  +2':'  +1')+(pad.pen&&M.penBonus?'  ✏️+1':'');
   showFb(msg); Voice.say(r.stars===3?'Perfect spell!':r.stars===2?'Strong spell!':'The spell worked!');
   await sleep(1400); nextItem();
- } else if(M.tries<((S.year===2)?3:2)){
-  FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); if(S.year===2){ const tip=r.tips[0]||'Look at the word above and go slowly.'; if(M.tries>=2){ pad.guide='faint'; pad.clear(); if(!M.battle) $('#playTarget').textContent=pad.text; const m='Fizzle! Here is a faint path to help. One more try.'; showFb(m); Voice.say(m); } else { pad.clear(); if(!M.battle&&spellHidden(pad.text)){ $('#playTarget').textContent=pad.text; const m='Fizzle! Here is how it is spelled. Look carefully, then write it on your own.'; showFb(m); Voice.say(m); } else { showFb('Fizzle! '+tip+' Try again, on your own.'); Voice.say('Fizzle! '+tip+' Try again.'); } } } else if(pad.guide!=='full'){ pad.guide='full'; pad.clear(); const m='Fizzle! Here is the full path to help. Try once more.'; showFb(m); Voice.say(m); if(!M.battle){ $('#playPrompt').textContent='Trace the word'; $('#playTarget').textContent=pad.text; } } else { const tip=r.tips[0]||'Follow the glowing path.'; showFb('Fizzle! '+tip+' Try once more.'); Voice.say('Fizzle! '+tip+' Try once more.'); pad.clear(); }
+ } else if(M.tries<(((S.year||1)>=2)?3:2)){
+  FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); if((S.year||1)>=2){ const tip=r.tips[0]||'Look at the word above and go slowly.'; if(M.tries>=2){ pad.guide='faint'; pad.clear(); if(!M.battle) $('#playTarget').textContent=pad.text; const m='Fizzle! Here is a faint path to help. One more try.'; showFb(m); Voice.say(m); } else { pad.clear(); if(!M.battle&&spellHidden(pad.text)){ $('#playTarget').textContent=pad.text; const m='Fizzle! Here is how it is spelled. Look carefully, then write it on your own.'; showFb(m); Voice.say(m); } else { showFb('Fizzle! '+tip+' Try again, on your own.'); Voice.say('Fizzle! '+tip+' Try again.'); } } } else if(pad.guide!=='full'){ pad.guide='full'; pad.clear(); const m='Fizzle! Here is the full path to help. Try once more.'; showFb(m); Voice.say(m); if(!M.battle){ $('#playPrompt').textContent='Trace the word'; $('#playTarget').textContent=pad.text; } } else { const tip=r.tips[0]||'Follow the glowing path.'; showFb('Fizzle! '+tip+' Try once more.'); Voice.say('Fizzle! '+tip+' Try once more.'); pad.clear(); }
  } else {
   FX.smoke(padScreenPts()); padFlash('wobble'); Snd.sfx('poof'); pad.locked=true; if(!M.battle) $('#playTarget').textContent=pad.text; showFb('Watch how this one is written, then we move on.'); Voice.say('Watch how this one is written.'); pad.clear(); pad.locked=false; await pad.playDemo(); M.quality.push(0); S.seen.push(pad.text); save(); await sleep(400); if(M.battle&&M.defend) return shieldFail(); if(M.battle) return battleMiss(); nextItem();
  }

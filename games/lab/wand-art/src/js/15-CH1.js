@@ -31,15 +31,15 @@ function applyYear(){ const y=yearOf(); CHAPTERS=y===2?Y2.CH:CH1; CH_TEXT=y===2?
 function setYear(y){ S.years=S.years||{}; const cur=yearOf();
  S.years[cur]={done:S.done,ch:S.ch,view:S.view,chDone:S.chDone,seenT:S.seenT||{},allDone:S.allDone,introSeen:S.introSeen,trial:S.trial};
  const d=S.years[y]||{done:{},ch:1,view:1,chDone:{},seenT:{},allDone:false,introSeen:false,trial:true};
- Object.assign(S,{done:d.done,ch:d.ch,view:d.view,chDone:d.chDone,seenT:d.seenT,allDone:d.allDone,introSeen:d.introSeen,trial:(y===2?true:d.trial)}); S.year=y;
+ Object.assign(S,{done:d.done,ch:d.ch,view:d.view,chDone:d.chDone,seenT:d.seenT,allDone:d.allDone,introSeen:d.introSeen,trial:(y>=2?true:d.trial)}); S.year=y;
  applyYear(); save(); refreshStars(); spotsKey=''; }
 applyYear();
 // transitions: Year 2 keys are looked up first while in Year 2
 const _afterMission=afterMission;
-afterMission=function(next){ if(yearOf()!==2) return _afterMission(next); const k=lastDoneKey; lastDoneKey=null; S.seenT=S.seenT||{}; const T=k&&Y2_TRANS[k]; if(T&&!S.seenT[k]){ S.seenT[k]=true; save(); const L=T(); if(L.length) return playStory(L,next); } next(); };
+afterMission=function(next){ if(yearOf()<2) return _afterMission(next); const k=lastDoneKey; lastDoneKey=null; S.seenT=S.seenT||{}; const T=k&&(yearOf()===3?Y3.TRANS:Y2_TRANS)[k]; if(T&&!S.seenT[k]){ S.seenT[k]=true; save(); const L=T(); if(L.length) return playStory(L,next); } next(); };
 
 // ---------- Year 2 writing: no tracing at first, a faint path only after two fizzles, five words per mission
-const _guideFor=guideFor; guideFor=function(t,i){ return yearOf()===2?'free':_guideFor(t,i); };
+const _guideFor=guideFor; guideFor=function(t,i){ return yearOf()>=2?'free':_guideFor(t,i); };
 Object.keys(Y2.POOLS_W).forEach(k=>{ POOLS[k]=()=>pickWords([Y2.POOLS_W[k]],5); });
 
 // ---------- reading test: see a cursive word, type what it says
@@ -63,20 +63,20 @@ startMission=function(m,n=S.view){ if(m.kind==='read'){ Snd.stopMusic(); return 
 
 // ---------- Year 2 explorable castle map
 const _goMap=goMap;
-goMap=function(){ if(yearOf()!==2) return _goMap(); if(S.trial&&!nextMain(S.view)&&!S.chDone[S.view]) return chapterEnd(S.view); show('map2'); refreshStars(); Snd.startMusic(); renderMap2(); };
+goMap=function(){ if(yearOf()<2) return _goMap(); if(S.trial&&!nextMain(S.view)&&!S.chDone[S.view]) return chapterEnd(S.view); show('map2'); refreshStars(); Snd.startMusic(); renderMap2(); };
 const TREASURE={1:['labels','opal'],2:['care','night'],3:['notes','friendW'],4:['pack','oldMap'],5:['saffron','law'],6:['mossW','opalSorry']};
 const TREASURE_TXT=['a lost silver button','a tiny dragon tooth','a glowing marble','a four-leaf clover','a feather quill','a shiny old coin','a ribbon from Mei','a sticker from Sunny','a pressed flower','a star-shaped stone','a secret note from Lola','a crystal bead'];
-function renderMap2(){ const n=S.view, ch=CH(n), nm=nextMain(n); $('#m2Ttl').textContent=`Year 2 · Chapter ${n} · ${ch.title}`;
+function renderMap2(){ const n=S.view, ch=CH(n), nm=nextMain(n); $('#m2Ttl').textContent=`Year ${yearOf()} · Chapter ${n} · ${ch.title}`;
  $('#m2Prev').style.visibility=n>1?'visible':'hidden'; $('#m2Next').style.visibility=n<Math.min(S.ch,CHAPTERS.length)?'visible':'hidden';
  const box=$('#m2Rooms'); box.innerHTML=''; S.found=S.found||{};
  ch.missions.forEach((m,i)=>{ const open=isOpen(n,m), done=isDone(n,m.id); const b=document.createElement('button'); b.className='room'+(open?'':' lock')+(done?' done':'')+(m===nm?' next':'')+(m.kind==='mini'?' mini':''); b.dataset.id=m.id;
   b.innerHTML=`<span class="pic" style="background-image:url(art/bg-${bgKey(m.bg)}.webp)"></span><span class="lbl">${open?m.icon:'🔒'} ${m.name}<small>${m.title||({mini:'Mini game'}[m.kind])||''}</small></span>${done?'<span class="tick">✓</span>':''}${m===nm?`<span class="here">${girl('nora',0,0,1,{arm:'wave',badge:false}).replace(/^/,'<svg viewBox="-160 -120 320 420">')+'</svg>'}</span>`:''}`;
   b.onclick=()=>{ if(!open){ Snd.sfx('fizz'); $('#m2Msg').textContent='Locked! Finish the glowing room first.'; return; } Snd.sfx('tap'); FX.burst(...FX.center(b),{n:40,speed:7}); setTimeout(()=>startMission(m,n),300); };
-  const tk=`${n}:${m.id}`; if((TREASURE[n]||[]).includes(m.id)&&!S.found[tk]&&(done||open)){ const t=document.createElement('span'); t.className='treasure'; t.textContent='✨'; t.style.left=(20+((i*37)%60))+'%'; t.style.top=(18+((i*23)%40))+'%';
-   t.onclick=e=>{ e.stopPropagation(); S.found[tk]=true; S.stars+=2; save(); refreshStars(); Snd.sfx('gold'); FX.burst(e.clientX,e.clientY,{n:60,speed:9}); const what=TREASURE_TXT[(n*7+i)%TREASURE_TXT.length]; $('#m2Msg').textContent=`You found ${what}! +2 ✨`; Voice.say(`You found ${what}!`); t.remove(); };
+  const tk=`${n}:${m.id}`; if(((yearOf()===3?Y3.TREASURE:TREASURE)[n]||[]).includes(m.id)&&!S.found[tk]&&(done||open)){ const t=document.createElement('span'); t.className='treasure'; t.textContent='✨'; t.style.left=(20+((i*37)%60))+'%'; t.style.top=(18+((i*23)%40))+'%';
+   t.onclick=e=>{ e.stopPropagation(); S.found[tk]=true; S.stars+=2; save(); refreshStars(); Snd.sfx('gold'); FX.burst(e.clientX,e.clientY,{n:60,speed:9}); const TT=yearOf()===3?Y3.TREASURE_TXT:TREASURE_TXT, what=TT[(n*7+i)%TT.length]; $('#m2Msg').textContent=`You found ${what}! +2 ✨`; Voice.say(`You found ${what}!`); t.remove(); };
    b.appendChild(t); }
   box.appendChild(b); });
- $('#m2Msg').textContent= nm ? `Go to the ${nm.name}! ${nm.icon}   ·   Psst… look for hidden ✨ treasures` : (n<CHAPTERS.length?`Chapter ${n} complete! ▶`:'You finished Year 2! ✨');
+ $('#m2Msg').textContent= nm ? `Go to the ${nm.name}! ${nm.icon}   ·   Psst… look for hidden ✨ treasures` : (n<CHAPTERS.length?`Chapter ${n} complete! ▶`:`You finished Year ${yearOf()}! ✨`);
  const cur=box.querySelector('.room.next'); if(cur) setTimeout(()=>cur.scrollIntoView({block:'center',inline:'center',behavior:'smooth'}),200);
 }
 $('#m2Home').onclick=()=>{ Snd.sfx('tap'); show('title'); refreshStars(); };

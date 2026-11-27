@@ -276,3 +276,11 @@ body[data-year="2"] #title.mag #tBg{background-image:url(art/bg-title2.webp)}
 #playTarget .blanks{font-size:.5em;display:block;letter-spacing:.08em}
 .rdHard{display:inline-block;margin:4px 0 2px;padding:2px 10px;border-radius:999px;background:#fff3bf;color:#e67700;font-weight:800;font-size:14px}
 .rdBlanks .rdOk{color:#2b8a3e;font-weight:900}
+
+/* Year 3 */
+body[data-year="3"] #title.mag #tBg{background-image:url(art/bg-title2.webp)}
+#y3Timer{display:none;position:relative;height:22px;border-radius:11px;background:rgba(0,0,0,.35);overflow:hidden;margin:4px 0;min-width:160px}
+#y3Timer i{position:absolute;left:0;top:0;bottom:0;width:100%;background:#40c057;transition:width .1s linear}
+#y3Timer span{position:relative;display:block;text-align:center;font:700 14px/22px Poppins,system-ui;color:#fff;text-shadow:0 1px 2px #000}
+.y3forged{position:relative;display:inline-block}
+.y3forged b{position:absolute;right:-6px;top:-8px;transform:rotate(12deg);border:3px solid #e03131;color:#e03131;border-radius:8px;padding:0 8px;font:800 16px Poppins,system-ui;background:rgba(255,255,255,.75)}
