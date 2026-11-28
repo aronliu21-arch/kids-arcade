@@ -17,7 +17,7 @@ function updateHUD() {
   $('hudHP').style.width = clamp(S.hp / maxHP() * 100, 0, 100) + '%'; $('hudHPt').textContent = `${Math.max(0, S.hp)} / ${maxHP()}`;
   $('hudXP').style.width = (S.xp / xpNeed(S.lv) * 100) + '%';
   $('hudGold').textContent = S.gold; $('hudCrys').textContent = `${S.crystals.length}/5`;
-  $('btnSound').textContent = Snd.isMuted() ? '🔇' : '🔊';
+  renderSoundButtons();
 }
 function showHUD(on) { $('hud').hidden = !on; }
 

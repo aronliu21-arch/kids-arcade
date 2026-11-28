@@ -116,7 +116,7 @@ function renderMoves() {
     ['swap', '🔁', 'Swap Lumi', lumiName(l), S.party.length > 1],
     ['run', '🏃', 'Run', e.boss ? 'No escape!' : 'Leave battle', !e.boss],
   ];
-  $('bMoves').innerHTML = moves.map(m => `<button class="move m-${m[0]}" data-m="${m[0]}" ${m[4] && !B.lock ? '' : 'disabled'}><span>${m[1]}</span><b>${m[2]}</b><small>${m[3]}</small></button>`).join('');
+  $('bMoves').innerHTML = moves.map(m => `<button class="move m-${m[0]}" data-m="${m[0]}" ${m[4] && !B.lock ? '' : 'disabled'}><img class="move-icon" src="art/icon-${m[0]}.webp" alt=""><b>${m[2]}</b><small>${m[3]}</small></button>`).join('');
   $('bMoves').querySelectorAll('button').forEach(b => b.addEventListener('click', () => doMove(b.dataset.m)));
 }
 async function doMove(kind, tier) {

@@ -72,7 +72,10 @@ const Portraits = (() => {
     // ears and head
     if (v.hat !== 'elder') E(c, hx, hy - 8, 82, 84, hair); // hair behind the head, so the top is never bald
     for (const sx of [-1, 1]) E(c, hx + sx * 74, hy + 8, 13, 18, skinD);
-    E(c, hx, hy, 74, 80, skin);
+    const light = c.createRadialGradient(hx - 28, hy - 30, 8, hx, hy, 90);
+    light.addColorStop(0, Art.shade(skin, .22)); light.addColorStop(.72, skin);
+    light.addColorStop(1, Art.shade(skin, -.23));
+    E(c, hx, hy, 74, 80, light);
     // hair and hats
     const fringe = () => { c.beginPath(); c.moveTo(hx - 78, hy + 6); c.bezierCurveTo(hx - 96, hy - 118, hx + 96, hy - 118, hx + 78, hy + 6); c.bezierCurveTo(hx + 66, hy - 30, hx + 40, hy - 50, hx + 10, hy - 44); c.bezierCurveTo(hx - 18, hy - 36, hx - 52, hy - 48, hx - 78, hy + 6); c.fillStyle = hair; c.fill(); };
     if (v.hat === 'elder') {
@@ -135,7 +138,7 @@ const Portraits = (() => {
     if (who === 'A voice in the fog') return { type: 'voice' };
     if (who === 'Old Tally') return { type: 'owl', mood: moodOf(text) };
     if (BOSSES[who]) return { type: 'fog', def: BOSSES[who] };
-    return { type: 'bust', v: PEOPLE[who] || { col: '#495057' }, mood: moodOf(text) };
+    return { type: 'bust', who, v: PEOPLE[who] || { col: '#495057' }, mood: moodOf(text) };
   }
   function draw(cv, p, t, talk) {
     const d = Math.min(2, window.devicePixelRatio || 1);
@@ -143,7 +146,14 @@ const Portraits = (() => {
     const c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, PW, PH);
     if (!p) return;
     c.save(); c.beginPath(); c.rect(0, 0, PW, PH); c.clip();
-    if (p.type === 'bust') bust(c, p.v, p.mood, t, talk);
+    if (p.type === 'bust') {
+      const name = Storybook.people[p.who];
+      const img = name && Storybook.image(name);
+      if (img) {
+        const bob = Math.sin(t * (talk ? 3.2 : 1.5)) * (talk ? 2 : 1);
+        Storybook.sprite(c, name, PW / 2, PH + 149 + bob, 470, 360);
+      } else bust(c, p.v, p.mood, t, talk);
+    }
     else if (p.type === 'hero') { const s = p.kid === S.kid ? S : loadSave(p.kid); Art.hero(c, 140, 448, 4.2, { ...looksOf(s), kid: p.kid, color: s.color, cape: null, cls: null, weapon: null, armor: ARMORS[s.armor].tier, t, glow: false, mood: p.kid === S.kid ? curMood() : 'calm' }); }
     else if (p.type === 'owl') { c.translate(140 - 95 * 2.2, 176 - 80 * 2.2); c.scale(2.2, 2.2); Animals.owl(c, t); }
     else if (p.type === 'fog') Art.fog(c, p.def, 140, p.def.boss ? 352 : 330, p.def.boss ? 2.9 : 3.3, t, false);

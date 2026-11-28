@@ -53,19 +53,20 @@ function drawBattle(c) {
   const B = G.B, e = B.e, pal = PAL[G.world], t = G.t;
   const sx = B.shake > 0 ? Math.sin(t * 90) * 7 * (B.shake / 0.3) : 0;
   c.save(); c.translate(sx, 0);
-  const sky = c.createLinearGradient(0, 0, 0, 280); sky.addColorStop(0, pal.sky[0]); sky.addColorStop(1, pal.sky[1]); c.fillStyle = sky; c.fillRect(-20, 0, W + 40, 290);
-  // sunburst + far hills
-  c.save(); c.translate(W / 2, 250); c.globalAlpha = 0.13; c.fillStyle = '#fff'; for (let i = 0; i < 14; i++) { c.rotate(Math.PI / 7); c.beginPath(); c.moveTo(0, 0); c.lineTo(-40, -700); c.lineTo(40, -700); c.fill(); } c.restore();
-  c.fillStyle = Art.shade(pal.hill, -0.12); c.beginPath(); c.moveTo(-20, 290); for (let x = -20; x <= W + 20; x += 40) c.lineTo(x, 235 - Math.sin(x * 0.012) * 26 - Math.sin(x * 0.031) * 10); c.lineTo(W + 20, 290); c.fill();
-  c.fillStyle = pal.hill; c.beginPath(); c.moveTo(-20, 290); for (let x = -20; x <= W + 20; x += 40) c.lineTo(x, 262 - Math.sin(x * 0.009 + 2) * 18); c.lineTo(W + 20, 290); c.fill();
-  const gr = c.createLinearGradient(0, 280, 0, H); gr.addColorStop(0, pal.g1); gr.addColorStop(1, Art.shade(pal.g1, -0.3)); c.fillStyle = gr; c.fillRect(-20, 280, W + 40, H);
-  Art.ell(c, 250, 372, 170, 30, 'rgba(255,255,255,.16)'); Art.ell(c, 720, 356, 150, 26, 'rgba(255,255,255,.16)');
+  if (!Storybook.arena(c, G.world, W, H)) {
+    const sky = c.createLinearGradient(0, 0, 0, 280); sky.addColorStop(0, pal.sky[0]); sky.addColorStop(1, pal.sky[1]); c.fillStyle = sky; c.fillRect(-20, 0, W + 40, 290);
+    // sunburst + far hills
+    c.save(); c.translate(W / 2, 250); c.globalAlpha = 0.13; c.fillStyle = '#fff'; for (let i = 0; i < 14; i++) { c.rotate(Math.PI / 7); c.beginPath(); c.moveTo(0, 0); c.lineTo(-40, -700); c.lineTo(40, -700); c.fill(); } c.restore();
+    c.fillStyle = Art.shade(pal.hill, -0.12); c.beginPath(); c.moveTo(-20, 290); for (let x = -20; x <= W + 20; x += 40) c.lineTo(x, 235 - Math.sin(x * 0.012) * 26 - Math.sin(x * 0.031) * 10); c.lineTo(W + 20, 290); c.fill();
+    c.fillStyle = pal.hill; c.beginPath(); c.moveTo(-20, 290); for (let x = -20; x <= W + 20; x += 40) c.lineTo(x, 262 - Math.sin(x * 0.009 + 2) * 18); c.lineTo(W + 20, 290); c.fill();
+    const gr = c.createLinearGradient(0, 280, 0, H); gr.addColorStop(0, pal.g1); gr.addColorStop(1, Art.shade(pal.g1, -0.3)); c.fillStyle = gr; c.fillRect(-20, 280, W + 40, H);
+  }
   // enemy
   if (B.eScale > 0.02) { c.save(); c.translate(720 + B.ex, 356); c.scale(B.eScale, B.eScale); if (e.wild) Art.lumi(c, SPECIES[e.sp], 0, 0, 2.6, t, false, true); else Art.fog(c, e, 0, 0, e.boss ? 2.3 : 2.4, t, B.eHit > 0); if (e.wild && B.eHit > 0) { c.globalAlpha = 0.5; Art.ell(c, 0, -50, 55, 55, '#fff'); } c.restore(); }
   // team
   const l = activeLumi();
   Art.lumi(c, SPECIES[l.sp], 345 + B.hx * 0.6 + B.lx, 384, 1.7, t, isEvo(l), false);
-  c.save(); if (B.hHit > 0) c.globalAlpha = 0.55 + Math.sin(t * 60) * 0.3; Art.hero(c, 205 + B.hx, 376, 1.6, heroLook({ swing: B.swing, badge: true })); c.restore();
+  c.save(); if (B.hHit > 0) c.globalAlpha = 0.55 + Math.sin(t * 60) * 0.3; Art.hero(c, 205 + B.hx, 376, 1.6, heroLook({ swing: B.swing, badge: true, sceneArt: true })); c.restore();
   if (B.fx) FX.draw[B.fx.name](c, B.fx.k, B.fx.s, B.fx.t, t);
   if (B.orb) { const k = B.orb.k, ox = 240 + (720 - 240) * k, oy = 300 - Math.sin(k * Math.PI) * 190 + (k * 0); c.save(); c.shadowColor = '#e599f7'; c.shadowBlur = 16; Art.ell(c, ox, oy, 13, 13, '#e599f7', '#15131f', 3); c.restore(); Art.ell(c, ox - 4, oy - 4, 4, 4, '#fff'); }
   drawParts(c);
@@ -111,7 +112,7 @@ G.intro = { state: 'wait', t: 0 };
 function profileCards() {
   $('whoText').innerHTML = zh(ZT.who); $('btnReset').innerHTML = zh(ZT.reset);
   $('saveNote').textContent = Cloud.ready ? '☁️ Progress is saved to your Claude account, on every device' : '💾 Progress is saved on this device';
-  $('profiles').innerHTML = ['nora', 'lucas'].map(k => { const s = loadSave(k); return `<button class="pcard ${k}" data-kid="${k}"><canvas data-hero="${k}"></canvas><b style="background:${KIDS[k].col}">${KIDS[k].name}</b><small>${s.created ? `${zh(ZT.level)} ${s.lv} · ${zh(ZT.crystal)} ${s.crystals.length}/5${s.won ? ' 🏆' : ''}` : zh(ZT.fresh)}</small></button>`; }).join('');
+  $('profiles').innerHTML = ['nora', 'lucas'].map(k => { const s = loadSave(k); return `<button class="pcard ${k}" data-kid="${k}">${s.created ? `<canvas data-hero="${k}"></canvas>` : `<img class="profile-portrait" src="art/${k}.webp" alt="">`}<b style="background:${KIDS[k].col}">${KIDS[k].name}</b><small>${s.created ? `${zh(ZT.level)} ${s.lv} · ${zh(ZT.crystal)} ${s.crystals.length}/5${s.won ? ' 🏆' : ''}` : zh(ZT.fresh)}</small></button>`; }).join('');
   drawMinis($('profiles'));
   $('profiles').querySelectorAll('.pcard').forEach(b => b.addEventListener('click', () => pickKid(b.dataset.kid)));
 }

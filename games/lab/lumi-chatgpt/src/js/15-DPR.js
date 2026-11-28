@@ -30,8 +30,18 @@ $('btnBag').addEventListener('click', () => { if (!G.busy && !dlg) { Snd.play('t
 $('btnTeam').addEventListener('click', () => { if (!G.busy && !dlg) { Snd.play('tap'); teamPanel(); } });
 $('btnQuest').addEventListener('click', () => { if (!G.busy && !dlg) { Snd.play('tap'); questPanel(); } });
 $('btnExit').addEventListener('click', () => { if (!G.busy && !dlg) { Snd.play('tap'); goTitle(); } });
-for (const id of ['btnSound', 'btnSound2']) $(id).addEventListener('click', () => { Snd.init(); Snd.setMuted(!Snd.isMuted()); $('btnSound').textContent = $('btnSound2').textContent = Snd.isMuted() ? '🔇' : '🔊'; });
-$('btnSound2').textContent = Snd.isMuted() ? '🔇' : '🔊';
+function renderSoundButtons() {
+  const muted = Snd.isMuted();
+  for (const id of ['btnSound', 'btnSound2']) {
+    const button = $(id);
+    button.querySelector('img').src = muted ? 'art/hud-muted.webp' : 'art/hud-sound.webp';
+    button.setAttribute('aria-pressed', String(muted));
+  }
+}
+for (const id of ['btnSound', 'btnSound2']) $(id).addEventListener('click', () => {
+  Snd.init(); Snd.setMuted(!Snd.isMuted()); renderSoundButtons();
+});
+renderSoundButtons();
 
 // Expose for automated playtests. Harmless for players.
 window.__test = {

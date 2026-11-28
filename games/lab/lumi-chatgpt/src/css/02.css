@@ -234,3 +234,28 @@ button.armed { outline: 4px solid var(--gold); outline-offset: 3px; animation: a
 .chk { cursor: pointer; }
 .opts.heads.six .opt b { font-size: 14px; }
 .opts.heads.six canvas { width: 62px !important; height: 55px !important; }
+
+/* Storybook interface. Solid dark surfaces keep text legible over detailed scenery. */
+:root { --ink: #182a2b; --night: #102326; --panel: #fff4dd; --text: #263633; --muted: #5f6658; --gold: #f3c96f; --violet: #634e82; --line: #dac7a1; }
+.pcard { border: 2px solid #e1bd77; border-radius: 19px; background: #263c37; color: #fff3cf; box-shadow: 0 10px 30px #101e21aa; }
+.pcard:hover { background: #345044; }
+.pcard small { color: #fff0c4; }
+.pcard b { border: 1px solid #efcf87; }
+.profile-portrait { width: 154px; height: 148px; object-fit: contain; object-position: center bottom; }
+#saveNote { color: #fff3cf; text-shadow: 0 2px 5px #102326; }
+#battle { background: linear-gradient(transparent, #142323ee 33%); }
+.move { color: #fff4dc; background: #233a37; border: 1.5px solid #aa976c; border-radius: 12px; box-shadow: 0 4px 9px #0c1718a0; }
+.move:hover:not(:disabled) { background: #38534a; border-color: #f4d189; }
+.move small { color: #eadbaf; }
+.move:disabled { opacity: .63; }
+.move-icon { width: 34px; height: 34px; object-fit: contain; }
+.m-strike { background: #4b3529; }
+.m-skill { background: #3d3153; }
+.m-capture { background: #40304a; }
+.m-potion { background: #25452f; }
+#dialog { border-top-color: #b7975e; background: linear-gradient(#1c3031f2, #102326fa); }
+#dlgWho { color: #f9e4ac; border-bottom-color: #9e87514a; }
+#panelCard, #qCard { border: 2px solid #b7955b; box-shadow: 0 12px 36px #0e1b22bb; }
+.hud-icon { width: 26px; height: 26px; object-fit: contain; }
+.stat .hud-icon { width: 22px; height: 22px; margin-right: 5px; }
+#btnSound2 .hud-icon { vertical-align: middle; }

@@ -92,6 +92,7 @@ function questPanel() {
 function drawMirror(c, px, py, t) {
   const cx = px + TILE / 2, by = py + TILE - 6;
   Art.ell(c, cx, by + 2, 15, 4, 'rgba(0,0,0,.25)');
+  if (Storybook.sprite(c, 'mirror', cx, by, 58, 37)) { Art.sparkle(c, cx + 10, by - 38, t, .3); return; }
   Art.rr(c, cx - 3, by - 10, 6, 12, 2, '#8d6e4a', Art.INK, 1.5); Art.ell(c, cx, by - 1, 11, 4, '#b5712c', Art.INK, 1.5);
   Art.ell(c, cx, by - 30, 14, 20, '#ffd43b', Art.INK, 2.2);
   const g = c.createLinearGradient(cx - 10, by - 48, cx + 10, by - 12); g.addColorStop(0, '#e7f5ff'); g.addColorStop(0.5 + Math.sin(t * 1.5) * 0.3, '#a5d8ff'); g.addColorStop(1, '#d0bfff');
@@ -101,6 +102,11 @@ function drawMirror(c, px, py, t) {
 const storybookOak = new Image();
 storybookOak.src = 'art/enchanted-oak-v1.png';
 function drawWorldTree(c, px, py, pal, t, x, y) {
+  if (pal.tree !== 'round') {
+    const name = Storybook.trees[pal.tree];
+    const x0 = px + TILE / 2, y0 = py + TILE - 5;
+    if (name && Storybook.sprite(c, name, x0, y0, TILE * 1.42, TILE * 1.32, (x + y) % 2 === 1)) return;
+  }
   if (pal.tree !== 'round' || !storybookOak.complete || !storybookOak.naturalWidth) {
     Art.tree(c, px, py, TILE, pal, t, x, y);
     return;
@@ -109,7 +115,10 @@ function drawWorldTree(c, px, py, pal, t, x, y) {
   const height = TILE * 2 * scale, width = height * storybookOak.naturalWidth / storybookOak.naturalHeight;
   const footX = px + TILE / 2, footY = py + TILE - 5;
   Art.ell(c, footX, footY - 1, width * .25, 4, 'rgba(18, 40, 25, .24)');
-  c.drawImage(storybookOak, footX - width / 2, footY - height, width, height);
+  c.save(); c.translate(footX, footY);
+  if ((x + y) % 2) c.scale(-1, 1);
+  c.drawImage(storybookOak, -width / 2, -height, width, height);
+  c.restore();
 }
 
 function drawWorld(c) {
@@ -140,7 +149,7 @@ function drawWorld(c) {
   const hx = G.fx * TILE + TILE / 2, hy = G.fy * TILE + TILE - 8;
   const l = activeLumi();
   if (l) { G.fol = G.fol || { x: hx - 30, y: hy }; const d = Math.hypot(hx - G.fol.x, hy - G.fol.y); if (d > 34) { G.fol.x += (hx - G.fol.x) * 0.09; G.fol.y += (hy - G.fol.y) * 0.09; } if (d > 300) { G.fol.x = hx - 30; G.fol.y = hy; } list.push([G.fol.y - 1, () => Art.lumi(c, SPECIES[l.sp], G.fol.x, G.fol.y, 0.62, t, isEvo(l), hx < G.fol.x)]); }
-  list.push([hy, () => Art.hero(c, hx, hy, 0.62, heroLook({ walk: G.walking }))]);
+  list.push([hy, () => Art.hero(c, hx, hy, 0.62, heroLook({ walk: G.walking, sceneArt: true }))]);
   list.sort((a, b) => a[0] - b[0]); for (const d of list) d[1]();
   // name badge last so nothing covers it
   const nm = KIDS[S.kid].name.toUpperCase(); c.font = '900 11px system-ui'; c.textAlign = 'center'; const bw = c.measureText(nm).width + 12;
