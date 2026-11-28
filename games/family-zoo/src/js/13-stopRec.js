@@ -71,6 +71,8 @@ window.__test={
   info:()=>({calls:renderer.info.render.calls,frames:renderer.info.render.frame,cam:[cam.left,cam.top,cam.position.x,cam.position.y]}),
   state:()=>({screen:!$('#intro').hidden?'intro':!$('#draw').hidden?'draw':!$('#passport').hidden?'passport':'zoo',mode,animals:S.animals.length,critters:critters.size,stamps:S.stamps.length,items:S.items.length}),
   choose:k=>choose(k),
+  frog:()=>{if(!frog||!frog.base)return null;const p=frog.sp.position.clone();p.y+=.25;p.project(cam);return {vis:frog.sp.visible,x:Math.round((p.x+1)/2*innerWidth),y:Math.round((1-p.y)/2*innerHeight),tree:frog.tree&&frog.tree.type,cool:+frog.cool.toFixed(1)};},
+  frogFocus:()=>{if(frog&&frog.base){flyTo(frog.base);}},
   give:n=>earn(n),
   coins:n=>{if(n!=null){S.coins=n;hud();}return S.coins;},
   place:(type,c,r)=>{if(!fits(type,c,r))return 'blocked';if(!spendCoins(costOf(type),'x'))return 'nocoins';const it={id:S.nextItem++,type,c,r};S.items.push(it);addItemObj(it);save();return 'ok';},
