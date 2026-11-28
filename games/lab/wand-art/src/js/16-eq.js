@@ -6,12 +6,12 @@ function robeSrc(src){ const r=SHOP.robe.find(x=>x.id===eq().robe); if(!r||r.h==
 function recolor(src,hue){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>{ try{ const c=document.createElement('canvas'); c.width=im.naturalWidth; c.height=im.naturalHeight; const g=c.getContext('2d'); g.drawImage(im,0,0); const d=g.getImageData(0,0,c.width,c.height), a=d.data;
   for(let i=0;i<a.length;i+=4){ if(a[i+3]<10) continue; const r=a[i]/255,gg=a[i+1]/255,b=a[i+2]/255, mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), l=(mx+mn)/2, dl=mx-mn; if(dl<.08) continue; const s=dl/(1-Math.abs(2*l-1));
    let h; if(mx===r) h=60*(((gg-b)/dl)%6); else if(mx===gg) h=60*((b-r)/dl+2); else h=60*((r-gg)/dl+4); if(h<0) h+=360;
-   if((src.includes('nora2-')?(h<195||h>240):(h<235||h>305))||s<.12) continue; // only the robe
+   if((src.includes('nora3-')?(h<135||h>178):src.includes('nora2-')?(h<195||h>240):(h<235||h>305))||s<.12) continue; // only the robe
    const nh=hue, L=hue===45?Math.min(.85,l*1.25):l, S2=Math.min(1,s*(hue===45?1.1:1)); const C=(1-Math.abs(2*L-1))*S2, X=C*(1-Math.abs((nh/60)%2-1)), m=L-C/2; let rr,g2,bb; const hh=nh/60;
    if(hh<1){rr=C;g2=X;bb=0;} else if(hh<2){rr=X;g2=C;bb=0;} else if(hh<3){rr=0;g2=C;bb=X;} else if(hh<4){rr=0;g2=X;bb=C;} else if(hh<5){rr=X;g2=0;bb=C;} else {rr=C;g2=0;bb=X;}
    a[i]=(rr+m)*255; a[i+1]=(g2+m)*255; a[i+2]=(bb+m)*255; }
   g.putImageData(d,0,0); res(c.toDataURL('image/png')); }catch(e){ rej(e); } }; im.onerror=rej; im.src=src; }); }
-function warmRobes(){ ['happy','wow','brave','cast','sad','sleepy','wave'].forEach(p=>{ robeSrc(`art/nora-${p}.webp`); robeSrc(`art/nora2-${p}.webp`); }); }
+function warmRobes(){ ['happy','wow','brave','cast','sad','sleepy','wave'].forEach(p=>{ robeSrc(`art/nora-${p}.webp`); robeSrc(`art/nora2-${p}.webp`); robeSrc(`art/nora3-${p}.webp`); }); }
 let shopFrom='title', shopTab='wand';
 function openShop(from){ shopFrom=from||'title'; eq(); show('shop'); Snd.sfx('tap'); renderShop(); }
 function renderShop(){ eq(); $('#shStars').textContent=S.stars; document.querySelectorAll('#shTabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===shopTab));

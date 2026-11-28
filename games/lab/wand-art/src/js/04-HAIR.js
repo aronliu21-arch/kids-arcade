@@ -24,7 +24,7 @@ function girl(who,x,y,s,o={}){
   return `<g transform="translate(${x},${y}) scale(${o.flip?-s:s},${s})">${glow}<ellipse cx="0" cy="252" rx="${w*.34}" ry="9" fill="#000" opacity=".16"/><image href="art/${pre}${emo?ek:who}.webp" x="${-w/2}" y="${252-h}" width="${w}" height="${h}"/></g>`; }
  if(who==='nora'&&window.NORA_ART!==false){ const ex=o.expr||'happy', arm=o.arm||'none';
   const pose=ex==='wow'?'wow':ex==='sad'?'sad':ex==='closed'?'sleepy':arm==='wand'?(o.glow?'happy':'cast'):arm==='wave'?'wave':ex==='smirk'?'brave':'happy';
-  const N2=y2()&&Y2ART.nora[pose]; const R=N2||NORA_DIM[pose]; const h=N2?352:340,w=h*R[0]/R[1]; const nsrc0=`art/${N2?'nora2':'nora'}-${pose}.webp`, nsrc=(typeof robeSrc==='function')?robeSrc(nsrc0):nsrc0;
+  const N2=y2()&&Y2ART.nora[pose]; const R=N2||NORA_DIM[pose]; const h=N2?352:340,w=h*R[0]/R[1]; const nsrc0=`art/${N2?(((S&&S.year)||1)>=3?'nora3':'nora2'):'nora'}-${pose}.webp`, nsrc=(typeof robeSrc==='function')?robeSrc(nsrc0):nsrc0;
   const glow=o.glow?`<ellipse cx="0" cy="120" rx="120" ry="180" fill="url(#warm)" opacity=".8"/>`:'';
   const badge=o.badge!==false?`<g transform="translate(-42,262)"><rect width="84" height="28" rx="14" fill="#7048e8"/><text x="42" y="20" font-family="Poppins,system-ui" font-weight="700" font-size="16" fill="#fff" text-anchor="middle">Nora</text></g>`:'';
   const sc=s*1.12;

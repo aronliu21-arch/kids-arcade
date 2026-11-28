@@ -7,12 +7,17 @@ Object.assign(CAST,{
  pen:{cast:['Daniel','Moira','Samantha'],pitch:.75,rate:.84},
  mirror:{cast:['Ava','Samantha','Zoe'],pitch:.95,rate:.9},
 });
-// Celeste and Pip use simple drawn placeholders until their painted pictures are made
+// Celeste and Pip: painted pictures are hooked up in 19-Y3ART.js (these colors are the fallback)
 Object.assign(HAIR,{celeste:'#e9ecef'}); Object.assign(ROBE,{celeste:'#1971c2'}); Object.assign(TRIM,{celeste:'#d0ebff'});
 if(!DRAGONS.pip) DRAGONS.pip=Object.assign({},DRAGONS.thistle,{c:'#c08a4a',wing:'#f1dcb8',horn:'#ffd43b',belly:'#fff4e0'});
-const PEN=(x=700,y=300,s=1,o={})=>`<g class="float" transform="translate(${x},${y}) scale(${s}) rotate(${o.rot??-30})"><ellipse cx="0" cy="0" rx="120" ry="60" fill="url(#warm)" opacity="${o.dark?.15:.55}"/><path d="M-10 -120Q40 -150 70 -190Q60 -110 14 -70Z" fill="#e9ecef" stroke="#adb5bd" stroke-width="3"/><path d="M-10 -120L14 -70" stroke="#adb5bd" stroke-width="2"/><rect x="-12" y="-80" width="24" height="150" rx="10" fill="${o.dark?'#495057':'#ced4da'}" stroke="#868e96" stroke-width="3"/><rect x="-12" y="-20" width="24" height="10" fill="#7048e8"/><path d="M-12 70L0 110L12 70Z" fill="#343a40"/>${o.eye?`<ellipse cx="0" cy="-40" rx="7" ry="9" fill="#b197fc" filter="url(#glow)"/>`:''}</g>`;
+const PEN_SVG=(x=700,y=300,s=1,o={})=>`<g transform="translate(${x},${y}) scale(${s}) rotate(${o.rot??-30})"><g class="float"><ellipse cx="0" cy="0" rx="120" ry="60" fill="url(#warm)" opacity="${o.dark?.15:.55}"/><path d="M-10 -120Q40 -150 70 -190Q60 -110 14 -70Z" fill="#e9ecef" stroke="#adb5bd" stroke-width="3"/><path d="M-10 -120L14 -70" stroke="#adb5bd" stroke-width="2"/><rect x="-12" y="-80" width="24" height="150" rx="10" fill="${o.dark?'#495057':'#ced4da'}" stroke="#868e96" stroke-width="3"/><rect x="-12" y="-20" width="24" height="10" fill="#7048e8"/><path d="M-12 70L0 110L12 70Z" fill="#343a40"/>${o.eye?`<ellipse cx="0" cy="-40" rx="7" ry="9" fill="#b197fc" filter="url(#glow)"/>`:''}</g></g>`;
+const PEN=(x=700,y=300,s=1,o={})=>{ const A=typeof Y3ART!=='undefined'&&Y3ART.pen[o.eye?'pen-awake':'pen']; if(!A) return PEN_SVG(x,y,s,o); const h=380*s*(o.eye?1.1:1), w=h*A[0]/A[1];
+ return `<g transform="translate(${x},${y}) rotate(${(o.rot??-30)+30})"><g class="float"><ellipse cx="0" cy="0" rx="${w*.7}" ry="${h*.3}" fill="url(#warm)" opacity="${o.dark?.15:.55}"/><image href="art/m-${o.eye?'pen-awake':'pen'}.webp" x="${-w/2}" y="${-h/2}" width="${w}" height="${h}"${o.dark?' style="filter:brightness(.6) saturate(.6)"':''}/></g></g>`; };
 const MIRRORDEF=`<defs><filter id="mirrorF"><feColorMatrix type="hueRotate" values="160"/><feColorMatrix type="saturate" values=".55"/></filter></defs>`;
-const MIRROR=(x,y,s,o={})=>MIRRORDEF+`<g filter="url(#mirrorF)" opacity=".82">${girl('nora',x,y,s,Object.assign({badge:false},o))}</g>`;
+const MIRROR=(x,y,s,o={})=>{ const pose=o.arm==='wave'?'wave':o.arm==='wand'?'brave':o.expr==='sad'?'sad':'smirk'; const A=typeof Y3ART!=='undefined'&&Y3ART.mirror[pose];
+ if(!A) return MIRRORDEF+`<g filter="url(#mirrorF)" opacity=".82">${girl('nora',x,y,s,Object.assign({badge:false},o))}</g>`;
+ const sc=s*1.12, h=360, w=h*A[0]/A[1];
+ return `<g transform="translate(${x},${y}) scale(${o.flip?-sc:sc},${sc})"><ellipse cx="0" cy="130" rx="${w*.6}" ry="190" fill="#e5dbff" opacity=".35" filter="url(#glow)"/><ellipse cx="0" cy="262" rx="${w*.32}" ry="10" fill="#000" opacity=".14"/><image class="mirrorShim" href="art/mirror-${pose}.webp" x="${-w/2}" y="${262-h}" width="${w}" height="${h}" opacity=".95"/></g>`; };
 const Y3CARD=(top,big)=>svg(`<rect width="1024" height="640" fill="#2b2440"/><circle cx="512" cy="320" r="300" fill="url(#warm)" opacity=".5"/><text x="512" y="250" text-anchor="middle" font-family="Poppins,system-ui" font-weight="800" font-size="44" fill="#ffd43b" letter-spacing="8">${top}</text><text x="512" y="360" text-anchor="middle" font-family="'TeX Gyre Chorus','Snell Roundhand',cursive" font-size="96" fill="#fff3bf" filter="url(#glow)">${big}</text>`);
 const PIP=(x,y,s,o={})=>D2(x,y,s,Object.assign({who:'pip'},o));
 const Y3={};
