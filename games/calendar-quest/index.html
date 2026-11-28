@@ -185,14 +185,34 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
-.goal{background:#fff8e1;border:3px solid #f5b700;border-radius:18px;padding:10px 14px;margin:0 0 12px;font-size:16px;line-height:1.4}
-.goal.met{background:#ebfbee;border-color:#2f9e44}
-.goal .gt{font-weight:700;font-size:18px}.goal .gr{font-weight:500;font-size:13px;opacity:.7}
-.goal .gp{margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.goal .gd{width:28px;height:28px;border-radius:50%;border:3px solid #f5b700;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:15px}
-.goal .gd.on{background:#f5b700}.goal.met .gd{border-color:#2f9e44}.goal.met .gd.on{background:#2f9e44}
-.mcard.goalm{outline:4px solid #f5b700;outline-offset:2px}
-.rgoal{margin-top:10px;font-weight:700;font-size:17px;background:#fff8e1;border-radius:12px;padding:8px 12px}
+/* Weekly goal uses its own palette so the paper stays readable in either theme. */
+.goal,.rgoal{background:#fff8e1;color:#35240e}
+.goal{--muted:#654d23;--goal-edge:#a36a00;--goal-fill:#8b5800;border:2px solid var(--goal-edge);border-inline-start-width:6px;border-radius:18px;padding:12px 16px;margin:0 0 14px;font-size:16px;line-height:1.4}
+.goal.met{--muted:#355b42;--goal-edge:#28743e;--goal-fill:#236435;background:#ebfbee;color:#183c25}
+.goal .gt{font-weight:700;font-size:18px}
+.goal .gr{display:block;margin:2px 0 6px;color:var(--muted);font-weight:600;font-size:14px}
+.goal .gp{margin-top:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.goal .gd{width:24px;height:24px;border-radius:50%;border:2px solid var(--goal-edge);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:15px}
+.goal .gd.on{background:var(--goal-fill);border-color:var(--goal-fill)}
+.mcard.goalm{border-color:#f5b700;background:color-mix(in srgb,var(--gold) 9%,var(--card))}
+.rgoal{margin-top:10px;font-weight:700;font-size:17px;border-radius:12px;padding:8px 12px}
+
+/* Let the mission map scroll when the cards need more room. */
+.wrap>#map{flex:1 0 auto;padding-bottom:12px}
+#map .maphead{margin-bottom:10px}
+#map .grid{grid-auto-rows:minmax(112px,1fr)}
+#map .mcard .em{width:1.75em;height:1.75em;display:grid;place-items:center;border-radius:12px;background:var(--paper)}
+#map .mcard .bl{overflow:visible}
+@media (max-width:560px){
+  #map .who{flex:1 0 100%}
+  #map .grid:not(.two) .mcard{flex-direction:column;align-items:flex-start;gap:2px;padding:8px 12px}
+  #map .grid:not(.two) .mcard .tt{flex:0 0 auto}
+  #map .mcard .bl{display:block}
+  #map .mix{flex-wrap:wrap;gap:6px 10px}
+}
+@media (max-height:560px) and (min-width:561px){
+  #map .grid:not(.two){grid-auto-rows:minmax(54px,1fr)}
+}
 </style>
 
 <div class="wrap">
@@ -743,7 +763,7 @@ function goalState(id){const g=GOALS[id];if(!g)return null;const w=weekOf(new Da
   if(!p.wk||p.wk.no!==w.no)p.wk={no:w.no,rounds:[]};
   const done=p.wk.rounds.filter(r=>r.stars>=g.min).length;return{g:g,w:w,done:Math.min(done,g.n),met:done>=g.n,tries:p.wk.rounds.length};}
 function goalCard(id){const s=goalState(id);if(!s)return '';const m=listFor(id).find(x=>x.id===s.g.m);
-  const dots=Array.from({length:s.g.n},(_,i)=>'<span class="gd'+(i<s.done?' on':'')+'">'+(i<s.done?'★':'')+'</span>').join('');
+  const dots=Array.from({length:s.g.n},(_,i)=>'<span aria-hidden="true" class="gd'+(i<s.done?' on':'')+'">'+(i<s.done?'★':'')+'</span>').join('');
   return '<div class="goal'+(s.met?' met':'')+'"><div class="gt">🎯 '+RB('本週目標','ㄅㄣˇ ㄓㄡ ㄇㄨˋ ㄅㄧㄠ')+' Week '+s.w.no+' goal <span class="gr">'+fmtDate(s.w.from)+' – '+fmtDate(s.w.to)+'</span></div>'+
     '<div class="gb">Play <b>'+m.e+' '+m.t+'</b> '+s.g.n+' times and get <b>'+'★'.repeat(s.g.min)+'</b> or better each time.</div>'+
     '<div class="gp">'+dots+' <b>'+s.done+' / '+s.g.n+'</b>'+(s.met?' ✅ '+RB('完成','ㄨㄢˊ ㄔㄥˊ')+' Done!':'')+'</div></div>';}
