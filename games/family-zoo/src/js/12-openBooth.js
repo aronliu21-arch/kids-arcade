@@ -7,11 +7,17 @@ function openBooth(msg){$('#booth').classList.remove('playing');closeSign();if(!
 function startRound(g){const G=QB.GAMES[g];let qs=[];try{qs=G.make(G.n,S.profile);}catch(e){qs=[];}
   if(!qs.length){toast("Those questions didn't load. Pick another game");return;}Q={g,qs,i:0,tries:0,earned:0,done:false,hero:heroPick()};save();renderQ();}
 function renderQ(){window.KA&&KA.shown();$('#booth').classList.add('playing');const q=Q.qs[Q.i],G=QB.GAMES[Q.g],k=S.profile;Q.tries=0;Q.done=false;const body=$('#boothBody');const m=MECH[Q.g]||'balloons';$('#boothTitle').textContent=MNAME[m]+' · '+G.title;
-  body.innerHTML='<div class="quiz arena m-'+m+(k==='milo'?' milo':'')+'"><div class="qtop"><div class="qdots">'+Q.qs.map((_,i)=>'<i class="'+(i<Q.i?'on':i===Q.i?'cur':'')+'"></i>').join('')+'</div><span class="pill sm" id="qTk">'+icon('ticket')+'<span>'+tickets()+'</span></span></div>'+
+  body.innerHTML='<div class="quiz arena m-'+m+(k==='milo'?' milo':'')+'"><div class="qtop"><div class="qdots">'+Q.qs.map((_,i)=>'<i class="'+(i<Q.i?'on':i===Q.i?'cur':'')+'"></i>').join('')+'</div>'+(q.say?'<button class="hear" id="qHear" aria-label="Hear it again">🔊</button>':'')+'<span class="pill sm" id="qTk">'+icon('ticket')+'<span>'+tickets()+'</span></span></div>'+
     '<div class="qbox">'+(q.lvl?'<div class="qlvl">'+esc(q.lvl)+'</div>':'')+q.prompt+'</div><div class="afield">'+fieldHTML(m,q.choices)+
     '</div><div class="qfb" id="qfb">'+(k==='milo'?'':'Tap the right answer.')+'</div></div>';
   body.querySelectorAll('.qc').forEach(b=>b.onclick=()=>pickAns(+b.dataset.i,b));body.scrollTop=0;
+  const hb=$('#qHear');if(hb)hb.onclick=()=>{SFX.tap();speak(q.say,true,q.lang);};
+  if(body.querySelector('.bowlWrap'))feedBowl(body,q);
   if(q.say)speak(q.say,false,q.lang);}
+function feedBowl(body,q){const st=wireBowl(body.querySelector('.afield'),n=>{if(Q.done)return;const bs=[...body.querySelectorAll('.qc')];
+  let i=q.choices.findIndex(c=>String(c.val)===String(n));if(i<0||bs[i].classList.contains('dead'))i=bs.findIndex((b,j)=>String(q.choices[j].val)!==String(q.answer)&&!b.classList.contains('dead'));if(i<0)return;
+  pickAns(i,bs[i]);if(String(q.choices[i].val)===String(q.answer)){st.gobble(body.querySelector('.afield .hero'));}
+  else if(Q.done){st.show(+q.answer);st.locked=true;}else setTimeout(st.reset,500);});}
 function rightIndex(q){return q.choices.findIndex(x=>String(x.val)===String(q.answer));}
 function pickAns(i,btn){if(!Q||Q.done)return;const q=Q.qs[Q.i],c=q.choices[i];if(!c||btn.classList.contains('dead'))return;const k=S.profile,fb=$('#qfb'),body=$('#boothBody');
   try{const t=v=>{const d=document.createElement('div');d.innerHTML=String(v==null?'':v);return d.textContent.trim()};const ri=rightIndex(q),cc=q.choices[ri];window.KA&&(KA.setKid(k),KA.answer({q:t(q.prompt),qid:q.id,given:t(c.label!=null?c.label:(c.txt!=null?c.txt:c.val)),expected:t(cc&&(cc.label!=null?cc.label:(cc.txt!=null?cc.txt:cc.val))),correct:String(c.val)===String(q.answer),tryNo:Q.tries+1,topic:QB.GAMES[Q.g]&&QB.GAMES[Q.g].title}));}catch(e){}

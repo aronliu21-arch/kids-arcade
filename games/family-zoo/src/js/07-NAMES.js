@@ -41,7 +41,7 @@ $('#toZooBtn').onclick=async()=>{if(!made)return;let n=$('#nameIn').value.trim()
 function bestPen(){const ps=pens();if(!ps.length)return autoPen();return ps.slice().sort((a,b)=>S.animals.filter(x=>x.pen===a.id).length-S.animals.filter(x=>x.pen===b.id).length)[0];}
 function autoPen(){const types=['pen_savanna','pen_jungle','pen_polar','pen_pond'];for(let r=rMin()+1;r<GRID-4;r++)for(let c=1;c<GRID-4;c++){if(fits('pen_savanna',c,r)){const it={id:S.nextItem++,type:types[(Math.random()*4)|0],c,r};S.items.push(it);addItemObj(it);save();return it;}}return null;}
 async function finishPlace(pen){
-  if(pending&&pending.move){const c=pending.move;c.hold=false;c.a.pen=pen.id;save();const b=penBounds(pen);const to=new THREE.Vector3(rand(b.x0,b.x1),0,rand(b.z0,b.z1));c.anim={from:c.g.position.clone(),to,t:0,d:1.2,h:pending.isNew?3:2.2};c.target=null;pending=null;setMode('zoo');flyTo(to);return;}
+  if(pending&&pending.move){const c=pending.move;c.hold=false;c.a.pen=pen.id;save();const b=penBounds(pen);const to=new THREE.Vector3(rand(b.x0,b.x1),0,rand(b.z0,b.z1));c.anim={from:c.g.position.clone(),to,t:0,d:1.2,h:pending.isNew?3:2.2};c.target=null;pending=null;setMode('zoo');flyTo(to);if(giftNext===c){giftNext=null;banner(null);setTimeout(()=>openBowl(c),1500);}return;}
   if(!pending)return;const a={id:S.nextAnimal++,name:pending.name,fact:pending.fact,maker:S.profile||'nora',made:today(),png:pending.png,pen:pen.id,sound:pending.sound};pending=null;
   S.animals.push(a);save();setMode('zoo');const c=await spawnCritter(a);hud();
   if(c){const b=penBounds(pen);const to=c.g.position.clone();c.anim={from:new THREE.Vector3(to.x,0,GRID/2+.5),to,t:0,d:1.4,h:3};flyTo(to);}
@@ -61,7 +61,7 @@ function fitView(animate){const W=innerWidth,H=innerHeight;if(!W||!H)return;let 
 
 /* ---------- passport ---------- */
 function openPassport(){closeSign();SFX.tap();const grid=$('#stampGrid');const st=S.stamps.slice().reverse();
-  const ic={new:'star',fed:'feed',pet:'heart',build:'build'};
+  const ic={new:'star',fed:'feed',pet:'heart',build:'build',frog:'sparkle'};
   grid.innerHTML=st.map((s,ix)=>{const k=KIDS[s.kid]||KIDS.keeper;return '<div class="st" style="transform:rotate('+((ix*37)%15-7)+'deg)" title="'+esc(s.label||'')+'">'+icon(ic[s.kind]||'star')+'<b>'+({new:'New!',fed:'Yum',pet:'Hug',build:'Built'}[s.kind]||'Stamp')+'</b><span>'+fmtDay(s.day)+'</span><span style="color:'+k.color+'">'+esc(k.name)+'</span></div>';}).join('')+
     Array.from({length:Math.max(0,8-st.length)},()=>'<div class="st empty">'+icon('stamp')+'<span>Next stamp</span></div>').join('');
   const list=$('#ticketList');

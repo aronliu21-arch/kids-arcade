@@ -60,6 +60,7 @@ function heroHTML(cls){return Q.hero?'<img class="hero'+(cls||'')+'" alt="" src=
 function fieldHTML(m,cs){const qc=(cls,i,st,inner)=>'<button class="qc '+cls+'" data-i="'+i+'"'+(st?' style="'+st+'"':'')+'>'+inner+'</button>';
   if(m==='balloons')return heroHTML()+'<div class="items">'+cs.map((c,i)=>qc('bal',i,'--c:'+PAL[i%4]+';--d:-'+(i*.7).toFixed(1)+'s',c.html)).join('')+'</div>';
   if(m==='fish')return '<div class="lanes">'+cs.map((c,i)=>'<div class="lane">'+qc('fish',i,'--c:'+PAL[i%4]+';--t:'+(4.5+i*1.3).toFixed(1)+'s;--d:-'+(i*1.9).toFixed(1)+'s',c.html)+'</div>').join('')+'</div>';
+  if(m==='feed'&&Q.g==='feed')return bowlHTML(8)+heroHTML(' big')+'<div hidden>'+cs.map((c,i)=>qc('plate',i,'',c.html)).join('')+'</div>';
   if(m==='feed')return '<div class="plates">'+cs.map((c,i)=>qc('plate',i,'',art(FOODS[i%FOODS.length].id)+'<span class="tag">'+c.html+'</span>')).join('')+'</div>'+heroHTML(' big');
   if(m==='eggs')return '<div class="nest">'+cs.map((c,i)=>qc('egg2',i,'--d:-'+(i*.9).toFixed(1)+'s','<span>'+c.html+'</span>')).join('')+'</div>';
   if(m==='goals')return '<div class="goals">'+cs.map((c,i)=>qc('goal',i,'','<span class="net"></span><span class="tag">'+c.html+'</span>')).join('')+'</div><span class="ball"></span>'+heroHTML();

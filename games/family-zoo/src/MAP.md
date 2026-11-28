@@ -16,4 +16,5 @@ Edit these files, then run `python3 games/.../build.py` (never edit index.html b
 - `js/10-cardMake.js` (13 KB): cardMake, ADV, advMake, huntGen, huntMake, shopGen, shopMake, drillGen
 - `js/11-drillMake.js` (13 KB): drillMake, NUMW, eggGen, addGen, MW, wordGen, ZP, soundGen, SH, shapeGen, miloMake, GAMES, ORDER, COST, costOf, doExpand, spendCoins, tickets, earn, spend, needTickets, Q, MECH, MNAME, PAL …
 - `js/12-openBooth.js` (12 KB): openBooth, startRound, renderQ, rightIndex, pickAns, roundDone, HUBKEY, syncHub, ON_SITE, closeBooth, SOUNDS, VOICES, synth, sayAs, defaultSound, playSpec, playSound, soundEditor, sndEd, recOn, canRec, startRec
+- `js/13a-gift.js`: v1.2 welcome gift (openGift, giftName, giftPlace), leaf bowl (bowlHTML, wireBowl, openBowl), find-the-frog (frogInit, tickFrog, frogTap), URLKID play-as
 - `js/13-stopRec.js` (9 KB): stopRec, openSoundSheet, save2, showKids, choose, sampleDrawing, boot, introOrbit, frame, step

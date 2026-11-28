@@ -35,6 +35,7 @@
   <div class="overlay" id="intro">
     <div class="arch"><h1>Family Zoo</h1></div>
     <button class="start" id="startBtn"><span data-i="play" style="font-size:34px"></span>Tap to start</button>
+    <button class="switchP" id="switchBtn" hidden>Switch player</button>
     <div class="kids" id="kids" hidden></div>
   </div>
 
@@ -86,6 +87,7 @@
     </div>
   </div>
 
+  <div class="overlay" id="gift" hidden><div class="sheet giftSheet"><div class="sheetHead"><h2 id="giftTitle">Welcome gift!</h2></div><div class="giftBody" id="giftBody"></div></div></div>
   <div class="overlay" id="booth" hidden>
     <div class="sheet">
       <div class="sheetHead"><h2 id="boothTitle">Ticket booth</h2><button class="x" id="boothClose" aria-label="Close" data-i="x"></button></div>
@@ -105,9 +107,9 @@
 
 <script src="../../tracker.js" data-game="family-zoo"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>/*@inc js/01-ICONS.js js/02-part.js js/03-lamp.js js/04-critters.js js/05-gateCell.js js/06-ray.js js/07-NAMES.js js/08-QB.js js/09-storyMake.js js/10-cardMake.js js/11-drillMake.js js/12-openBooth.js js/13-stopRec.js*/</script>
+<script>/*@inc js/01-ICONS.js js/02-part.js js/03-lamp.js js/04-critters.js js/05-gateCell.js js/06-ray.js js/07-NAMES.js js/08-QB.js js/09-storyMake.js js/10-cardMake.js js/11-drillMake.js js/12-openBooth.js js/13a-gift.js js/13-stopRec.js*/</script>
 
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-27" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-27</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>

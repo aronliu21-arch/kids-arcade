@@ -10,8 +10,13 @@ function showKids(){const box=$('#kids');box.hidden=false;$('#startBtn').hidden=
   box.innerHTML=['nora','lucas','milo'].map(k=>'<button class="kid" data-k="'+k+'"><span class="face" style="background:'+KIDS[k].color+'">'+KIDS[k].name[0]+'</span>'+KIDS[k].name+'</button>').join('');
   box.querySelectorAll('.kid').forEach(b=>b.onclick=()=>choose(b.dataset.k));}
 function choose(k){S.profile=k;save();syncHub();hud();$('#intro').hidden=true;stopMusic();SFX.place();speak('Welcome to the zoo, '+KIDS[k].name+'!',true);introOrbit=false;fitView(true);
-  if(!S.animals.length)setTimeout(()=>speak(tickets()<COST.draw?'Your zoo is empty! Tap Tickets and answer questions to earn tickets for your first animal.':'Tap Draw an animal to make your first one!'),2200);}
-$('#startBtn').onclick=()=>{audio();if(S.sound)startMusic();SFX.boing();showKids();};
+  if(needsGift(k)){setTimeout(openGift,1400);return;}
+  if(!S.animals.some(a=>a.maker===k))setTimeout(()=>speak(tickets()<COST.draw?'Your zoo is empty! Tap Tickets and answer questions to earn tickets for your first animal.':'Tap Draw an animal to make your first one!'),2200);}
+function introKid(){return URLKID||(KIDS[S.profile]?S.profile:null);}
+function introBtns(){const k=introKid(),sb=$('#startBtn');if(!k)return;sb.innerHTML=icon('play')+'Play as '+KIDS[k].name;sb.style.background=KIDS[k].color;sb.style.color='#fff';$('#switchBtn').hidden=false;}
+$('#startBtn').onclick=()=>{audio();SFX.boing();const k=introKid();if(k){$('#switchBtn').hidden=true;choose(k);return;}if(S.sound)startMusic();showKids();};
+$('#switchBtn').onclick=()=>{audio();if(S.sound)startMusic();SFX.boing();$('#switchBtn').hidden=true;showKids();};
+introBtns();
 $('#whoBtn').onclick=()=>{$('#intro').hidden=false;showKids();};
 
 /* ---------- sample animals so the zoo opens alive ---------- */
@@ -33,7 +38,7 @@ async function boot(){
     S.samples=true;save();}
   const ids=new Set(pens().map(p=>p.id));S.animals.forEach(a=>{if(!ids.has(a.pen)){const p=bestPen();if(p)a.pen=p.id;}});
   for(const a of S.animals)await spawnCritter(a);
-  hud();bottom();resize();
+  hud();bottom();resize();frogInit();
   try{await Promise.race([document.fonts.load('60px "Lilita One"'),new Promise(r=>setTimeout(r,2500))]);}catch(e){}
   /* repaint text boards once the sign font is ready */
   if(document.fonts&&document.fonts.check('60px "Lilita One"')){itemObjs.forEach((o,id)=>{const it=S.items.find(i=>i.id===id);if(it&&it.type.startsWith('pen_')){scene.remove(o);addItemObj(it);}});
@@ -50,7 +55,7 @@ function frame(now){requestAnimationFrame(frame);if(!document.hidden)step(now);}
 function step(now){const dt=Math.min(.05,(now-lastT)/1000);lastT=now;const t=now/1000;
   if(introOrbit&&!reduced){view.x=Math.sin(t*.15)*3;view.z=.5+Math.cos(t*.15)*2;placeCam();}
   if(fly){fly.t+=dt/.7;const k=Math.min(1,fly.t),e=1-Math.pow(1-k,3);view.x=fly.x0+(fly.x1-fly.x0)*e;view.z=fly.z0+(fly.z1-fly.z0)*e;view.zoom=fly.m0+(fly.m1-fly.m0)*e;placeCam();if(k>=1)fly=null;}
-  critters.forEach(c=>c.update(dt,t));tickPeople(dt,t);tickParts(dt);tickDrops(dt);
+  critters.forEach(c=>c.update(dt,t));tickFrog(dt);tickPeople(dt,t);tickParts(dt);tickDrops(dt);
   for(let i=popIn.length-1;i>=0;i--){const p=popIn[i];p.t+=dt*2.5;const k=Math.min(1,p.t);const s=k<1?1+Math.sin(k*Math.PI)*.25*(1-k)+(k-1)*0:1;p.o.scale.setScalar(Math.max(.01,1-Math.pow(1-k,3))*s);if(k>=1){p.o.scale.setScalar(1);popIn.splice(i,1);}}
   waterMats.forEach((tx,i)=>{tx.offset.x=(t*.03+i*.1)%1;tx.offset.y=Math.sin(t*.4+i)*.02;});
   if(mode==='choosePen'){const o=.45+.4*Math.sin(t*5);pens().forEach(p=>{const ob=itemObjs.get(p.id);if(ob&&ob.userData.ringMesh)ob.userData.ringMesh.material.opacity=o;});}

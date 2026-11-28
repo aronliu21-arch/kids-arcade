@@ -35,7 +35,7 @@ function clearVisitors(){PEOPLE.forEach(p=>scene.remove(p.m));PEOPLE.length=0;[.
 
 /* ---------- stamps ---------- */
 function addStamp(kind,a,label){S.stamps.push({kind,animal:a?a.id:null,day:today(),kid:S.profile,label});save();hud();slam(kind,a,label);}
-function slam(kind,a,label){const el=$('#slam');$('#slamPic').innerHTML=a?'<img alt="" src="'+a.png+'">':'';el.querySelector('b').textContent=kind==='new'?'New animal!':kind==='fed'?'Yum stamp!':kind==='pet'?'Hug stamp!':'Builder!';
+function slam(kind,a,label){const el=$('#slam');$('#slamPic').innerHTML=a?'<img alt="" src="'+a.png+'">':kind==='frog'?'<img alt="" src="'+FROG_URL+'">':'';el.querySelector('b').textContent=kind==='new'?'New animal!':kind==='fed'?'Yum stamp!':kind==='pet'?'Hug stamp!':kind==='frog'?'Frog stamp!':'Builder!';
   speak(kind==='new'?'You got a new animal stamp!':label);
   if(reduced){SFX.stamp();el.style.display='block';setTimeout(()=>el.style.display='none',1200);return;}
   el.style.display='block';el.animate([{transform:'scale(2.4) rotate(-20deg)',opacity:0},{transform:'scale(.92) rotate(0)',opacity:1,offset:.45},{transform:'scale(1)',opacity:1,offset:.6},{transform:'scale(1)',opacity:1,offset:.85},{transform:'translate(0,40vh) scale(.2)',opacity:0}],{duration:1900,easing:'cubic-bezier(.2,.8,.2,1)'}).onfinish=()=>el.style.display='none';
@@ -43,7 +43,7 @@ function slam(kind,a,label){const el=$('#slam');$('#slamPic').innerHTML=a?'<img 
 
 /* ---------- HUD ---------- */
 let mode='zoo',buildSel=null,foodSel=null,pending=null,selected=null;
-function hud(){$('#nAnimals').textContent=S.animals.length;$('#nCoins').textContent=S.coins;$('#nTickets').textContent=tickets();$('#lvl').textContent=1+Math.floor(S.stamps.length/5);
+function hud(){$('#nAnimals').textContent=S.animals.length;$('#nCoins').textContent=S.coins;{const t=tickets();$('#nTickets').innerHTML=t<COST.draw?t+'<small>/'+COST.draw+'</small>':String(t);}$('#lvl').textContent=1+Math.floor(S.stamps.length/5);
   const k=kid();$('#whoDot').textContent=k.name[0];$('#whoDot').style.background=k.color;$('#whoName').textContent=k.name;
   const sb=$('#soundBtn');sb.innerHTML=icon(S.sound?'sound':'mute');}
 function bottom(){const b=$('#bottom');

@@ -64,8 +64,8 @@ function foodObj(f){const g=new THREE.Group();let m;
   else if(f.id==='carrot'){m=mesh(new THREE.ConeGeometry(.08,.4,10),mat('#f08a3c'));m.rotation.z=Math.PI/2;m.position.y=.1;g.add(m);const l=mesh(new THREE.ConeGeometry(.06,.16,6),mat('#3fa34d'));l.rotation.z=-Math.PI/2;l.position.set(.26,.1,0);g.add(l);}
   else{m=mesh(new THREE.CylinderGeometry(.16,.16,.2,16),mat('#ffb3c7'));m.position.y=.1;g.add(m);const c=mesh(new THREE.CylinderGeometry(.165,.165,.05,16),mat('#ffffff'));c.position.y=.21;g.add(c);const ch=mesh(new THREE.SphereGeometry(.05,8,6),mat('#e8573c'));ch.position.y=.26;g.add(ch);}
   return g;}
-function giveFood(critter,f,at){if(critter.food){toast(critter.a.name+' is still eating');return;}
-  if(!spendCoins(COST.food,'for food'))return;
+function giveFood(critter,f,at,free){if(critter.food){toast(critter.a.name+' is still eating');return;}
+  if(!free&&!spendCoins(COST.food,'for food'))return;
   const o=foodObj(f);const p=at||critter.g.position.clone().add(new THREE.Vector3(rand(-.5,.5),0,rand(-.5,.5)));const b=critter.bounds();if(b){p.x=clamp(p.x,b.x0,b.x1);p.z=clamp(p.z,b.z0,b.z1);}
   o.position.set(p.x,0,p.z);o.userData.drop=1.4;o.position.y=1.4;scene.add(o);drops.push(o);critter.food={obj:o,f};critter.target=null;SFX.pop();}
 const drops=[];

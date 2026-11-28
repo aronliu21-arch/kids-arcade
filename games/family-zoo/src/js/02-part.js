@@ -11,7 +11,7 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','
 /* ---------- voice ---------- */
 function speak(t,force,lang){
   if(!S.profile||!t)return; if(!force&&!S.voice[S.profile])return;
-  try{const u=new SpeechSynthesisUtterance(t);u.rate=.95;u.pitch=1.12;if(lang)u.lang=lang;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}
+  try{if(window.KAVoice){KAVoice.stop();KAVoice.say(t,{pitch:1.12});return;}const u=new SpeechSynthesisUtterance(t);u.rate=.95;u.pitch=1.12;if(lang)u.lang=lang;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}
 }
 
 /* ---------- audio ---------- */

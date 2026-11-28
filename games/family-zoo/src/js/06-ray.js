@@ -24,6 +24,7 @@ function ghostAt(x,y){if(!buildSel||buildSel==='remove'||buildSel==='expand'){gh
 
 function tap(x,y){audio();
   if(mode!=='choosePen'&&collectAt(x,y))return;
+  if(mode==='zoo'&&frogTap(x,y))return;
   if(mode==='zoo'){const c=critterAt(x,y);if(c){pet(c);showSign(c);return;}closeSign();const cl=cellAt(x,y);if(cl){const it=itemAt(cl.c,cl.r);if(it&&it.type.startsWith('pen_')){const cs=[...critters.values()].filter(k=>k.a.pen===it.id&&!k.food&&!k.anim);
       if(cs.length){cs.forEach((k,i)=>{const b=k.bounds();k.target=new THREE.Vector3(clamp(cl.p.x+rand(-.4,.4),b.x0,b.x1),0,clamp(cl.p.z+rand(-.4,.4),b.z0,b.z1));setTimeout(()=>playSound(k),i*350);});}
       else toast('This pen is empty. Draw an animal for it!');}}return;}
