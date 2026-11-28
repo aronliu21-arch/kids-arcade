@@ -1,11 +1,11 @@
 /* ===== Car physics (simple, kid-explainable) and the track ===== */
 var PHYS = {
-  motor: { normal: { v: 1.0, t: 1.0 }, turbo: { v: 1.25, t: 1.15 }, torque: { v: 1.12, t: 1.45 }, hyper: { v: 1.4, t: 0.95 } },
-  gear: { speed: { top: 1.1, tq: 0.8 }, power: { top: 1.0, tq: 1.3 }, mid: { top: 1.05, tq: 1.05 } },
-  tire: { hard: { grip: 0.75, roll: 1.03 }, soft: { grip: 1.1, roll: 0.97 }, low: { grip: 0.95, roll: 1.08 } },
+  motor: { normal: { v: 1.0, t: 1.0 }, rev: { v: 1.15, t: 1.2 }, turbo: { v: 1.25, t: 1.15 }, torque: { v: 1.12, t: 1.45 }, light: { v: 1.3, t: 1.08 }, hyper: { v: 1.4, t: 0.95 }, sprint: { v: 1.5, t: 0.88 }, mach: { v: 1.46, t: 1.12 } },
+  gear: { speed: { top: 1.1, tq: 0.8 }, power: { top: 1.0, tq: 1.3 }, mid: { top: 1.05, tq: 1.05 }, super: { top: 1.16, tq: 0.68 }, climb: { top: 0.94, tq: 1.55 } },
+  tire: { hard: { grip: 0.75, roll: 1.03 }, soft: { grip: 1.1, roll: 0.97 }, low: { grip: 0.95, roll: 1.08 }, sponge: { grip: 1.18, roll: 0.93 }, slick: { grip: 0.86, roll: 1.11 }, spike: { grip: 1.0, roll: 0.99, tq: 1.15 }, large: { grip: 0.88, roll: 1.13, tq: 0.88 } },
   body: { sleek: 1.04, boxy: 0.96, aero: 1.07 },
-  roller: { yes: 1.35, no: 1.0, four: 1.48 },
-  wing: { none: { c: 1, v: 1 }, small: { c: 1.06, v: 0.99 }, big: { c: 1.13, v: 0.97 } },
+  roller: { yes: 1.35, no: 1.0, four: 1.48, plastic: 1.25, alu: 1.42, bearing: 1.56 },
+  wing: { none: { c: 1, v: 1 }, fin: { c: 1.03, v: 1.0 }, small: { c: 1.06, v: 0.99 }, air: { c: 1.08, v: 0.985 }, big: { c: 1.13, v: 0.97 }, dual: { c: 1.17, v: 0.955 } },
   CRASH_NO_ROLLERS: 9,   // without rollers, faster than this in a curve = course out
   CURVE: 10.2,           // curve speed limit with rollers = CURVE * grip * roller * wing (radius 11)
   BASE: 15
@@ -18,8 +18,8 @@ function bodyStat(id) { // classic bodies are a number (top speed); Chapter 2 bo
 function carStats(b) {
   var m = PHYS.motor[b.motor], g = PHYS.gear[b.gear], t = PHYS.tire[b.tire], wg = PHYS.wing[b.wing || "none"], rl = PHYS.roller[b.roller] || 1;
   var bs = bodyStat(b.body);
-  var top = PHYS.BASE * m.v * g.top * t.roll * bs.v * wg.v * (b.roller === "four" ? 0.985 : 1) * (b.luck || 1);
-  var torque = m.t * g.tq * bs.a;
+  var top = PHYS.BASE * m.v * g.top * t.roll * bs.v * wg.v * (b.roller === "four" || b.roller === "bearing" ? 0.985 : 1) * (b.luck || 1);
+  var torque = m.t * g.tq * bs.a * (t.tq || 1);
   return {
     top: top,
     accel: 9 * torque,
@@ -31,7 +31,7 @@ function carStats(b) {
 /* 0..1 bars for the stats panel */
 function carBars(b) {
   var s = carStats(b);
-  return { speed: Math.min(1, (s.top - 12) / 12), hill: (s.hill - 0.6) / 0.4, grip: b.roller !== "no" ? Math.min(1, (s.curve - 7) / 11) : 0.05, safe: s.rollers ? 1 : 0 };
+  return { speed: Math.min(1, (s.top - 12) / 16), hill: Math.min(1, (s.hill - 0.5) / 1.0), grip: b.roller !== "no" ? Math.min(1, (s.curve - 7) / 11) : 0.05, safe: s.rollers ? 1 : 0 };
 }
 
 /* Tracks. Segments: S straight, C left curve (radius), R right curve (radius), H hill. Units are "track units". */

@@ -10,8 +10,12 @@ var CarArt = {
     yellow: { main: "#fab005", dark: "#e67700", light: "#ffe066" },
     purple: { main: "#7048e8", dark: "#5f3dc4", light: "#b197fc" }
   },
-  MOTORCAP: { normal: "#adb5bd", turbo: "#e03131", torque: "#fab005", hyper: "#1c7ed6" },
-  GEARCOL: { speed: "#ffd43b", power: "#51cf66", mid: "#ff922b" },
+  MOTORCAP: { normal: "#adb5bd", rev: "#ae3ec9", turbo: "#e03131", torque: "#fab005", light: "#20c997", hyper: "#1c7ed6", sprint: "#f76707", mach: "#212529" },
+  GEARCOL: { speed: "#ffd43b", power: "#51cf66", mid: "#ff922b", super: "#f03e3e", climb: "#1971c2" },
+  TIREART: { hard: "hard", soft: "soft", low: "low", sponge: "soft", slick: "low", spike: "hard", large: "hard" }, // which rear-view tire picture each tire uses
+  TIRESTRIPE: { hard: "#495057", soft: "#f76707", low: "#ced4da", sponge: "#fff3bf", slick: "#74c0fc", spike: "#ffd43b", large: "#e03131" },
+  FOUR: { four: 1, bearing: 1 }, // rollers front and back
+  ROLLCOL: { yes: "#dee2e6", four: "#dee2e6", plastic: "#ffe066", alu: "#a5d8ff", bearing: "#ffd8a8" },
   // ChatGPT layer art: name -> box [x, y, w, h] in car-width units (rear: origin = ground center; top: origin = car center)
   LAYERS: {
     rear_body_boxy: [-0.416, -0.688, 0.832, 0.588], rear_body_sleek: [-0.431, -0.592, 0.863, 0.492], rear_body_aero: [-0.47, -0.504, 0.94, 0.404],
@@ -30,6 +34,44 @@ var CarArt = {
   artBody: function (b) { var id = b.body, f = typeof C2BODIES !== "undefined" && C2BODIES.filter(function (x) { return x.v === id; })[0]; if (!f) return null;
     var im = img("b/" + id + "_" + (f.cols.indexOf(b.paint) >= 0 ? b.paint : "orig")); return im.complete && im.naturalWidth ? im : null; },
   isArt: function (b) { return typeof C2BODIES !== "undefined" && C2BODIES.some(function (x) { return x.v === b.body; }); },
+  /* store pictures for every part (drawn in code, same style) */
+  _ic: {},
+  icon: function (slot, v) {
+    var key = slot + ":" + v; if (this._ic[key]) return this._ic[key];
+    var cv = document.createElement("canvas"); cv.width = cv.height = 120; var x = cv.getContext("2d"), k = this;
+    x.translate(60, 60); x.lineJoin = x.lineCap = "round"; x.lineWidth = 5; x.strokeStyle = "#111";
+    function circ(r, f) { x.beginPath(); x.arc(0, 0, r, 0, 7); x.fillStyle = f; x.fill(); x.stroke(); }
+    if (slot === "motor") {
+      var cap = this.MOTORCAP[v] || "#adb5bd";
+      rr(x, -38, -24, 66, 48, 12); x.fillStyle = "#ced4da"; x.fill(); x.stroke();
+      x.fillStyle = cap; rr(x, -38, -24, 22, 48, 10); x.fill(); x.stroke();
+      x.fillStyle = "#fff"; x.fillRect(-8, -16, 30, 6); x.fillStyle = cap; x.fillRect(-8, 6, 30, 8);
+      x.fillStyle = "#868e96"; x.fillRect(28, -5, 16, 10); x.strokeRect(28, -5, 16, 10);
+      if (v === "mach" || v === "sprint" || v === "hyper") { x.fillStyle = "#ffd43b"; x.font = "900 26px system-ui"; x.textAlign = "center"; x.fillText("⚡", 6, -28); }
+    } else if (slot === "gear") {
+      var col = this.GEARCOL[v] || "#ffd43b", n = { speed: 10, power: 16, mid: 13, super: 8, climb: 20 }[v] || 12, R0 = { speed: 34, power: 40, mid: 37, super: 30, climb: 44 }[v] || 36;
+      x.beginPath(); for (var i = 0; i < n * 2; i++) { var a = i * Math.PI / n, r = i % 2 ? R0 - 8 : R0; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.closePath(); x.fillStyle = col; x.fill(); x.stroke();
+      circ(10, "#fff");
+    } else if (slot === "tire") {
+      var big = v === "large" ? 48 : v === "low" || v === "slick" ? 36 : 42;
+      circ(big, v === "sponge" ? "#e9ecef" : v === "hard" ? "#495057" : "#212529");
+      if (v === "spike") for (var j = 0; j < 14; j++) { var aa = j * Math.PI / 7; x.beginPath(); x.moveTo(Math.cos(aa) * big, Math.sin(aa) * big); x.lineTo(Math.cos(aa) * (big + 9), Math.sin(aa) * (big + 9)); x.stroke(); }
+      x.lineWidth = 6; x.strokeStyle = this.TIRESTRIPE[v] || "#868e96"; x.beginPath(); x.arc(0, 0, big - 9, 0, 7); x.stroke();
+      x.lineWidth = 5; x.strokeStyle = "#111"; circ(big * 0.42, "#f1f3f5");
+      if (v === "slick") { x.strokeStyle = "rgba(255,255,255,.6)"; x.beginPath(); x.arc(0, 0, big - 3, -2.4, -1.4); x.stroke(); }
+    } else if (slot === "roller") {
+      var col2 = this.ROLLCOL[v] || "#dee2e6", n2 = v === "no" ? 0 : this.FOUR[v] ? 4 : 2;
+      if (!n2) { x.font = "900 54px system-ui"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("🚫", 0, 4); }
+      for (var q = 0; q < n2; q++) { x.save(); x.translate(n2 === 4 ? (q % 2 ? 24 : -24) : (q ? 24 : -24), n2 === 4 ? (q < 2 ? -24 : 24) : 0); x.beginPath(); x.arc(0, 0, n2 === 4 ? 20 : 26, 0, 7); x.fillStyle = col2; x.fill(); x.stroke(); x.beginPath(); x.arc(0, 0, 6, 0, 7); x.fillStyle = "#495057"; x.fill(); if (v === "bearing") { x.fillStyle = "#fff"; for (var z = 0; z < 6; z++) { x.beginPath(); x.arc(Math.cos(z) * 12, Math.sin(z) * 12, 2.5, 0, 7); x.fill(); } } x.restore(); }
+    } else if (slot === "wing") {
+      var wc = "#1c7ed6";
+      if (v === "none") { x.font = "900 54px system-ui"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("🚫", 0, 4); }
+      if (v === "small" || v === "big" || v === "dual") { var ww2 = v === "small" ? 70 : 96; [-1, 1].forEach(function (d) { x.fillStyle = "#868e96"; x.fillRect(d * ww2 * 0.28 - 4, -6, 8, 34); x.strokeRect(d * ww2 * 0.28 - 4, -6, 8, 34); }); x.fillStyle = wc; rr(x, -ww2 / 2, -20, ww2, 16, 6); x.fill(); x.stroke(); if (v === "dual") { rr(x, -ww2 / 2 + 8, -42, ww2 - 16, 14, 6); x.fill(); x.stroke(); } if (v !== "small") { x.fillRect(-ww2 / 2 - 4, -30, 10, 30); x.strokeRect(-ww2 / 2 - 4, -30, 10, 30); x.fillRect(ww2 / 2 - 6, -30, 10, 30); x.strokeRect(ww2 / 2 - 6, -30, 10, 30); } }
+      if (v === "fin") { x.fillStyle = wc; x.beginPath(); x.moveTo(-26, 30); x.quadraticCurveTo(-4, -10, 18, -40); x.lineTo(26, 30); x.closePath(); x.fill(); x.stroke(); }
+      if (v === "air") { x.fillStyle = wc; x.beginPath(); x.moveTo(-50, 10); x.lineTo(-36, -14); x.lineTo(36, -14); x.lineTo(50, 10); x.closePath(); x.fill(); x.stroke(); }
+    }
+    return (this._ic[key] = cv.toDataURL());
+  },
   _tc: {},
   topCanvas: function (b, col) { // the whole top-view car drawn once into a canvas (re-made when more images load)
     var key = JSON.stringify([b.body, b.paint, b.tire, b.roller, b.wing, b.motor, b.gear, b.sticker, col]), e = this._tc[key];
@@ -81,18 +123,22 @@ var CarArt = {
     var lw = Math.max(1, w * 0.035), k = this, tire = b.tire || "hard", body = b.body || "boxy";
     function R(px, py, pw, ph, r, fill) { rr(x, px * w, py * w, pw * w, ph * w, r * w); x.fillStyle = fill; x.fill(); x.lineWidth = lw; x.strokeStyle = "#111"; x.stroke(); }
     function wheels(front) {
-      var s = front ? 0.72 : 1, ty = front ? -0.36 : 0, tw = (tire === "low" ? 0.2 : 0.23) * s, th = (tire === "low" ? 0.3 : 0.36) * s, sx = front ? 0.36 : 0.43;
-      var pw = (tire === "low" ? 0.235 : 0.27) * s;
-      if (k.part(x, "rear_tire_" + tire, -sx, ty, pw, w) && k.part(x, "rear_tire_" + tire, sx, ty, pw, w)) return;
+      var big = tire === "large" ? 1.15 : 1, thin = tire === "low" || tire === "slick";
+      var s = (front ? 0.72 : 1) * big, ty = front ? -0.36 : 0, tw = (thin ? 0.2 : 0.23) * s, th = (thin ? 0.3 : 0.36) * s, sx = front ? 0.36 : 0.43;
+      var pw = (thin ? 0.235 : 0.27) * s, ta = k.TIREART[tire] || "hard";
+      if (k.part(x, "rear_tire_" + ta, -sx, ty, pw, w) && k.part(x, "rear_tire_" + ta, sx, ty, pw, w)) {
+        if (ta !== tire) [-1, 1].forEach(function (d) { x.fillStyle = k.TIRESTRIPE[tire]; x.fillRect((d * sx - pw * 0.12) * w, (ty - pw * 0.9) * w, pw * 0.24 * w, pw * 0.5 * w); }); // stripe tells the tire apart
+        return;
+      }
       [-1, 1].forEach(function (d) {
         var cx = d * sx - tw / 2;
         R(cx, ty - th, tw, th, 0.05 * s, tire === "soft" ? "#212529" : "#343a40");
-        x.fillStyle = tire === "soft" ? "#f76707" : tire === "low" ? "#ced4da" : "#495057";
+        x.fillStyle = k.TIRESTRIPE[tire] || "#495057";
         x.fillRect((cx + tw * 0.15) * w, (ty - th * 0.62) * w, tw * 0.7 * w, th * 0.1 * w); // tire stripe
       });
     }
     function rollers(front) {
-      if (b.roller === "no" || (front && b.roller !== "four")) return;
+      if (b.roller === "no" || (front && !k.FOUR[b.roller])) return;
       var s = front ? 0.7 : 1, ty = front ? -0.33 : -0.1, sx = front ? 0.5 : 0.6;
       if (k.part(x, "rear_roller", -(sx - 0.03), ty + 0.1 * s, 0.3 * s, w) && k.part(x, "rear_roller", sx - 0.03, ty + 0.1 * s, 0.3 * s, w, true)) return;
       [-1, 1].forEach(function (d) {
@@ -139,9 +185,13 @@ var CarArt = {
     }
     wheels(false); rollers(false);
     // rear wing
-    var wh = b.wing && b.wing !== "none" ? this.part(x, "rear_wing_" + b.wing, 0, top + 0.1, b.wing === "big" ? 0.84 : 0.58, w, false, this.cn) : 0;
+    var wn = b.wing === "dual" ? "big" : b.wing === "air" || b.wing === "fin" ? null : b.wing;
+    var wh = wn && wn !== "none" ? this.part(x, "rear_wing_" + wn, 0, top + 0.1, wn === "big" ? 0.84 : 0.58, w, false, this.cn) : 0;
+    if (wh && b.wing === "dual") { var w2 = this.part(x, "rear_wing_small", 0, top + 0.1 - wh + 0.06, 0.66, w, false, this.cn); wh += (w2 || 0) - 0.06; }
+    if (b.wing === "fin") { x.fillStyle = c.dark; x.strokeStyle = "#111"; x.lineWidth = lw; x.beginPath(); x.moveTo(-0.04 * w, (top + 0.04) * w); x.lineTo(0, (top - 0.2) * w); x.lineTo(0.04 * w, (top + 0.04) * w); x.closePath(); x.fill(); x.stroke(); top -= 0.2; }
+    if (b.wing === "air") { R(-0.4, -0.18, 0.8, 0.06, 0.02, c.dark); }
     if (wh) top = top + 0.1 - wh;
-    else if (b.wing && b.wing !== "none") {
+    else if (wn && wn !== "none") {
       var big = b.wing === "big", wy = top - (big ? 0.2 : 0.12), ww = big ? 0.9 : 0.62;
       [-1, 1].forEach(function (d) { R(d * ww * 0.3 - 0.025, wy, 0.05, top - wy + 0.05, 0.01, "#495057"); });
       R(-ww / 2, wy - 0.07, ww, 0.08, 0.03, c.dark); top = wy - 0.07;
@@ -157,16 +207,16 @@ var CarArt = {
     function R(px, py, pw, ph, r, fill) { rr(x, px * w, py * w, pw * w, ph * w, r * w); x.fillStyle = fill; x.fill(); x.lineWidth = lw; x.strokeStyle = "#111"; x.stroke(); }
     // tires (4)
     if (!this.lay(x, "top_tire_" + tire, w)) {
-      var tw = tire === "low" ? 0.18 : 0.22, tl = tire === "low" ? 0.3 : 0.34;
+      var tw = tire === "low" || tire === "slick" ? 0.18 : 0.22, tl = tire === "large" ? 0.4 : tire === "low" || tire === "slick" ? 0.3 : 0.34;
       [[-1, -0.5], [1, -0.5], [-1, 0.48], [1, 0.48]].forEach(function (p) {
         R(p[0] * 0.44 - tw / 2, p[1] - tl / 2, tw, tl, 0.05, tire === "soft" ? "#212529" : "#343a40");
-        x.fillStyle = tire === "soft" ? "#f76707" : tire === "low" ? "#ced4da" : "#495057"; x.fillRect((p[0] * 0.44 - tw * 0.1) * w, (p[1] - tl * 0.4) * w, tw * 0.2 * w, tl * 0.8 * w);
+        x.fillStyle = k.TIRESTRIPE[tire] || "#495057"; x.fillRect((p[0] * 0.44 - tw * 0.1) * w, (p[1] - tl * 0.4) * w, tw * 0.2 * w, tl * 0.8 * w);
       });
     }
     // rollers
     if (b.roller !== "no" && !this.lay(x, "top_roller_" + b.roller, w)) {
-      var rp = b.roller === "four" ? [[-1, -0.74], [1, -0.74], [-1, 0.74], [1, 0.74]] : [[-1, -0.74], [1, -0.74]];
-      rp.forEach(function (p) { x.lineWidth = lw; x.strokeStyle = "#111"; x.beginPath(); x.moveTo(p[0] * 0.3 * w, p[1] * w); x.lineTo(p[0] * 0.5 * w, p[1] * w); x.stroke(); x.beginPath(); x.arc(p[0] * 0.53 * w, p[1] * w, 0.07 * w, 0, 7); x.fillStyle = "#dee2e6"; x.fill(); x.stroke(); });
+      var rp = k.FOUR[b.roller] ? [[-1, -0.74], [1, -0.74], [-1, 0.74], [1, 0.74]] : [[-1, -0.74], [1, -0.74]];
+      rp.forEach(function (p) { x.lineWidth = lw; x.strokeStyle = "#111"; x.beginPath(); x.moveTo(p[0] * 0.3 * w, p[1] * w); x.lineTo(p[0] * 0.5 * w, p[1] * w); x.stroke(); x.beginPath(); x.arc(p[0] * 0.53 * w, p[1] * w, 0.07 * w, 0, 7); x.fillStyle = k.ROLLCOL[b.roller] || "#dee2e6"; x.fill(); x.stroke(); });
     }
     // body
     var abt = this.isArt(b) ? this.artBody(b) : null;
@@ -187,7 +237,10 @@ var CarArt = {
     x.beginPath(); x.arc(0, 0.62 * w, 0.06 * w, 0, 7); x.fillStyle = this.MOTORCAP[b.motor || "normal"]; x.fill(); x.lineWidth = lw; x.stroke();
     x.beginPath(); x.arc(0.18 * w, 0.48 * w, 0.05 * w, 0, 7); x.fillStyle = this.GEARCOL[b.gear || "speed"]; x.fill(); x.stroke();
     // wing
-    if (b.wing && b.wing !== "none" && !this.lay(x, "top_wing_" + b.wing, w)) { var ww = b.wing === "big" ? 0.96 : 0.7; R(-ww / 2, 0.66, ww, b.wing === "big" ? 0.16 : 0.11, 0.03, c.dark); }
+    if (b.wing && b.wing !== "none") {
+      var ww = { big: 0.96, dual: 1.0, small: 0.7, fin: 0.12, air: 0.8 }[b.wing], wy = b.wing === "air" ? -0.86 : 0.66, wd = { big: 0.16, dual: 0.26, small: 0.11, fin: 0.3, air: 0.1 }[b.wing];
+      R(-ww / 2, b.wing === "fin" ? 0.2 : wy, ww, wd, 0.03, c.dark);
+    }
     return L * w;
   }
 };

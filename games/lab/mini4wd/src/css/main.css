@@ -244,3 +244,9 @@ button{font:inherit;cursor:pointer;color:inherit}
 .c2paint .paint.on{background:#ffd43b;box-shadow:0 0 0 3px #ffd43b}
 @media (max-height:500px),(max-width:600px){.opt .thumb{height:44px}}
 @media (max-height:500px){.c2parts .opt small{display:none}.c2tabs,.c2slots{margin-bottom:3px;gap:4px}.c2tabs .btn,.c2slots .chip{min-height:44px;padding:2px 8px;font-size:13px}}
+.c2parts.compact{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:6px}
+.c2parts.compact .opt{padding:6px;font-size:14px;line-height:1.15}.c2parts.compact .opt small{display:none}.c2parts.compact .opt .pr{margin-top:2px}
+.c2parts.compact .opt .thumb{height:48px}
+.trk{display:flex;gap:10px;align-items:center;text-align:left;margin:6px 0}.trk img{width:180px;max-width:45%;border:3px solid var(--ink);border-radius:12px;flex:none}
+.trk .tn{font-size:14px;font-weight:700;color:#444}.trkopt{display:block;width:100%;margin-bottom:6px}
+@media (max-height:500px){.trk img{width:120px}.c2parts.compact .opt .thumb{height:36px}.c2parts.compact .opt{font-size:12px}}

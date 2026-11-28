@@ -252,6 +252,12 @@ button{font:inherit;cursor:pointer;color:inherit}
 .c2paint .paint.on{background:#ffd43b;box-shadow:0 0 0 3px #ffd43b}
 @media (max-height:500px),(max-width:600px){.opt .thumb{height:44px}}
 @media (max-height:500px){.c2parts .opt small{display:none}.c2tabs,.c2slots{margin-bottom:3px;gap:4px}.c2tabs .btn,.c2slots .chip{min-height:44px;padding:2px 8px;font-size:13px}}
+.c2parts.compact{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:6px}
+.c2parts.compact .opt{padding:6px;font-size:14px;line-height:1.15}.c2parts.compact .opt small{display:none}.c2parts.compact .opt .pr{margin-top:2px}
+.c2parts.compact .opt .thumb{height:48px}
+.trk{display:flex;gap:10px;align-items:center;text-align:left;margin:6px 0}.trk img{width:180px;max-width:45%;border:3px solid var(--ink);border-radius:12px;flex:none}
+.trk .tn{font-size:14px;font-weight:700;color:#444}.trkopt{display:block;width:100%;margin-bottom:6px}
+@media (max-height:500px){.trk img{width:120px}.c2parts.compact .opt .thumb{height:36px}.c2parts.compact .opt{font-size:12px}}
 </style>
 </head>
 <body>
@@ -340,6 +346,8 @@ Object.assign(ZYC,{"份":"ㄈㄣˋ","中": "ㄓㄨㄥ", "二": "ㄦˋ", "互": "
 Object.assign(ZYR,{"數學": "ㄕㄨˋ ㄒㄩㄝˊ", "銀行": "ㄧㄣˊ ㄏㄤˊ", "爸爸": "ㄅㄚˋ ˙ㄅㄚ", "從頭": "ㄘㄨㄥˊ ㄊㄡˊ", "跑得": "ㄆㄠˇ ˙ㄉㄜ", "爬得": "ㄆㄚˊ ˙ㄉㄜ", "抓得": "ㄓㄨㄚ ˙ㄉㄜ", "休息": "ㄒㄧㄡ ˙ㄒㄧ", "睡覺": "ㄕㄨㄟˋ ㄐㄧㄠˋ"});
 Object.assign(ZYC,{"仙": "ㄒㄧㄢ", "免": "ㄇㄧㄢˇ", "凰": "ㄏㄨㄤˊ", "器": "ㄑㄧˋ", "式": "ㄕˋ", "形": "ㄒㄧㄥˊ", "戰": "ㄓㄢˋ", "月": "ㄩㄝˋ", "步": "ㄅㄨˋ", "犀": "ㄒㄧ", "狼": "ㄌㄤˊ", "獨": "ㄉㄨˊ", "獵": "ㄌㄧㄝˋ", "球": "ㄑㄧㄡˊ", "甲": "ㄐㄧㄚˇ", "眼": "ㄧㄢˇ", "程": "ㄔㄥˊ", "箭": "ㄐㄧㄢˋ", "肌": "ㄐㄧ", "虎": "ㄏㄨˇ", "蛇": "ㄕㄜˊ", "蠍": "ㄒㄧㄝ", "衡": "ㄏㄥˊ", "豹": "ㄅㄠˋ", "野": "ㄧㄝˇ", "隱": "ㄧㄣˇ", "雪": "ㄒㄩㄝˇ", "顏": "ㄧㄢˊ", "魚": "ㄩˊ", "魟": "ㄏㄨㄥˊ", "鯊": "ㄕㄚ", "鱷": "ㄜˋ", "鳳": "ㄈㄥˋ", "鷹": "ㄧㄥ", "龍": "ㄌㄨㄥˊ"});
 Object.assign(ZYR,{"獨角仙": "ㄉㄨˊ ㄐㄧㄠˇ ㄒㄧㄢ", "老虎": "ㄌㄠˇ ㄏㄨˇ"});
+Object.assign(ZYC,{"乎": "ㄏㄨ", "便": "ㄆㄧㄢˊ", "光": "ㄍㄨㄤ", "咬": "ㄧㄠˇ", "宜": "ㄧˊ", "寬": "ㄎㄨㄢ", "層": "ㄘㄥˊ", "徑": "ㄐㄧㄥˋ", "承": "ㄔㄥˊ", "擾": "ㄖㄠˇ", "海": "ㄏㄞˇ", "綿": "ㄇㄧㄢˊ", "貴": "ㄍㄨㄟˋ", "軸": "ㄓㄡˊ", "釘": "ㄉㄧㄥ", "鋁": "ㄌㄩˇ", "音": "ㄧㄣ", "鰭": "ㄑㄧˊ"});
+Object.assign(ZYR,{"便宜": "ㄆㄧㄢˊ ㄧˊ", "幾乎": "ㄐㄧ ㄏㄨ"});
 /* ===== Story, parts and science content (all bilingual) ===== */
 var CAST = {
   lucas: { zh: "陸晨", en: "Lucas", img: "p_lucas", col: "#f76707", pitch: 1.25 },
@@ -477,12 +485,12 @@ var ADVICE = {
 };
 /* ===== Car physics (simple, kid-explainable) and the track ===== */
 var PHYS = {
-  motor: { normal: { v: 1.0, t: 1.0 }, turbo: { v: 1.25, t: 1.15 }, torque: { v: 1.12, t: 1.45 }, hyper: { v: 1.4, t: 0.95 } },
-  gear: { speed: { top: 1.1, tq: 0.8 }, power: { top: 1.0, tq: 1.3 }, mid: { top: 1.05, tq: 1.05 } },
-  tire: { hard: { grip: 0.75, roll: 1.03 }, soft: { grip: 1.1, roll: 0.97 }, low: { grip: 0.95, roll: 1.08 } },
+  motor: { normal: { v: 1.0, t: 1.0 }, rev: { v: 1.15, t: 1.2 }, turbo: { v: 1.25, t: 1.15 }, torque: { v: 1.12, t: 1.45 }, light: { v: 1.3, t: 1.08 }, hyper: { v: 1.4, t: 0.95 }, sprint: { v: 1.5, t: 0.88 }, mach: { v: 1.46, t: 1.12 } },
+  gear: { speed: { top: 1.1, tq: 0.8 }, power: { top: 1.0, tq: 1.3 }, mid: { top: 1.05, tq: 1.05 }, super: { top: 1.16, tq: 0.68 }, climb: { top: 0.94, tq: 1.55 } },
+  tire: { hard: { grip: 0.75, roll: 1.03 }, soft: { grip: 1.1, roll: 0.97 }, low: { grip: 0.95, roll: 1.08 }, sponge: { grip: 1.18, roll: 0.93 }, slick: { grip: 0.86, roll: 1.11 }, spike: { grip: 1.0, roll: 0.99, tq: 1.15 }, large: { grip: 0.88, roll: 1.13, tq: 0.88 } },
   body: { sleek: 1.04, boxy: 0.96, aero: 1.07 },
-  roller: { yes: 1.35, no: 1.0, four: 1.48 },
-  wing: { none: { c: 1, v: 1 }, small: { c: 1.06, v: 0.99 }, big: { c: 1.13, v: 0.97 } },
+  roller: { yes: 1.35, no: 1.0, four: 1.48, plastic: 1.25, alu: 1.42, bearing: 1.56 },
+  wing: { none: { c: 1, v: 1 }, fin: { c: 1.03, v: 1.0 }, small: { c: 1.06, v: 0.99 }, air: { c: 1.08, v: 0.985 }, big: { c: 1.13, v: 0.97 }, dual: { c: 1.17, v: 0.955 } },
   CRASH_NO_ROLLERS: 9,   // without rollers, faster than this in a curve = course out
   CURVE: 10.2,           // curve speed limit with rollers = CURVE * grip * roller * wing (radius 11)
   BASE: 15
@@ -495,8 +503,8 @@ function bodyStat(id) { // classic bodies are a number (top speed); Chapter 2 bo
 function carStats(b) {
   var m = PHYS.motor[b.motor], g = PHYS.gear[b.gear], t = PHYS.tire[b.tire], wg = PHYS.wing[b.wing || "none"], rl = PHYS.roller[b.roller] || 1;
   var bs = bodyStat(b.body);
-  var top = PHYS.BASE * m.v * g.top * t.roll * bs.v * wg.v * (b.roller === "four" ? 0.985 : 1) * (b.luck || 1);
-  var torque = m.t * g.tq * bs.a;
+  var top = PHYS.BASE * m.v * g.top * t.roll * bs.v * wg.v * (b.roller === "four" || b.roller === "bearing" ? 0.985 : 1) * (b.luck || 1);
+  var torque = m.t * g.tq * bs.a * (t.tq || 1);
   return {
     top: top,
     accel: 9 * torque,
@@ -508,7 +516,7 @@ function carStats(b) {
 /* 0..1 bars for the stats panel */
 function carBars(b) {
   var s = carStats(b);
-  return { speed: Math.min(1, (s.top - 12) / 12), hill: (s.hill - 0.6) / 0.4, grip: b.roller !== "no" ? Math.min(1, (s.curve - 7) / 11) : 0.05, safe: s.rollers ? 1 : 0 };
+  return { speed: Math.min(1, (s.top - 12) / 16), hill: Math.min(1, (s.hill - 0.5) / 1.0), grip: b.roller !== "no" ? Math.min(1, (s.curve - 7) / 11) : 0.05, safe: s.rollers ? 1 : 0 };
 }
 
 /* Tracks. Segments: S straight, C left curve (radius), R right curve (radius), H hill. Units are "track units". */
@@ -807,7 +815,7 @@ function refreshMenu() {
   $("#lucasSub").innerHTML = sub;
   $("#bRead").innerHTML = (Read.on ? "🔊 " : "🔇 ") + bi("讀出來", "Read aloud");
 }
-var STAGES = [["shop", "故事：模型店", "Story: hobby shop"], ["garage", "組車", "Build the car"], ["test", "測試跑道", "Test run"], ["park", "比賽日", "Race day"], ["race", "第一場比賽", "Race 1"], ["win", "結局", "Ending"], ["c2", "第二章", "Chapter 2"]];
+var STAGES = [["shop", "故事：模型店", "Story: hobby shop"], ["garage", "組車", "Build the car"], ["test", "測試跑道", "Test run"], ["park", "比賽日", "Race day"], ["race", "第一場比賽", "Race 1"], ["win", "結局", "Ending"], ["c2", "第二章", "Chapter 2"], ["c2pm", "第二章：下課後", "Ch 2: after school (Mon PM)"], ["c2cup", "第二章：比賽日", "Ch 2: cup day"]];
 function testerMenu() {
   var j = $("#jump");
   j.innerHTML = STAGES.map(function (s) { return "<button class='btn white' data-s='" + s[0] + "'>" + bi(s[1], s[2]) + "</button>"; }).join("");
@@ -854,6 +862,11 @@ function go(stage) {
   else if (stage === "race") Race.start("race");
   else if (stage === "win") playScene("win", finishEpisode);
   else if (stage === "c2") { k.stage = "done"; save(); C2G.start(); }
+  else if (stage === "c2pm" || stage === "c2cup") { // test shortcuts: skip Monday's class
+    k.stage = "done"; k.c2 = C2S.fresh(); var c = k.c2; c.intro = true; c.lessons[0] = true; c.slot = 1;
+    if (stage === "c2cup") { c.day = 5; c.slot = 0; c.tests[1] = { pct: 1, a: true }; c.money = 1500; c.hasKit = true; c.build = JSON.parse(JSON.stringify(C2.KIT.build)); Object.keys(C2.KIT.build).forEach(function (s2) { C2S.give(c, s2, C2.KIT.build[s2]); }); C2S.give(c, "roller", "yes"); c.build.roller = "yes"; C2S.give(c, "tire", "soft"); c.toolbox = ["tire:soft"]; c.build.tire = "hard"; }
+    save(); C2G.town();
+  }
 }
 function maxSays(adv, buttons) {
   var a = ADVICE[adv];
@@ -1548,23 +1561,39 @@ var C2 = {
       { v: "normal", price: 0, zh: "普通馬達", en: "Stock motor", d: ["套件附的，速度普通。", "Comes in the kit. Normal speed."] },
       { v: "turbo", price: 380, zh: "高速馬達", en: "Turbo motor", d: ["轉得快，直線很快。", "Spins fast. Great on straights."] },
       { v: "torque", price: 420, zh: "扭力馬達", en: "Torque motor", d: ["力氣大，爬坡最強。", "Strong push. Best on hills."] },
-      { v: "hyper", price: 650, zh: "超級馬達", en: "Hyper motor", d: ["最快，可是爬坡比較沒力。", "Fastest, but weaker on hills."] }],
+      { v: "hyper", price: 650, zh: "超級馬達", en: "Hyper motor", d: ["最快，可是爬坡比較沒力。", "Fastest, but weaker on hills."] },
+      { v: "rev", price: 300, zh: "轉速馬達", en: "Rev motor", d: ["比普通快一點，也有一點力氣。", "A bit faster and a bit stronger than stock."] },
+      { v: "light", price: 520, zh: "輕快馬達", en: "Light-dash motor", d: ["很快，爬坡也還可以。", "Very fast, OK on hills."] },
+      { v: "sprint", price: 900, zh: "衝刺馬達", en: "Sprint motor", d: ["直線最快！爬坡很沒力。", "Fastest on straights! Weak on hills."] },
+      { v: "mach", price: 1100, zh: "音速馬達", en: "Mach motor", d: ["又快又有力，最貴。", "Fast and strong. Most expensive."] }],
     gear: [
       { v: "speed", price: 0, zh: "高速齒輪", en: "Speed gears", d: ["套件附的，直線快，爬坡慢。", "Comes in the kit. Fast, weak on hills."] },
       { v: "power", price: 150, zh: "力量齒輪", en: "Power gears", d: ["比較慢，可是很有力氣。", "Slower, but strong."] },
-      { v: "mid", price: 180, zh: "中速齒輪", en: "Middle gears", d: ["速度和力氣都中等。", "A bit of both."] }],
+      { v: "mid", price: 180, zh: "中速齒輪", en: "Middle gears", d: ["速度和力氣都中等。", "A bit of both."] },
+      { v: "super", price: 200, zh: "超高速齒輪", en: "Super-speed gears", d: ["直線更快，爬坡更慢。", "Even faster, even weaker on hills."] },
+      { v: "climb", price: 200, zh: "爬坡齒輪", en: "Climbing gears", d: ["慢，可是上坡最強。", "Slow, but best up hills."] }],
     tire: [
       { v: "hard", price: 0, zh: "硬輪胎", en: "Hard tires", d: ["套件附的，容易滑。", "Comes in the kit. Slippery."] },
       { v: "soft", price: 160, zh: "軟輪胎", en: "Soft tires", d: ["抓地力好，過彎穩。", "Good grip in curves."] },
-      { v: "low", price: 220, zh: "低摩擦輪胎", en: "Low-friction tires", d: ["直線滾得快，抓地力中等。", "Roll fast on straights, medium grip."] }],
+      { v: "low", price: 220, zh: "低摩擦輪胎", en: "Low-friction tires", d: ["直線滾得快，抓地力中等。", "Roll fast on straights, medium grip."] },
+      { v: "sponge", price: 240, zh: "海綿輪胎", en: "Sponge tires", d: ["抓地力最好，直線慢一點。", "Best grip, a little slower."] },
+      { v: "slick", price: 260, zh: "光頭輪胎", en: "Slick tires", d: ["直線很快，彎道容易滑。", "Fast on straights, slides in curves."] },
+      { v: "spike", price: 180, zh: "釘釘輪胎", en: "Spike tires", d: ["咬住地面，爬坡比較有力。", "Bites the road. Better on hills."] },
+      { v: "large", price: 300, zh: "大直徑輪胎", en: "Big tires", d: ["輪子大跑得快，可是起步和爬坡比較慢。", "Big wheels go fast, but start and climb slower."] }],
     roller: [
       { v: "no", price: 0, zh: "沒有滾輪", en: "No rollers", d: ["過彎太快會飛出去！", "Too fast in a curve and it flies off!"] },
       { v: "yes", price: 140, zh: "兩個滾輪", en: "2 rollers", d: ["靠著牆滑過彎道。", "Slides along the wall in curves."] },
-      { v: "four", price: 260, zh: "四個滾輪", en: "4 rollers", d: ["前後都有，彎道最穩，有一點重。", "Front and back. Steadiest, a little heavy."] }],
+      { v: "four", price: 260, zh: "四個滾輪", en: "4 rollers", d: ["前後都有，彎道最穩，有一點重。", "Front and back. Steadiest, a little heavy."] },
+      { v: "plastic", price: 80, zh: "塑膠滾輪", en: "Plastic rollers", d: ["最便宜，不太滑順。", "Cheapest. Not very smooth."] },
+      { v: "alu", price: 220, zh: "鋁合金滾輪", en: "Aluminum rollers", d: ["兩個，比普通的滑順。", "Two rollers, smoother than normal."] },
+      { v: "bearing", price: 420, zh: "軸承滾輪", en: "Ball-bearing rollers", d: ["四個超滑順，彎道最快。", "Four super-smooth rollers. Fastest in curves."] }],
     wing: [
       { v: "none", price: 0, zh: "沒有尾翼", en: "No wing", d: ["比較輕。", "Lighter."] },
       { v: "small", price: 150, zh: "小尾翼", en: "Small wing", d: ["風把車子往下壓，過彎穩一點。", "Wind pushes the car down. A bit steadier."] },
-      { v: "big", price: 280, zh: "大尾翼", en: "Big wing", d: ["彎道很穩，直線慢一點點。", "Very steady in curves, slightly slower."] }]
+      { v: "big", price: 280, zh: "大尾翼", en: "Big wing", d: ["彎道很穩，直線慢一點點。", "Very steady in curves, slightly slower."] },
+      { v: "fin", price: 120, zh: "鯊魚鰭", en: "Shark fin", d: ["小小的，幾乎不擋風。", "Tiny. Almost no wind."] },
+      { v: "air", price: 220, zh: "前擾流板", en: "Front air dam", d: ["把車頭往下壓。", "Pushes the nose down."] },
+      { v: "dual", price: 380, zh: "雙層尾翼", en: "Double wing", d: ["彎道最穩，直線慢一些。", "Steadiest in curves, slower on straights."] }]
   },
   // school week 1 (Mon-Thu lessons, Fri test). Each question: [zh, en], answers [[zh,en]...], c = right index, why [zh,en]
   LESSONS: [
@@ -1667,8 +1696,12 @@ var CarArt = {
     yellow: { main: "#fab005", dark: "#e67700", light: "#ffe066" },
     purple: { main: "#7048e8", dark: "#5f3dc4", light: "#b197fc" }
   },
-  MOTORCAP: { normal: "#adb5bd", turbo: "#e03131", torque: "#fab005", hyper: "#1c7ed6" },
-  GEARCOL: { speed: "#ffd43b", power: "#51cf66", mid: "#ff922b" },
+  MOTORCAP: { normal: "#adb5bd", rev: "#ae3ec9", turbo: "#e03131", torque: "#fab005", light: "#20c997", hyper: "#1c7ed6", sprint: "#f76707", mach: "#212529" },
+  GEARCOL: { speed: "#ffd43b", power: "#51cf66", mid: "#ff922b", super: "#f03e3e", climb: "#1971c2" },
+  TIREART: { hard: "hard", soft: "soft", low: "low", sponge: "soft", slick: "low", spike: "hard", large: "hard" }, // which rear-view tire picture each tire uses
+  TIRESTRIPE: { hard: "#495057", soft: "#f76707", low: "#ced4da", sponge: "#fff3bf", slick: "#74c0fc", spike: "#ffd43b", large: "#e03131" },
+  FOUR: { four: 1, bearing: 1 }, // rollers front and back
+  ROLLCOL: { yes: "#dee2e6", four: "#dee2e6", plastic: "#ffe066", alu: "#a5d8ff", bearing: "#ffd8a8" },
   // ChatGPT layer art: name -> box [x, y, w, h] in car-width units (rear: origin = ground center; top: origin = car center)
   LAYERS: {
     rear_body_boxy: [-0.416, -0.688, 0.832, 0.588], rear_body_sleek: [-0.431, -0.592, 0.863, 0.492], rear_body_aero: [-0.47, -0.504, 0.94, 0.404],
@@ -1687,6 +1720,44 @@ var CarArt = {
   artBody: function (b) { var id = b.body, f = typeof C2BODIES !== "undefined" && C2BODIES.filter(function (x) { return x.v === id; })[0]; if (!f) return null;
     var im = img("b/" + id + "_" + (f.cols.indexOf(b.paint) >= 0 ? b.paint : "orig")); return im.complete && im.naturalWidth ? im : null; },
   isArt: function (b) { return typeof C2BODIES !== "undefined" && C2BODIES.some(function (x) { return x.v === b.body; }); },
+  /* store pictures for every part (drawn in code, same style) */
+  _ic: {},
+  icon: function (slot, v) {
+    var key = slot + ":" + v; if (this._ic[key]) return this._ic[key];
+    var cv = document.createElement("canvas"); cv.width = cv.height = 120; var x = cv.getContext("2d"), k = this;
+    x.translate(60, 60); x.lineJoin = x.lineCap = "round"; x.lineWidth = 5; x.strokeStyle = "#111";
+    function circ(r, f) { x.beginPath(); x.arc(0, 0, r, 0, 7); x.fillStyle = f; x.fill(); x.stroke(); }
+    if (slot === "motor") {
+      var cap = this.MOTORCAP[v] || "#adb5bd";
+      rr(x, -38, -24, 66, 48, 12); x.fillStyle = "#ced4da"; x.fill(); x.stroke();
+      x.fillStyle = cap; rr(x, -38, -24, 22, 48, 10); x.fill(); x.stroke();
+      x.fillStyle = "#fff"; x.fillRect(-8, -16, 30, 6); x.fillStyle = cap; x.fillRect(-8, 6, 30, 8);
+      x.fillStyle = "#868e96"; x.fillRect(28, -5, 16, 10); x.strokeRect(28, -5, 16, 10);
+      if (v === "mach" || v === "sprint" || v === "hyper") { x.fillStyle = "#ffd43b"; x.font = "900 26px system-ui"; x.textAlign = "center"; x.fillText("⚡", 6, -28); }
+    } else if (slot === "gear") {
+      var col = this.GEARCOL[v] || "#ffd43b", n = { speed: 10, power: 16, mid: 13, super: 8, climb: 20 }[v] || 12, R0 = { speed: 34, power: 40, mid: 37, super: 30, climb: 44 }[v] || 36;
+      x.beginPath(); for (var i = 0; i < n * 2; i++) { var a = i * Math.PI / n, r = i % 2 ? R0 - 8 : R0; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.closePath(); x.fillStyle = col; x.fill(); x.stroke();
+      circ(10, "#fff");
+    } else if (slot === "tire") {
+      var big = v === "large" ? 48 : v === "low" || v === "slick" ? 36 : 42;
+      circ(big, v === "sponge" ? "#e9ecef" : v === "hard" ? "#495057" : "#212529");
+      if (v === "spike") for (var j = 0; j < 14; j++) { var aa = j * Math.PI / 7; x.beginPath(); x.moveTo(Math.cos(aa) * big, Math.sin(aa) * big); x.lineTo(Math.cos(aa) * (big + 9), Math.sin(aa) * (big + 9)); x.stroke(); }
+      x.lineWidth = 6; x.strokeStyle = this.TIRESTRIPE[v] || "#868e96"; x.beginPath(); x.arc(0, 0, big - 9, 0, 7); x.stroke();
+      x.lineWidth = 5; x.strokeStyle = "#111"; circ(big * 0.42, "#f1f3f5");
+      if (v === "slick") { x.strokeStyle = "rgba(255,255,255,.6)"; x.beginPath(); x.arc(0, 0, big - 3, -2.4, -1.4); x.stroke(); }
+    } else if (slot === "roller") {
+      var col2 = this.ROLLCOL[v] || "#dee2e6", n2 = v === "no" ? 0 : this.FOUR[v] ? 4 : 2;
+      if (!n2) { x.font = "900 54px system-ui"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("🚫", 0, 4); }
+      for (var q = 0; q < n2; q++) { x.save(); x.translate(n2 === 4 ? (q % 2 ? 24 : -24) : (q ? 24 : -24), n2 === 4 ? (q < 2 ? -24 : 24) : 0); x.beginPath(); x.arc(0, 0, n2 === 4 ? 20 : 26, 0, 7); x.fillStyle = col2; x.fill(); x.stroke(); x.beginPath(); x.arc(0, 0, 6, 0, 7); x.fillStyle = "#495057"; x.fill(); if (v === "bearing") { x.fillStyle = "#fff"; for (var z = 0; z < 6; z++) { x.beginPath(); x.arc(Math.cos(z) * 12, Math.sin(z) * 12, 2.5, 0, 7); x.fill(); } } x.restore(); }
+    } else if (slot === "wing") {
+      var wc = "#1c7ed6";
+      if (v === "none") { x.font = "900 54px system-ui"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("🚫", 0, 4); }
+      if (v === "small" || v === "big" || v === "dual") { var ww2 = v === "small" ? 70 : 96; [-1, 1].forEach(function (d) { x.fillStyle = "#868e96"; x.fillRect(d * ww2 * 0.28 - 4, -6, 8, 34); x.strokeRect(d * ww2 * 0.28 - 4, -6, 8, 34); }); x.fillStyle = wc; rr(x, -ww2 / 2, -20, ww2, 16, 6); x.fill(); x.stroke(); if (v === "dual") { rr(x, -ww2 / 2 + 8, -42, ww2 - 16, 14, 6); x.fill(); x.stroke(); } if (v !== "small") { x.fillRect(-ww2 / 2 - 4, -30, 10, 30); x.strokeRect(-ww2 / 2 - 4, -30, 10, 30); x.fillRect(ww2 / 2 - 6, -30, 10, 30); x.strokeRect(ww2 / 2 - 6, -30, 10, 30); } }
+      if (v === "fin") { x.fillStyle = wc; x.beginPath(); x.moveTo(-26, 30); x.quadraticCurveTo(-4, -10, 18, -40); x.lineTo(26, 30); x.closePath(); x.fill(); x.stroke(); }
+      if (v === "air") { x.fillStyle = wc; x.beginPath(); x.moveTo(-50, 10); x.lineTo(-36, -14); x.lineTo(36, -14); x.lineTo(50, 10); x.closePath(); x.fill(); x.stroke(); }
+    }
+    return (this._ic[key] = cv.toDataURL());
+  },
   _tc: {},
   topCanvas: function (b, col) { // the whole top-view car drawn once into a canvas (re-made when more images load)
     var key = JSON.stringify([b.body, b.paint, b.tire, b.roller, b.wing, b.motor, b.gear, b.sticker, col]), e = this._tc[key];
@@ -1738,18 +1809,22 @@ var CarArt = {
     var lw = Math.max(1, w * 0.035), k = this, tire = b.tire || "hard", body = b.body || "boxy";
     function R(px, py, pw, ph, r, fill) { rr(x, px * w, py * w, pw * w, ph * w, r * w); x.fillStyle = fill; x.fill(); x.lineWidth = lw; x.strokeStyle = "#111"; x.stroke(); }
     function wheels(front) {
-      var s = front ? 0.72 : 1, ty = front ? -0.36 : 0, tw = (tire === "low" ? 0.2 : 0.23) * s, th = (tire === "low" ? 0.3 : 0.36) * s, sx = front ? 0.36 : 0.43;
-      var pw = (tire === "low" ? 0.235 : 0.27) * s;
-      if (k.part(x, "rear_tire_" + tire, -sx, ty, pw, w) && k.part(x, "rear_tire_" + tire, sx, ty, pw, w)) return;
+      var big = tire === "large" ? 1.15 : 1, thin = tire === "low" || tire === "slick";
+      var s = (front ? 0.72 : 1) * big, ty = front ? -0.36 : 0, tw = (thin ? 0.2 : 0.23) * s, th = (thin ? 0.3 : 0.36) * s, sx = front ? 0.36 : 0.43;
+      var pw = (thin ? 0.235 : 0.27) * s, ta = k.TIREART[tire] || "hard";
+      if (k.part(x, "rear_tire_" + ta, -sx, ty, pw, w) && k.part(x, "rear_tire_" + ta, sx, ty, pw, w)) {
+        if (ta !== tire) [-1, 1].forEach(function (d) { x.fillStyle = k.TIRESTRIPE[tire]; x.fillRect((d * sx - pw * 0.12) * w, (ty - pw * 0.9) * w, pw * 0.24 * w, pw * 0.5 * w); }); // stripe tells the tire apart
+        return;
+      }
       [-1, 1].forEach(function (d) {
         var cx = d * sx - tw / 2;
         R(cx, ty - th, tw, th, 0.05 * s, tire === "soft" ? "#212529" : "#343a40");
-        x.fillStyle = tire === "soft" ? "#f76707" : tire === "low" ? "#ced4da" : "#495057";
+        x.fillStyle = k.TIRESTRIPE[tire] || "#495057";
         x.fillRect((cx + tw * 0.15) * w, (ty - th * 0.62) * w, tw * 0.7 * w, th * 0.1 * w); // tire stripe
       });
     }
     function rollers(front) {
-      if (b.roller === "no" || (front && b.roller !== "four")) return;
+      if (b.roller === "no" || (front && !k.FOUR[b.roller])) return;
       var s = front ? 0.7 : 1, ty = front ? -0.33 : -0.1, sx = front ? 0.5 : 0.6;
       if (k.part(x, "rear_roller", -(sx - 0.03), ty + 0.1 * s, 0.3 * s, w) && k.part(x, "rear_roller", sx - 0.03, ty + 0.1 * s, 0.3 * s, w, true)) return;
       [-1, 1].forEach(function (d) {
@@ -1796,9 +1871,13 @@ var CarArt = {
     }
     wheels(false); rollers(false);
     // rear wing
-    var wh = b.wing && b.wing !== "none" ? this.part(x, "rear_wing_" + b.wing, 0, top + 0.1, b.wing === "big" ? 0.84 : 0.58, w, false, this.cn) : 0;
+    var wn = b.wing === "dual" ? "big" : b.wing === "air" || b.wing === "fin" ? null : b.wing;
+    var wh = wn && wn !== "none" ? this.part(x, "rear_wing_" + wn, 0, top + 0.1, wn === "big" ? 0.84 : 0.58, w, false, this.cn) : 0;
+    if (wh && b.wing === "dual") { var w2 = this.part(x, "rear_wing_small", 0, top + 0.1 - wh + 0.06, 0.66, w, false, this.cn); wh += (w2 || 0) - 0.06; }
+    if (b.wing === "fin") { x.fillStyle = c.dark; x.strokeStyle = "#111"; x.lineWidth = lw; x.beginPath(); x.moveTo(-0.04 * w, (top + 0.04) * w); x.lineTo(0, (top - 0.2) * w); x.lineTo(0.04 * w, (top + 0.04) * w); x.closePath(); x.fill(); x.stroke(); top -= 0.2; }
+    if (b.wing === "air") { R(-0.4, -0.18, 0.8, 0.06, 0.02, c.dark); }
     if (wh) top = top + 0.1 - wh;
-    else if (b.wing && b.wing !== "none") {
+    else if (wn && wn !== "none") {
       var big = b.wing === "big", wy = top - (big ? 0.2 : 0.12), ww = big ? 0.9 : 0.62;
       [-1, 1].forEach(function (d) { R(d * ww * 0.3 - 0.025, wy, 0.05, top - wy + 0.05, 0.01, "#495057"); });
       R(-ww / 2, wy - 0.07, ww, 0.08, 0.03, c.dark); top = wy - 0.07;
@@ -1814,16 +1893,16 @@ var CarArt = {
     function R(px, py, pw, ph, r, fill) { rr(x, px * w, py * w, pw * w, ph * w, r * w); x.fillStyle = fill; x.fill(); x.lineWidth = lw; x.strokeStyle = "#111"; x.stroke(); }
     // tires (4)
     if (!this.lay(x, "top_tire_" + tire, w)) {
-      var tw = tire === "low" ? 0.18 : 0.22, tl = tire === "low" ? 0.3 : 0.34;
+      var tw = tire === "low" || tire === "slick" ? 0.18 : 0.22, tl = tire === "large" ? 0.4 : tire === "low" || tire === "slick" ? 0.3 : 0.34;
       [[-1, -0.5], [1, -0.5], [-1, 0.48], [1, 0.48]].forEach(function (p) {
         R(p[0] * 0.44 - tw / 2, p[1] - tl / 2, tw, tl, 0.05, tire === "soft" ? "#212529" : "#343a40");
-        x.fillStyle = tire === "soft" ? "#f76707" : tire === "low" ? "#ced4da" : "#495057"; x.fillRect((p[0] * 0.44 - tw * 0.1) * w, (p[1] - tl * 0.4) * w, tw * 0.2 * w, tl * 0.8 * w);
+        x.fillStyle = k.TIRESTRIPE[tire] || "#495057"; x.fillRect((p[0] * 0.44 - tw * 0.1) * w, (p[1] - tl * 0.4) * w, tw * 0.2 * w, tl * 0.8 * w);
       });
     }
     // rollers
     if (b.roller !== "no" && !this.lay(x, "top_roller_" + b.roller, w)) {
-      var rp = b.roller === "four" ? [[-1, -0.74], [1, -0.74], [-1, 0.74], [1, 0.74]] : [[-1, -0.74], [1, -0.74]];
-      rp.forEach(function (p) { x.lineWidth = lw; x.strokeStyle = "#111"; x.beginPath(); x.moveTo(p[0] * 0.3 * w, p[1] * w); x.lineTo(p[0] * 0.5 * w, p[1] * w); x.stroke(); x.beginPath(); x.arc(p[0] * 0.53 * w, p[1] * w, 0.07 * w, 0, 7); x.fillStyle = "#dee2e6"; x.fill(); x.stroke(); });
+      var rp = k.FOUR[b.roller] ? [[-1, -0.74], [1, -0.74], [-1, 0.74], [1, 0.74]] : [[-1, -0.74], [1, -0.74]];
+      rp.forEach(function (p) { x.lineWidth = lw; x.strokeStyle = "#111"; x.beginPath(); x.moveTo(p[0] * 0.3 * w, p[1] * w); x.lineTo(p[0] * 0.5 * w, p[1] * w); x.stroke(); x.beginPath(); x.arc(p[0] * 0.53 * w, p[1] * w, 0.07 * w, 0, 7); x.fillStyle = k.ROLLCOL[b.roller] || "#dee2e6"; x.fill(); x.stroke(); });
     }
     // body
     var abt = this.isArt(b) ? this.artBody(b) : null;
@@ -1844,7 +1923,10 @@ var CarArt = {
     x.beginPath(); x.arc(0, 0.62 * w, 0.06 * w, 0, 7); x.fillStyle = this.MOTORCAP[b.motor || "normal"]; x.fill(); x.lineWidth = lw; x.stroke();
     x.beginPath(); x.arc(0.18 * w, 0.48 * w, 0.05 * w, 0, 7); x.fillStyle = this.GEARCOL[b.gear || "speed"]; x.fill(); x.stroke();
     // wing
-    if (b.wing && b.wing !== "none" && !this.lay(x, "top_wing_" + b.wing, w)) { var ww = b.wing === "big" ? 0.96 : 0.7; R(-ww / 2, 0.66, ww, b.wing === "big" ? 0.16 : 0.11, 0.03, c.dark); }
+    if (b.wing && b.wing !== "none") {
+      var ww = { big: 0.96, dual: 1.0, small: 0.7, fin: 0.12, air: 0.8 }[b.wing], wy = b.wing === "air" ? -0.86 : 0.66, wd = { big: 0.16, dual: 0.26, small: 0.11, fin: 0.3, air: 0.1 }[b.wing];
+      R(-ww / 2, b.wing === "fin" ? 0.2 : wy, ww, wd, 0.03, c.dark);
+    }
     return L * w;
   }
 };
@@ -1862,7 +1944,38 @@ var C2S = { // state helpers
   testA: function (c) { var t = c.tests[this.week(c)]; return !!(t && t.a); }
 };
 function money(n) { return "NT$" + n; }
-function chunks(items, n) { var out = ""; for (var i = 0; i < items.length; i += n) out += "<div class='c2parts'>" + items.slice(i, i + n).join("") + "</div>"; return out; } // small blocks so the pager can split long lists
+function chunks(items, n) { var out = ""; for (var i = 0; i < items.length; i += n) out += "<div class='c2parts compact'>" + items.slice(i, i + n).join("") + "</div>"; return out; }
+function partCols() { var cd = $("#c2Card"); return Math.max(3, Math.floor(((cd && cd.clientWidth) || 600) - 40) / 128 | 0); } // one row per block
+function partImg(slot, p) { return p.art ? A("b/" + p.v + "_orig") : slot === "body" ? A("L_top_body_" + p.v) : CarArt.icon(slot, p.v); }
+function byPrice(a, b) { return a.price - b.price; }
+/* track map picture: grey road, red curves (darker = tighter), orange hills, checkered start */
+var TRACKNOTE = {
+  oval: ["直線很長，彎道很寬：最高速度最重要！", "Long straights, wide curves: top speed matters most!"],
+  twisty: ["很多急彎：要抓地力、滾輪和尾翼。", "Lots of tight curves: grip, rollers and a wing help."],
+  hills: ["兩個大坡：要有力氣（扭力、齒輪）。", "Two big hills: you need push (torque, gears)."],
+  classic: ["直線、彎道和一個坡。", "Straights, curves and one hill."] };
+var _tmap = {};
+function trackMap(id) {
+  if (_tmap[id]) return _tmap[id];
+  var T = TRACKS[id], b = T.box, W = 320, H = 200, m = 16, sc = Math.min((W - 2 * m) / (b[2] - b[0] + 8), (H - 2 * m) / (b[3] - b[1] + 8));
+  var cv = document.createElement("canvas"); cv.width = W; cv.height = H; var x = cv.getContext("2d");
+  function X(p) { return m + (p.x - b[0] + 4) * sc; } function Y(p) { return H - m - (p.y - b[1] + 4) * sc; }
+  x.fillStyle = "#2f9e44"; rr(x, 2, 2, W - 4, H - 4, 18); x.fill(); x.lineJoin = x.lineCap = "round";
+  function path(f, col, wid) { x.strokeStyle = col; x.lineWidth = wid; var on = false; x.beginPath();
+    T.pts.forEach(function (p, i) { if (f(p)) { if (!on) x.moveTo(X(p), Y(p)); else x.lineTo(X(p), Y(p)); on = true; } else { if (on) { x.stroke(); x.beginPath(); } on = false; } }); if (on) x.stroke(); }
+  path(function () { return true; }, "#111", 7.6 * sc + 6); path(function () { return true; }, "#dee2e6", 7.6 * sc);
+  path(function (p) { return p.type === "C" || p.type === "R"; }, "rgba(224,49,49,.75)", 7.6 * sc * 0.55);
+  path(function (p) { return (p.type === "C" || p.type === "R") && p.rad < 9; }, "#a61e1e", 7.6 * sc * 0.55);
+  path(function (p) { return p.type === "H"; }, "#f76707", 7.6 * sc * 0.6);
+  var s0 = T.pts[0]; x.save(); x.translate(X(s0), Y(s0)); x.fillStyle = "#fff"; x.fillRect(-3, -7.6 * sc / 2, 6, 7.6 * sc); x.fillStyle = "#111"; for (var i = 0; i < 4; i++) x.fillRect(i % 2 ? 0 : -3, -7.6 * sc / 2 + i * 7.6 * sc / 4, 3, 7.6 * sc / 4); x.restore();
+  x.font = "900 13px system-ui"; x.fillStyle = "#fff"; x.textAlign = "left";
+  x.fillText("🟥 彎道 curve  🟧 坡 hill  🏁", 10, H - 8);
+  return (_tmap[id] = cv.toDataURL());
+}
+function trackCard(id, best) {
+  var T = TRACKS[id];
+  return "<div class='trk'><img src='" + trackMap(id) + "' alt=''><div><b>" + bi(T.zh, T.en) + "</b><div class='tn'>" + bi(TRACKNOTE[id][0], TRACKNOTE[id][1]) + "</div>" + (best ? "<div class='pr'>⏱ " + best.toFixed(1) + "s</div>" : "") + "</div></div>";
+} // small blocks so the pager can split long lists
 
 var C2G = {
   /* ---------- screen frame ---------- */
@@ -2093,22 +2206,22 @@ var C2G = {
     }
     var cur = this.shopSlot || "motor", slotBar = "<div class='c2slots'>" + C2.SLOTS.map(function (sl) { return "<button class='chip" + (sl[0] === cur ? " on" : "") + "' data-sl='" + sl[0] + "'>" + bi(sl[1], sl[2]) + "</button>"; }).join("") + "</div>";
     if (tab === "buy") {
-      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return p.price > 0; }).map(function (p) {
+      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return p.price > 0; }).sort(byPrice).map(function (p) {
         var own = C2S.has(c, cur, p.v), price = Math.max(0, p.price - (c.coupon || 0));
-        return "<button class='opt" + (own ? " own" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + (p.art ? "<img class='thumb' src='" + A("b/" + p.v + "_orig") + "' alt=''>" : cur === "body" ? "<img class='thumb' src='" + A("L_top_body_" + p.v) + "' alt=''>" : "") + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span></button>";
-      }), innerWidth > 900 ? 4 : 3);
+        return "<button class='opt" + (own ? " own" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + "<img class='thumb' src='" + partImg(cur, p) + "' alt=''>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span></button>";
+      }), partCols());
     } else if (tab === "equip") {
-      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).map(function (p) {
-        return "<button class='opt" + (c.build[cur] === p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + (p.art ? "<img class='thumb' src='" + A("b/" + p.v + "_" + (p.v === c.build.body && c.build.paint ? c.build.paint : "orig")) + "' alt=''>" : "") + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small></button>";
-      }), innerWidth > 900 ? 4 : 3);
+      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).sort(byPrice).map(function (p) {
+        return "<button class='opt" + (c.build[cur] === p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + "<img class='thumb' src='" + (p.art && p.v === c.build.body && c.build.paint ? A("b/" + p.v + "_" + c.build.paint) : partImg(cur, p)) + "' alt=''>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small></button>";
+      }), partCols());
+      if (this.fitTrack) body = slotBar + "<div class='c2sub'>🗺 " + bi("調整給：" + TRACKS[this.fitTrack].zh, "Tuning for: " + TRACKS[this.fitTrack].en) + " — " + bi(TRACKNOTE[this.fitTrack][0], TRACKNOTE[this.fitTrack][1]) + "</div>" + body.slice(slotBar.length);
       var cb = C2S.part("body", c.build.body);
       if (cur === "body" && cb && cb.art) body = slotBar + "<div class='c2sub'>🎨 " + bi("車殼顏色（免費換）", "Body color (free to change)") + "</div><div class='c2paint'>" + cb.cols.map(function (k) {
         return "<button class='paint" + ((c.build.paint || "orig") === k ? " on" : "") + "' data-p='" + k + "'><img src='" + A("b/" + cb.v + "_" + k) + "' alt='" + k + "'></button>"; }).join("") + "</div>" + body.slice(slotBar.length); // paint row goes under the pinned slot bar
     } else if (tab === "test") {
-      body = "<div class='c2sub'>" + bi("選一條跑道測試（這次還能測 " + this.shopRuns + " 次）", "Pick a track to test (" + this.shopRuns + " runs left this visit)") + "</div><div class='c2tracks'>" + ["oval", "twisty", "hills"].map(function (id) {
-        var T = TRACKS[id], b = c.best[id];
-        return "<button class='opt' data-tr='" + id + "'>" + bi(T.zh, T.en) + "<small>" + ({ oval: "直線很長 · Long straights", twisty: "很多急彎 · Lots of tight curves", hills: "兩個大坡 · Two big hills" }[id]) + "</small><span class='pr'>⏱ " + (b ? b.toFixed(1) + "s" : "—") + "</span></button>";
-      }).join("") + "</div>";
+      body = "<div class='c2sub'>" + bi("選一條跑道測試（這次還能測 " + this.shopRuns + " 次）", "Pick a track to test (" + this.shopRuns + " runs left this visit)") + "</div>" + ["oval", "twisty", "hills"].map(function (id) {
+        return "<button class='opt trkopt' data-tr='" + id + "'>" + trackCard(id, c.best[id]) + "</button>";
+      }).join("");
     } else if (tab === "box") {
       var spares = Object.keys(c.owned).filter(function (k) { var a = k.split(":"); return c.owned[k] > 0 && c.build[a[0]] !== a[1] && C2S.part(a[0], a[1]).price > 0; });
       body = "<div class='c2sub'>" + bi("選最多 " + C2.TOOLBOX + " 個備用零件帶去比賽，比賽前可以換。", "Pick up to " + C2.TOOLBOX + " spare parts to bring to the cup. You can swap them in before the race.") + "</div><div class='c2parts'>" +
@@ -2127,9 +2240,12 @@ var C2G = {
         if (C2S.has(c, s, v)) { sfx("buzz"); return; }
         self.drawCar(Object.assign({}, c.build, (function () { var o = {}; o[s] = v; return o; })())); // preview it on the car
         if (c.money < price) { sfx("buzz"); return Read.pair("錢不夠，去打工賺錢吧！還差 " + (price - c.money) + " 元。", "Not enough money. Work to earn " + money(price - c.money) + " more!"); }
+        var nb = Object.assign({}, c.build); nb[s] = v; var b0 = carBars(c.build), b1 = carBars(nb);
+        var diff = [["speed", "最高速度", "Top speed"], ["hill", "上坡力氣", "Hill power"], ["grip", "彎道抓地", "Curve grip"]].map(function (d) {
+          var dv = b1[d[0]] - b0[d[0]]; return Math.abs(dv) < 0.01 ? "" : "<span class='chip' style='background:" + (dv > 0 ? "#d3f9d8" : "#ffe3e3") + "'>" + (dv > 0 ? "▲ " : "▼ ") + bi(d[1], d[2]) + "</span>"; }).join(" ");
         self.confirm(["買 " + p.zh + "，" + price + " 元？", "Buy " + p.en + " for " + money(price) + "?"], function () {
           c.money -= price; c.coupon = 0; C2S.give(c, s, v); c.build[s] = v; if (s === "body") c.build.paint = "orig"; save(); sfx("win"); self.shop("buy");
-        }, function () { self.shop("buy"); });
+        }, function () { self.shop("buy"); }, "<img src='" + partImg(s, p) + "' style='height:90px;display:block;margin:0 auto'><div style='text-align:center'>" + bi(p.d[0], p.d[1]) + "</div><div style='text-align:center;margin-top:6px'>" + (diff || bi("跟現在差不多", "About the same as now")) + "</div>");
       };
       if (tab === "equip") b.onclick = function () { sfx("tap"); c.build[b.dataset.s] = b.dataset.v; c.toolbox = c.toolbox.filter(function (k) { return k !== b.dataset.s + ":" + b.dataset.v; }); save(); self.shop("equip"); };
       if (tab === "box") b.onclick = function () { var k = b.dataset.k, i = c.toolbox.indexOf(k); if (i >= 0) c.toolbox.splice(i, 1); else if (c.toolbox.length < C2.TOOLBOX) c.toolbox.push(k); else { sfx("buzz"); return; } sfx("tap"); save(); self.shop("box"); };
@@ -2140,8 +2256,8 @@ var C2G = {
       };
     });
   },
-  confirm: function (q, yes, no) {
-    ovl("<div class='big'>🛒</div><div style='text-align:center'>" + bi(q[0], q[1]) + "</div><div class='act'><button class='btn white' id='cfN'>" + bi("先不要", "Not now") + "</button><button class='btn red' id='cfY'>" + bi("買！", "Buy!") + "</button></div>");
+  confirm: function (q, yes, no, extra) {
+    ovl((extra || "<div class='big'>🛒</div>") + "<div style='text-align:center;margin-top:8px'>" + bi(q[0], q[1]) + "</div><div class='act'><button class='btn white' id='cfN'>" + bi("先不要", "Not now") + "</button><button class='btn red' id='cfY'>" + bi("買！", "Buy!") + "</button></div>");
     Read.pair(q[0], q[1]);
     $("#cfY").onclick = function () { closeOvl(); Read.stop(); yes(); }; $("#cfN").onclick = function () { closeOvl(); Read.stop(); no(); };
   },
@@ -2154,8 +2270,9 @@ var C2G = {
       ["跑得很順！想更快可以換馬達、車殼或低摩擦輪胎。", "Smooth run! For more speed try a motor, body or low-friction tires."];
     this.frame(["測試結果", "Test result"]);
     this.card("<div class='big'>⏱ " + (res.out ? "—" : t.toFixed(1) + "s") + "</div><div style='text-align:center'>" + bi(TRACKS[id].zh + (old && !res.out && t < old ? "　新紀錄！" : ""), TRACKS[id].en + (old && !res.out && t < old ? " · New best!" : "")) + "</div>" +
-      this.say("max", hint[0], hint[1]) + "<div class='act'><button class='btn blue' id='trBack'>🔧 " + bi("回到模型店", "Back to the store") + "</button></div>");
+      this.say("max", hint[0], hint[1]) + trackCard(id) + "<div class='act'><button class='btn white' id='trBack'>🏁 " + bi("再測一次", "Test again") + "</button><button class='btn blue' id='trFit'>🔧 " + bi("看著跑道換零件", "Adjust parts for this track") + "</button></div>");
     $("#trBack").onclick = function () { Read.stop(); self.shop("test"); };
+    $("#trFit").onclick = function () { Read.stop(); self.fitTrack = id; self.shop("equip"); };
   },
 
   /* ---------- work ---------- */
@@ -2238,7 +2355,7 @@ var C2G = {
   pit: function (cup) { // swap parts from the toolbox before the race
     var c = C2S.get(), self = this;
     this.frame(["維修區", "Pit area"]);
-    var cd = this.card(this.say("max", "今天的跑道是" + TRACKS[cup.track].zh + "。要用工具箱換零件嗎？", "Today's track: " + TRACKS[cup.track].en + ". Swap anything from your toolbox?") +
+    var cd = this.card(this.say("max", "今天的跑道是" + TRACKS[cup.track].zh + "。看看跑道，要用工具箱換零件嗎？", "Today's track: " + TRACKS[cup.track].en + ". Look at the track. Swap anything from your toolbox?") + trackCard(cup.track) +
       "<div class='c2parts'>" + (c.toolbox.length ? c.toolbox.map(function (k) { var a = k.split(":"), p = C2S.part(a[0], a[1]), on = c.build[a[0]] === a[1]; return "<button class='opt" + (on ? " sel" : "") + "' data-k='" + k + "'>" + bi(p.zh, p.en) + "<small>" + (on ? bi("裝上了", "Fitted") : bi("點一下裝上", "Tap to fit")) + "</small></button>"; }).join("") : "<i>" + bi("工具箱是空的", "The toolbox is empty") + "</i>") +
       "</div><div class='act'><button class='btn red' id='puGo'>🏁 " + bi("出發！", "Race!") + "</button></div>");
     $$(".opt", cd).forEach(function (b) { b.onclick = function () { var a = b.dataset.k.split(":"); c.build[a[0]] = a[1]; save(); sfx("tap"); self.pit(cup); }; });
@@ -2347,6 +2464,6 @@ window.__test = {
   }
 };
 </script>
-<div id="kaVer" data-v="2.2" data-d="2026-11-27">v2.2 · 2026-11-27</div>
+<div id="kaVer" data-v="2.3" data-d="2026-11-27">v2.3 · 2026-11-27</div>
 </body>
 </html>

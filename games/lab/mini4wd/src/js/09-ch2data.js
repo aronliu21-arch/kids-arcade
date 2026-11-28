@@ -49,23 +49,39 @@ var C2 = {
       { v: "normal", price: 0, zh: "普通馬達", en: "Stock motor", d: ["套件附的，速度普通。", "Comes in the kit. Normal speed."] },
       { v: "turbo", price: 380, zh: "高速馬達", en: "Turbo motor", d: ["轉得快，直線很快。", "Spins fast. Great on straights."] },
       { v: "torque", price: 420, zh: "扭力馬達", en: "Torque motor", d: ["力氣大，爬坡最強。", "Strong push. Best on hills."] },
-      { v: "hyper", price: 650, zh: "超級馬達", en: "Hyper motor", d: ["最快，可是爬坡比較沒力。", "Fastest, but weaker on hills."] }],
+      { v: "hyper", price: 650, zh: "超級馬達", en: "Hyper motor", d: ["最快，可是爬坡比較沒力。", "Fastest, but weaker on hills."] },
+      { v: "rev", price: 300, zh: "轉速馬達", en: "Rev motor", d: ["比普通快一點，也有一點力氣。", "A bit faster and a bit stronger than stock."] },
+      { v: "light", price: 520, zh: "輕快馬達", en: "Light-dash motor", d: ["很快，爬坡也還可以。", "Very fast, OK on hills."] },
+      { v: "sprint", price: 900, zh: "衝刺馬達", en: "Sprint motor", d: ["直線最快！爬坡很沒力。", "Fastest on straights! Weak on hills."] },
+      { v: "mach", price: 1100, zh: "音速馬達", en: "Mach motor", d: ["又快又有力，最貴。", "Fast and strong. Most expensive."] }],
     gear: [
       { v: "speed", price: 0, zh: "高速齒輪", en: "Speed gears", d: ["套件附的，直線快，爬坡慢。", "Comes in the kit. Fast, weak on hills."] },
       { v: "power", price: 150, zh: "力量齒輪", en: "Power gears", d: ["比較慢，可是很有力氣。", "Slower, but strong."] },
-      { v: "mid", price: 180, zh: "中速齒輪", en: "Middle gears", d: ["速度和力氣都中等。", "A bit of both."] }],
+      { v: "mid", price: 180, zh: "中速齒輪", en: "Middle gears", d: ["速度和力氣都中等。", "A bit of both."] },
+      { v: "super", price: 200, zh: "超高速齒輪", en: "Super-speed gears", d: ["直線更快，爬坡更慢。", "Even faster, even weaker on hills."] },
+      { v: "climb", price: 200, zh: "爬坡齒輪", en: "Climbing gears", d: ["慢，可是上坡最強。", "Slow, but best up hills."] }],
     tire: [
       { v: "hard", price: 0, zh: "硬輪胎", en: "Hard tires", d: ["套件附的，容易滑。", "Comes in the kit. Slippery."] },
       { v: "soft", price: 160, zh: "軟輪胎", en: "Soft tires", d: ["抓地力好，過彎穩。", "Good grip in curves."] },
-      { v: "low", price: 220, zh: "低摩擦輪胎", en: "Low-friction tires", d: ["直線滾得快，抓地力中等。", "Roll fast on straights, medium grip."] }],
+      { v: "low", price: 220, zh: "低摩擦輪胎", en: "Low-friction tires", d: ["直線滾得快，抓地力中等。", "Roll fast on straights, medium grip."] },
+      { v: "sponge", price: 240, zh: "海綿輪胎", en: "Sponge tires", d: ["抓地力最好，直線慢一點。", "Best grip, a little slower."] },
+      { v: "slick", price: 260, zh: "光頭輪胎", en: "Slick tires", d: ["直線很快，彎道容易滑。", "Fast on straights, slides in curves."] },
+      { v: "spike", price: 180, zh: "釘釘輪胎", en: "Spike tires", d: ["咬住地面，爬坡比較有力。", "Bites the road. Better on hills."] },
+      { v: "large", price: 300, zh: "大直徑輪胎", en: "Big tires", d: ["輪子大跑得快，可是起步和爬坡比較慢。", "Big wheels go fast, but start and climb slower."] }],
     roller: [
       { v: "no", price: 0, zh: "沒有滾輪", en: "No rollers", d: ["過彎太快會飛出去！", "Too fast in a curve and it flies off!"] },
       { v: "yes", price: 140, zh: "兩個滾輪", en: "2 rollers", d: ["靠著牆滑過彎道。", "Slides along the wall in curves."] },
-      { v: "four", price: 260, zh: "四個滾輪", en: "4 rollers", d: ["前後都有，彎道最穩，有一點重。", "Front and back. Steadiest, a little heavy."] }],
+      { v: "four", price: 260, zh: "四個滾輪", en: "4 rollers", d: ["前後都有，彎道最穩，有一點重。", "Front and back. Steadiest, a little heavy."] },
+      { v: "plastic", price: 80, zh: "塑膠滾輪", en: "Plastic rollers", d: ["最便宜，不太滑順。", "Cheapest. Not very smooth."] },
+      { v: "alu", price: 220, zh: "鋁合金滾輪", en: "Aluminum rollers", d: ["兩個，比普通的滑順。", "Two rollers, smoother than normal."] },
+      { v: "bearing", price: 420, zh: "軸承滾輪", en: "Ball-bearing rollers", d: ["四個超滑順，彎道最快。", "Four super-smooth rollers. Fastest in curves."] }],
     wing: [
       { v: "none", price: 0, zh: "沒有尾翼", en: "No wing", d: ["比較輕。", "Lighter."] },
       { v: "small", price: 150, zh: "小尾翼", en: "Small wing", d: ["風把車子往下壓，過彎穩一點。", "Wind pushes the car down. A bit steadier."] },
-      { v: "big", price: 280, zh: "大尾翼", en: "Big wing", d: ["彎道很穩，直線慢一點點。", "Very steady in curves, slightly slower."] }]
+      { v: "big", price: 280, zh: "大尾翼", en: "Big wing", d: ["彎道很穩，直線慢一點點。", "Very steady in curves, slightly slower."] },
+      { v: "fin", price: 120, zh: "鯊魚鰭", en: "Shark fin", d: ["小小的，幾乎不擋風。", "Tiny. Almost no wind."] },
+      { v: "air", price: 220, zh: "前擾流板", en: "Front air dam", d: ["把車頭往下壓。", "Pushes the nose down."] },
+      { v: "dual", price: 380, zh: "雙層尾翼", en: "Double wing", d: ["彎道最穩，直線慢一些。", "Steadiest in curves, slower on straights."] }]
   },
   // school week 1 (Mon-Thu lessons, Fri test). Each question: [zh, en], answers [[zh,en]...], c = right index, why [zh,en]
   LESSONS: [

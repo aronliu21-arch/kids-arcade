@@ -11,7 +11,38 @@ var C2S = { // state helpers
   testA: function (c) { var t = c.tests[this.week(c)]; return !!(t && t.a); }
 };
 function money(n) { return "NT$" + n; }
-function chunks(items, n) { var out = ""; for (var i = 0; i < items.length; i += n) out += "<div class='c2parts'>" + items.slice(i, i + n).join("") + "</div>"; return out; } // small blocks so the pager can split long lists
+function chunks(items, n) { var out = ""; for (var i = 0; i < items.length; i += n) out += "<div class='c2parts compact'>" + items.slice(i, i + n).join("") + "</div>"; return out; }
+function partCols() { var cd = $("#c2Card"); return Math.max(3, Math.floor(((cd && cd.clientWidth) || 600) - 40) / 128 | 0); } // one row per block
+function partImg(slot, p) { return p.art ? A("b/" + p.v + "_orig") : slot === "body" ? A("L_top_body_" + p.v) : CarArt.icon(slot, p.v); }
+function byPrice(a, b) { return a.price - b.price; }
+/* track map picture: grey road, red curves (darker = tighter), orange hills, checkered start */
+var TRACKNOTE = {
+  oval: ["直線很長，彎道很寬：最高速度最重要！", "Long straights, wide curves: top speed matters most!"],
+  twisty: ["很多急彎：要抓地力、滾輪和尾翼。", "Lots of tight curves: grip, rollers and a wing help."],
+  hills: ["兩個大坡：要有力氣（扭力、齒輪）。", "Two big hills: you need push (torque, gears)."],
+  classic: ["直線、彎道和一個坡。", "Straights, curves and one hill."] };
+var _tmap = {};
+function trackMap(id) {
+  if (_tmap[id]) return _tmap[id];
+  var T = TRACKS[id], b = T.box, W = 320, H = 200, m = 16, sc = Math.min((W - 2 * m) / (b[2] - b[0] + 8), (H - 2 * m) / (b[3] - b[1] + 8));
+  var cv = document.createElement("canvas"); cv.width = W; cv.height = H; var x = cv.getContext("2d");
+  function X(p) { return m + (p.x - b[0] + 4) * sc; } function Y(p) { return H - m - (p.y - b[1] + 4) * sc; }
+  x.fillStyle = "#2f9e44"; rr(x, 2, 2, W - 4, H - 4, 18); x.fill(); x.lineJoin = x.lineCap = "round";
+  function path(f, col, wid) { x.strokeStyle = col; x.lineWidth = wid; var on = false; x.beginPath();
+    T.pts.forEach(function (p, i) { if (f(p)) { if (!on) x.moveTo(X(p), Y(p)); else x.lineTo(X(p), Y(p)); on = true; } else { if (on) { x.stroke(); x.beginPath(); } on = false; } }); if (on) x.stroke(); }
+  path(function () { return true; }, "#111", 7.6 * sc + 6); path(function () { return true; }, "#dee2e6", 7.6 * sc);
+  path(function (p) { return p.type === "C" || p.type === "R"; }, "rgba(224,49,49,.75)", 7.6 * sc * 0.55);
+  path(function (p) { return (p.type === "C" || p.type === "R") && p.rad < 9; }, "#a61e1e", 7.6 * sc * 0.55);
+  path(function (p) { return p.type === "H"; }, "#f76707", 7.6 * sc * 0.6);
+  var s0 = T.pts[0]; x.save(); x.translate(X(s0), Y(s0)); x.fillStyle = "#fff"; x.fillRect(-3, -7.6 * sc / 2, 6, 7.6 * sc); x.fillStyle = "#111"; for (var i = 0; i < 4; i++) x.fillRect(i % 2 ? 0 : -3, -7.6 * sc / 2 + i * 7.6 * sc / 4, 3, 7.6 * sc / 4); x.restore();
+  x.font = "900 13px system-ui"; x.fillStyle = "#fff"; x.textAlign = "left";
+  x.fillText("🟥 彎道 curve  🟧 坡 hill  🏁", 10, H - 8);
+  return (_tmap[id] = cv.toDataURL());
+}
+function trackCard(id, best) {
+  var T = TRACKS[id];
+  return "<div class='trk'><img src='" + trackMap(id) + "' alt=''><div><b>" + bi(T.zh, T.en) + "</b><div class='tn'>" + bi(TRACKNOTE[id][0], TRACKNOTE[id][1]) + "</div>" + (best ? "<div class='pr'>⏱ " + best.toFixed(1) + "s</div>" : "") + "</div></div>";
+} // small blocks so the pager can split long lists
 
 var C2G = {
   /* ---------- screen frame ---------- */
@@ -242,22 +273,22 @@ var C2G = {
     }
     var cur = this.shopSlot || "motor", slotBar = "<div class='c2slots'>" + C2.SLOTS.map(function (sl) { return "<button class='chip" + (sl[0] === cur ? " on" : "") + "' data-sl='" + sl[0] + "'>" + bi(sl[1], sl[2]) + "</button>"; }).join("") + "</div>";
     if (tab === "buy") {
-      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return p.price > 0; }).map(function (p) {
+      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return p.price > 0; }).sort(byPrice).map(function (p) {
         var own = C2S.has(c, cur, p.v), price = Math.max(0, p.price - (c.coupon || 0));
-        return "<button class='opt" + (own ? " own" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + (p.art ? "<img class='thumb' src='" + A("b/" + p.v + "_orig") + "' alt=''>" : cur === "body" ? "<img class='thumb' src='" + A("L_top_body_" + p.v) + "' alt=''>" : "") + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span></button>";
-      }), innerWidth > 900 ? 4 : 3);
+        return "<button class='opt" + (own ? " own" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + "<img class='thumb' src='" + partImg(cur, p) + "' alt=''>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span></button>";
+      }), partCols());
     } else if (tab === "equip") {
-      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).map(function (p) {
-        return "<button class='opt" + (c.build[cur] === p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + (p.art ? "<img class='thumb' src='" + A("b/" + p.v + "_" + (p.v === c.build.body && c.build.paint ? c.build.paint : "orig")) + "' alt=''>" : "") + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small></button>";
-      }), innerWidth > 900 ? 4 : 3);
+      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).sort(byPrice).map(function (p) {
+        return "<button class='opt" + (c.build[cur] === p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + "<img class='thumb' src='" + (p.art && p.v === c.build.body && c.build.paint ? A("b/" + p.v + "_" + c.build.paint) : partImg(cur, p)) + "' alt=''>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small></button>";
+      }), partCols());
+      if (this.fitTrack) body = slotBar + "<div class='c2sub'>🗺 " + bi("調整給：" + TRACKS[this.fitTrack].zh, "Tuning for: " + TRACKS[this.fitTrack].en) + " — " + bi(TRACKNOTE[this.fitTrack][0], TRACKNOTE[this.fitTrack][1]) + "</div>" + body.slice(slotBar.length);
       var cb = C2S.part("body", c.build.body);
       if (cur === "body" && cb && cb.art) body = slotBar + "<div class='c2sub'>🎨 " + bi("車殼顏色（免費換）", "Body color (free to change)") + "</div><div class='c2paint'>" + cb.cols.map(function (k) {
         return "<button class='paint" + ((c.build.paint || "orig") === k ? " on" : "") + "' data-p='" + k + "'><img src='" + A("b/" + cb.v + "_" + k) + "' alt='" + k + "'></button>"; }).join("") + "</div>" + body.slice(slotBar.length); // paint row goes under the pinned slot bar
     } else if (tab === "test") {
-      body = "<div class='c2sub'>" + bi("選一條跑道測試（這次還能測 " + this.shopRuns + " 次）", "Pick a track to test (" + this.shopRuns + " runs left this visit)") + "</div><div class='c2tracks'>" + ["oval", "twisty", "hills"].map(function (id) {
-        var T = TRACKS[id], b = c.best[id];
-        return "<button class='opt' data-tr='" + id + "'>" + bi(T.zh, T.en) + "<small>" + ({ oval: "直線很長 · Long straights", twisty: "很多急彎 · Lots of tight curves", hills: "兩個大坡 · Two big hills" }[id]) + "</small><span class='pr'>⏱ " + (b ? b.toFixed(1) + "s" : "—") + "</span></button>";
-      }).join("") + "</div>";
+      body = "<div class='c2sub'>" + bi("選一條跑道測試（這次還能測 " + this.shopRuns + " 次）", "Pick a track to test (" + this.shopRuns + " runs left this visit)") + "</div>" + ["oval", "twisty", "hills"].map(function (id) {
+        return "<button class='opt trkopt' data-tr='" + id + "'>" + trackCard(id, c.best[id]) + "</button>";
+      }).join("");
     } else if (tab === "box") {
       var spares = Object.keys(c.owned).filter(function (k) { var a = k.split(":"); return c.owned[k] > 0 && c.build[a[0]] !== a[1] && C2S.part(a[0], a[1]).price > 0; });
       body = "<div class='c2sub'>" + bi("選最多 " + C2.TOOLBOX + " 個備用零件帶去比賽，比賽前可以換。", "Pick up to " + C2.TOOLBOX + " spare parts to bring to the cup. You can swap them in before the race.") + "</div><div class='c2parts'>" +
@@ -276,9 +307,12 @@ var C2G = {
         if (C2S.has(c, s, v)) { sfx("buzz"); return; }
         self.drawCar(Object.assign({}, c.build, (function () { var o = {}; o[s] = v; return o; })())); // preview it on the car
         if (c.money < price) { sfx("buzz"); return Read.pair("錢不夠，去打工賺錢吧！還差 " + (price - c.money) + " 元。", "Not enough money. Work to earn " + money(price - c.money) + " more!"); }
+        var nb = Object.assign({}, c.build); nb[s] = v; var b0 = carBars(c.build), b1 = carBars(nb);
+        var diff = [["speed", "最高速度", "Top speed"], ["hill", "上坡力氣", "Hill power"], ["grip", "彎道抓地", "Curve grip"]].map(function (d) {
+          var dv = b1[d[0]] - b0[d[0]]; return Math.abs(dv) < 0.01 ? "" : "<span class='chip' style='background:" + (dv > 0 ? "#d3f9d8" : "#ffe3e3") + "'>" + (dv > 0 ? "▲ " : "▼ ") + bi(d[1], d[2]) + "</span>"; }).join(" ");
         self.confirm(["買 " + p.zh + "，" + price + " 元？", "Buy " + p.en + " for " + money(price) + "?"], function () {
           c.money -= price; c.coupon = 0; C2S.give(c, s, v); c.build[s] = v; if (s === "body") c.build.paint = "orig"; save(); sfx("win"); self.shop("buy");
-        }, function () { self.shop("buy"); });
+        }, function () { self.shop("buy"); }, "<img src='" + partImg(s, p) + "' style='height:90px;display:block;margin:0 auto'><div style='text-align:center'>" + bi(p.d[0], p.d[1]) + "</div><div style='text-align:center;margin-top:6px'>" + (diff || bi("跟現在差不多", "About the same as now")) + "</div>");
       };
       if (tab === "equip") b.onclick = function () { sfx("tap"); c.build[b.dataset.s] = b.dataset.v; c.toolbox = c.toolbox.filter(function (k) { return k !== b.dataset.s + ":" + b.dataset.v; }); save(); self.shop("equip"); };
       if (tab === "box") b.onclick = function () { var k = b.dataset.k, i = c.toolbox.indexOf(k); if (i >= 0) c.toolbox.splice(i, 1); else if (c.toolbox.length < C2.TOOLBOX) c.toolbox.push(k); else { sfx("buzz"); return; } sfx("tap"); save(); self.shop("box"); };
@@ -289,8 +323,8 @@ var C2G = {
       };
     });
   },
-  confirm: function (q, yes, no) {
-    ovl("<div class='big'>🛒</div><div style='text-align:center'>" + bi(q[0], q[1]) + "</div><div class='act'><button class='btn white' id='cfN'>" + bi("先不要", "Not now") + "</button><button class='btn red' id='cfY'>" + bi("買！", "Buy!") + "</button></div>");
+  confirm: function (q, yes, no, extra) {
+    ovl((extra || "<div class='big'>🛒</div>") + "<div style='text-align:center;margin-top:8px'>" + bi(q[0], q[1]) + "</div><div class='act'><button class='btn white' id='cfN'>" + bi("先不要", "Not now") + "</button><button class='btn red' id='cfY'>" + bi("買！", "Buy!") + "</button></div>");
     Read.pair(q[0], q[1]);
     $("#cfY").onclick = function () { closeOvl(); Read.stop(); yes(); }; $("#cfN").onclick = function () { closeOvl(); Read.stop(); no(); };
   },
@@ -303,8 +337,9 @@ var C2G = {
       ["跑得很順！想更快可以換馬達、車殼或低摩擦輪胎。", "Smooth run! For more speed try a motor, body or low-friction tires."];
     this.frame(["測試結果", "Test result"]);
     this.card("<div class='big'>⏱ " + (res.out ? "—" : t.toFixed(1) + "s") + "</div><div style='text-align:center'>" + bi(TRACKS[id].zh + (old && !res.out && t < old ? "　新紀錄！" : ""), TRACKS[id].en + (old && !res.out && t < old ? " · New best!" : "")) + "</div>" +
-      this.say("max", hint[0], hint[1]) + "<div class='act'><button class='btn blue' id='trBack'>🔧 " + bi("回到模型店", "Back to the store") + "</button></div>");
+      this.say("max", hint[0], hint[1]) + trackCard(id) + "<div class='act'><button class='btn white' id='trBack'>🏁 " + bi("再測一次", "Test again") + "</button><button class='btn blue' id='trFit'>🔧 " + bi("看著跑道換零件", "Adjust parts for this track") + "</button></div>");
     $("#trBack").onclick = function () { Read.stop(); self.shop("test"); };
+    $("#trFit").onclick = function () { Read.stop(); self.fitTrack = id; self.shop("equip"); };
   },
 
   /* ---------- work ---------- */
@@ -387,7 +422,7 @@ var C2G = {
   pit: function (cup) { // swap parts from the toolbox before the race
     var c = C2S.get(), self = this;
     this.frame(["維修區", "Pit area"]);
-    var cd = this.card(this.say("max", "今天的跑道是" + TRACKS[cup.track].zh + "。要用工具箱換零件嗎？", "Today's track: " + TRACKS[cup.track].en + ". Swap anything from your toolbox?") +
+    var cd = this.card(this.say("max", "今天的跑道是" + TRACKS[cup.track].zh + "。看看跑道，要用工具箱換零件嗎？", "Today's track: " + TRACKS[cup.track].en + ". Look at the track. Swap anything from your toolbox?") + trackCard(cup.track) +
       "<div class='c2parts'>" + (c.toolbox.length ? c.toolbox.map(function (k) { var a = k.split(":"), p = C2S.part(a[0], a[1]), on = c.build[a[0]] === a[1]; return "<button class='opt" + (on ? " sel" : "") + "' data-k='" + k + "'>" + bi(p.zh, p.en) + "<small>" + (on ? bi("裝上了", "Fitted") : bi("點一下裝上", "Tap to fit")) + "</small></button>"; }).join("") : "<i>" + bi("工具箱是空的", "The toolbox is empty") + "</i>") +
       "</div><div class='act'><button class='btn red' id='puGo'>🏁 " + bi("出發！", "Race!") + "</button></div>");
     $$(".opt", cd).forEach(function (b) { b.onclick = function () { var a = b.dataset.k.split(":"); c.build[a[0]] = a[1]; save(); sfx("tap"); self.pit(cup); }; });
