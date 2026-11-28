@@ -5,9 +5,9 @@ const ANIMALS = {
   monkey:   {img: 'monkey',   w: 469, h: 520, patch: [.45, .68, 3.0], part: [.13, .50, 2.4], pitch: 1.45},
   elephant: {img: 'elephant', w: 512, h: 520, patch: [.45, .70, 3.0], part: [.86, .28, 2.4], pitch: .75},
   zebra:    {img: 'zebra',    w: 419, h: 520, patch: [.45, .60, 3.0], part: [.11, .55, 2.4], pitch: 1.1},
-  parrot:   {img: 'parrot',   w: 139, h: 137, patch: [.40, .45, 3.0], part: [.86, .30, 2.4], pitch: 1.6},
-  giraffe:  {img: 'giraffe',  w: 120, h: 189, patch: [.42, .62, 3.2], part: [.66, .22, 1.7], pitch: 1.0},
-  deer:     {img: 'deer',     w: 109, h: 172, pitch: 1.3},
+  parrot:   {img: 'parrot',   w: 481, h: 485, patch: [.45, .50, 3.0], part: [.80, .22, 2.4], pitch: 1.6},
+  giraffe:  {img: 'giraffe',  w: 297, h: 520, patch: [.40, .60, 3.0], part: [.70, .14, 1.9], pitch: 1.0},
+  deer:     {img: 'deer',     w: 359, h: 520, pitch: 1.3},
 };
 const SUSPECTS = ['tiger', 'monkey', 'elephant', 'zebra', 'parrot', 'giraffe'];
 const CLUE_ORDER = ['patch', 'part', 'shadow'];

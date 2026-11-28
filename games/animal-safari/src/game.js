@@ -307,6 +307,7 @@ async function tapObj(o) {
     if (Math.abs(stand - S.leo.x) > 6) await walkToP(stand);
     S.leo.dir = o.x >= S.leo.x ? 1 : -1; S.leo.forceSide = 600;
     inspect();
+    if ((o.kind === 'crate' || o.kind === 'chest') && !o.opened) { o.opened = true; o.img.src = IMG(o.kind + '_open'); AU.sfx('boing'); bounce(o.el); await wait(300); }
     if (o.act) { await clueAction(o); }
     else await surprise(o);
   } finally { G.busy = false; G.poke(); }
