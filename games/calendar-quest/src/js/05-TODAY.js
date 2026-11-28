@@ -72,6 +72,23 @@ function show(id){
 }
 const starStr=n=>'★'.repeat(n)+'☆'.repeat(3-n);
 const totalStars=id=>listFor(id).concat([MIX]).reduce((a,m)=>a+(prof(id).stars[m.id]||0),0);
+
+/* ---------- weekly goal (Week 1 = Sat Nov 28 – Sun Dec 6 2026, then Monday–Sunday weeks) ---------- */
+const GOALS={lucas:{m:'clock',n:3,min:2},nora:{m:'clock',n:4,min:2}};
+function weekOf(d){const W1=new Date(2026,10,28),W2=new Date(2026,11,7),x=day0(d);
+  if(x<W2){return{no:1,from:W1,to:new Date(2026,11,6)};}
+  const k=Math.floor(daysBetween(W2,x)/7),f=new Date(2026,11,7+7*k);return{no:2+k,from:f,to:new Date(f.getFullYear(),f.getMonth(),f.getDate()+6)};}
+function goalState(id){const g=GOALS[id];if(!g)return null;const w=weekOf(new Date()),p=prof(id);
+  if(!p.wk||p.wk.no!==w.no)p.wk={no:w.no,rounds:[]};
+  const done=p.wk.rounds.filter(r=>r.stars>=g.min).length;return{g:g,w:w,done:Math.min(done,g.n),met:done>=g.n,tries:p.wk.rounds.length};}
+function goalCard(id){const s=goalState(id);if(!s)return '';const m=listFor(id).find(x=>x.id===s.g.m);
+  const dots=Array.from({length:s.g.n},(_,i)=>'<span class="gd'+(i<s.done?' on':'')+'">'+(i<s.done?'★':'')+'</span>').join('');
+  return '<div class="goal'+(s.met?' met':'')+'"><div class="gt">🎯 '+RB('本週目標','ㄅㄣˇ ㄓㄡ ㄇㄨˋ ㄅㄧㄠ')+' Week '+s.w.no+' goal <span class="gr">'+fmtDate(s.w.from)+' – '+fmtDate(s.w.to)+'</span></div>'+
+    '<div class="gb">Play <b>'+m.e+' '+m.t+'</b> '+s.g.n+' times and get <b>'+'★'.repeat(s.g.min)+'</b> or better each time.</div>'+
+    '<div class="gp">'+dots+' <b>'+s.done+' / '+s.g.n+'</b>'+(s.met?' ✅ '+RB('完成','ㄨㄢˊ ㄔㄥˊ')+' Done!':'')+'</div></div>';}
+function goalRound(stars){if(!cur||!mission)return '';const s0=goalState(cur.id);if(!s0||mission.id!==s0.g.m)return '';
+  const p=prof(cur.id);p.wk.rounds.push({t:Date.now(),stars:stars,pts:pts,max:qs.length*2});const s=goalState(cur.id);
+  return s.met?'🎯 Weekly goal done! '+s.done+' / '+s.g.n+' ✅':stars>=s.g.min?'🎯 This one counts! Weekly goal: '+s.done+' / '+s.g.n:'🎯 Get '+'★'.repeat(s.g.min)+' to count it. Weekly goal: '+s.done+' / '+s.g.n;}
 function renderHome(){
   $('kits').innerHTML='';
   ['nora','lucas','milo'].forEach(id=>{const k=KID[id],b=document.createElement('button');b.className='kit '+id;
@@ -82,8 +99,9 @@ function renderMap(){
   const p=prof(cur.id),L=listFor(cur.id);
   $('who').innerHTML='<span style="color:'+cur.color+'">'+cur.name+'</span>’s missions';
   $('mapStars').textContent='★ '+totalStars(cur.id)+' / '+(L.length+1)*3;
+  $('goalBox').innerHTML=goalCard(cur.id);const gs=goalState(cur.id);
   const g=$('missions');g.className='grid'+(cur.id==='milo'?' two':'');g.innerHTML='';
-  L.forEach(m=>{const b=document.createElement('button');b.className='mcard';
+  L.forEach(m=>{const b=document.createElement('button');b.className='mcard'+(gs&&gs.g.m===m.id&&!gs.met?' goalm':'');
     b.innerHTML='<div class="em">'+m.e+'</div><div class="tt">'+m.t+'</div>'+(m.b?'<div class="bl">'+m.b+'</div>':'')+'<div class="stars">'+starStr(p.stars[m.id]||0)+'</div>';
     b.onclick=()=>startMission(m);g.appendChild(b);});
   $('mix').innerHTML='<span class="em">'+(cur.id==='milo'?'🦖':MIX.e)+'</span><span class="tt">'+(cur.id==='milo'?'Dino Mix':MIX.t)+'</span><span class="bl">'+MIX.b+'</span><span class="stars">'+starStr(p.stars.mix||0)+'</span>';
@@ -142,7 +160,7 @@ function coach(html,kind,face){
   if(answered)requestAnimationFrame(revealView);
 }
 const PRAISE=['Yes!','Great job!','You got it!','Super!','Nailed it!'];
-function _ka(ok){try{const q=qs[qi];window.KA&&KA.answer({q:String(q.q||'').replace(/<[^>]*>/g,''),qid:q.id,given:window._kaGiven,expected:answerText(q).replace(/<[^>]*>/g,''),correct:ok,tryNo:tries+1,topic:mission&&mission.t});}catch(e){}}
+function _ka(ok){try{const q=qs[qi];window.KA&&KA.answer({q:'['+(qi+1)+'/'+qs.length+'] '+String(q.q||'').replace(/<[^>]*>/g,''),qid:q.id,given:window._kaGiven,expected:answerText(q).replace(/<[^>]*>/g,''),correct:ok,tryNo:tries+1,topic:mission&&mission.t});}catch(e){}}
 function win(){
   _ka(true);answered=true;pts+=tries===0?2:1;$('ptsInfo').textContent='⭐ '+pts;sfx.good();buddyMood('cheer');
   const q=qs[qi];coach('<b>'+pick(PRAISE)+'</b> '+(q.why||''),'ok','🎉');say(pick(PRAISE)+' '+(cur.id==='milo'?(q.why||''):''));
@@ -167,10 +185,10 @@ $('again').onclick=()=>{const q=qs[qi];if(q){const was=prof(cur.id).voice;prof(c
 
 function finish(){
   const max=qs.length*2,pct=pts/max,stars=pct>=.85?3:pct>=.6?2:1,p=prof(cur.id);
-  p.stars[mission.id]=Math.max(p.stars[mission.id]||0,stars);p.rev=Date.now();store.save();
+  p.stars[mission.id]=Math.max(p.stars[mission.id]||0,stars);const gl=goalRound(stars);p.rev=Date.now();store.save();
   streaks[cur.id]++;
   $('rStars').textContent=starStr(stars);$('rTitle').textContent=stars===3?'Amazing, '+cur.name+'!':stars===2?'Nice work, '+cur.name+'!':'Good try, '+cur.name+'!';
-  $('rSub').textContent=pts+' of '+max+' points';$('rTip').textContent=mission.tip;
+  $('rSub').textContent=pts+' of '+max+' points';$('rTip').textContent=mission.tip;$('rGoal').textContent=gl;$('rGoal').hidden=!gl;
   const brk=streaks[cur.id]>=3,L=listFor(cur.id).concat([MIX]),nx=L[(L.indexOf(mission)+1)%L.length];
   $('breakCard').hidden=$('breakRow').hidden=!brk;$('goRow').hidden=$('moreRow').hidden=brk;
   $('nextMission').textContent='Next: '+(nx===MIX&&cur.id==='milo'?'Dino Mix':nx.t)+' ▶';$('nextMission').onclick=()=>startMission(nx);

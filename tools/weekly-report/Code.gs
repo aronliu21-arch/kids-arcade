@@ -20,6 +20,15 @@ var CONFIG = {
   dailyLimitMin: 0       // 0 = no daily limit flag
 };
 
+/* Weekly goals. Week 1 = Sat Nov 28 – Sun Dec 6 2026, then Monday–Sunday weeks.
+   A round counts when all its questions were answered and it scored at least `min` stars
+   (2 points for a first-try answer, 1 for a second try; 3★ at 85%+, 2★ at 60%+).
+   Rebuilt from the raw answers, so it doesn't trust what the iPad says. */
+var GOALS = {
+  lucas: { game: "calendar-quest", topic: "What Time Is It?", label: "時間專家 · What Time Is It?", n: 3, min: 2 },
+  nora:  { game: "calendar-quest", topic: "What Time Is It?", label: "時間專家 · What Time Is It?", n: 4, min: 2 }
+};
+
 var KID_INFO = {
   nora: { name: "Nora", color: "#7048e8" },
   lucas: { name: "Lucas", color: "#f76707" },
@@ -29,7 +38,7 @@ var KID_INFO = {
 var GAME_NAMES = {
   "spelling-bees": "Spelling Bees", "pitch-smarts": "Pitch Smarts", "question-beasts": "Question Beasts",
   "times-tables": "Times Table Pixel Quest", "sports-stars": "Lucas's Sports Stars", "magic-academy": "Nora's Magic Academy",
-  "dragon-heart": "Dragon Heart Quest", "dino-journey": "Milo's Dino Journey", "calendar-quest": "Calendar Quest",
+  "dragon-heart": "Dragon Heart Quest", "dino-journey": "Milo's Dino Journey", "calendar-quest": "時間專家 Time Expert",
   "game-room": "Game Room", "family-zoo": "Family Zoo", "zhuyin": "Zhuyin Spell-It", "lumi-quest": "Lumi Quest",
   "math-quest": "Math Quest", "drawing-game-": "Doodle Dash", "doodle-dash": "Doodle Dash", "critter-grove": "Critter Grove",
   "dragon-heart-en": "Dragon Heart Quest · English", "kanga-hop": "Kanga Hop", "times-challenge": "Times Table Challenge",
@@ -124,6 +133,7 @@ function sendReport_(now, isTest) {
     time: readTable_(ss.getSheetByName("Time"))
   };
   var report = buildReport(data, now);
+  report.goals = weeklyGoals_(data.answers, now);
   var subject = (isTest ? "[Test] " : "") + "Kids Arcade weekly report · " + report.rangeLabel;
   MailApp.sendEmail({ to: CONFIG.email, subject: subject, htmlBody: renderHtml(report, ss.getUrl()), name: "Kids Arcade" });
 }
@@ -253,6 +263,45 @@ function busiestDay_(rows, days) {
 }
 function esc_(s) { return String(s === undefined || s === null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 
+
+/* ---------------- weekly goals ---------------- */
+function goalWeek_(now) {
+  var d = new Date(now.getFullYear(), now.getMonth(), now.getDate()), w2 = new Date(2026, 11, 7);
+  if (d < w2) return { no: 1, from: "2026-11-28", to: "2026-12-06" };
+  var k = Math.floor(Math.round((d - w2) / 864e5) / 7), f = new Date(2026, 11, 7 + 7 * k), t = new Date(2026, 11, 13 + 7 * k);
+  return { no: 2 + k, from: ymd_(f), to: ymd_(t) };
+}
+function weeklyGoals_(answers, now) {
+  var w = goalWeek_(now), out = [];
+  Object.keys(GOALS).forEach(function (kid) {
+    var g = GOALS[kid];
+    var rows = answers.filter(function (r) { return r.kid === kid && r.game === g.game && r.topic === g.topic && r.ldate >= w.from && r.ldate <= w.to; })
+      .sort(function (a, b) { return String(a.ts) < String(b.ts) ? -1 : 1; });
+    var rounds = [], cur = null;
+    rows.forEach(function (r) {
+      var m = /^\[(\d+)\/(\d+)\]/.exec(String(r.q || "")); if (!m) return;
+      var i = +m[1], n = +m[2];
+      if (!cur || cur.session !== r.session || i < cur.last || (i === 1 && cur.last > 1)) { cur = { session: r.session, n: n, q: {}, last: 0, day: r.ldate }; rounds.push(cur); }
+      cur.last = i;
+      var q = cur.q[i] || (cur.q[i] = { pts: 0, done: false });
+      if (q.done) return;
+      if (isTrue_(r.correct)) { q.pts = Number(r.tryNo) === 1 ? 2 : 1; q.done = true; }
+      else if (Number(r.tryNo) >= 2) q.done = true;
+    });
+    var done = 0, detail = [];
+    rounds.forEach(function (rd) {
+      var keys = Object.keys(rd.q), complete = keys.length >= rd.n && keys.every(function (k) { return rd.q[k].done; });
+      if (!complete) { detail.push(dayName_(rd.day) + " quit"); return; }
+      var pts = keys.reduce(function (s, k) { return s + rd.q[k].pts; }, 0), pct = pts / (rd.n * 2), st = pct >= .85 ? 3 : pct >= .6 ? 2 : 1;
+      if (st >= g.min) done++;
+      detail.push(dayName_(rd.day) + " " + "★".repeat(st) + " " + Math.round(pct * 100) + "%");
+    });
+    out.push({ kid: kid, label: g.label, n: g.n, min: g.min, done: done, met: done >= g.n, detail: detail });
+  });
+  return { week: w, list: out };
+}
+function isTrue_(v) { return v === true || String(v).toLowerCase() === "true"; }
+
 function renderHtml(rep, sheetUrl) {
   var font = "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang TC','Noto Sans TC',sans-serif;";
   var muted = "color:#5f5e5a;", small = "font-size:13px;line-height:1.5;";
@@ -262,6 +311,17 @@ function renderHtml(rep, sheetUrl) {
   h.push('<div style="' + small + muted + '">' + esc_(rep.rangeLabel) + ' · Total play ' + hm_(rep.totalMin) + ' · ' + rep.totalAnswers + ' answers' +
     (rep.totalAcc !== null ? ' · ' + rep.totalAcc + '% right on the first try' : '') + '</div></div>');
 
+  if (rep.goals && rep.goals.list.length) {
+    var gw = rep.goals.week;
+    h.push('<div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:12px">');
+    h.push('<div style="font-size:15px;font-weight:600">🎯 Weekly goals · Week ' + gw.no + ' (' + esc_(gw.from.slice(5)) + ' to ' + esc_(gw.to.slice(5)) + ')</div>');
+    rep.goals.list.forEach(function (x) {
+      var info = KID_INFO[x.kid] || { name: x.kid, color: "#333" };
+      h.push('<div style="' + small + 'margin-top:6px"><b style="color:' + info.color + '">' + esc_(info.name) + '</b> ' + (x.met ? '✅' : '❌') + ' ' + x.done + ' / ' + x.n +
+        ' rounds at ' + "★".repeat(x.min) + '+ · ' + esc_(x.label) + '<br><span style="' + muted + '">' + (x.detail.length ? esc_(x.detail.join(" · ")) : "Not played this week") + '</span></div>');
+    });
+    h.push('<div style="font-size:11px;' + muted + 'margin-top:6px">Counted from the raw answers in the Sheet, not from the iPad\'s own counter.</div></div>');
+  }
   rep.kids.forEach(function (k) {
     h.push('<div style="background:#fff;border:1px solid #e3e1d9;border-radius:12px;padding:14px 16px;margin:0 0 12px">');
     var delta = !k.hadPrev ? (k.min ? "New this week" : "") : (k.deltaMin === 0 ? "Same as last week" : (k.deltaMin > 0 ? "▲ " : "▼ ") + Math.abs(k.deltaMin) + " min vs last week");

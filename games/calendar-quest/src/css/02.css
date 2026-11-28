@@ -177,3 +177,12 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
   .vis-emoji{font-size:clamp(2.5rem,22vh,5rem)}.promptrow{margin-bottom:2px}#foot{margin-top:4px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.goal{background:#fff8e1;border:3px solid #f5b700;border-radius:18px;padding:10px 14px;margin:0 0 12px;font-size:16px;line-height:1.4}
+.goal.met{background:#ebfbee;border-color:#2f9e44}
+.goal .gt{font-weight:700;font-size:18px}.goal .gr{font-weight:500;font-size:13px;opacity:.7}
+.goal .gp{margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.goal .gd{width:28px;height:28px;border-radius:50%;border:3px solid #f5b700;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:15px}
+.goal .gd.on{background:#f5b700}.goal.met .gd{border-color:#2f9e44}.goal.met .gd.on{background:#2f9e44}
+.mcard.goalm{outline:4px solid #f5b700;outline-offset:2px}
+.rgoal{margin-top:10px;font-weight:700;font-size:17px;background:#fff8e1;border-radius:12px;padding:8px 12px}
