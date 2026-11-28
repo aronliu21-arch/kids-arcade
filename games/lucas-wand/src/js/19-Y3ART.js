@@ -1,6 +1,6 @@
 // ================= YEAR 3 ART =================
 // Painted Year 3 pictures (Gemini watercolor). Built from tools in the art chat; dims are [width,height] of each webp.
-const Y3ART={pen:{"pen": [202, 484], "pen-awake": [195, 488], "pen2": [472, 536]},mirror:{}};
+const Y3ART={pen:{"pen": [202, 484], "pen-awake": [195, 488], "pen2": [472, 536]},mirror:{"smirk": [193, 453], "wave": [235, 461], "brave": [295, 445], "sad": [204, 444]}};
 Object.assign(Y2ART.f,{celeste:[277,514,330]});
 Object.assign(Y2ART.femo,{"celeste-sad": [223, 495], "celeste-wow": [356, 497]});
 Object.assign(Y2ART.drag,{pip:[587,496,400],'pip-fly':[610,537,420]});
