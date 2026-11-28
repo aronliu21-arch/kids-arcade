@@ -112,8 +112,10 @@ G.intro = { state: 'wait', t: 0 };
 function profileCards() {
   $('whoText').innerHTML = zh(ZT.who); $('btnReset').innerHTML = zh(ZT.reset);
   $('saveNote').textContent = Cloud.ready ? '☁️ Progress is saved to your Claude account, on every device' : '💾 Progress is saved on this device';
-  $('profiles').innerHTML = ['nora', 'lucas'].map(k => { const s = loadSave(k); return `<button class="pcard ${k}" data-kid="${k}">${s.created ? `<canvas data-hero="${k}"></canvas>` : `<img class="profile-portrait" src="art/${k}.webp" alt="">`}<b style="background:${KIDS[k].col}">${KIDS[k].name}</b><small>${s.created ? `${zh(ZT.level)} ${s.lv} · ${zh(ZT.crystal)} ${s.crystals.length}/5${s.won ? ' 🏆' : ''}` : zh(ZT.fresh)}</small></button>`; }).join('');
-  drawMinis($('profiles'));
+  $('profiles').innerHTML = ['lucas', 'nora'].map(k => {
+    const s = loadSave(k), option = heroAvatar(s);
+    return `<button class="pcard ${k}" data-kid="${k}"><img class="profile-portrait" src="art/${option.art}.webp" alt=""><b style="background:${KIDS[k].col}">${KIDS[k].name}</b><small>${s.created ? 'Continue · Level ' + s.lv : 'Choose a hero'}</small></button>`;
+  }).join('');
   $('profiles').querySelectorAll('.pcard').forEach(b => b.addEventListener('click', () => pickKid(b.dataset.kid)));
 }
 function startIntro() {
@@ -128,7 +130,7 @@ function goTitle() {
 }
 function pickKid(k) {
   Snd.play('tap'); kid = k; S = loadSave(k); $('title').hidden = true; $('menu').hidden = true;
-  if (!S.created) showCreator(); else enterGame(false);
+  showCreator();
 }
 async function enterGame(fresh) {
   $('creator').hidden = true;
@@ -137,48 +139,50 @@ async function enterGame(fresh) {
   if (fresh) { G.busy = true; await say(STORY.intro); G.busy = false; toast('❗ Walk to Elder Lumen. Tap where you want to go.'); }
 }
 
-// ---------- creator ----------
-let pickSp = STARTERS[0], crStep = 0, crNick = '';
+// ---------- hero and companion selection ----------
+let pickSp = STARTERS[0], crStep = 0, crNick = '', selectedAvatar = null;
 const cleanNick = t => String(t || '').replace(/[^\p{L}\p{N} '\-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 12);
-// The hero creator has three steps: how the hero looks, their class and gear, then their first Lumi.
-// The magic mirror reuses the creator's Hair, Face and Hero steps, and keeps all progress.
-function openMirror() { if (G.busy) return; G.mirror = true; G.path = []; G.mode = 'create'; showHUD(false); $('creator').hidden = false; crStep = 0; Snd.play('warp'); drawCreatorUI(); }
-function closeMirror() { G.mirror = false; $('creator').hidden = true; S.hp = Math.min(S.hp, maxHP()); save(); G.mode = 'world'; showHUD(true); updateHUD(); setMood('happy', 3); Snd.play('ok'); burst(W / 2, H / 2 - 40, '#fff9db', 24); toast(`✨ Looking great, ${heroName(S)}!`); }
-function showCreator() { G.mirror = false; G.mode = 'create'; $('creator').hidden = false; pickSp = STARTERS[0]; crStep = 0; crNick = ''; drawCreatorUI(); }
-function drawCreatorUI() {
-  const steps = G.mirror ? ['Hair', 'Face', 'Hero'] : ['Hair', 'Face', 'Hero', 'Lumi'], last = steps.length - 1, head = o => `data-head='${JSON.stringify(o)}'`;
-  $('crName').textContent = [`${KIDS[kid].name}'s hair`, `${KIDS[kid].name}'s face`, `Choose ${KIDS[kid].name}'s gear`, `${KIDS[kid].name}'s first Lumi friend`][crStep];
-  $('crSteps').innerHTML = steps.map((n, i) => `<span class="${i === crStep ? 'on' : i < crStep ? 'done' : ''}">${i + 1}. ${n}</span>`).join('');
-  let h = '';
-  if (crStep === 0) {
-    h += `<div class="crsec"><h3>Hair style</h3><div class="opts heads">${HAIRS[kid].map(([id, n]) => `<button class="opt head${S.hair === id ? ' on' : ''}" data-hair="${id}" aria-label="${n} hair"><canvas ${head({ hair: id })}></canvas><b>${n}</b></button>`).join('')}</div></div>`;
-    h += `<div class="crsec"><h3>Hair colour</h3><div class="sws">${HAIR_COLS.map(c => `<button class="sw${S.hairCol === c ? ' on' : ''}" data-hc="${c}" style="background:${c}" aria-label="Hair colour"></button>`).join('')}</div></div>`;
-  } else if (crStep === 1) {
-    h += `<div class="crsec"><h3>Eyes</h3><div class="opts heads six">${EYES.map(([id, n]) => `<button class="opt head${S.eyes === id ? ' on' : ''}" data-eyes="${id}" aria-label="${n} eyes"><canvas ${head({ eyes: id, extra: "" })}></canvas><b>${n}</b></button>`).join('')}</div></div>`;
-    h += `<div class="crsec"><h3>Eye colour</h3><div class="sws">${EYE_COLS.map(c => `<button class="sw${S.eyeCol === c ? ' on' : ''}" data-ec="${c}" style="background:${c || (kid === 'nora' ? '#6b3a1e' : '#17141c')}" aria-label="Eye colour"></button>`).join('')}</div></div>`;
-    h += `<div class="crsec"><h3>Extras</h3><div class="opts heads">${EXTRAS.map(([id, n]) => `<button class="opt head${S.extra === id ? ' on' : ''}" data-extra="${id}" aria-label="${n}"><canvas ${head({ extra: id })}></canvas><b>${n}</b></button>`).join('')}</div></div>`;
-  } else if (crStep === 2) {
-    h += `<div class="crsec"><h3>Hero class</h3><div class="opts">${Object.entries(CLASSES).map(([id, c]) => `<button class="opt${S.cls === id ? ' on' : ''}" data-cls="${id}"><span>${c.icon}</span><b>${c.name}</b><small>${c.perk}</small></button>`).join('')}</div></div>`;
-    h += `<div class="crsec"><h3>Tunic</h3><div class="sws">${TUNICS.map(c => `<button class="sw${S.color === c ? ' on' : ''}" data-col="${c}" style="background:${c}" aria-label="Tunic colour"></button>`).join('')}</div></div>`;
-    h += `<div class="crsec"><h3>Cape</h3><div class="sws">${CAPES.map(c => `<button class="sw${S.cape === c ? ' on' : ''}" data-cape="${c || ''}" style="background:${c || 'transparent'}" aria-label="${c ? 'Cape colour' : 'No cape'}">${c ? '' : '✕'}</button>`).join('')}</div></div>`;
-    h += `<div class="crsec"><h3>Hero title</h3><div class="pills">${['', ...TITLES].map(tl => `<button class="pill${S.title === tl ? ' on' : ''}" data-title="${tl}">${tl ? KIDS[kid].name + ' ' + tl : 'Just ' + KIDS[kid].name}</button>`).join('')}</div></div>`;
-  } else {
-    h += `<div class="crsec"><div class="opts">${STARTERS.map(id => `<button class="opt lumi${pickSp === id ? ' on' : ''}" data-sp="${id}"><canvas data-lumi="${id}"></canvas><b>${SPECIES[id].name}</b><small class="el el-${SPECIES[id].el}">${SPECIES[id].el}</small></button>`).join('')}</div></div>`;
-    h += `<div class="crsec"><h3>Give it a name</h3><input id="crNick" type="text" maxlength="12" autocomplete="off" placeholder="${SPECIES[pickSp].name}" value="${crNick}" aria-label="Lumi name"><div class="pills">${NICKS[SPECIES[pickSp].el].map(n => `<button class="pill${crNick === n ? ' on' : ''}" data-nick="${n}">${n}</button>`).join('')}</div></div>`;
-  }
-  $('crBody').innerHTML = h; drawMinis($('creator'));
-  $('crBack').hidden = crStep === 0 && !G.mirror; $('crBack').textContent = G.mirror && crStep === 0 ? '✕ Close' : '◀ Back';
-  $('btnBegin').textContent = crStep < last ? 'Next ▶' : G.mirror ? 'Done ✓' : 'Begin the adventure ▶';
-  if (G.mirror) $('crName').textContent = ['Mirror: hair', 'Mirror: face', 'Mirror: gear and title'][crStep];
-  const on = (sel, fn) => $('creator').querySelectorAll(sel).forEach(b => b.onclick = () => { fn(b); Snd.play('tap'); drawCreatorUI(); });
-  on('[data-hair]', b => { S.hair = b.dataset.hair; }); on('[data-hc]', b => { S.hairCol = b.dataset.hc; }); on('[data-eyes]', b => { S.eyes = b.dataset.eyes; }); on('[data-ec]', b => { S.eyeCol = b.dataset.ec; }); on('[data-extra]', b => { S.extra = b.dataset.extra; });
-  on('[data-cls]', b => { S.cls = b.dataset.cls; }); on('[data-col]', b => { S.color = b.dataset.col; }); on('[data-cape]', b => { S.cape = b.dataset.cape || null; }); on('[data-title]', b => { S.title = b.dataset.title; });
-  on('[data-sp]', b => { if (pickSp !== b.dataset.sp) crNick = ''; pickSp = b.dataset.sp; }); on('[data-nick]', b => { crNick = b.dataset.nick; });
-  const inp = $('crNick'); if (inp) inp.oninput = () => { crNick = cleanNick(inp.value); };
+function openMirror() {
+  if (G.busy) return;
+  G.mirror = true; G.path = []; G.mode = 'create'; showHUD(false);
+  $('creator').hidden = false; crStep = 0; selectedAvatar = heroAvatar(S);
+  Snd.play('warp'); drawCreatorUI();
 }
-$('crBack').addEventListener('click', () => { if (G.mirror && crStep === 0) return closeMirror(); if (crStep > 0) { crStep--; Snd.play('tap'); drawCreatorUI(); } });
+function closeMirror() {
+  G.mirror = false; $('creator').hidden = true; save();
+  G.mode = 'world'; showHUD(true); updateHUD(); Snd.play('ok');
+}
+function showCreator() {
+  G.mirror = false; G.mode = 'create'; $('creator').hidden = false;
+  pickSp = STARTERS[0]; crStep = 0; crNick = ''; selectedAvatar = heroAvatar(S); drawCreatorUI();
+}
+function drawCreatorUI() {
+  const companion = crStep === 1;
+  $('crName').textContent = companion ? 'Choose your first Lumi' : 'Choose a ' + KIDS[kid].name.toLowerCase() + ' hero';
+  $('crSteps').hidden = true;
+  $('crBody').innerHTML = companion
+    ? `<div class="opts">${STARTERS.map(id => `<button class="opt lumi${pickSp === id ? ' on' : ''}" data-sp="${id}" aria-pressed="${pickSp === id}"><canvas data-lumi="${id}"></canvas><b>${SPECIES[id].name}</b><small class="el el-${SPECIES[id].el}">${SPECIES[id].el}</small></button>`).join('')}</div>
+       <div class="crsec"><h3>Give it a name</h3><input id="crNick" type="text" maxlength="12" autocomplete="off" placeholder="${SPECIES[pickSp].name}" value="${crNick}" aria-label="Lumi name"></div>`
+    : `<div class="opts avatar-options">${AVATARS[kid].map(a => `<button class="opt avatar${selectedAvatar === a ? ' on' : ''}" data-avatar="${a.art}" aria-pressed="${selectedAvatar === a}"><img src="art/${a.art}.webp" alt=""><b>${a.label}</b>${S.created ? '' : `<small>${CLASSES[a.cls].name} · ${CLASSES[a.cls].perk}</small>`}</button>`).join('')}</div>`;
+  drawMinis($('creator'));
+  $('crBack').hidden = false;
+  $('crBack').textContent = G.mirror ? '✕ Cancel' : '◀ Back';
+  $('btnBegin').textContent = G.mirror ? 'Save look' : S.created ? 'Continue ▶' : companion ? 'Begin the adventure ▶' : 'Next ▶';
+  const bind = (sel, fn) => $('creator').querySelectorAll(sel).forEach(b => b.onclick = () => { fn(b); Snd.play('tap'); drawCreatorUI(); });
+  bind('[data-avatar]', b => { selectedAvatar = AVATARS[kid].find(a => a.art === b.dataset.avatar); });
+  bind('[data-sp]', b => { if (pickSp !== b.dataset.sp) crNick = ''; pickSp = b.dataset.sp; });
+  const input = $('crNick'); if (input) input.oninput = () => { crNick = cleanNick(input.value); };
+}
+$('crBack').addEventListener('click', () => {
+  if (G.mirror) return closeMirror();
+  if (crStep === 1) { crStep = 0; drawCreatorUI(); return; }
+  S = null; kid = null; G.mode = 'title'; $('creator').hidden = true; $('title').hidden = false; showMenu();
+});
 $('btnBegin').addEventListener('click', () => {
-  if (G.mirror) { if (crStep < 2) { crStep++; Snd.play('tap'); drawCreatorUI(); } else closeMirror(); return; }
-  if (crStep < 3) { crStep++; Snd.play('tap'); drawCreatorUI(); return; }
-  Snd.play('ok'); S.created = true; S.party = [{ sp: pickSp, lv: 1, xp: 0, nick: cleanNick(crNick) }]; S.active = 0; S.hp = maxHP(); save(); enterGame(true);
+  if (G.mirror) { S.avatar = selectedAvatar.art; return closeMirror(); }
+  if (S.created) { S.avatar = selectedAvatar.art; return enterGame(false); }
+  if (crStep === 0) { crStep = 1; Snd.play('tap'); drawCreatorUI(); return; }
+  S.avatar = selectedAvatar.art; S.cls = selectedAvatar.cls;
+  Snd.play('ok'); S.created = true; S.party = [{ sp: pickSp, lv: 1, xp: 0, nick: cleanNick(crNick) }];
+  S.active = 0; S.hp = maxHP(); save(); enterGame(true);
 });

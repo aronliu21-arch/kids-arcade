@@ -42,7 +42,7 @@ const isEvo = l => l.lv >= 6;
 const speciesName = l => isEvo(l) ? SPECIES[l.sp].evo : SPECIES[l.sp].name;
 const lumiName = l => l.nick || speciesName(l);
 const heroName = s => KIDS[s.kid].name + (s.title ? ' ' + s.title : '');
-const looksOf = s => ({ hair: s.hair, hairCol: s.hairCol, eyes: s.eyes, eyeCol: s.eyeCol, extra: s.extra });
+const looksOf = s => ({ avatar: s.avatar, hair: s.hair, hairCol: s.hairCol, eyes: s.eyes, eyeCol: s.eyeCol, extra: s.extra });
 const lumiPower = l => Math.round((9 + 3 * l.lv) * (isEvo(l) ? 1.2 : 1) * (S.cls === 'mage' ? 1.2 : 1));
 const knownMoves = l => MOVE_LV.filter(lv => l.lv >= lv).length;
 const movePower = (l, tier) => Math.round(lumiPower(l) * MOVE_MULT[tier]);

@@ -8,7 +8,7 @@ function resetGate() {
     G.gateAnswer = a * b;
   };
   const pickReset = () => {
-    $('panelBody').innerHTML = `<h2>Reset records</h2><p>Tick who to reset on this device. This clears levels, Lumis, treasure and seen questions.</p><label class="chk"><input type="checkbox" id="rsNora"> Nora</label><label class="chk"><input type="checkbox" id="rsLucas"> Lucas</label><div class="gaterow"><button id="rsGo" class="big danger">Reset ticked</button></div>`;
+    $('panelBody').innerHTML = `<h2>Reset records</h2><p>Tick who to reset on this device. This clears levels, Lumis, treasure and seen questions.</p><label class="chk"><input type="checkbox" id="rsNora"> Girl</label><label class="chk"><input type="checkbox" id="rsLucas"> Boy</label><div class="gaterow"><button id="rsGo" class="big danger">Reset ticked</button></div>`;
     $('rsGo').onclick = () => { if ($('rsNora').checked) wipe('nora'); if ($('rsLucas').checked) wipe('lucas'); closePanel(); profileCards(); toast('Records reset.'); };
   };
   openPanel(''); ask();
@@ -131,13 +131,13 @@ function drawEnding(c) {
     if (E.scene >= 2 && Math.random() < 0.1) burst(W / 2, 160, '#fff9db', 3);
   }
   if (l) Art.lumi(c, SPECIES[l.sp], 345, 462, 1.6, t, isEvo(l), false);
-  Art.hero(c, 225, 452, 1.9, heroLook({ badge: true }));
+  Art.hero(c, 225, 452, 1.9, heroLook({ avatar: selectedAvatar?.art, weapon: null, armor: 0 }));
   c.restore();
 }
 function drawCreator(c) {
-  sunburst(c, 250, 330, '#3b2a7a', '#4c3a8f', G.t * 0.05);
+  if (!drawStorybookCover(c)) sunburst(c, 250, 330, '#3b2a7a', '#4c3a8f', G.t * 0.05);
   Art.ell(c, 250, 452, 170, 34, 'rgba(255,255,255,.14)');
-  Art.hero(c, 190, 448, 3, heroLook({ badge: true }));
+  Art.hero(c, 190, 448, 3, heroLook({ avatar: selectedAvatar?.art, weapon: null, armor: 0 }));
   const ml = G.mirror && activeLumi(); if (ml) Art.lumi(c, SPECIES[ml.sp], 372, 466, 1.8, G.t, isEvo(ml), true); else Art.lumi(c, SPECIES[pickSp], 372, 466, 1.8, G.t, false, true);
 }
 
@@ -167,7 +167,7 @@ function frame(ts) {
   else if (G.mode === 'world') { if (held && !G.path.length) worldKey(held[0], held[1]); stepWorld(dt); drawWorld(ctx); drawParts(ctx); }
   if (QS && S) mini2($('qFace'), c => Art.hero(c, 36, 106, 1.05, heroLook({ glow: false, weapon: null, cls: null, cape: null })));
   if (G.mode === 'battle' && G.B) { const B = G.B; B.eHit = Math.max(0, B.eHit - dt); B.hHit = Math.max(0, B.hHit - dt); B.shake = Math.max(0, B.shake - dt); drawBattle(ctx); }
-  if (dlg && G.me) Portraits.drawMe($('dlgMeFace'), G.mood && G.moodUntil > G.t ? G.mood : G.me, G.t);
+  if (dlg && G.me) Portraits.drawMe($('dlgMeFace'), G.t);
   if (dlg && G.face) Portraits.draw($('dlgFace'), G.face, G.t, G.t - G.faceT0 < Math.min(2.4, 0.5 + dlg.lines[0].length * 0.03));
   if (G.fade > 0) { ctx.fillStyle = `rgba(21,19,31,${G.fade})`; ctx.fillRect(0, 0, W, H); }
   requestAnimationFrame(frame);

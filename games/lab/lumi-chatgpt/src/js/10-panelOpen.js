@@ -7,7 +7,6 @@ function drawMinis(root) {
   (root || document).querySelectorAll('canvas[data-hero]').forEach(el => { const s = el.dataset.hero === 'me' ? S : loadSave(el.dataset.hero); mini(el, c => Art.hero(c, 60, 128, 1.15, { ...looksOf(s), kid: s.kid, color: s.color, cape: s.cape, cls: s.created ? s.cls : null, weapon: weaponLook(s.weapon, s.cls), armor: ARMORS[s.armor].tier, t: 0.3 }), 120, 136); });
   (root || document).querySelectorAll('canvas[data-head]').forEach(el => mini(el, c => Art.hero(c, 36, 99, 1.0, Object.assign({ kid: S.kid, color: S.color, cape: null, cls: null, weapon: null, armor: 0, t: 0.3, glow: false, mood: 'calm' }, looksOf(S), JSON.parse(el.dataset.head))), 72, 64));
   (root || document).querySelectorAll('canvas[data-weapon]').forEach(el => mini(el, c => { const w = weaponLook(el.dataset.weapon, S.cls), bow = w.kind === 'bow'; c.translate(bow ? 44 : 22, bow ? 47 : 54); c.rotate(bow ? 0.15 : 0.62); c.scale(bow ? 0.85 : 0.8, bow ? 0.85 : 0.8); Art.weapon(c, w); }, 60, 60));
-  (root || document).querySelectorAll('canvas[data-armor]').forEach(el => mini(el, c => { c.beginPath(); c.rect(0, 0, 60, 60); c.clip(); Art.hero(c, 30, 78, 1.05, { ...looksOf(S), kid: S.kid, color: S.color, cape: null, cls: null, weapon: null, armor: ARMORS[el.dataset.armor].tier, t: 0.3, glow: false, mood: 'calm' }); }, 60, 60));
 }
 
 // ---------- HUD ----------
@@ -86,8 +85,9 @@ function arrive() { const e = G.after; G.after = null; if (e && !e.gone) interac
 function stepWorld(dt) {
   G.walking = false;
   if (G.path.length && !G.busy && !dlg && !panelOpen()) {
-    const [tx, ty] = G.path[0], sp = 6.5 * dt, dx = tx - G.fx, dy = ty - G.fy, d = Math.hypot(dx, dy);
-    G.walking = true;
+    const [tx, ty] = G.path[0], sp = 8 * dt, dx = tx - G.fx, dy = ty - G.fy, d = Math.hypot(dx, dy);
+    G.walking = true; G.runTime += dt;
+    if (Math.abs(dx) > .01) G.facing = dx < 0 ? -1 : 1;
     if (d <= sp) { G.fx = tx; G.fy = ty; G.px = tx; G.py = ty; G.path.shift(); onStep(); if (!G.path.length) arrive(); }
     else { G.fx += dx / d * sp; G.fy += dy / d * sp; }
   }

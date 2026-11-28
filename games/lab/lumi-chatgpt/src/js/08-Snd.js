@@ -117,10 +117,10 @@ const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d');
 const rnd = (a, b) => a + Math.random() * (b - a);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-const KIDS = { nora: { name: 'Nora', col: '#7048e8', he: 'she', his: 'her' }, lucas: { name: 'Lucas', col: '#f76707', he: 'he', his: 'his' } };
+const KIDS = { nora: { name: 'Girl', col: '#7048e8', he: 'she', his: 'her' }, lucas: { name: 'Boy', col: '#f76707', he: 'he', his: 'his' } };
 
 let kid = null, S = null;
-const G = { mode: 'title', t: 0, fast: false, world: null, grid: null, ents: [], px: 0, py: 0, fx: 0, fy: 0, path: [], after: null, walking: false, grace: 0, cam: { x: 0, y: 0 }, parts: [], B: null, intro: null, busy: false };
+const G = { mode: 'title', t: 0, fast: false, world: null, grid: null, ents: [], px: 0, py: 0, fx: 0, fy: 0, path: [], after: null, walking: false, facing: 1, runTime: 0, grace: 0, cam: { x: 0, y: 0 }, parts: [], B: null, intro: null, busy: false };
 
 // ---------- save ----------
 function newSave(k) { return { v: 1, kid: k, created: false, cls: 'knight', color: TUNICS[0], cape: null, hair: HAIRS[k][0][0], hairCol: HAIR_COLS[0], eyes: 'sparkle', eyeCol: '', extra: '', title: '', readBtns: false, lv: 1, xp: 0, hp: 40, gold: 30, weapon: 'wood', armor: 'cloth', weapons: ['wood'], armors: ['cloth'], potion: 2, orb: 3, party: [], active: 0, crystals: [], chests: {}, bosses: {}, quests: {}, ts: 0, seen: {}, met: {}, news: {}, elderTold: false, stats: { right: 0, asked: 0, wins: 0, first: 0 }, read: k === 'lucas', metElder: false, won: false }; }

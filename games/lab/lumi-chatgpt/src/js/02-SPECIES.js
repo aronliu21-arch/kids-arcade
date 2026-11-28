@@ -109,3 +109,22 @@ const PAL = {
   w5: { g1: '#8fd3a6', g2: '#86cc9e', path: '#f3c5c5', tuft: '#63b583', water: '#3bc9db', tg1: '#0ca678', tg2: '#12b886', tree: 'bamboo', leaf1: '#51cf66', leaf2: '#37b24d', rock: '#868e96', flowers: ['#ff8fab', '#ffd6e0', '#e03131'], sky: ['#ffb3c1', '#fff0f3'], hill: '#7cc596', wall: '#fff5f5' },
   w6: { g1: '#3d3558', g2: '#383052', path: '#5c5080', tuft: '#2c2542', water: '#5f3dc4', tg1: '#4b3f72', tg2: '#55487f', tree: 'dead', leaf1: '#3b2f4a', leaf2: '#3b2f4a', rock: '#4a4466', flowers: ['#9775fa', '#5f3dc4'], sky: ['#1a1433', '#4a3a7a'], hill: '#2c2542' },
 };
+
+const AVATARS = {
+  nora: [
+    { art: 'girl-1', label: 'Azure', cls: 'knight', hair: 'ponytail' },
+    { art: 'girl-2', label: 'Violet', cls: 'mage', hair: 'twinbuns' },
+    { art: 'girl-3', label: 'Crimson', cls: 'ranger', hair: 'braids' },
+  ],
+  lucas: [
+    { art: 'boy-1', label: 'Azure', cls: 'knight', hair: 'spiky' },
+    { art: 'boy-2', label: 'Moss', cls: 'ranger', hair: 'curly' },
+    { art: 'boy-3', label: 'Ember', cls: 'mage', hair: 'swoop' },
+  ],
+};
+function heroAvatar(o) {
+  const options = AVATARS[o.kid];
+  return options.find(p => p.art === o.avatar) || options.find(p => p.hair === o.hair) || options[0];
+}
+for (const options of Object.values(AVATARS)) for (const option of options) Storybook.image(option.art);
+for (const id of Object.keys(ARMORS)) Storybook.image('armor-' + id);

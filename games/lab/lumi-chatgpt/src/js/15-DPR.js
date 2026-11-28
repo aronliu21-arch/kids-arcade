@@ -53,7 +53,7 @@ window.__test = {
   solve() { this.step(); },
   step() {
     if (G.mode === 'title') { if (G.intro.state === 'wait') return startIntro(); if (G.intro.state === 'play') return showMenu(); return pickKid('nora'); }
-    if (G.mode === 'create') { if (G.mirror) return closeMirror(); crStep = 3; return $('btnBegin').click(); }
+    if (G.mode === 'create') { if (G.mirror) return closeMirror(); crStep = S.created ? 0 : 1; return $('btnBegin').click(); }
     if (QS) { if (QS.done) { if (!$('qNext').hidden) $('qNext').click(); return; } const q = QS.q; if (q.type === 'order') q.correct.forEach(i => pickAnswer(i)); else pickAnswer(q.answer); return; }
     if (dlg) return advanceDialog();
     if (panelOpen()) { const f = $('btnFinish'); if (f) return f.click(); return closePanel(); }

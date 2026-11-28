@@ -169,25 +169,41 @@ const Art = (() => {
   }
   function poly4(c, pts, fill) { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); c.fillStyle = fill; c.fill(); c.strokeStyle = INK; c.lineWidth = 1.6; c.stroke(); }
   function heroBadge(c, x, y, s, nora, bob) {
-    const nm = nora ? 'NORA' : 'LUCAS', bc = nora ? '#634e82' : '#ad552b';
+    const nm = nora ? 'GIRL' : 'BOY', bc = nora ? '#634e82' : '#ad552b';
     c.save(); c.font = `900 ${Math.max(10, 11 * s)}px system-ui`; c.textAlign = 'center';
     const w = c.measureText(nm).width + 12, by = y - 100 * s - bob;
     rr(c, x - w / 2, by - 12, w, 16, 8, bc, '#f0d489', 1.5);
     c.fillStyle = '#fff6e1'; c.fillText(nm, x, by); c.restore();
   }
-  // The stock looks use painted sprites. Custom looks use the same palette with the configurable layers.
-  function paintedHero(c, x, y, s, o, bob, step) {
-    if (!o.sceneArt || o.cape || o.armor || o.extra || o.eyeCol || o.hairCol !== HAIR_COLS[0]
-      || o.hair !== HAIRS[o.kid][0][0] || o.eyes !== 'sparkle' || o.cls !== 'knight'
-      || o.color !== (o.kid === 'nora' ? TUNICS[0] : TUNICS[2]) || !Storybook.image(o.kid)) return false;
+  function paintedHero(c, x, y, s, o, bob) {
+    const img = Storybook.image(heroAvatar(o).art);
+    if (!img) return false;
+    const w = Math.min(64, 98 * img.naturalWidth / img.naturalHeight), h = 98;
+    const stride = o.walk ? Math.sin((o.runTime || 0) * 21) : 0;
     c.save(); c.translate(x, y); c.scale(s, s); shadow(c, 0, 0, 16);
-    c.translate(0, -bob); c.rotate(step * .035);
-    Storybook.sprite(c, o.kid, 0, 0, 96, 60);
+    c.translate(0, -bob - Math.abs(stride) * 3); c.scale(o.facing === -1 ? -1 : 1, 1);
+    if (o.walk) {
+      const cut = Math.round(img.naturalHeight * .68), hip = -h + h * cut / img.naturalHeight;
+      const mid = Math.floor(img.naturalWidth / 2), leg = -hip;
+      for (const side of [-1, 1]) {
+        c.save(); c.translate(side * w * .13, hip);
+        c.rotate(side * stride * .60);
+        const from = side < 0 ? 0 : mid, width = side < 0 ? mid : img.naturalWidth - mid;
+        c.drawImage(img, from, cut, width, img.naturalHeight - cut, side < 0 ? -w * .37 : -w * .13, 0, w * .5, leg);
+        c.restore();
+      }
+      c.save(); c.translate(0, hip); c.rotate(.13 + stride * .04);
+      c.drawImage(img, 0, 0, img.naturalWidth, cut, -w / 2, -h - hip, w, h + hip);
+      c.restore();
+    } else c.drawImage(img, -w / 2, -h, w, h);
+    if (o.armor) {
+      const id = Object.keys(ARMORS).find(k => ARMORS[k].tier === o.armor);
+      if (id) Storybook.sprite(c, 'armor-' + id, 0, -44, 27, 31);
+    }
     if (o.weapon) {
-      c.translate(22, -31);
-      c.rotate(.46 + (o.swing || 0));
-      c.scale(.85, .85);
-      weapon(c, o.weapon);
+      c.translate(21, -38 + stride * 4);
+      c.rotate(.48 + (o.swing || 0) + stride * .4);
+      c.scale(.78, .78); weapon(c, o.weapon);
     }
     c.restore();
     if (o.badge) heroBadge(c, x, y, s, o.kid === 'nora', bob);

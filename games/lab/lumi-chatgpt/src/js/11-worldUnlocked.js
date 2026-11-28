@@ -26,7 +26,7 @@ async function teleport(dest) {
 function shopRows(tab) {
   let h = '';
   if (tab === 'weapons') for (const [id, w0] of Object.entries(WEAPONS)) { const w = weaponLook(id, S.cls); if (w.found && !S.weapons.includes(id)) continue; const own = S.weapons.includes(id), eq = S.weapon === id; h += `<div class="row"><canvas class="ricon" data-weapon="${id}"></canvas><div><b>${w.name}</b><small>+${w.atk} attack${w.found ? ' · found treasure' : ''}</small>${perkList(w.perks)}</div>${eq ? '<em>Equipped</em>' : own ? `<button data-eq="weapon:${id}">Equip</button>` : `<button data-buy="weapon:${id}" ${S.gold >= w.price ? '' : 'disabled'}>🪙 ${w.price}</button>`}</div>`; }
-  if (tab === 'armour') for (const [id, a] of Object.entries(ARMORS)) { const own = S.armors.includes(id), eq = S.armor === id; h += `<div class="row"><canvas class="ricon" data-armor="${id}"></canvas><div><b>${a.name}</b><small>+${a.hp} health · blocks ${a.def}</small>${perkList(a.perks)}</div>${eq ? '<em>Equipped</em>' : own ? `<button data-eq="armor:${id}">Equip</button>` : `<button data-buy="armor:${id}" ${S.gold >= a.price ? '' : 'disabled'}>🪙 ${a.price}</button>`}</div>`; }
+  if (tab === 'armour') for (const [id, a] of Object.entries(ARMORS)) { const own = S.armors.includes(id), eq = S.armor === id; h += `<div class="row"><img class="ricon armor-icon" src="art/armor-${id}.webp" alt=""><div><b>${a.name}</b><small>+${a.hp} health · blocks ${a.def}</small>${perkList(a.perks)}</div>${eq ? '<em>Equipped</em>' : own ? `<button data-eq="armor:${id}">Equip</button>` : `<button data-buy="armor:${id}" ${S.gold >= a.price ? '' : 'disabled'}>🪙 ${a.price}</button>`}</div>`; }
   if (tab === 'items') h += `<div class="row"><span class="ri">🧪</span><div><b>Potion</b><small>Heals in battle · you have ${S.potion}</small></div><button data-buy="item:potion" ${S.gold >= 15 ? '' : 'disabled'}>🪙 15</button></div><div class="row"><span class="ri">🔮</span><div><b>Capture Orb</b><small>Catches a weak wild Lumi · you have ${S.orb}</small></div><button data-buy="item:orb" ${S.gold >= 20 ? '' : 'disabled'}>🪙 20</button></div>`;
   return h;
 }
@@ -44,7 +44,7 @@ function gearPanel(title, shop) {
 function bagRows(tab) {
   let h = '';
   if (tab === 'weapons') for (const id of S.weapons) { const w = weaponLook(id, S.cls); h += `<div class="row"><canvas class="ricon" data-weapon="${id}"></canvas><div><b>${w.name}</b><small>+${w.atk} attack</small>${perkList(w.perks)}</div>${S.weapon === id ? '<em>Equipped</em>' : `<button data-eq="weapon:${id}">Equip</button>`}</div>`; }
-  if (tab === 'armour') for (const id of S.armors) { const a = ARMORS[id]; h += `<div class="row"><canvas class="ricon" data-armor="${id}"></canvas><div><b>${a.name}</b><small>+${a.hp} health · blocks ${a.def}</small>${perkList(a.perks)}</div>${S.armor === id ? '<em>Equipped</em>' : `<button data-eq="armor:${id}">Equip</button>`}</div>`; }
+  if (tab === 'armour') for (const id of S.armors) { const a = ARMORS[id]; h += `<div class="row"><img class="ricon armor-icon" src="art/armor-${id}.webp" alt=""><div><b>${a.name}</b><small>+${a.hp} health · blocks ${a.def}</small>${perkList(a.perks)}</div>${S.armor === id ? '<em>Equipped</em>' : `<button data-eq="armor:${id}">Equip</button>`}</div>`; }
   if (tab === 'items') h += `<div class="row"><span class="ri">🧪</span><div><b>Potion × ${S.potion}</b><small>Heals half your health</small></div><button data-use="potion" ${S.potion && S.hp < maxHP() ? '' : 'disabled'}>Use</button></div><div class="row"><span class="ri">🔮</span><div><b>Capture Orb × ${S.orb}</b><small>Use in battle on a weak wild Lumi</small></div></div>`;
   return h;
 }
@@ -149,7 +149,7 @@ function drawWorld(c) {
   const hx = G.fx * TILE + TILE / 2, hy = G.fy * TILE + TILE - 8;
   const l = activeLumi();
   if (l) { G.fol = G.fol || { x: hx - 30, y: hy }; const d = Math.hypot(hx - G.fol.x, hy - G.fol.y); if (d > 34) { G.fol.x += (hx - G.fol.x) * 0.09; G.fol.y += (hy - G.fol.y) * 0.09; } if (d > 300) { G.fol.x = hx - 30; G.fol.y = hy; } list.push([G.fol.y - 1, () => Art.lumi(c, SPECIES[l.sp], G.fol.x, G.fol.y, 0.62, t, isEvo(l), hx < G.fol.x)]); }
-  list.push([hy, () => Art.hero(c, hx, hy, 0.62, heroLook({ walk: G.walking, sceneArt: true }))]);
+  list.push([hy, () => Art.hero(c, hx, hy, 0.62, heroLook({ walk: G.walking, runTime: G.runTime, facing: G.facing }))]);
   list.sort((a, b) => a[0] - b[0]); for (const d of list) d[1]();
   // name badge last so nothing covers it
   const nm = KIDS[S.kid].name.toUpperCase(); c.font = '900 11px system-ui'; c.textAlign = 'center'; const bw = c.measureText(nm).width + 12;
