@@ -31,7 +31,10 @@ function carStats(b) {
 /* 0..1 bars for the stats panel */
 function carBars(b) {
   var s = carStats(b);
-  return { speed: Math.min(1, (s.top - 12) / 16), hill: Math.min(1, (s.hill - 0.5) / 1.0), grip: b.roller !== "no" ? Math.min(1, (s.curve - 7) / 11) : 0.05, safe: s.rollers ? 1 : 0 };
+  // safety: rollers keep it on the track; better rollers, wings and grip help; a very fast car is harder to keep on
+  var safe = 0.05;
+  if (b.roller !== "no") safe = ({ plastic: 0.45, yes: 0.55, alu: 0.62, four: 0.75, bearing: 0.85 }[b.roller] || 0.55) + ((PHYS.wing[b.wing || "none"].c) - 1) * 1.2 + (PHYS.tire[b.tire].grip - 0.9) * 0.3 - Math.max(0, s.top - 18) / 40;
+  return { speed: Math.min(1, (s.top - 12) / 16), hill: Math.min(1, (s.hill - 0.5) / 1.0), grip: b.roller !== "no" ? Math.min(1, (s.curve - 7) / 11) : 0.05, safe: Math.max(0.05, Math.min(1, safe)) };
 }
 
 /* Tracks. Segments: S straight, C left curve (radius), R right curve (radius), H hill. Units are "track units". */

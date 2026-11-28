@@ -19,7 +19,8 @@ function show(id) {
   CUR = id;
   var home = id !== "sTitle" && id !== "sMenu";
   $("#bHome").style.display = home ? "" : "none";
-  if (home) Music.stop(); else Music.start();
+  if (id === "sC2") {} // Chapter 2 picks music per location (C2G.frame)
+  else if (home) Music.stop(); else Music.play("anthem");
   if (id !== "sRace") Engine.stop();
 }
 

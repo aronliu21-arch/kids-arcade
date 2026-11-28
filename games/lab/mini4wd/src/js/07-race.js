@@ -16,6 +16,8 @@ var Race = {
     var rv0 = opts ? (opts.rivals || []) : mode === "race" ? RIVALS : [];
     rv0.forEach(function (rv, i) { self.cars.push({ who: rv.who, car: rv.car || "c_red", col: rv.col, build: opts ? rv.build : null, r: new Racer(rv.build, { laps: self.laps, lane: i + 1 }) }); });
     show("sRace"); this.resize(); this.cam = null; this.camLabel();
+    var q = $("#quitBtn"); q.style.display = opts && opts.onQuit ? "" : "none";
+    q.onclick = function () { if (self.over) return; self.over = true; Engine.stop(); Read.stop(); var f = self.opts && self.opts.onQuit; self.opts = null; if (f) f(); };
     $("#cheer").style.display = "";
     this.tick(["準備好了嗎？", "Ready?"]);
     this.hud(); this.draw();
@@ -31,7 +33,7 @@ var Race = {
   },
   loop: function () {
     var self = this;
-    if (CUR !== "sRace") return;
+    if (CUR !== "sRace" || this.over) return;
     var now = performance.now(), dt = Math.min(0.05, (now - this.last) / 1000) * this.speed; this.last = now;
     var steps = Math.ceil(dt / (1 / 60)), h = dt / steps;
     for (var i = 0; i < steps; i++) this.cars.forEach(function (c) { c.r.step(h); });
@@ -39,7 +41,7 @@ var Race = {
     this.events();
     this.draw(); this.hud();
     var me = this.cars[0].r;
-    Engine.set(me.out || me.done ? 0 : me.v / me.st.top * 10);
+    Engine.set(me.out || me.done ? 0 : me.v / me.st.top * 10, { scrape: me.scraping, hill: hillPhase(me.s) >= 0 && hillPhase(me.s) < 0.5, near: this.cars.slice(1).some(function (c) { return !c.r.out && Math.abs(c.r.s + c.r.lap * TRACK.len - me.s - me.lap * TRACK.len) < 4; }) });
     var allDone = this.cars.every(function (c) { return c.r.done || c.r.out; });
     if ((me.done || me.out) && !this.endAt) this.endAt = this.t + (this.mode === "race" && !me.out ? 4 : 1.6);
     if (this.endAt && (this.t > this.endAt || (allDone && this.t > this.endAt - 3))) return this.finish();
@@ -84,7 +86,10 @@ var Race = {
     var me = this.cars[0].r;
     $("#hLap").innerHTML = bi("第 " + Math.min(this.laps, me.lap + 1) + " / " + this.laps + " 圈", "Lap " + Math.min(this.laps, me.lap + 1) + " / " + this.laps);
     if (this.mode !== "race") { $("#hPos").innerHTML = "<span class='chip me'>" + bi("測試跑道", "Test run") + "</span>"; return; }
-    $("#hPos").innerHTML = this.order().map(function (c, i) { return "<span class='chip" + (c.who === "lucas" ? " me" : "") + "'>" + (i + 1) + ". " + CAST[c.who].en + "</span>"; }).join(" ");
+    var L = this.laps, tl = TRACK.len;
+    $("#hPos").innerHTML = this.order().map(function (c, i) { // place, name, lap x/3 and a progress bar for every racer
+      var r = c.r, f = r.done ? 1 : Math.min(1, (r.lap * tl + r.s) / (L * tl)), lap = r.done ? L : Math.min(L, r.lap + 1);
+      return "<span class='chip prog" + (c.who === "lucas" ? " me" : "") + "'>" + (i + 1) + ". " + CAST[c.who].en + " " + (r.out ? "💥" : r.done ? "🏁" : lap + "/" + L) + "<i style='width:" + Math.round(f * 100) + "%;background:" + (c.col ? CarArt.COL[c.col].main : "#1c7ed6") + "'></i></span>"; }).join(" ");
   },
   /* 3/4 view: the track is tilted away from you (K squashes depth) and the hill really rises (Z units). */
   K: 0.58, HZ: 7, TH: 0.9,
@@ -299,7 +304,7 @@ var Race = {
     var cv = $("#raceCv"), x = cv.getContext("2d"), s = this.sc, self = this, b = TRACK.box;
     this.label = label;
     x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height);
-    var zf = this.zf || 1, tx = 0, ty = 0;
+    var zf = this.camMode === "iso" ? 1 : (this.zf || 1), tx = 0, ty = 0; // Top view: the whole track; Auto: zoom in and follow
     if (zf > 1) { // follow Lucas, keep the view inside the table
       var lp = this.pos(this.cars[0]), q0 = this.P(lp.x, lp.y, lp.z), bx = s * q0[0] + this.ox, by = s * q0[1] + this.oy;
       var wx = Math.min(0, Math.max(cv.width * (1 - zf), cv.width / 2 - zf * bx)), wy = Math.min(0, Math.max(cv.height * (1 - zf), cv.height * 0.55 - zf * by));

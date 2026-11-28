@@ -281,3 +281,32 @@ button{font:inherit;cursor:pointer;color:inherit}
 .menu+.menu{margin-top:6px}.card>.pin.tray{margin-top:6px}
 @media (max-height:500px){.menu .opt{font-size:11px;padding:3px}.menu .opt .pr{font-size:12px}.c2say .ic{font-size:30px}.tray{min-height:52px;padding:4px}.dish.big{transform:none;margin:2px}.till{min-height:44px;padding:3px}}
 @media (max-height:500px){.cashq{display:none}.bill2{font-size:18px;margin:0}.cashbar{margin:3px 0}}
+/* v2.5 restaurant: Gemini food pictures, 2 rows of 6 */
+img.food{height:52px;max-width:72px;object-fit:contain;display:block;margin:0 auto}
+img.food.big{height:58px;max-width:80px}
+.menu{grid-template-columns:repeat(6,1fr)!important;gap:5px}
+.menu .opt{padding:4px 2px;min-height:0}.menu .opt .mn{display:block;font-size:13px;line-height:1.1}.menu .opt .mn small{display:block;font-size:10px;color:#555;font-weight:700}
+.menu .opt .pr{font-size:13px;margin-top:1px}
+.c2say.cust .ic{font-size:52px}.c2say .bubble{background:#fff;border:3px solid var(--ink);border-radius:16px;padding:8px 12px;position:relative;font-size:18px}
+.c2say.sm .ic{font-size:34px}.c2say.sm .bubble{font-size:15px;padding:4px 10px}
+.bill2 b{font-size:28px}
+@media (max-height:500px){img.food{height:30px}img.food.big{height:36px}.menu .opt .mn{font-size:10px}.menu .opt .mn small{display:none}.menu .opt .pr{font-size:11px}.c2say.sm .bubble{font-size:12px;padding:2px 8px}.c2say.sm .ic{font-size:26px}.tray{min-height:44px}}
+.tags{display:block;font-size:12px;margin-top:2px;white-space:nowrap}.tags .g{background:#d3f9d8;border-radius:8px;padding:0 4px;margin-right:2px}.tags .b{background:#ffe3e3;border-radius:8px;padding:0 4px}
+.opt.sel{outline:4px solid #ffd43b;background:#fff9db}
+.pick{border:3px solid var(--ink);border-radius:12px;background:#fff9db;padding:6px;margin-bottom:6px;font-size:14px}.pick .pd{font-size:12px;margin:2px 0}.pick .btn{width:100%;margin-top:4px;min-height:48px}
+@media (max-height:500px){.pick{font-size:11px;padding:3px}.pick .pd{display:none}.pick .btn{min-height:44px;font-size:13px}.tags{font-size:10px}}
+.tags{display:block;font-size:12px;margin-top:2px;white-space:nowrap}.tags .g{background:#d3f9d8;border-radius:8px;padding:0 4px;margin-right:2px}.tags .b{background:#ffe3e3;border-radius:8px;padding:0 4px}
+.opt.sel{outline:4px solid #ffd43b;background:#fff9db}
+.pick{border:3px solid var(--ink);border-radius:12px;background:#fff9db;padding:6px;margin-bottom:6px;font-size:14px}.pick .pd{font-size:12px;margin:2px 0}.pick .btn{width:100%;margin-top:4px;min-height:48px}
+@media (max-height:500px){.pick{font-size:11px;padding:3px}.pick .pd{display:none}.pick .btn{min-height:44px;font-size:13px}.tags{font-size:10px}}
+.join{border:3px solid var(--ink);border-radius:14px;background:#fff9db;padding:6px 10px;margin:8px 0;font-size:14px}.join div{opacity:.75}.join div.ok{opacity:1;color:#2b8a3e}
+.est{font-size:16px;margin:2px 0 4px}.est b{font-size:20px;color:#1864ab}
+@media (max-height:500px){.join{font-size:11px;padding:3px 6px}.est{font-size:12px}.est b{font-size:15px}}
+.street{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}.house{border:3px solid var(--ink);border-radius:12px 12px 6px 6px;min-height:64px;font:inherit;cursor:pointer}
+.house span{display:block;font-size:26px;line-height:1}.house b{font-size:20px;background:#fff;border-radius:6px;padding:0 6px}.house.ok{outline:5px solid #2f9e44}.house.no{opacity:.4}
+.road{background:#495057;color:#ffd43b;border-radius:8px;margin:6px 0;padding:4px 10px;font-weight:900;letter-spacing:2px}
+.pile{justify-content:center}
+@media (max-height:500px){.house{min-height:44px}.house span{font-size:18px}.house b{font-size:15px}.road{margin:3px 0;padding:1px 8px}}
+.chip.prog{position:relative;overflow:hidden;padding-bottom:6px}.chip.prog i{position:absolute;left:0;bottom:0;height:4px;border-radius:2px}
+#quitBtn{min-height:48px}
+@media (max-height:500px){#hPos{display:flex;flex-direction:column;gap:2px}#hPos .chip.prog{font-size:11px;padding:1px 6px 5px;white-space:nowrap}}

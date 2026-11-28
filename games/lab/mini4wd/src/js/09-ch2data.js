@@ -122,12 +122,12 @@ var C2 = {
   ],
   A_LINE: 0.9, // A = 90% of points (first try 2, second try 1)
   // jobs: 5 options; the thin version opens the noodle shop
-  JOBS: [
+  JOBS: [ // 3 open from the start; 2 open in week 2
     { id: "noodle", ic: "🍜", zh: "麵店幫忙", en: "Noodle shop", pay: 100, open: true },
-    { id: "deliver", ic: "📦", zh: "送貨", en: "Delivery", pay: 120, open: false },
-    { id: "bank", ic: "🏦", zh: "銀行數錢", en: "Bank helper", pay: 120, open: false },
-    { id: "wash", ic: "🧽", zh: "洗車", en: "Car wash", pay: 110, open: false },
-    { id: "books", ic: "📚", zh: "書店整理", en: "Bookstore", pay: 100, open: false }],
+    { id: "deliver", ic: "📦", zh: "送貨", en: "Delivery", pay: 110, open: true },
+    { id: "bank", ic: "🏦", zh: "銀行數錢", en: "Bank helper", pay: 120, open: true },
+    { id: "wash", ic: "🧽", zh: "洗車", en: "Car wash", pay: 110, open: false, week: 2 },
+    { id: "books", ic: "📚", zh: "書店整理", en: "Bookstore", pay: 100, open: false, week: 2 }],
   MENU: [ // d = dish: bowl, plate, cup, steamer
     { id: "beef", ic: "🍜", zh: "牛肉麵", en: "Beef noodles", p: 120, d: "bowl" },
     { id: "rice", ic: "🍚", zh: "滷肉飯", en: "Braised pork rice", p: 40, d: "bowl" },
@@ -142,6 +142,10 @@ var C2 = {
     { id: "tea", ic: "🧋", zh: "珍珠奶茶", en: "Bubble tea", p: 50, d: "cup" },
     { id: "soy", ic: "🥛", zh: "豆漿", en: "Soy milk", p: 25, d: "cup" }],
   TIP: 10, // per perfect customer
+  TALK: [ // small talk after paying
+    ["你算錢好快喔！", "You count money so fast!"], ["我兒子也很喜歡四驅車。", "My son loves Mini 4WD cars too."], ["這裡的東西最好吃了。", "The food here is the best."],
+    ["今天天氣真好！", "What a nice day today!"], ["你長大想做什麼？", "What do you want to be when you grow up?"], ["下次我還要再來！", "I'll come back next time!"],
+    ["聽說星期六有比賽，加油喔！", "I heard there's a race on Saturday. Good luck!"], ["你是小幫手嗎？好棒！", "Are you the little helper? Great job!"]],
   CASH: [500, 100, 50, 10, 5], // Taiwan bills and coins Lucas uses to collect the bill
   // rivals (boys only in Lucas's game), team colors
   KIDS: {

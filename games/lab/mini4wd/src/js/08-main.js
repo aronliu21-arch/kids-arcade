@@ -38,7 +38,7 @@
   $("#bHome").onclick = function () { Read.stop(); closeOvl(); Engine.stop(); refreshMenu(); show("sMenu"); };
   $("#bSound").onclick = function () {
     var m = !KAKit.muted(); KAKit.muted(m); $("#bSound").textContent = m ? "🔇" : "🔊";
-    if (m) { Music.stop(); Engine.stop(); Read.stop(); } else if (CUR === "sMenu" || CUR === "sTitle") Music.start();
+    if (m) { Music.stop(); Engine.stop(); Read.stop(); } else if (CUR === "sMenu" || CUR === "sTitle") Music.play("anthem"); else if (CUR === "sC2" && C2G.loc) Music.play(C2G.loc);
   };
   $("#dNext").onclick = function (e) { e.stopPropagation(); storyNext(); };
   $("#dlg").onclick = storyNext;
