@@ -1,6 +1,6 @@
 <!doctype html><html><head>
 <script src="../../voice.js"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Calendar Quest</title>
+<title>時間專家 Time Expert</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -189,7 +189,7 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
 <div class="wrap">
   <div class="top">
     <button class="ico" id="back" aria-label="Back" hidden>←</button>
-    <div class="brand" id="brand"><span class="be">🕰️</span> <span class="bt">Calendar Quest</span></div>
+    <div class="brand" id="brand"><span class="be">🕰️</span> <span class="bt">時間專家 Time Expert</span></div>
     <span class="pill" id="roundInfo" hidden></span><span class="pill" id="ptsInfo" hidden></span>
     <button class="ico" id="voiceBtn" aria-label="Read aloud" aria-pressed="false" hidden>🗣️</button>
     <button class="ico" id="soundBtn" aria-label="Sound" aria-pressed="true">🔊</button>
@@ -198,7 +198,7 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
   <section id="home">
     <div class="hero">
       <canvas id="intro" aria-label="Nora and Lucas race to a giant clock. Milo the dinosaur pops up. Tap to start."></canvas>
-      <h1>Calendar Quest</h1>
+      <h1>時間專家 Time Expert</h1>
       <p>Clocks, days, months and holidays from the US, Taiwan and around the world.</p>
       <div class="kits" id="kits"></div>
     </div>
@@ -716,7 +716,7 @@ function show(id){
   $('roundInfo').hidden=$('ptsInfo').hidden=id!=='play';
   $('voiceBtn').hidden=!(cur&&(id==='play'||id==='map'));
   if(cur){$('voiceBtn').setAttribute('aria-pressed',String(!!prof(cur.id).voice));}
-  const bt=id==='cal'?['📅','Holiday Calendar']:id==='play'&&mission?[mission.e,mission.id==='mix'&&cur&&cur.id==='milo'?'Dino Mix':mission.t]:['🕰️','Calendar Quest'];
+  const bt=id==='cal'?['📅','Holiday Calendar']:id==='play'&&mission?[mission.e,mission.id==='mix'&&cur&&cur.id==='milo'?'Dino Mix':mission.t]:['🕰️',RB('時間專家','ㄕˊ ㄐㄧㄢ ㄓㄨㄢ ㄐㄧㄚ')+' Time Expert'];
   $('brand').innerHTML='<span class="be">'+bt[0]+'</span> <span class="bt">'+bt[1]+'</span>';document.body.classList.toggle('playing',id==='play');
   if(id!=='play'&&'speechSynthesis' in window)try{speechSynthesis.cancel();}catch(e){}
   musicSync();
@@ -834,6 +834,8 @@ $('back').onclick=()=>{stopBuddy();if(screen==='play'||screen==='result'){render
 $('soundBtn').onclick=()=>{DB.sound=!DB.sound;$('soundBtn').setAttribute('aria-pressed',String(DB.sound));$('soundBtn').textContent=DB.sound?'🔊':'🔇';store.save();musicSync();};
 $('voiceBtn').onclick=()=>{const p=prof(cur.id);p.voice=!p.voice;p.rev=Date.now();$('voiceBtn').setAttribute('aria-pressed',String(p.voice));store.save();if(!p.voice&&'speechSynthesis' in window)try{speechSynthesis.cancel();}catch(e){}};
 
+
+(function(){var h=document.querySelector('#home h1');if(h)h.innerHTML=RB('時間專家','ㄕˊ ㄐㄧㄢ ㄓㄨㄢ ㄐㄧㄚ')+'<br><small style="font-size:.55em">Time Expert</small>';var b=document.querySelector('#brand .bt');if(b)b.innerHTML=RB('時間專家','ㄕˊ ㄐㄧㄢ ㄓㄨㄢ ㄐㄧㄚ')+' Time Expert';})();
 /* ---------- visuals: clock, calendar page, tear-off leaves, week strip ---------- */
 function renderVis(v,q,isHint){
   const box=$('visual');
@@ -1225,6 +1227,6 @@ fitIntro();renderHome();show('home');requestAnimationFrame(introFrame);cloudInit
 </script>
 
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.1" data-d="2026-11-25" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.1 · 2026-11-25</div>
+<div id="kaVer" data-v="1.2" data-d="2026-11-28" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.2 · 2026-11-28</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>

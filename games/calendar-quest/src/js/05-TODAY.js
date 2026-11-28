@@ -65,7 +65,7 @@ function show(id){
   $('roundInfo').hidden=$('ptsInfo').hidden=id!=='play';
   $('voiceBtn').hidden=!(cur&&(id==='play'||id==='map'));
   if(cur){$('voiceBtn').setAttribute('aria-pressed',String(!!prof(cur.id).voice));}
-  const bt=id==='cal'?['📅','Holiday Calendar']:id==='play'&&mission?[mission.e,mission.id==='mix'&&cur&&cur.id==='milo'?'Dino Mix':mission.t]:['🕰️','Calendar Quest'];
+  const bt=id==='cal'?['📅','Holiday Calendar']:id==='play'&&mission?[mission.e,mission.id==='mix'&&cur&&cur.id==='milo'?'Dino Mix':mission.t]:['🕰️',RB('時間專家','ㄕˊ ㄐㄧㄢ ㄓㄨㄢ ㄐㄧㄚ')+' Time Expert'];
   $('brand').innerHTML='<span class="be">'+bt[0]+'</span> <span class="bt">'+bt[1]+'</span>';document.body.classList.toggle('playing',id==='play');
   if(id!=='play'&&'speechSynthesis' in window)try{speechSynthesis.cancel();}catch(e){}
   musicSync();
@@ -183,3 +183,5 @@ $('back').onclick=()=>{stopBuddy();if(screen==='play'||screen==='result'){render
 $('soundBtn').onclick=()=>{DB.sound=!DB.sound;$('soundBtn').setAttribute('aria-pressed',String(DB.sound));$('soundBtn').textContent=DB.sound?'🔊':'🔇';store.save();musicSync();};
 $('voiceBtn').onclick=()=>{const p=prof(cur.id);p.voice=!p.voice;p.rev=Date.now();$('voiceBtn').setAttribute('aria-pressed',String(p.voice));store.save();if(!p.voice&&'speechSynthesis' in window)try{speechSynthesis.cancel();}catch(e){}};
 
+
+(function(){var h=document.querySelector('#home h1');if(h)h.innerHTML=RB('時間專家','ㄕˊ ㄐㄧㄢ ㄓㄨㄢ ㄐㄧㄚ')+'<br><small style="font-size:.55em">Time Expert</small>';var b=document.querySelector('#brand .bt');if(b)b.innerHTML=RB('時間專家','ㄕˊ ㄐㄧㄢ ㄓㄨㄢ ㄐㄧㄚ')+' Time Expert';})();
