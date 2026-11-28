@@ -83,7 +83,30 @@ function sheet_() {
 
 /* ---------------- collecting rows from the games ---------------- */
 
-function doGet() { return ContentService.createTextOutput("Kids Arcade tracker is running."); }
+/* The Baba dashboard (arcade front page) asks for its data here: ?view=dash&pin=…&days=90
+   The PIN is checked here, so it is not written in the public arcade code. */
+var DASH_PIN = "1234";
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  if (p.view !== "dash") return ContentService.createTextOutput("Kids Arcade tracker is running.");
+  var out;
+  if (String(p.pin || "") !== DASH_PIN) out = { ok: false, error: "pin" };
+  else {
+    var days = Math.max(1, Math.min(180, Number(p.days) || 90)), now = new Date();
+    var from = ymd_(new Date(now.getTime() - days * 864e5)), ss = sheet_();
+    var pick = function (rows, cols) { return rows.filter(function (r) { return r.kid !== "tester" && String(r.ldate) >= from; })
+      .map(function (r) { return cols.map(function (c) { return r[c]; }); }); };
+    var ans = readTable_(ss.getSheetByName("Answers")), tm = readTable_(ss.getSheetByName("Time"));
+    out = { ok: true, now: now.toISOString(), from: from, games: GAME_NAMES, goals: weeklyGoals_(ans, now),
+      aCols: ["ldate", "lhour", "kid", "game", "session", "correct", "tryNo", "topic", "ms", "q", "expected", "given"],
+      tCols: ["ldate", "lhour", "kid", "game", "session", "secs"] };
+    out.a = pick(ans, out.aCols); out.t = pick(tm, out.tCols);
+  }
+  var txt = JSON.stringify(out);
+  if (p.callback && /^[A-Za-z_$][\w$]*$/.test(p.callback))
+    return ContentService.createTextOutput(p.callback + "(" + txt + ")").setMimeType(ContentService.MimeType.JAVASCRIPT);
+  return ContentService.createTextOutput(txt).setMimeType(ContentService.MimeType.JSON);
+}
 
 function doPost(e) {
   var body;
