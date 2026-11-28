@@ -8,8 +8,29 @@ var C2S = { // state helpers
   give: function (c, slot, v) { c.owned[slot + ":" + v] = (c.owned[slot + ":" + v] || 0) + 1; },
   part: function (slot, v) { return C2.PARTS[slot].filter(function (p) { return p.v === v; })[0]; },
   cupThisWeek: function (c) { var w = this.week(c); return C2.CUPS.filter(function (u) { return u.week === w; })[0]; },
+  sellPrice: function (p) { return Math.round(p.price * 0.8 / 5) * 5; },
+  lvl: function (c, id) { return Math.min(4, this.week(c) - 1 + Math.floor(((c.shifts || {})[id] || 0) / 3)); }, // job level 0-4
+  shiftDone: function (c, id, was) { c.shifts = c.shifts || {}; c.shifts[id] = (c.shifts[id] || 0) + 1; return this.lvl(c, id) > was; },
   testA: function (c) { var t = c.tests[this.week(c)]; return !!(t && t.a); }
 };
+function clockSVG(t) { // "h:mm" -> analog clock face for the clock lessons
+  var hm = t.split(":"), h = +hm[0] % 12, m = +hm[1], ha = (h + m / 60) * 30, ma = m * 6, n = "";
+  for (var k = 1; k <= 12; k++) { var a = k * 30 * Math.PI / 180; n += "<text x='" + (50 + 37 * Math.sin(a)).toFixed(1) + "' y='" + (54 - 37 * Math.cos(a)).toFixed(1) + "' text-anchor='middle' font-size='11' font-weight='800'>" + k + "</text>"; }
+  var hand = function (deg, len, w, col) { var a = deg * Math.PI / 180; return "<line x1='50' y1='50' x2='" + (50 + len * Math.sin(a)).toFixed(1) + "' y2='" + (50 - len * Math.cos(a)).toFixed(1) + "' stroke='" + col + "' stroke-width='" + w + "' stroke-linecap='round'/>"; };
+  return "<div class='clockpic'><svg viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='#fff' stroke='#222' stroke-width='5'/>" + n + hand(ma, 34, 3.5, "#1c7ed6") + hand(ha, 22, 6, "#e03131") + "<circle cx='50' cy='50' r='4' fill='#222'/></svg></div>";
+}
+function R(n) { return (Math.random() * n) | 0; }
+function stars(l) { return "⭐".repeat(l + 1); }
+function lvlNote(up, id) { var l = C2S.lvl(C2S.get(), id); return up ? "<div class='tip lvup'>🆙 " + bi("升級了！現在是 " + stars(l) + "，工作變難，薪水多 10 元！", "Level up! Now " + stars(l) + ": harder work, NT$10 more pay!") + "</div>" : ""; }
+function seqBind(order) { // tap buttons in a given order; a wrong tap counts as a try but the button stays
+  var fn = function (cd, right, wrong) { var i = 0;
+    $$("[data-a]", cd).forEach(function (b) { b.onclick = function () { if (b.classList.contains("ok")) return;
+      if (b.dataset.a === String(order[i])) { b.classList.add("ok"); b.insertAdjacentHTML("beforeend", "<em class='ord'>" + (i + 1) + "</em>"); sfx("tap"); i++; if (i >= order.length) right(); }
+      else { b.classList.add("no"); setTimeout(function () { b.classList.remove("no"); }, 700); wrong(null); } }; }); };
+  fn.order = order; return fn;
+}
+function seqReveal(order) { return function (cd) { $$("[data-a]", cd).forEach(function (b) { var k = order.map(String).indexOf(b.dataset.a); if (k >= 0 && !b.classList.contains("ok")) { b.classList.add("ok"); b.insertAdjacentHTML("beforeend", "<em class='ord'>" + (k + 1) + "</em>"); } }); }; }
+function custFace(w) { return "<span class='cface'><img src='assets/cust/" + w.id + ".webp' alt='' onerror='this.remove()'><i>" + w.ic + "</i></span>"; }
 function money(n) { return "NT$" + n; }
 function chunks(items, n) { var out = ""; for (var i = 0; i < items.length; i += n) out += "<div class='c2parts compact'>" + items.slice(i, i + n).join("") + "</div>"; return out; }
 function partCols() { var cd = $("#c2Card"); return Math.max(3, Math.floor(((cd && cd.clientWidth) || 600) - 40) / 128 | 0); } // one row per block
@@ -147,7 +168,7 @@ var C2G = {
     function card() {
       if (i >= L.cards.length) return quiz();
       var cd = L.cards[i];
-      self.card("<div class='c2sub'>" + L.ic + " " + bi(L.sub[0], L.sub[1]) + "</div>" + self.say("teacher", cd[0], cd[1]) + "<div class='act'><button class='btn white' id='lAgain'>🔊</button><button class='btn blue' id='lNext'>" + bi("下一張", "Next") + " ▶</button></div>");
+      self.card("<div class='c2sub'>" + L.ic + " " + bi(L.sub[0], L.sub[1]) + "</div>" + (cd[2] ? "<div class='wclk'>" + self.say("teacher", cd[0], cd[1]) + clockSVG(cd[2]) + "</div>" : self.say("teacher", cd[0], cd[1])) + "<div class='act'><button class='btn white' id='lAgain'>🔊</button><button class='btn blue' id='lNext'>" + bi("下一張", "Next") + " ▶</button></div>");
       $("#lNext").onclick = function () { sfx("tap"); Read.stop(); i++; card(); };
       $("#lAgain").onclick = function () { Read.pair(cd[0], cd[1], CAST.teacher.pitch); };
     }
@@ -185,7 +206,7 @@ var C2G = {
     function one() {
       if (i >= qs.length) return done(pts, qs.length * 2);
       var q = qs[i], tries = 0, order = q.a.map(function (_, j) { return j; }).sort(function () { return Math.random() - 0.5; });
-      var cd = self.card("<div class='c2sub'>" + bi(title[0], title[1]) + " " + (i + 1) + " / " + qs.length + "</div><div class='quiz'><div class='qq'>" + bi(q.q[0], q.q[1]) + "</div><div class='ans'>" +
+      var cd = self.card("<div class='c2sub'>" + bi(title[0], title[1]) + " " + (i + 1) + " / " + qs.length + "</div><div class='quiz'>" + (q.clock ? "<div class='wclk'><div class='qq'>" + bi(q.q[0], q.q[1]) + "</div>" + clockSVG(q.clock) + "</div>" : "<div class='qq'>" + bi(q.q[0], q.q[1]) + "</div>") + "<div class='ans'>" +
         order.map(function (j) { return "<button class='btn' data-j='" + j + "'>" + bi(q.a[j][0], q.a[j][1]) + "</button>"; }).join("") + "</div><div class='why'></div></div><div class='act'></div>");
       Read.pair(q.q[0], q.q[1]);
       $$(".ans .btn", cd).forEach(function (b) {
@@ -300,7 +321,10 @@ var C2G = {
     if (tab === "buy") {
       body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return p.price > 0; }).sort(byPrice).map(function (p) {
         var own = C2S.has(c, cur, p.v), price = Math.max(0, p.price - (c.coupon || 0));
-        return "<button class='opt" + (own ? " own" : "") + (self.sel === cur + ":" + p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + "<img class='thumb' src='" + partImg(cur, p) + "' alt=''>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span>" + partTags(cur, p.v) + "</button>";
+        var on = self.sel === cur + ":" + p.v, kitPart = C2.KIT.build[cur] === p.v;
+        var tag = own ? (on && !kitPart ? "<span class='mbuy sell' role='button' data-sell='1' aria-label='Sell'>💰 " + bi("賣", "Sell") + " " + C2S.sellPrice(p) + "</span>" : "✅ " + bi("已經有了", "Owned"))
+          : on ? "<span class='mbuy' role='button' data-buy='1' aria-label='Buy'>🛒 " + price + "</span>" : money(price); // the small Buy / Sell button replaces the price line
+        return "<button class='opt" + (own ? " own" : "") + (on ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + "<img class='thumb' src='" + partImg(cur, p) + "' alt=''>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + tag + "</span>" + partTags(cur, p.v) + "</button>";
       }), partCols());
     } else if (tab === "equip") {
       body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).sort(byPrice).map(function (p) {
@@ -321,14 +345,18 @@ var C2G = {
     }
     var pinned = body.indexOf("<div class='c2slots'>") === 0 ? body.slice(0, body.indexOf("</div>") + 6) : "";
     if (pinned) body = body.slice(pinned.length);
-    var cd = this.card("<div class='pin'>" + tabs + pinned + "</div>" + body + "<div class='act'><button class='btn white' id='bOut'>🗺 " + bi("離開模型店", "Leave the store") + "</button></div>");
+    var same = self._shopAt === tab + ":" + cur; self._shopAt = tab + ":" + cur; // stay on the same page when re-drawing the same list
+    var cd = this.card("<div class='pin'>" + tabs + pinned + "</div>" + body + "<div class='act'><button class='btn white' id='bOut'>🗺 " + bi("離開模型店", "Leave the store") + "</button></div>",
+      tab === "buy" && self.sel ? { find: function () { var e = $("#c2Card .opt.sel"); return e && e.closest(".c2parts"); } } : { keep: same });
     if (tab === "buy" && self.sel && self.sel.split(":")[0] === cur) self.showPick();
     $$(".c2paint .paint", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); c.build.paint = b.dataset.p; save(); self.shop("equip"); }; });
     $$(".c2slots .chip", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); self.shopSlot = b.dataset.sl; self.shop(tab); }; });
     $$(".c2tabs .btn", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); Read.stop(); self.sel = null; self.shop(b.dataset.t); }; });
     $("#bOut").onclick = function () { Read.stop(); self.advance(); };
     $$(".opt", cd).forEach(function (b) {
-      if (tab === "buy") b.onclick = function () { sfx("tap"); self.sel = b.dataset.s + ":" + b.dataset.v; self.shop("buy"); }; // select first, buy from the side panel
+      if (tab === "buy") b.onclick = function (ev) { // select first; the small Buy / Sell button sits inside the selected item
+        var t = ev.target.closest(".mbuy"); if (t) { ev.stopPropagation(); return t.dataset.sell ? self.sell(b.dataset.s, b.dataset.v) : self.buy(b.dataset.s, b.dataset.v); }
+        sfx("tap"); self.sel = b.dataset.s + ":" + b.dataset.v; self.shop("buy"); };
       if (tab === "equip") b.onclick = function () { sfx("tap"); c.build[b.dataset.s] = b.dataset.v; c.toolbox = c.toolbox.filter(function (k) { return k !== b.dataset.s + ":" + b.dataset.v; }); save(); self.shop("equip"); };
       if (tab === "box") b.onclick = function () { var k = b.dataset.k, i = c.toolbox.indexOf(k); if (i >= 0) c.toolbox.splice(i, 1); else if (c.toolbox.length < C2.TOOLBOX) c.toolbox.push(k); else { sfx("buzz"); return; } sfx("tap"); save(); self.shop("box"); };
       if (tab === "test") b.onclick = function () {
@@ -346,14 +374,25 @@ var C2G = {
     var diff = [["speed", "🚀"], ["hill", "⛰️"], ["grip", "🌀"], ["safe", "🛡️"]].map(function (d) { var dv = b1[d[0]] - b0[d[0]]; return Math.abs(dv) < 0.01 ? "" : "<span class='chip' style='background:" + (dv > 0 ? "#d3f9d8" : "#ffe3e3") + "'>" + d[1] + (dv > 0 ? "▲" : "▼") + "</span>"; }).join(" ");
     var st = $("#c2Stats"), box = document.createElement("div"); box.className = "pick";
     box.innerHTML = "<b>" + bi(p.zh, p.en) + "</b><div class='pd'>" + bi(p.d[0], p.d[1]) + "</div><div>" + (diff || bi("跟現在差不多", "About the same")) + "</div>" +
-      (own ? "<div class='pr'>✅ " + bi("已經有了", "Owned") + "</div>" : "<button class='btn red' id='pkBuy'>🛒 " + bi("買", "Buy") + " " + money(price) + "</button>");
+      (own ? "<div class='pr'>✅ " + bi("已經有了", "Owned") + "</div>" : "<div class='pr'>" + money(price) + "</div>");
     st.insertBefore(box, st.firstChild);
-    if ($("#pkBuy")) $("#pkBuy").onclick = function () {
-      if (c.money < price) { sfx("buzz"); return Read.pair("錢不夠，去打工賺錢吧！還差 " + (price - c.money) + " 元。", "Not enough money. Work to earn " + money(price - c.money) + " more!"); }
-      c.money -= price; c.coupon = 0; C2S.give(c, sl, v); c.build[sl] = v; if (sl === "body") c.build.paint = "orig"; save(); sfx("win"); self.sel = null; self.shop("buy");
-      Read.pair("買好了，已經裝在車上！", "Bought and fitted to your car!");
-    };
     Read.pair(p.zh + "。" + p.d[0], p.en + ". " + p.d[1]);
+  },
+  buy: function (sl, v) {
+    var c = C2S.get(), p = C2S.part(sl, v), price = Math.max(0, p.price - (c.coupon || 0));
+    if (c.money < price) { sfx("buzz"); return Read.pair("錢不夠，去打工賺錢吧！還差 " + (price - c.money) + " 元。", "Not enough money. Work to earn " + money(price - c.money) + " more!"); }
+    c.money -= price; c.coupon = 0; C2S.give(c, sl, v); c.build[sl] = v; if (sl === "body") c.build.paint = "orig"; save(); sfx("win"); this.shop("buy");
+    Read.pair("買好了，已經裝在車上！", "Bought and fitted to your car!");
+  },
+  sell: function (sl, v) { // sell an owned part back for 80%; if it was on the car, the kit part goes back on
+    var c = C2S.get(), self = this, p = C2S.part(sl, v), get = C2S.sellPrice(p);
+    ovl("<div class='big'>💰</div><div style='text-align:center;margin-top:8px'>" + bi("把" + p.zh + "賣回給店裡，拿回 " + get + " 元？（買的價錢的八成）", "Sell the " + p.en + " back to the store for " + money(get) + "? (80% of the price)") + "</div><div class='act'><button class='btn white' id='slN'>" + bi("先不要", "Not now") + "</button><button class='btn red' id='slY'>" + bi("賣！", "Sell!") + "</button></div>");
+    Read.pair("賣掉" + p.zh + "，拿回 " + get + " 元？", "Sell the " + p.en + " for NT$" + get + "?");
+    $("#slN").onclick = function () { closeOvl(); Read.stop(); };
+    $("#slY").onclick = function () { closeOvl(); Read.stop();
+      var k = sl + ":" + v; c.owned[k] = Math.max(0, (c.owned[k] || 1) - 1); c.money += get; c.toolbox = c.toolbox.filter(function (x) { return x !== k; });
+      if (c.build[sl] === v && !C2S.has(c, sl, v)) { c.build[sl] = C2.KIT.build[sl]; if (sl === "body") c.build.paint = "orig"; }
+      save(); sfx("win"); self.shop("buy"); Read.pair("賣掉了，拿回 " + get + " 元。", "Sold! You got NT$" + get + " back."); };
   },
   confirm: function (q, yes, no, extra) {
     ovl((extra || "<div class='big'>🛒</div>") + "<div style='text-align:center;margin-top:8px'>" + bi(q[0], q[1]) + "</div><div class='act'><button class='btn white' id='cfN'>" + bi("先不要", "Not now") + "</button><button class='btn red' id='cfY'>" + bi("買！", "Buy!") + "</button></div>");
@@ -380,184 +419,242 @@ var C2G = {
     this.frame(["打工", "Work"]);
     var wk = C2S.week(C2S.get()), isOpen = function (j) { return j.open || wk >= j.week; };
     var cd = this.card("<div class='c2sub'>" + bi("選一個工作（一次工作用掉一段時間）", "Pick a job (one job uses one time slot)") + "</div><div class='c2jobs'>" + C2.JOBS.map(function (j) {
-      return "<button class='opt" + (isOpen(j) ? "" : " off") + "' data-j='" + j.id + "'><span class='ic'>" + j.ic + "</span>" + bi(j.zh, j.en) + "<span class='pr'>" + (isOpen(j) ? money(j.pay) + "+" : "🔒 " + bi("第" + j.week + "週開放", "Opens week " + j.week)) + "</span></button>";
+      return "<button class='opt" + (isOpen(j) ? "" : " off") + "' data-j='" + j.id + "'><span class='ic'>" + j.ic + "</span>" + bi(j.zh, j.en) + "<span class='pr'>" + (isOpen(j) ? money(j.pay + 10 * C2S.lvl(C2S.get(), j.id)) + "+ " + stars(C2S.lvl(C2S.get(), j.id)) : "🔒 " + bi("第" + j.week + "週開放", "Opens week " + j.week)) + "</span></button>";
     }).join("") + "</div><div class='act'><button class='btn white' id='wBack'>🗺 " + bi("回地圖", "Back to map") + "</button></div>");
     $$(".opt", cd).forEach(function (b) { b.onclick = function () { if (b.classList.contains("off")) { sfx("buzz"); return Read.pair("這個工作第二週才開放！", "This job opens in week 2!"); } sfx("tap"); ({ noodle: self.noodle, deliver: self.deliver, bank: self.bank, wash: self.wash, books: self.books })[b.dataset.j].call(self); }; });
     $("#wBack").onclick = function () { Read.stop(); self.town(); };
   },
   /* noodle shop: make the tray for each order, then pick the right total */
+  /* noodle shop: the customer talks in a bubble on the same page as the menu and the till */
   noodle: function () {
-    var self = this, c = C2S.get(), n = 0, tips = 0, N = 5, last = [];
+    var self = this, c = C2S.get(), n = 0, tips = 0, N = 5, last = [], lastC = "", lvl = C2S.lvl(c, "noodle");
+    var MW = { bowl: ["碗", "bowl"], plate: ["盤", "plate"], cup: ["杯", "cup"], steamer: ["籠", "basket"] };
     this.frame(["麵店幫忙", "Noodle shop"]);
-    var faces = ["👦", "👴", "👨", "🧑", "👨‍🦱", "👱‍♂️", "👨‍🦳", "🧔"];
-    function talk(face, z, e, extra, btn, go) { // a customer speaking, like a dialog
-      var cd = self.card("<div class='c2say cust'><span class='ic'>" + face + "</span><div class='bubble'>" + bi(z, e) + "</div></div>" + (extra || "") + "<div class='act'><button class='btn blue' id='tNext'>" + bi(btn[0], btn[1]) + " ▶</button></div>");
-      Read.pair(z, e); $("#tNext").onclick = function () { sfx("tap"); Read.stop(); go(); }; return cd;
-    }
     function customer() {
       if (n >= N) return pay();
-      // 2-3 dishes for the first customers, up to 4 later; all different, and not the same dishes as last time
-      var k = n < 2 ? 2 + (Math.random() < 0.5 ? 1 : 0) : 2 + (Math.random() * 3 | 0);
+      var cu = C2.CUST.filter(function (x) { return x.id !== lastC; }), who = cu[R(cu.length)]; lastC = who.id;
+      // more dishes as Lucas levels up; level 2+ can order two of one dish; level 1+ can pay with a big bill and want change
+      var k = [[2, 3], [2, 4], [3, 4], [3, 5], [4, 5]][lvl], cnt = k[0] + R(k[1] - k[0] + 1);
       var pool = C2.MENU.filter(function (m) { return last.indexOf(m.id) < 0; }).sort(function () { return Math.random() - 0.5; });
-      var want = pool.slice(0, k); last = want.map(function (m) { return m.id; });
-      var tray = [], tries = 0, perfect = true, face = faces[(Math.random() * faces.length) | 0]; self._want = want; // for automated tests
-      var oz = want.map(function (m) { return m.zh; }).join("、"), oe = want.map(function (m) { return m.en; }).join(", ");
-      talk(face, "你好！我要" + oz + "，謝謝！", "Hi! I'd like " + oe + ", please!", "", ["好的，馬上來", "Coming right up"], draw);
-      function draw() {
-        var cd = self.card("<div class='pin c2say cust sm'><span class='ic'>" + face + "</span><div class='bubble'><small>🍜 " + (n + 1) + " / " + N + "</small> " + bi("我要：" + oz, "I'd like: " + oe) + "</div></div>" +
+      var kinds = pool.slice(0, cnt), dbl = lvl >= 2 && Math.random() < 0.45 ? kinds[0] : null; if (dbl && cnt >= 5) kinds.pop();
+      var want = kinds.slice(); if (dbl) want.push(dbl);
+      last = kinds.map(function (m) { return m.id; });
+      var change = lvl >= 1 && Math.random() < 0.5, tray = [], tries = 0, perfect = true; self._want = want; // for automated tests
+      var line = function (m) { var two = dbl && m.id === dbl.id; return { z: (two ? "2 " + MW[m.d][0] : "") + m.zh, e: (two ? "2 × " : "") + m.en }; };
+      var oz = kinds.map(function (m) { return line(m).z; }).join("、"), oe = kinds.map(function (m) { return line(m).e; }).join(", ");
+      var face = function (sm, z, e) { return "<div class='pin c2say cust" + (sm ? " sm" : "") + "'>" + custFace(who) + "<div class='bubble'><small>🍜 " + (n + 1) + " / " + N + " · " + bi(who.zh, who.en) + "</small><br>" + bi(z, e) + "</div></div>"; };
+      var say = [who.hi[0] + "我要" + oz + "，謝謝！", who.hi[1] + " I'd like " + oe + ", please!"];
+      draw(say, true);
+      function draw(msg, speak) {
+        var cd = self.card(face(true, msg[0], msg[1]) +
           "<div class='menu'>" + C2.MENU.map(function (m) { return "<button class='opt' data-m='" + m.id + "'>" + dish(m) + "<span class='mn'>" + zh(m.zh) + "<small>" + esc(m.en) + "</small></span><span class='pr'>" + m.p + "</span></button>"; }).join("") + "</div>" +
           "<div class='pin tray'>" + (tray.length ? tray.map(function (m, i) { return "<button class='tchip' data-i='" + i + "' aria-label='remove'>" + dish(m, true) + "<b>✕</b></button>"; }).join("") : bi("點菜單，把菜放到托盤上", "Tap the menu to put food on the tray")) + "</div>" +
           "<div class='act'><button class='btn white' id='nAgain'>🔊</button><button class='btn blue' id='nDone'>" + bi("送餐", "Serve") + " ▶</button></div>");
-        $$(".menu .opt", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); if (tray.length < 5) tray.push(C2.MENU.filter(function (m) { return m.id === b.dataset.m; })[0]); draw(); }; });
-        $$(".tray .tchip", cd).forEach(function (b) { b.onclick = function () { tray.splice(+b.dataset.i, 1); draw(); }; });
-        $("#nAgain").onclick = function () { Read.pair("我要：" + oz, "I'd like: " + oe); };
+        if (speak) Read.pair(msg[0], msg[1], who.pitch);
+        $$(".menu .opt", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); if (tray.length < 6) tray.push(C2.MENU.filter(function (m) { return m.id === b.dataset.m; })[0]); draw(msg); }; });
+        $$(".tray .tchip", cd).forEach(function (b) { b.onclick = function () { tray.splice(+b.dataset.i, 1); draw(msg); }; });
+        $("#nAgain").onclick = function () { Read.pair(say[0], say[1], who.pitch); };
         $("#nDone").onclick = function () {
           var a = want.map(function (m) { return m.id; }).sort().join(), t = tray.map(function (m) { return m.id; }).sort().join();
-          if (a === t) { sfx("ding"); return talk(face, "看起來好好吃！一共多少錢？", "Looks yummy! How much is it?", "", ["我來算", "Let me count"], bill); }
+          if (a === t) { sfx("ding"); return bill(); }
           tries++; perfect = false; sfx("buzz");
-          if (tries >= 2) { tray = want.slice(); draw(); talk(face, "我要的是：" + oz + "。沒關係！一共多少錢？", "I wanted: " + oe + ". That's OK! How much is it?", "<div class='tray'>" + want.map(function (m) { return dish(m, true); }).join("") + "</div>", ["我來算", "Let me count"], bill); }
-          else Read.pair("不太對喔，我要：" + oz, "Not quite. I'd like: " + oe);
+          if (tries >= 2) { tray = want.slice(); return bill(["我要的是：" + oz + "。沒關係！", "I wanted: " + oe + ". That's OK! "]); }
+          draw(["不太對喔，我要：" + oz, "Not quite. I'd like: " + oe], true);
         };
       }
-      function bill() { // collect the money with bills and coins (numbers only in the sum)
-        var sum = want.reduce(function (s, m) { return s + m.p; }, 0), paid = [], bt = 0;
-        function draw2(msg) {
+      function bill(pre) { // exact money, or (level 1+) the customer pays with a big bill and Lucas gives change
+        var sum = want.reduce(function (s, m) { return s + m.p; }, 0), giv = sum <= 100 ? 100 : sum <= 500 ? 500 : 1000;
+        if (giv === sum) change = false;
+        var target = change ? giv - sum : sum, paid = [], bt = 0, over = false;
+        var ask = change ? ["一共 " + sum + " 元對嗎？我付 " + giv + " 元，請找錢。", "That's NT$" + sum + ", right? Here's NT$" + giv + ". My change, please."] : ["看起來好好吃！一共多少錢？", "Looks yummy! How much is it?"];
+        if (pre) ask = [pre[0] + ask[0], pre[1] + ask[1]];
+        function draw2(msg, talkNow, end) {
           var got = paid.reduce(function (a, b) { return a + b; }, 0);
-          var cd = self.card("<div class='c2sub cashq'>🧾 " + bi("收錢：用錢幣和鈔票湊出一共多少", "Collect the money: make the total with bills and coins") + "</div>" +
-            "<div class='bill2 pin'>" + want.map(function (m) { return "<b>" + m.p + "</b>"; }).join(" + ") + " = ?</div>" +
-            "<div class='cashbar pin'>" + C2.CASH.map(function (v) { return "<button class='cashb' data-v='" + v + "' aria-label='" + v + "'>" + cash(v) + "</button>"; }).join("") + "</div>" +
+          var cd = self.card(face(true, (end || ask)[0], (end || ask)[1]) +
+            "<div class='bill2 pin'>" + (change ? "<b>" + giv + "</b> − (" + want.map(function (m) { return m.p; }).join(" + ") + ") = ?" : want.map(function (m) { return "<b>" + m.p + "</b>"; }).join(" + ") + " = ?") + "</div>" +
+            (end ? "" : "<div class='c2sub cashq'>🧾 " + (change ? bi("找錢：用錢幣和鈔票湊出要找多少", "Give change: make the change with bills and coins") : bi("收錢：用錢幣和鈔票湊出一共多少", "Collect the money: make the total with bills and coins")) + "</div>" +
+            "<div class='cashbar pin'>" + C2.CASH.map(function (v) { return "<button class='cashb' data-v='" + v + "' aria-label='" + v + "'>" + cash(v) + "</button>"; }).join("") + "</div>") +
             "<div class='till pin'>💰 " + (paid.length ? paid.map(function (v, i) { return "<button class='tchip' data-i='" + i + "'>" + cash(v) + "</button>"; }).join("") : bi("點上面的錢放進收銀台", "Tap the money to put it in the till")) + "<span class='got'>= " + got + "</span></div>" +
             (msg ? "<div class='tip'>" + msg + "</div>" : "") +
-            "<div class='act'><button class='btn white' id='cClr'>↺ " + bi("清空", "Clear") + "</button><button class='btn blue' id='cOk'>" + bi("收好了", "Done") + " ▶</button></div>");
+            (end ? "<div class='act'><button class='btn blue' id='cNext'>" + (n >= N ? bi("下班", "Finish shift") : bi("謝謝光臨！下一位", "Thank you! Next")) + " ▶</button></div>"
+              : "<div class='act'><button class='btn white' id='cClr'>↺ " + bi("清空", "Clear") + "</button><button class='btn blue' id='cOk'>" + bi(change ? "找好了" : "收好了", "Done") + " ▶</button></div>"));
+          if (talkNow) Read.pair(talkNow[0], talkNow[1], who.pitch);
+          if (end) { $("#cNext").onclick = function () { sfx("tap"); Read.stop(); customer(); }; return; }
           $$(".cashb", cd).forEach(function (b) { b.onclick = function () { if (paid.length < 14) { paid.push(+b.dataset.v); sfx("tap"); draw2(); } }; });
           $$(".till .tchip", cd).forEach(function (b) { b.onclick = function () { paid.splice(+b.dataset.i, 1); draw2(); }; });
           $("#cClr").onclick = function () { paid = []; draw2(); };
           $("#cOk").onclick = function () {
-            bt++;
-            if (got === sum) { sfx("ding"); if (perfect && bt === 1) tips += C2.TIP; return thanks(sum, perfect && bt === 1); }
+            if (over) return; bt++;
+            if (got === target) { sfx("ding"); over = true; return thanks(perfect && bt === 1); }
             sfx("buzz");
-            if (bt >= 2) { var left = sum, ans = []; C2.CASH.forEach(function (v) { while (left >= v) { ans.push(v); left -= v; } }); paid = ans; draw2("👉 " + want.map(function (m) { return m.p; }).join(" + ") + " = " + sum); return setTimeout(function () { thanks(sum, false); }, 2200); }
-            var hint = got < sum ? ["還不夠，再加一點。", "Not enough yet. Add more."] : ["太多了，拿掉一些。", "Too much. Take some away."];
-            Read.pair(hint[0], hint[1]); draw2(bi(hint[0], hint[1]));
+            if (bt >= 2) { over = true; var left = target, ans = []; C2.CASH.forEach(function (v) { while (left >= v) { ans.push(v); left -= v; } }); paid = ans;
+              var w = change ? giv + " − " + sum + " = " + target : want.map(function (m) { return m.p; }).join(" + ") + " = " + sum; draw2("👉 " + w, ["答案是 " + target + " 元。", "The answer is NT$" + target + "."]); return setTimeout(function () { thanks(false); }, 2400); }
+            var hint = got < target ? ["還不夠，再加一點。", "Not enough yet. Add more."] : ["太多了，拿掉一些。", "Too much. Take some away."];
+            draw2(bi(hint[0], hint[1]), hint);
           };
         }
-        draw2();
-      }
-      function thanks(sum, tip) { // pay, say thanks, a little small talk
-        var t = C2.TALK[(Math.random() * C2.TALK.length) | 0];
-        n++;
-        talk(face, "給你 " + sum + " 元。" + (tip ? "這 10 元小費給你！" : "") + t[0], "Here's NT$" + sum + "." + (tip ? " And NT$10 tip for you!" : "") + " " + t[1], tip ? "<div class='tip'>💰 +" + money(C2.TIP) + " " + bi("小費", "tip") + "</div>" : "", n >= N ? ["下班", "Finish shift"] : ["謝謝光臨！下一位", "Thank you! Next"], customer);
+        function thanks(tip) { // thanks + small talk in the same bubble
+          var t = C2.TALK[R(C2.TALK.length)]; n++; if (tip) tips += C2.TIP;
+          var e = [(change ? "謝謝你找錢！" : "給你 " + sum + " 元。") + (tip ? "這 10 元小費給你！" : "") + t[0], (change ? "Thanks for the change!" : "Here's NT$" + sum + ".") + (tip ? " And NT$10 tip for you!" : "") + " " + t[1]];
+          draw2(tip ? "💰 +" + money(C2.TIP) + " " + bi("小費", "tip") : "", e, e);
+        }
+        draw2("", ask);
       }
     }
     function pay() {
-      var job = C2.JOBS[0], got = job.pay + tips; c.money += got; save(); sfx("win");
+      var job = C2.JOBS[0], pay = job.pay + 10 * lvl, got = pay + tips, up = C2S.shiftDone(c, "noodle", lvl); c.money += got; save(); sfx("win");
       self.frame(["下班了", "Shift done"]);
-      self.card("<div class='big'>💰 +" + money(got) + "</div>" + self.say("boss", "做得很好！薪水 " + job.pay + " 元，小費 " + tips + " 元。", "Great work! Pay NT$" + job.pay + ", tips NT$" + tips + ".") +
+      self.card("<div class='big'>💰 +" + money(got) + "</div>" + self.say("boss", "做得很好！薪水 " + pay + " 元，小費 " + tips + " 元。", "Great work! Pay NT$" + pay + ", tips NT$" + tips + ".") + lvlNote(up, "noodle") +
         "<div class='tip'>💡 " + bi("生活小技巧：去店裡買東西時，先算算看總共多少錢！", "Try it next time you shop: add up the total before you pay!") + "</div><div class='act'><button class='btn blue' id='pOk'>" + bi("回家路上", "Head out") + " ▶</button></div>");
       $("#pOk").onclick = function () { Read.stop(); self.advance(); };
     }
     customer();
   },
-  /* a job made of N small questions: two tries, NT$10 bonus for each first-try answer */
-  job: function (job, N, make, tip) {
-    var self = this, c = C2S.get(), n = 0, bonus = 0;
+  /* a job made of N rounds. Each job has several round kinds ({min: level, f(lvl)}); a random one is picked each round, never the same kind twice in a row.
+     f returns {say, ans, why, html} (tap [data-a]); or adds bind(cd, right, wrong) for its own controls and reveal(cd) for the answer. */
+  job: function (job, N, kinds, tip) {
+    var self = this, c = C2S.get(), n = 0, bonus = 0, lvl = C2S.lvl(c, job.id), lastK = -1;
     this.frame([job.zh, job.en]);
     function one() {
       if (n >= N) {
-        var got = job.pay + bonus; c.money += got; save(); sfx("win"); self.frame(["下班了", "Shift done"]);
-        self.card("<div class='big'>💰 +" + money(got) + "</div><div style='text-align:center'>" + bi("薪水 " + job.pay + " 元，獎金 " + bonus + " 元", "Pay NT$" + job.pay + ", bonus NT$" + bonus) + "</div><div class='tip'>💡 " + bi(tip[0], tip[1]) + "</div><div class='act'><button class='btn blue' id='jOk'>" + bi("回家路上", "Head out") + " ▶</button></div>");
+        var pay = job.pay + 10 * lvl, got = pay + bonus, up = C2S.shiftDone(c, job.id, lvl); c.money += got; save(); sfx("win"); self.frame(["下班了", "Shift done"]);
+        self.card("<div class='big'>💰 +" + money(got) + "</div><div style='text-align:center'>" + bi("薪水 " + pay + " 元，獎金 " + bonus + " 元", "Pay NT$" + pay + ", bonus NT$" + bonus) + "</div>" + lvlNote(up, job.id) + "<div class='tip'>💡 " + bi(tip[0], tip[1]) + "</div><div class='act'><button class='btn blue' id='jOk'>" + bi("回家路上", "Head out") + " ▶</button></div>");
         $("#jOk").onclick = function () { Read.stop(); self.advance(); }; return;
       }
-      var q = make(n), tries = 0;
-      var cd = self.card("<div class='pin c2sub'>" + job.ic + " " + (n + 1) + " / " + N + "　" + bi(q.say[0], q.say[1]) + "</div>" + q.html + "<div class='why'></div>");
+      var av = kinds.map(function (k, i) { return k.min <= lvl ? i : -1; }).filter(function (i) { return i >= 0; });
+      var ok = av.length > 1 ? av.filter(function (i) { return i !== lastK; }) : av, ki = ok[R(ok.length)]; lastK = ki;
+      var q = kinds[ki].f(lvl), tries = 0, done = false; self._q = q; // for automated tests
+      var cd = self.card("<div class='pin c2sub'>" + job.ic + " " + (n + 1) + " / " + N + " <span class='lv'>" + stars(lvl) + "</span>　" + bi(q.say[0], q.say[1]) + "</div>" + q.html + "<div class='why'></div>");
       Read.pair(q.say[0], q.say[1]);
-      $$("[data-a]", cd).forEach(function (b) { b.onclick = function () {
-        if (b.disabled) return; tries++;
-        if (b.dataset.a === String(q.ans)) { b.classList.add("ok"); sfx("ding"); if (tries === 1) bonus += 10; n++; Read.pair("答對了！", "Right!"); setTimeout(one, 900); return; }
-        b.classList.add("no"); b.disabled = true; sfx("buzz");
-        if (tries >= 2) { $$("[data-a]", cd).forEach(function (x) { if (x.dataset.a === String(q.ans)) x.classList.add("ok"); }); $(".why", cd).innerHTML = "<div class='tip'>👉 " + bi(q.why[0], q.why[1]) + "</div>"; Read.pair(q.why[0], q.why[1]); n++; setTimeout(one, 2600); }
-        else Read.pair("再試一次！", "Try again!");
-      }; });
+      function right(b) { if (done) return; done = true; if (b) b.classList.add("ok"); sfx("ding"); if (tries === 0) bonus += 10; n++; Read.pair("答對了！", "Right!"); setTimeout(one, 1000); }
+      function wrong(b, hint) {
+        if (done) return; tries++; if (b) { b.classList.add("no"); b.disabled = true; } sfx("buzz");
+        if (tries >= 2) { done = true; if (q.reveal) q.reveal(cd); else $$("[data-a]", cd).forEach(function (x) { if (x.dataset.a === String(q.ans)) x.classList.add("ok"); });
+          $(".why", cd).innerHTML = "<div class='tip'>👉 " + bi(q.why[0], q.why[1]) + "</div>"; Read.pair(q.why[0], q.why[1]); n++; setTimeout(one, 3000); }
+        else { var h = hint || ["再試一次！", "Try again!"]; if (hint) $(".why", cd).innerHTML = "<div class='tip'>" + bi(h[0], h[1]) + "</div>"; Read.pair(h[0], h[1]); }
+      }
+      if (q.bind) q.bind(cd, right, wrong);
+      else $$("[data-a]", cd).forEach(function (b) { b.onclick = function () { if (b.disabled) return; if (b.dataset.a === String(q.ans)) right(b); else wrong(b); }; });
     }
     one();
   },
-  deliver: function () { // read the label (sometimes a math clue) and tap the right house
+  deliver: function () { // house numbers: clues with + and −, across the street, next door, and routes in order
     var cols = ["#ff8787", "#74c0fc", "#8ce99a", "#ffd43b", "#b197fc", "#ffa94d"];
-    this.job(C2.JOBS[1], 5, function (i) {
-      var start = 2 + 2 * (Math.random() * 10 | 0), odd = [], even = [];
-      for (var k = 0; k < 6; k++) { odd.push(start + 1 + 2 * k); even.push(start + 2 * k); }
-      var all = odd.concat(even), ans = all[(Math.random() * all.length) | 0], say, why;
-      if (i < 2) { say = ["包裹要送到 " + ans + " 號。", "This package goes to number " + ans + "."]; why = ["門牌是 " + ans + " 號的房子。", "The house with number " + ans + "."]; }
-      else { var d = i % 2 ? 2 : 4, base = ans - d; if (all.indexOf(base) < 0) { base = ans + d; say = ["送到比 " + base + " 號小 " + d + " 號的房子。", "Deliver to the house " + d + " less than number " + base + "."]; why = [base + " − " + d + " = " + ans, base + " − " + d + " = " + ans]; }
-        else { say = ["送到比 " + base + " 號大 " + d + " 號的房子。", "Deliver to the house " + d + " more than number " + base + "."]; why = [base + " + " + d + " = " + ans, base + " + " + d + " = " + ans]; } }
-      function row(list) { return "<div class='street'>" + list.map(function (h, k) { return "<button class='house' data-a='" + h + "' style='background:" + cols[(h + k) % cols.length] + "'><span>🏠</span><b>" + h + "</b></button>"; }).join("") + "</div>"; }
-      return { say: say, ans: ans, why: why, html: row(odd) + "<div class='road'>🚚 · · · · · · · · · ·</div>" + row(even) };
-    }, ["看門牌：一邊是單數，一邊是雙數！", "Look at house numbers: odd on one side, even on the other!"]);
+    function street(lvl) { var big = lvl >= 3 ? 100 + 2 * R(140) : lvl >= 1 ? 20 + 2 * R(30) : 2 + 2 * R(10), odd = [], even = [];
+      for (var k = 0; k < 6; k++) { odd.push(big + 1 + 2 * k); even.push(big + 2 * k); } return { odd: odd, even: even, all: odd.concat(even) }; }
+    function draw(s, mark) { var row = function (list) { return "<div class='street'>" + list.map(function (h, k) { return "<button class='house' data-a='" + h + "' style='background:" + cols[(h + k) % cols.length] + "'><span>" + (mark && mark[h] ? mark[h] : "🏠") + "</span><b>" + h + "</b></button>"; }).join("") + "</div>"; };
+      return row(s.odd) + "<div class='road'>🚚 · · · · · · · · · ·</div>" + row(s.even); }
+    this.job(C2.JOBS[1], 6, [
+      { min: 0, f: function (lvl) { // math clue
+        var s = street(lvl), ans = s.all[R(12)], d = [3, 4, 6, 8, 10][Math.min(4, lvl + R(2))] + (lvl >= 2 ? R(5) : 0), base, say, why;
+        if (R(2)) { base = ans + d; say = ["送到比 " + base + " 號小 " + d + " 號的房子。", "Deliver to the house " + d + " less than number " + base + "."]; why = [base + " − " + d + " = " + ans, base + " − " + d + " = " + ans]; }
+        else { base = ans - d; say = ["送到比 " + base + " 號大 " + d + " 號的房子。", "Deliver to the house " + d + " more than number " + base + "."]; why = [base + " + " + d + " = " + ans, base + " + " + d + " = " + ans]; }
+        return { say: say, ans: ans, why: why, html: draw(s) }; } },
+      { min: 0, f: function (lvl) { // across the street
+        var s = street(lvl), k = R(6), ans = s.even[k], from = s.odd[k], m = {};
+        if (R(2)) { ans = s.odd[k]; from = s.even[k]; } m[from] = "⭐";
+        return { say: ["送到 " + from + " 號⭐對面的房子。", "Deliver to the house across the street from number " + from + " ⭐."], ans: ans, why: [from + " 號對面是 " + ans + " 號。", "Across from " + from + " is " + ans + "."], html: draw(s, m) }; } },
+      { min: 0, f: function (lvl) { // next door, same side: ± 2
+        var s = street(lvl), side = R(2) ? s.odd : s.even, k = 1 + R(4), from = side[k], dir = R(2) ? 1 : -1, ans = side[k + dir];
+        return { say: ["送到 " + from + " 號隔壁，號碼比較" + (dir > 0 ? "大" : "小") + "的那一家。", "Deliver next door to number " + from + ", the " + (dir > 0 ? "bigger" : "smaller") + " number."], ans: ans, why: ["同一邊的門牌差 2：" + from + (dir > 0 ? " + 2 = " : " − 2 = ") + ans, "Same-side numbers go up by 2: " + from + (dir > 0 ? " + 2 = " : " − 2 = ") + ans], html: draw(s) }; } },
+      { min: 0, f: function (lvl) { // route: tap 3-4 houses from smallest to biggest
+        var s = street(lvl), m = 3 + (lvl >= 2 ? 1 : 0), pick = s.all.slice().sort(function () { return Math.random() - 0.5; }).slice(0, m), order = pick.slice().sort(function (a, b) { return a - b; }), mark = {};
+        pick.forEach(function (h) { mark[h] = "📦"; });
+        return { say: ["有 " + m + " 個包裹📦。從最小的號碼送到最大的號碼！", "You have " + m + " packages 📦. Deliver from the smallest number to the biggest!"], why: ["順序：" + order.join(" → "), "Order: " + order.join(" → ")], html: draw(s, mark), bind: seqBind(order), reveal: seqReveal(order) }; } },
+      { min: 2, f: function (lvl) { // two-step clue
+        var s = street(lvl), ans = s.all[R(12)], a = 10 + R(10), b = a - (2 + R(6)), base = ans - a + b;
+        return { say: ["從 " + base + " 號開始，先加 " + a + "，再減 " + b + "。送到哪一家？", "Start at number " + base + ". Add " + a + ", then take away " + b + ". Which house?"], ans: ans, why: [base + " + " + a + " − " + b + " = " + ans, base + " + " + a + " − " + b + " = " + ans], html: draw(s) }; } }
+    ], ["看門牌：一邊是單數，一邊是雙數！", "Look at house numbers: odd on one side, even on the other!"]);
   },
-  bank: function () { // count a pile of bills and coins
-    this.job(C2.JOBS[2], 5, function (i) {
-      var pile = [], kinds = i < 2 ? [100, 50, 10] : [500, 100, 50, 10, 5], k = 3 + (Math.random() * (i < 2 ? 2 : 4) | 0);
-      for (var j = 0; j < k; j++) pile.push(kinds[(Math.random() * kinds.length) | 0]);
-      pile.sort(function (a, b) { return b - a; });
-      var sum = pile.reduce(function (a, b) { return a + b; }, 0), opts = [sum, sum + (i < 2 ? 10 : 50), sum - (sum > 60 ? 50 : -100)];
-      opts = opts.filter(function (v, x) { return opts.indexOf(v) === x; }).sort(function () { return Math.random() - 0.5; });
-      return { say: ["客人要存錢，一共有多少？", "A customer is saving money. How much is it?"], ans: sum, why: [pile.join(" + ") + " = " + sum, pile.join(" + ") + " = " + sum],
-        html: "<div class='till pile'>" + pile.map(cash).join("") + "</div><div class='quiz'><div class='ans'>" + opts.map(function (v) { return "<button class='btn' data-a='" + v + "'>" + money(v) + "</button>"; }).join("") + "</div></div>" };
-    }, ["數錢時，先數大的鈔票，再數小的錢幣。", "When counting money, start with the big bills, then the small coins."]);
+  bank: function () { // count piles, make an amount, swap bills, compare piles
+    function pile(lvl) { var p = [], kinds = lvl >= 2 ? [1000, 500, 100, 50, 10, 5, 1] : lvl >= 1 ? [500, 100, 50, 10, 5] : [100, 50, 10, 5], k = 3 + R(2 + lvl);
+      for (var j = 0; j < k; j++) p.push(kinds[R(kinds.length)]); return p.sort(function (a, b) { return b - a; }); }
+    var sumOf = function (p) { return p.reduce(function (a, b) { return a + b; }, 0); };
+    var opts3 = function (v, d) { var o = [v, v + d, v - d > 0 ? v - d : v + 2 * d]; return o.sort(function () { return Math.random() - 0.5; }).map(function (x) { return "<button class='btn' data-a='" + x + "'>" + money(x) + "</button>"; }).join(""); };
+    this.job(C2.JOBS[2], 5, [
+      { min: 0, f: function (lvl) { var p = pile(lvl), s = sumOf(p);
+        return { say: ["客人要存錢，一共有多少？", "A customer is saving money. How much is it?"], ans: s, why: [p.join(" + ") + " = " + s, p.join(" + ") + " = " + s], html: "<div class='till pile'>" + p.map(cash).join("") + "</div><div class='quiz'><div class='ans'>" + opts3(s, lvl >= 2 ? 5 : 10) + "</div></div>" }; } },
+      { min: 0, f: function (lvl) { // make an amount with the cash buttons
+        var t = (lvl >= 2 ? 100 + R(18) * 50 + R(2) * 5 : lvl >= 1 ? 50 + R(15) * 25 : 30 + R(12) * 10), paid = [], few = lvl >= 2, greedy = [], left = t;
+        C2.CASH.forEach(function (v) { while (left >= v) { greedy.push(v); left -= v; } });
+        return { say: ["客人要領 " + t + " 元。" + (few ? "用最少張數湊出來！" : "湊出來給他！"), "A customer wants NT$" + t + "." + (few ? " Make it with the fewest pieces!" : " Make it for him!")],
+          why: ["可以這樣：" + greedy.join(" + "), "Like this: " + greedy.join(" + ")],
+          html: "<div class='cashbar'>" + C2.CASH.map(function (v) { return "<button class='cashb' data-v='" + v + "'>" + cash(v) + "</button>"; }).join("") + "</div><div class='till' id='bTill'></div><div class='act'><button class='btn white' id='bClr'>↺</button><button class='btn blue' id='bOk'>" + bi("給客人", "Hand over") + " ▶</button></div>",
+          bind: function (cd, right, wrong) {
+            function show() { $("#bTill", cd).innerHTML = "💰 " + paid.map(function (v, i) { return "<button class='tchip' data-i='" + i + "'>" + cash(v) + "</button>"; }).join("") + "<span class='got'>= " + sumOf(paid) + "</span>"; $$("#bTill .tchip", cd).forEach(function (b) { b.onclick = function () { paid.splice(+b.dataset.i, 1); show(); }; }); }
+            $$(".cashb", cd).forEach(function (b) { b.onclick = function () { if (paid.length < 14) { paid.push(+b.dataset.v); sfx("tap"); show(); } }; });
+            $("#bClr", cd).onclick = function () { paid = []; show(); };
+            $("#bOk", cd).onclick = function () { var g = sumOf(paid); if (g === t && (!few || paid.length <= greedy.length)) return right(); wrong(null, g !== t ? (g < t ? ["還不夠，再加一點。", "Not enough yet."] : ["太多了，拿掉一些。", "Too much."]) : ["金額對了，但可以用更少張！", "Right amount, but you can use fewer pieces!"]); };
+            show(); },
+          reveal: function (cd) { $("#bTill", cd).innerHTML = "💰 " + greedy.map(cash).join("") + "<span class='got'>= " + t + "</span>"; } }; } },
+      { min: 0, f: function (lvl) { // swap a bill for smaller money
+        var sw = [[100, 10], [50, 10], [100, 50], [500, 100], [100, 5], [1000, 100], [500, 50], [1000, 500]][Math.min(7, R(3) + lvl)], ans = sw[0] / sw[1];
+        return { say: ["一張 " + sw[0] + " 元可以換幾個 " + sw[1] + " 元？", "One NT$" + sw[0] + " can be swapped for how many NT$" + sw[1] + "?"], ans: ans, why: [ans + " 個 " + sw[1] + " 元是 " + sw[0] + " 元。", ans + " × " + sw[1] + " = " + sw[0]],
+          html: "<div class='till pile'>" + cash(sw[0]) + " ➡️ ❓ × " + cash(sw[1]) + "</div><div class='quiz'><div class='ans'>" + [ans, ans * 2, ans + 5].sort(function () { return Math.random() - 0.5; }).map(function (v) { return "<button class='btn' data-a='" + v + "'>" + v + "</button>"; }).join("") + "</div></div>" }; } },
+      { min: 1, f: function (lvl) { // which pile is more?
+        var a = pile(lvl), b = pile(lvl); while (sumOf(a) === sumOf(b)) b = pile(lvl); var big = sumOf(a) > sumOf(b) ? "A" : "B";
+        return { say: ["哪一堆錢比較多？", "Which pile has more money?"], ans: big, why: ["A = " + sumOf(a) + "，B = " + sumOf(b), "A = " + sumOf(a) + ", B = " + sumOf(b)],
+          html: "<div class='quiz'><div class='ans'><button class='btn' data-a='A'><b>A</b> " + a.map(cash).join("") + "</button><button class='btn' data-a='B'><b>B</b> " + b.map(cash).join("") + "</button></div></div>" }; } }
+    ], ["數錢時，先數大的鈔票，再數小的錢幣。", "When counting money, start with the big bills, then the small coins."]);
   },
-  wash: function () { // count mud, next wash step, then the price board
-    var W = C2.WASH, P = W.price, R = function (n) { return (Math.random() * n) | 0; }, mix = function (a) { return a.filter(function (v, x) { return a.indexOf(v) === x; }).sort(function () { return Math.random() - 0.5; }); };
+  wash: function () { // scrub mud, wash steps, price board, waiting time
+    var W = C2.WASH, P = W.price, mix = function (a) { return a.filter(function (v, x) { return a.indexOf(v) === x; }).sort(function () { return Math.random() - 0.5; }); };
     var board = "<div class='wboard'><b>🧽 " + bi("價目表", "Prices") + "</b><span>🚗 " + bi("小車", "Small car") + " " + money(P.small) + "</span><span>🚙 " + bi("大車", "Big car") + " " + money(P.big) + "</span><span>✨ " + bi("打蠟", "Wax") + " +" + money(P.wax) + "</span></div>";
     var nums = function (opts, fmt) { return "<div class='quiz'><div class='ans'>" + opts.map(function (v) { return "<button class='btn' data-a='" + v + "'>" + (fmt ? fmt(v) : v) + "</button>"; }).join("") + "</div></div>"; };
-    this.job(C2.JOBS[3], 5, function (i) {
-      if (i === 0) { // count the mud spots
-        var k = 3 + R(5), spots = "";
-        for (var j = 0; j < k; j++) spots += "<i style='left:" + (10 + (j * 80 / k) + R(6)) + "%;top:" + (18 + R(50)) + "%'></i>";
-        return { say: ["這台車有幾個泥巴點？", "How many mud spots are on this car?"], ans: k, why: ["一個一個數：一共 " + k + " 個。", "Count them one by one: " + k + "."],
-          html: "<div class='wcar'><span>🚙</span>" + spots + "</div>" + nums(mix([k, k + 1, k - 1])) };
-      }
-      if (i === 1) { // which step comes next?
-        var at = 1 + R(W.steps.length - 1), others = [];
-        W.steps.forEach(function (s, x) { if (x !== at) others.push(x); });
-        others.sort(function () { return Math.random() - 0.5; });
-        var opts = mix([at, others[0], others[1]]);
-        return { say: ["洗車的下一步是什麼？", "What is the next wash step?"], ans: at, why: ["順序：" + W.steps.map(function (s) { return s[1]; }).join("、"), "Order: " + W.steps.map(function (s) { return s[2]; }).join(", ")],
-          html: "<div class='wsteps'>" + W.steps.slice(0, at).map(function (s, x) { return "<span>" + (x + 1) + ". " + s[0] + " " + bi(s[1], s[2]) + "</span>"; }).join("") + "<span class='q'>" + (at + 1) + ". ❓</span></div>" +
-            "<div class='quiz'><div class='ans'>" + opts.map(function (x) { var s = W.steps[x]; return "<button class='btn' data-a='" + x + "'>" + s[0] + " " + bi(s[1], s[2]) + "</button>"; }).join("") + "</div></div>" };
-      }
-      // price board math: one car + wax, two cars, then change from a bill
-      var big = R(2) === 1, wax = i !== 3 && R(2) === 1, car = big ? P.big : P.small, cz = big ? "大車" : "小車", ce = big ? "a big car" : "a small car";
-      if (i === 3) { var big2 = R(2) === 1, car2 = big2 ? P.big : P.small, sum2 = car + car2;
-        return { say: ["一台" + cz + "和一台" + (big2 ? "大車" : "小車") + "，一共多少錢？", "One " + (big ? "big" : "small") + " car and one " + (big2 ? "big" : "small") + " car. How much in all?"], ans: sum2, why: [car + " + " + car2 + " = " + sum2, car + " + " + car2 + " = " + sum2],
-          html: board + nums(mix([sum2, sum2 + 10, sum2 - 30 > 0 ? sum2 - 30 : sum2 + 30]), money) };
-      }
-      var cost = car + (wax ? P.wax : 0);
-      if (i === 2) return { say: ["客人要洗" + cz + (wax ? "，還要打蠟" : "") + "。要多少錢？", "Wash " + ce + (wax ? " with wax" : "") + ". How much?"], ans: cost, why: [wax ? car + " + " + P.wax + " = " + cost : cz + "是 " + car + " 元。", wax ? car + " + " + P.wax + " = " + cost : "A " + (big ? "big" : "small") + " car is NT$" + car + "."],
-        html: board + nums(mix([cost, cost + 20, cost === P.small ? 110 : cost - 30]), money) };
-      var paid = cost > 100 ? 500 : 100, ch = paid - cost;
-      return { say: ["洗" + cz + (wax ? "加打蠟" : "") + "，客人付 " + paid + " 元，要找多少？", "Wash " + ce + (wax ? " with wax" : "") + ". The customer pays NT$" + paid + ". How much change?"], ans: ch, why: [paid + " − " + cost + " = " + ch, paid + " − " + cost + " = " + ch],
-        html: board + "<div class='till pile'>" + cash(paid) + "</div>" + nums(mix([ch, ch + 10, ch + 30]), money) };
-    }, ["洗東西要照順序：先沖水、抹肥皂、刷一刷，最後沖乾淨！", "Try it when you wash your hands: water, soap, scrub, then rinse!"]);
+    var stepBtn = function (x) { var s = W.steps[x]; return "<button class='btn' data-a='" + x + "'>" + s[0] + " " + bi(s[1], s[2]) + "</button>"; };
+    this.job(C2.JOBS[3], 5, [
+      { min: 0, f: function (lvl) { // scrub every mud spot, then say how many
+        var k = 4 + R(3 + lvl * 2), spots = "", cells = []; for (var cc = 0; cc < 15; cc++) cells.push(cc); cells.sort(function () { return Math.random() - 0.5; });
+        for (var j = 0; j < k; j++) spots += "<button class='mud' style='left:" + (10 + (cells[j] % 5) * 15 + R(3)) + "%;top:" + (40 + ((cells[j] / 5) | 0) * 13 + R(2)) + "%' aria-label='mud'></button>";
+        return { say: ["把泥巴全部刷掉！刷完說說看，一共刷了幾個？", "Scrub off every mud spot! Then: how many did you scrub?"], ans: k, why: ["一共 " + k + " 個泥巴點。", "There were " + k + " mud spots."],
+          html: "<div class='wcar'><span>🚙</span>" + spots + "</div><div class='mudq' style='visibility:hidden'>" + nums(mix([k, k + 1, k - 1])) + "</div>",
+          bind: function (cd, right, wrong) {
+            var left = k; $$(".mud", cd).forEach(function (m) { m.onclick = function () { if (m.classList.contains("clean")) return; m.classList.add("clean"); sfx("pop"); left--; if (!left) { $(".mudq", cd).style.visibility = "visible"; Read.pair("刷好了！一共幾個？", "All clean! How many?"); } }; });
+            $$("[data-a]", cd).forEach(function (b) { b.onclick = function () { if (b.disabled) return; if (b.dataset.a === String(k)) right(b); else wrong(b); }; }); },
+          reveal: function (cd) { $(".mudq", cd).style.visibility = "visible"; $$("[data-a]", cd).forEach(function (x) { if (x.dataset.a === String(k)) x.classList.add("ok"); }); } }; } },
+      { min: 0, f: function (lvl) { // next step / missing step
+        var at = 1 + R(W.steps.length - 1), others = []; W.steps.forEach(function (s, x) { if (x !== at) others.push(x); }); others.sort(function () { return Math.random() - 0.5; });
+        var miss = lvl >= 1 && R(2), row = W.steps.map(function (s, x) { return x === at ? "<span class='q'>" + (x + 1) + ". ❓</span>" : (!miss && x > at) ? "" : "<span>" + (x + 1) + ". " + s[0] + " " + bi(s[1], s[2]) + "</span>"; }).join("");
+        return { say: miss ? ["哪一個步驟不見了？", "Which wash step is missing?"] : ["洗車的下一步是什麼？", "What is the next wash step?"], ans: at, why: ["順序：" + W.steps.map(function (s) { return s[1]; }).join("、"), "Order: " + W.steps.map(function (s) { return s[2]; }).join(", ")],
+          html: "<div class='wsteps'>" + row + "</div><div class='quiz'><div class='ans'>" + mix([at, others[0], others[1]]).map(stepBtn).join("") + "</div></div>" }; } },
+      { min: 1, f: function (lvl) { // put the steps in order
+        var order = [0, 1, 2, 3, 4].slice(0, 3 + Math.min(2, lvl - 1)), shown = order.slice().sort(function () { return Math.random() - 0.5; });
+        return { say: ["照順序點洗車的步驟！", "Tap the wash steps in the right order!"], why: ["順序：" + order.map(function (x) { return W.steps[x][1]; }).join(" → "), "Order: " + order.map(function (x) { return W.steps[x][2]; }).join(" → ")],
+          html: "<div class='quiz'><div class='ans'>" + shown.map(stepBtn).join("") + "</div></div>", bind: seqBind(order), reveal: seqReveal(order) }; } },
+      { min: 0, f: function (lvl) { // price board math
+        var big = R(2), wax = R(2), car = big ? P.big : P.small, cz = big ? "大車" : "小車", ce = big ? "big car" : "small car", cost = car + (wax ? P.wax : 0);
+        if (lvl >= 1 && R(2)) { var m = 2 + R(lvl >= 3 ? 3 : 2), tot = cost * m;
+          return { say: [m + " 台" + cz + (wax ? "都要打蠟" : "") + "，一共多少錢？", m + " " + ce + "s" + (wax ? ", all with wax" : "") + ". How much in all?"], ans: tot, why: [cost + " × " + m + " = " + tot, cost + " × " + m + " = " + tot], html: board + nums(mix([tot, tot + cost, tot - 30]), money) }; }
+        if (lvl >= 1) { var paid = cost > 100 ? 500 : 100, ch = paid - cost;
+          return { say: ["洗" + cz + (wax ? "加打蠟" : "") + "，客人付 " + paid + " 元，要找多少？", "Wash a " + ce + (wax ? " with wax" : "") + ". The customer pays NT$" + paid + ". How much change?"], ans: ch, why: [paid + " − " + cost + " = " + ch, paid + " − " + cost + " = " + ch], html: board + "<div class='till pile'>" + cash(paid) + "</div>" + nums(mix([ch, ch + 10, ch + 30]), money) }; }
+        return { say: ["客人要洗" + cz + (wax ? "，還要打蠟" : "") + "。要多少錢？", "Wash a " + ce + (wax ? " with wax" : "") + ". How much?"], ans: cost, why: [wax ? car + " + " + P.wax + " = " + cost : cz + "是 " + car + " 元。", wax ? car + " + " + P.wax + " = " + cost : "A " + ce + " is NT$" + car + "."], html: board + nums(mix([cost, cost + 20, cost === P.small ? 110 : cost - 30]), money) }; } },
+      { min: 2, f: function (lvl) { // waiting time
+        var per = [5, 10, 15][R(3)], q = 2 + R(3), t = per * q;
+        return { say: ["洗一台車要 " + per + " 分鐘。前面有 " + q + " 台車，要等幾分鐘？", "Each wash takes " + per + " minutes. There are " + q + " cars ahead. How long is the wait?"], ans: t, why: [per + " × " + q + " = " + t, per + " × " + q + " = " + t],
+          html: "<div class='wsteps'>" + Array(q + 1).join("<span>🚗 ⏱" + per + "</span>") + "<span class='q'>🚙 ❓</span></div>" + nums(mix([t, t + per, t - per]), function (v) { return v + " min"; }) }; } }
+    ], ["洗東西要照順序：先沖水、抹肥皂、刷一刷，最後沖乾淨！", "Try it when you wash your hands: water, soap, scrub, then rinse!"]);
   },
-  books: function () { // shelve books by number, by first letter, and fill the gap
-    var R = function (n) { return (Math.random() * n) | 0; }, B = C2.BOOKS, AZ = C2.SHELF_AZ, cols = ["#ffc9c9", "#a5d8ff", "#b2f2bb", "#ffec99"];
-    var shelves = function (labels) { return "<div class='shelves'>" + labels.map(function (t, x) { return "<button class='shelf' data-a='" + x + "' style='background:" + cols[x] + "'><span>📚</span><b>" + t + "</b></button>"; }).join("") + "</div>"; };
-    this.job(C2.JOBS[4], 5, function (i) {
-      if (i < 2) { // number shelves 1-20, 21-40...
-        var n = 1 + R(80), s = Math.floor((n - 1) / 20), lab = [0, 1, 2, 3].map(function (x) { return (x * 20 + 1) + "–" + (x * 20 + 20); });
-        return { say: ["這本書是 " + n + " 號，要放哪一層？", "This is book number " + n + ". Which shelf?"], ans: s, why: [n + " 在 " + lab[s] + " 中間。", n + " is between " + lab[s].replace("–", " and ") + "."],
-          html: "<div class='bookc'>📕 <b>#" + n + "</b></div>" + shelves(lab) };
-      }
-      if (i < 4) { // English title, first letter A-F, G-L...
-        var t = B[R(B.length)], L = t[0], s2 = 0;
-        AZ.forEach(function (r, x) { if (L >= r[0] && L <= r[1]) s2 = x; });
-        return { say: ["這本書叫 " + t + "，第一個字母是 " + L + "。要放哪一層？", "This book is called " + t + ". It starts with " + L + ". Which shelf?"], ans: s2, why: [L + " 在 " + AZ[s2][0] + " 到 " + AZ[s2][1] + " 中間。", L + " comes between " + AZ[s2][0] + " and " + AZ[s2][1] + "."],
-          html: "<div class='bookc'>📘 <b><u>" + L + "</u>" + t.slice(1) + "</b></div>" + shelves(AZ.map(function (r) { return r[0] + "–" + r[1]; })) };
-      }
-      var st = 10 + R(80), gap = 1 + R(3), row = [0, 1, 2, 3, 4].map(function (x) { return x === gap ? "<span class='q'>❓</span>" : "<span>📗 " + (st + x) + "</span>"; }).join(""), ans = st + gap;
-      return { say: ["書要照號碼排。缺了哪一本？", "Books go in number order. Which one is missing?"], ans: ans, why: [(st + gap - 1) + " 的下一個是 " + ans + "。", "After " + (st + gap - 1) + " comes " + ans + "."],
-        html: "<div class='wsteps'>" + row + "</div><div class='quiz'><div class='ans'>" + [ans, ans + 2, ans - 2].sort(function () { return Math.random() - 0.5; }).map(function (v) { return "<button class='btn' data-a='" + v + "'>📗 " + v + "</button>"; }).join("") + "</div></div>" };
-    }, ["去圖書館時，看看書背上的號碼和字母，就知道書放在哪裡！", "Next time you're at the library, look at the numbers and letters on the book spines!"]);
+  books: function () { // number shelves, A-Z shelves, gaps, ABC order, counting books
+    var B = C2.BOOKS, AZ = C2.SHELF_AZ, cols = ["#ffc9c9", "#a5d8ff", "#b2f2bb", "#ffec99"];
+    var shelves = function (labels) { return "<div class='shelves'>" + labels.map(function (t, x) { return "<button class='bshelf' data-a='" + x + "' style='background:" + cols[x] + "'><span>📚</span><b>" + t + "</b></button>"; }).join("") + "</div>"; };
+    this.job(C2.JOBS[4], 5, [
+      { min: 0, f: function (lvl) { var w = [20, 25, 50, 50, 100][lvl], n = 1 + R(w * 4), s = Math.floor((n - 1) / w), lab = [0, 1, 2, 3].map(function (x) { return (x * w + 1) + "–" + (x * w + w); });
+        return { say: ["這本書是 " + n + " 號，要放哪一層？", "This is book number " + n + ". Which shelf?"], ans: s, why: [n + " 在 " + lab[s] + " 中間。", n + " is between " + lab[s].replace("–", " and ") + "."], html: "<div class='bookc'>📕 <b>#" + n + "</b></div>" + shelves(lab) }; } },
+      { min: 0, f: function (lvl) { var t = B[R(B.length)], L = t[0], s2 = 0; AZ.forEach(function (r, x) { if (L >= r[0] && L <= r[1]) s2 = x; });
+        return { say: lvl >= 2 ? ["這本書叫 " + t + "。要放哪一層？", "This book is called " + t + ". Which shelf?"] : ["這本書叫 " + t + "，第一個字母是 " + L + "。要放哪一層？", "This book is called " + t + ". It starts with " + L + ". Which shelf?"], ans: s2, why: [L + " 在 " + AZ[s2][0] + " 到 " + AZ[s2][1] + " 中間。", L + " comes between " + AZ[s2][0] + " and " + AZ[s2][1] + "."],
+          html: "<div class='bookc'>📘 <b>" + (lvl >= 2 ? t : "<u>" + L + "</u>" + t.slice(1)) + "</b></div>" + shelves(AZ.map(function (r) { return r[0] + "–" + r[1]; })) }; } },
+      { min: 0, f: function (lvl) { var step = [1, 2, 5, 10, 25][Math.min(4, lvl + R(2))], st = step * (2 + R(20)), gap = 1 + R(3), ans = st + gap * step;
+        var row = [0, 1, 2, 3, 4].map(function (x) { return x === gap ? "<span class='q'>❓</span>" : "<span>📗 " + (st + x * step) + "</span>"; }).join("");
+        return { say: ["書要照號碼排。缺了哪一本？", "The books are in number order. Which one is missing?"], ans: ans, why: [step > 1 ? "每本多 " + step + "：" + (ans - step) + " + " + step + " = " + ans : (ans - 1) + " 的下一個是 " + ans + "。", step > 1 ? "Count by " + step + "s: " + (ans - step) + " + " + step + " = " + ans : "After " + (ans - 1) + " comes " + ans + "."],
+          html: "<div class='wsteps'>" + row + "</div><div class='quiz'><div class='ans'>" + [ans, ans + 1, ans - 1].sort(function () { return Math.random() - 0.5; }).map(function (v) { return "<button class='btn' data-a='" + v + "'>📗 " + v + "</button>"; }).join("") + "</div></div>" }; } },
+      { min: 1, f: function (lvl) { // ABC order: tap 3-4 titles
+        var m = lvl >= 3 ? 4 : 3, pick = B.slice().sort(function () { return Math.random() - 0.5; }).slice(0, m), order = pick.slice().sort();
+        return { say: ["照 ABC 的順序，把書排上架！", "Put the books on the shelf in ABC order!"], why: ["ABC 順序：" + order.join(" → "), "ABC order: " + order.join(" → ")],
+          html: "<div class='quiz'><div class='ans'>" + pick.map(function (t) { return "<button class='btn' data-a='" + t + "'>📘 " + t + "</button>"; }).join("") + "</div></div>", bind: seqBind(order), reveal: seqReveal(order) }; } },
+      { min: 1, f: function (lvl) { var per = 3 + R(lvl >= 3 ? 7 : 4), sh = 2 + R(3), t = per * sh;
+        return { say: ["每一層放 " + per + " 本書，" + sh + " 層一共幾本？", "Each shelf holds " + per + " books. How many on " + sh + " shelves?"], ans: t, why: [per + " × " + sh + " = " + t, per + " × " + sh + " = " + t],
+          html: "<div class='bshelfs'>" + Array(sh + 1).join("<div>" + Array(per + 1).join("📕") + "</div>") + "</div><div class='quiz'><div class='ans'>" + [t, t + per, t - per].sort(function () { return Math.random() - 0.5; }).map(function (v) { return "<button class='btn' data-a='" + v + "'>" + v + "</button>"; }).join("") + "</div></div>" }; } }
+    ], ["去圖書館時，看看書背上的號碼和字母，就知道書放在哪裡！", "Next time you're at the library, look at the numbers and letters on the book spines!"]);
   },
   /* ---------- the cup ---------- */
   cup: function () {

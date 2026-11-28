@@ -85,11 +85,34 @@ var Race = {
   hud: function () {
     var me = this.cars[0].r;
     $("#hLap").innerHTML = bi("第 " + Math.min(this.laps, me.lap + 1) + " / " + this.laps + " 圈", "Lap " + Math.min(this.laps, me.lap + 1) + " / " + this.laps);
+    this.board();
     if (this.mode !== "race") { $("#hPos").innerHTML = "<span class='chip me'>" + bi("測試跑道", "Test run") + "</span>"; return; }
-    var L = this.laps, tl = TRACK.len;
-    $("#hPos").innerHTML = this.order().map(function (c, i) { // place, name, lap x/3 and a progress bar for every racer
-      var r = c.r, f = r.done ? 1 : Math.min(1, (r.lap * tl + r.s) / (L * tl)), lap = r.done ? L : Math.min(L, r.lap + 1);
-      return "<span class='chip prog" + (c.who === "lucas" ? " me" : "") + "'>" + (i + 1) + ". " + CAST[c.who].en + " " + (r.out ? "💥" : r.done ? "🏁" : lap + "/" + L) + "<i style='width:" + Math.round(f * 100) + "%;background:" + (c.col ? CarArt.COL[c.col].main : "#1c7ed6") + "'></i></span>"; }).join(" ");
+    $("#hPos").innerHTML = "";
+  },
+  /* v2.7: racer cards with faces + names (bottom-left of the track) and Lucas's speed gauge (bottom-right), laid over the empty infield */
+  board: function () {
+    var self = this, wrap = $("#sRace .rwrap"), cv = $("#raceCv"), bd = $("#rBoard"), gg = $("#rGauge");
+    if (!bd) { bd = document.createElement("div"); bd.id = "rBoard"; wrap.appendChild(bd); gg = document.createElement("div"); gg.id = "rGauge"; wrap.appendChild(gg); }
+    var key = this.mode + ":" + this.cars.map(function (c) { return c.who; }).join();
+    if (bd.__key !== key) { bd.__key = key;
+      bd.innerHTML = this.mode !== "race" ? "" : this.cars.map(function (c) { var w = CAST[c.who] || { en: c.who, zh: c.who }, col = c.col ? CarArt.COL[c.col].main : "#1c7ed6";
+        return "<div class='rc" + (c.who === "lucas" ? " me" : "") + "' data-w='" + c.who + "' style='--tc:" + col + "'><b class='pl'></b>" + (w.img ? "<img src='" + A(w.img) + "' alt=''>" : "<span class='fc'>" + (w.ic || "🙂") + "</span>") +
+          "<span class='nm'>" + zh(w.zh) + "<small>" + esc(w.en) + "</small></span><span class='lp'></span><i class='bar'><i></i></i></div>"; }).join("");
+      gg.innerHTML = "<svg viewBox='0 0 120 70'><path d='M10 64 A50 50 0 0 1 110 64' fill='none' stroke='#fff' stroke-width='12' stroke-linecap='round'/><path class='arc' d='M10 64 A50 50 0 0 1 110 64' fill='none' stroke='url(#gG)' stroke-width='12' stroke-linecap='round' pathLength='100' stroke-dasharray='0 100'/>" +
+        "<defs><linearGradient id='gG'><stop offset='0' stop-color='#40c057'/><stop offset='.6' stop-color='#fab005'/><stop offset='1' stop-color='#e03131'/></linearGradient></defs><line class='nd' x1='60' y1='64' x2='60' y2='22' stroke='#222' stroke-width='4' stroke-linecap='round'/><circle cx='60' cy='64' r='6' fill='#222'/></svg><div class='sp'></div><div class='fl'></div>";
+    }
+    var r = cv.getBoundingClientRect(), w0 = wrap.getBoundingClientRect(), small = r.width < 760 || r.height < 420;
+    bd.style.left = (r.left - w0.left + 6) + "px"; bd.style.bottom = (w0.bottom - r.bottom + 6) + "px"; bd.classList.toggle("sm", small);
+    gg.style.left = (r.left - w0.left + (small ? 162 : 250)) + "px"; gg.style.bottom = (w0.bottom - r.bottom + 6) + "px"; gg.classList.toggle("sm", small);
+    if (this.mode === "race") { var L = this.laps, tl = TRACK.len, medals = ["🥇", "🥈", "🥉", "4"];
+      this.order().forEach(function (c, i) { var el = bd.querySelector("[data-w='" + c.who + "']"); if (!el) return; var r = c.r, f = r.done ? 1 : Math.min(1, (r.lap * tl + r.s) / (L * tl)), lap = r.done ? L : Math.min(L, r.lap + 1);
+        el.style.order = i; el.querySelector(".pl").textContent = medals[i] || (i + 1); el.querySelector(".lp").textContent = r.out ? "💥" : r.done ? "🏁" : lap + "/" + L; el.querySelector(".bar i").style.width = Math.round(f * 100) + "%"; }); }
+    var me = this.cars[0].r, k = me.out || !me.st ? 0 : Math.max(0, Math.min(1, me.v / 26));
+    gg.querySelector(".arc").setAttribute("stroke-dasharray", Math.round(k * 100) + " 100");
+    gg.querySelector(".nd").setAttribute("transform", "rotate(" + Math.round(-90 + k * 180) + " 60 64)");
+    gg.querySelector(".sp").innerHTML = "<b>" + Math.round(me.v * 3.6) + "</b> km/h";
+    gg.querySelector(".fl").textContent = me.st && me.v > me.st.top * 0.92 ? "🔥" : "";
+    bd.style.display = gg.style.display = CUR === "sRace" ? "" : "none";
   },
   /* 3/4 view: the track is tilted away from you (K squashes depth) and the hill really rises (Z units). */
   K: 0.58, HZ: 7, TH: 0.9,

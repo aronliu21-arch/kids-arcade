@@ -326,10 +326,55 @@ img.food.big{height:58px;max-width:80px}
 .wsteps{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0}.wsteps>span{background:#e7f5ff;border:2px solid var(--ink);border-radius:10px;padding:4px 8px;font-weight:700}
 .wsteps>.q{background:#fff3bf}
 .bookc{text-align:center;font-size:40px;margin:4px 0}.bookc b{font-size:30px;background:#fff;border:3px solid var(--ink);border-radius:8px;padding:0 10px}
-.shelves{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.shelf{border:3px solid var(--ink);border-radius:10px;min-height:64px;font:inherit;cursor:pointer;border-bottom-width:8px;border-bottom-color:#8b5a2b}
-.shelf span{display:block;font-size:24px;line-height:1}.shelf b{font-size:18px;background:#fff;border-radius:6px;padding:0 6px}.shelf.ok{outline:5px solid #2f9e44}.shelf.no{opacity:.4}
-@media (max-height:500px){.wcar span{font-size:64px}.bookc{font-size:26px}.bookc b{font-size:20px}.shelf{min-height:48px}.shelf span{font-size:16px}.wboard{padding:3px 6px;font-size:13px}}
+.shelves{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.bshelf{border:3px solid var(--ink);border-radius:10px;min-height:64px;font:inherit;cursor:pointer;border-bottom-width:8px;border-bottom-color:#8b5a2b}
+.bshelf span{display:block;font-size:24px;line-height:1}.bshelf b{font-size:18px;background:#fff;border-radius:6px;padding:0 6px}.bshelf.ok{outline:5px solid #2f9e44}.bshelf.no{opacity:.4}
+@media (max-height:500px){.wcar span{font-size:64px}.bookc{font-size:26px}.bookc b{font-size:20px}.bshelf{min-height:48px}.bshelf span{font-size:16px}.wboard{padding:3px 6px;font-size:13px}}
 @media (max-width:500px){.shelves{grid-template-columns:repeat(2,1fr)}}
+.clockpic{text-align:center;margin:4px 0}.clockpic svg{width:150px;height:150px}
+@media (max-height:500px){.clockpic svg{width:96px;height:96px}}
+/* v2.7 jobs: levels, scrub, order taps, customers */
+.coin.c1{width:36px;height:36px;background:#e9ecef;font-size:15px}
+.lv{font-size:13px;letter-spacing:-2px}.lvup{background:#d3f9d8!important}
+.mud{position:absolute;width:34px;height:28px;border-radius:50%;background:#7b4a22;box-shadow:0 0 0 3px #4a2a10;border:none;cursor:pointer;transition:opacity .3s,transform .3s;padding:0}
+.mud.clean{opacity:0;transform:scale(1.6);pointer-events:none}
+.btn .ord,.house .ord{position:absolute;top:-8px;left:-8px;background:#2f9e44;color:#fff;border-radius:50%;width:24px;height:24px;line-height:24px;font-style:normal;font-weight:900;font-size:14px}
+.ans .btn,.house{position:relative}
+.bshelfs{display:flex;flex-direction:column;gap:2px;align-items:center;margin:4px 0}.bshelfs div{border-bottom:6px solid #8b5a2b;padding:0 6px;font-size:22px;letter-spacing:-4px}
+.cface{position:relative;flex:none;width:76px;height:76px;display:flex;align-items:center;justify-content:center}
+.cface img{width:76px;height:76px;border-radius:50%;object-fit:cover;object-position:top;border:3px solid var(--ink);background:#fff3bf}
+.cface img+i{display:none}.cface i{font-style:normal;font-size:56px;line-height:1}
+.c2say.sm .cface{width:52px;height:52px}.c2say.sm .cface img{width:52px;height:52px}.c2say.sm .cface i{font-size:38px}
+@media (max-height:500px){.cface,.cface img{width:48px;height:48px}.cface i{font-size:34px}.c2say.sm .cface,.c2say.sm .cface img{width:40px;height:40px}.c2say.sm .cface i{font-size:28px}.mud{width:28px;height:24px}}
+/* v2.7 store: small Buy / Sell inside the selected item */
+.opt .mbuy{display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:3px 10px;min-height:36px;border:3px solid var(--ink);border-radius:999px;background:#e03131;color:#fff;font-weight:900;font-size:14px;cursor:pointer}
+.opt .mbuy small,.opt .mbuy rt{color:#fff}.opt .mbuy.sell{background:#2f9e44}
+.c2parts.compact .opt .mbuy small{display:inline}
+/* v2.7 race: racer cards with faces + speed gauge over the infield */
+#rBoard{position:absolute;display:flex;flex-direction:column;gap:5px;z-index:4;pointer-events:none;width:230px}
+#rBoard .rc{display:flex;align-items:center;gap:6px;background:#fffdf5ee;border:3px solid var(--ink);border-left:10px solid var(--tc);border-radius:14px;padding:3px 8px 8px 4px;position:relative;transition:transform .3s}
+#rBoard .rc.me{box-shadow:0 0 0 3px #ffd43b,0 0 16px 4px #ffd43b;transform:scale(1.06);transform-origin:left center}
+#rBoard .pl{font-size:20px;width:26px;text-align:center}
+#rBoard img,#rBoard .fc{width:44px;height:44px;border-radius:50%;border:3px solid var(--tc);object-fit:cover;object-position:top;background:#d0ebff;font-size:30px;text-align:center;line-height:40px}
+#rBoard .nm{font-weight:900;font-size:16px;line-height:1.05;flex:1}#rBoard .nm small{display:block;font-size:12px;color:#555}
+#rBoard .lp{font-weight:900;font-size:15px}
+#rBoard .bar{position:absolute;left:44px;right:10px;bottom:3px;height:5px;background:#dee2e6;border-radius:3px;overflow:hidden}#rBoard .bar i{display:block;height:100%;background:var(--tc);width:0}
+#rBoard.sm{width:150px;gap:2px}#rBoard.sm .rc{padding:1px 4px 5px 2px;border-width:2px;border-left-width:6px}#rBoard.sm img,#rBoard.sm .fc{width:26px;height:26px;font-size:18px;line-height:24px;border-width:2px}
+#rBoard.sm .nm{font-size:12px}#rBoard.sm .nm small{display:none}#rBoard.sm .pl{font-size:13px;width:16px}#rBoard.sm .lp{font-size:11px}#rBoard.sm .bar{left:26px;height:3px;bottom:1px}
+#rGauge{position:absolute;width:144px;z-index:4;pointer-events:none;background:#fffdf5ee;border:3px solid var(--ink);border-radius:18px;padding:4px 6px 2px;text-align:center}
+#rGauge svg{width:100%;display:block}#rGauge .sp{font-weight:900;font-size:13px;margin-top:-4px}#rGauge .sp b{font-size:24px}
+#rGauge .fl{position:absolute;top:-18px;right:-8px;font-size:30px}
+#rGauge.sm{width:90px;padding:2px 4px 0;border-width:2px}#rGauge.sm .sp{font-size:10px}#rGauge.sm .sp b{font-size:15px}
+#cheer{animation:cheerP 1.4s ease-in-out infinite}@keyframes cheerP{50%{transform:scale(1.07)}}
+@media (prefers-reduced-motion:reduce){#cheer{animation:none}}
+#engBtn{font-size:16px;min-height:48px;padding:2px 10px}
+.wcar{font-size:180px;width:1.1em;height:.95em;line-height:1}.wcar span{font-size:1em}
+@media (max-height:500px){.wcar{font-size:120px}.c2say.cust.sm .bubble{font-size:13px;padding:2px 8px}}
+.opt .pr .mbuy{margin-top:0;font-size:13px;padding:2px 8px;min-height:30px}
+.wclk{display:flex;align-items:center;gap:10px;justify-content:center}.wclk>.c2say,.wclk>.qq{flex:1}.wclk .clockpic{flex:none;margin:0}
+.wcar{font-size:200px}
+@media (max-height:500px){.wcar{font-size:150px}.wclk .clockpic svg{width:110px;height:110px}.mud{width:26px;height:22px}}
+.wcar .mud{width:12%;height:11%;min-width:22px;min-height:18px}
+@media (max-height:500px){.wcar .mud{width:12%;height:11%}}
 </style>
 </head>
 <body>
@@ -392,6 +437,7 @@ img.food.big{height:58px;max-width:80px}
     <div class="ticker" id="ticker"></div>
     <button class="btn red" id="cheer">📣 加油 Go!</button>
     <button class="btn white" id="camBtn"></button>
+    <button class="btn white" id="engBtn" aria-label="engine sound">🏎️🔈</button>
     <button class="btn white" id="quitBtn">✕ 離開 Leave</button>
   </div>
   <div id="count"></div>
@@ -426,6 +472,10 @@ Object.assign(ZYC,{"估": "ㄍㄨ", "位": "ㄨㄟˋ", "係": "ㄒㄧˋ", "兒":
 Object.assign(ZYR,{"沒關係": "ㄇㄟˊ ㄍㄨㄢ ˙ㄒㄧ", "兒子": "ㄦˊ ˙ㄗ", "光臨": "ㄍㄨㄤ ㄌㄧㄣˊ", "好吃": "ㄏㄠˇ ㄔ", "長大": "ㄓㄤˇ ㄉㄚˋ", "算得": "ㄙㄨㄢˋ ˙ㄉㄜ", "多少": "ㄉㄨㄛ ㄕㄠˇ"});
 Object.assign(ZYC,{"筒":"ㄊㄨㄥˇ","燈":"ㄉㄥ","繞":"ㄖㄠˋ","顆":"ㄎㄜ","鐘":"ㄓㄨㄥ","短":"ㄉㄨㄢˇ","針":"ㄓㄣ","告":"ㄍㄠˋ","訴":"ㄙㄨˋ","指":"ㄓˇ","半":"ㄅㄢˋ","提":"ㄊㄧˊ","伍":"ㄨˇ","衣":"ㄧ","服":"ㄈㄨˊ","綠":"ㄌㄩˋ","反":"ㄈㄢˇ","甩":"ㄕㄨㄞˇ","騎":"ㄑㄧˊ","腳":"ㄐㄧㄠˇ","踏":"ㄊㄚˋ","被":"ㄅㄟˋ","閉":"ㄅㄧˋ","睛":"ㄐㄧㄥ","退":"ㄊㄨㄟˋ","沿":"ㄧㄢˊ","破":"ㄆㄛˋ","喇":"ㄌㄚˇ","叭":"ㄅㄚ","頂":"ㄉㄧㄥˇ","距":"ㄐㄩˋ","尺":"ㄔˇ","寫":"ㄒㄧㄝˇ","舉":"ㄐㄩˇ","左":"ㄗㄨㄛˇ","右":"ㄧㄡˋ","樓":"ㄌㄡˊ","抹":"ㄇㄛˇ","肥":"ㄈㄟˊ","皂":"ㄗㄠˋ","刷":"ㄕㄨㄚ","沖":"ㄔㄨㄥ","乾":"ㄍㄢ","淨":"ㄐㄧㄥˋ","節":"ㄐㄧㄝˊ","蠟":"ㄌㄚˋ","泥":"ㄋㄧˊ","巴":"ㄅㄚ","序":"ㄒㄩˋ","本":"ㄅㄣˇ","母":"ㄇㄨˇ","碼":"ㄇㄚˇ","排":"ㄆㄞˊ","缺":"ㄑㄩㄝ","館":"ㄍㄨㄢˇ","背":"ㄅㄟˋ","知":"ㄓ"});
 Object.assign(ZYR,{"眼睛":"ㄧㄢˇ ˙ㄐㄧㄥ","喇叭":"ㄌㄚˇ ˙ㄅㄚ","衣服":"ㄧ ˙ㄈㄨ","知道":"ㄓ ˙ㄉㄠ","過得了":"ㄍㄨㄛˋ ˙ㄉㄜ ㄌㄧㄠˇ","轉得":"ㄓㄨㄢˇ ˙ㄉㄜ","沖乾淨":"ㄔㄨㄥ ㄍㄢ ㄐㄧㄥˋ","擦乾":"ㄘㄚ ㄍㄢ"});
+Object.assign(ZYC,{"朋":"ㄆㄥˊ","友":"ㄧㄡˇ","族":"ㄗㄨˊ","趕":"ㄍㄢˇ","哥":"ㄍㄜ","嗨":"ㄏㄞ","警":"ㄐㄧㄥˇ","察":"ㄔㄚˊ","伯":"ㄅㄛˊ","辛":"ㄒㄧㄣ","苦":"ㄎㄨˇ","餓":"ㄜˋ","郵":"ㄧㄡˊ","弟":"ㄉㄧˋ","農":"ㄋㄨㄥˊ","夫":"ㄈㄨ","爺":"ㄧㄝˊ","升":"ㄕㄥ","碗":"ㄨㄢˇ","杯":"ㄅㄟ","隔":"ㄍㄜˊ","壁":"ㄅㄧˋ","同":"ㄊㄨㄥˊ","減":"ㄐㄧㄢˇ","他":"ㄊㄚ","額":"ㄜˊ","堆":"ㄉㄨㄟ","驟":"ㄗㄡˋ","見":"ㄐㄧㄢˋ"});
+Object.assign(ZYR,{"朋友":"ㄆㄥˊ ˙ㄧㄡ","哥哥":"ㄍㄜ ˙ㄍㄜ","弟弟":"ㄉㄧˋ ˙ㄉㄧ","伯伯":"ㄅㄛˊ ˙ㄅㄛ","爺爺":"ㄧㄝˊ ˙ㄧㄝ","叔叔":"ㄕㄨˊ ˙ㄕㄨ","農夫":"ㄋㄨㄥˊ ㄈㄨ","辛苦":"ㄒㄧㄣ ㄎㄨˇ","步驟":"ㄅㄨˋ ㄗㄡˋ"});
+Object.assign(ZYC,{"賣":"ㄇㄞˋ","八":"ㄅㄚ","引":"ㄧㄣˇ","擎":"ㄑㄧㄥˊ","聲":"ㄕㄥ"});
+Object.assign(ZYR,{"八成":"ㄅㄚ ㄔㄥˊ","引擎":"ㄧㄣˇ ㄑㄧㄥˊ"});
 /* ===== Story, parts and science content (all bilingual) ===== */
 var CAST = {
   lucas: { zh: "陸晨", en: "Lucas", img: "p_lucas", col: "#f76707", pitch: 1.25 },
@@ -563,12 +613,12 @@ var ADVICE = {
 };
 /* ===== Car physics (simple, kid-explainable) and the track ===== */
 var PHYS = {
-  motor: { normal: { v: 1.0, t: 1.0 }, rev: { v: 1.15, t: 1.2 }, turbo: { v: 1.25, t: 1.15 }, torque: { v: 1.12, t: 1.45 }, light: { v: 1.3, t: 1.08 }, hyper: { v: 1.4, t: 0.95 }, sprint: { v: 1.5, t: 0.88 }, mach: { v: 1.46, t: 1.12 } },
-  gear: { speed: { top: 1.1, tq: 0.8 }, power: { top: 1.0, tq: 1.3 }, mid: { top: 1.05, tq: 1.05 }, super: { top: 1.16, tq: 0.68 }, climb: { top: 0.94, tq: 1.55 } },
-  tire: { hard: { grip: 0.75, roll: 1.03 }, soft: { grip: 1.1, roll: 0.97 }, low: { grip: 0.95, roll: 1.08 }, sponge: { grip: 1.18, roll: 0.93 }, slick: { grip: 0.86, roll: 1.11 }, spike: { grip: 1.0, roll: 0.99, tq: 1.15 }, large: { grip: 0.88, roll: 1.13, tq: 0.88 } },
+  motor: { normal: { v: 1.0, t: 1.0 }, rev: { v: 1.1, t: 1.15 }, turbo: { v: 1.25, t: 1.15 }, torque: { v: 1.1, t: 1.5 }, light: { v: 1.32, t: 1.2 }, hyper: { v: 1.48, t: 0.94 }, sprint: { v: 1.58, t: 0.97 }, mach: { v: 1.5, t: 1.32 } },
+  gear: { speed: { top: 1.1, tq: 0.8 }, power: { top: 1.0, tq: 1.3 }, mid: { top: 1.06, tq: 1.05 }, super: { top: 1.2, tq: 0.78 }, climb: { top: 0.92, tq: 1.55 } },
+  tire: { hard: { grip: 0.75, roll: 1.03 }, soft: { grip: 1.1, roll: 0.97 }, low: { grip: 0.98, roll: 1.07 }, sponge: { grip: 1.22, roll: 0.98 }, slick: { grip: 0.84, roll: 1.1 }, spike: { grip: 1.0, roll: 0.99, tq: 1.1 }, large: { grip: 0.95, roll: 1.14, tq: 0.95 } },
   body: { sleek: 1.04, boxy: 0.96, aero: 1.07 },
-  roller: { yes: 1.35, no: 1.0, four: 1.48, plastic: 1.25, alu: 1.42, bearing: 1.56 },
-  wing: { none: { c: 1, v: 1 }, fin: { c: 1.03, v: 1.0 }, small: { c: 1.06, v: 0.99 }, air: { c: 1.08, v: 0.985 }, big: { c: 1.13, v: 0.97 }, dual: { c: 1.17, v: 0.955 } },
+  roller: { yes: 1.35, no: 1.0, four: 1.55, plastic: 1.25, alu: 1.45, bearing: 1.7 },
+  wing: { none: { c: 1, v: 1 }, fin: { c: 1.03, v: 1.0 }, small: { c: 1.06, v: 0.99 }, air: { c: 1.08, v: 0.995 }, big: { c: 1.14, v: 0.975 }, dual: { c: 1.2, v: 0.965 } },
   CRASH_NO_ROLLERS: 9,   // without rollers, faster than this in a curve = course out
   CURVE: 10.2,           // curve speed limit with rollers = CURVE * grip * roller * wing (radius 11)
   BASE: 15
@@ -818,25 +868,27 @@ var Engine = (function () {
   function noise() { var b = ac.createBuffer(1, ac.sampleRate, ac.sampleRate), d = b.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; var s = ac.createBufferSource(); s.buffer = b; s.loop = true; return s; }
   return {
     start: function () {
-      if (on || KAKit.muted()) return; ac = KAKit.ac(); if (!ac) return; on = true;
+      if (on || KAKit.muted() || Engine.off()) return; ac = KAKit.ac(); if (!ac) return; on = true;
       out = ac.createGain(); out.gain.value = 0.0001; out.connect(ac.destination);
       f = ac.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 1600; f.Q.value = 4; g = ac.createGain(); g.gain.value = 1; f.connect(g).connect(out);
-      o = ac.createOscillator(); o.type = "sawtooth"; o2 = ac.createOscillator(); o2.type = "square"; o3 = ac.createOscillator(); o3.type = "triangle";
-      var g2 = ac.createGain(); g2.gain.value = 0.5; o.connect(f); o2.connect(g2).connect(f); o3.connect(f);
+      o = ac.createOscillator(); o.type = "triangle"; o2 = ac.createOscillator(); o2.type = "sine"; o3 = ac.createOscillator(); o3.type = "sine"; // soft motor tone (v2.7: no sawtooth/square buzz)
+      var g2 = ac.createGain(); g2.gain.value = 0.6; o.connect(f); o2.connect(g2).connect(f); o3.connect(f);
       lfo = ac.createOscillator(); lfo.frequency.value = 6; lfoG = ac.createGain(); lfoG.gain.value = 0; lfo.connect(lfoG); lfoG.connect(o.frequency); lfoG.connect(o3.frequency);
       nz = noise(); nzF = ac.createBiquadFilter(); nzF.type = "bandpass"; nzF.frequency.value = 3000; nzF.Q.value = 1.5; nzG = ac.createGain(); nzG.gain.value = 0.0001; nz.connect(nzF).connect(nzG).connect(out);
       rv = ac.createOscillator(); rv.type = "sawtooth"; rvG = ac.createGain(); rvG.gain.value = 0.0001; var rf = ac.createBiquadFilter(); rf.type = "lowpass"; rf.frequency.value = 1200; rv.connect(rf).connect(rvG).connect(out);
       [o, o2, o3, lfo, nz, rv].forEach(function (x) { x.start(); });
     },
     set: function (v, s) {
-      if (!on) return; s = s || {}; var t = ac.currentTime, base = s.hill ? 150 + v * 26 : 180 + v * 40; // v: 0..10
-      o.frequency.setTargetAtTime(base, t, 0.06); o2.frequency.setTargetAtTime(base / 2, t, 0.06); o3.frequency.setTargetAtTime(base * 2.01, t, 0.06);
-      lfoG.gain.setTargetAtTime(v > 8 ? 9 : 2, t, 0.2); lfo.frequency.setTargetAtTime(4 + v, t, 0.2); // wobble when flat out
-      f.frequency.setTargetAtTime(900 + v * 160, t, 0.1);
-      out.gain.setTargetAtTime(v > 0.2 ? 0.05 + v * 0.008 : 0.0001, t, 0.08);
-      nzG.gain.setTargetAtTime(s.scrape ? 0.5 : 0.04 + v * 0.01, t, 0.04); nzF.frequency.setTargetAtTime(s.scrape ? 5200 : 2000 + v * 200, t, 0.05); // whir, or hiss on the wall
-      rvG.gain.setTargetAtTime(s.near ? 0.35 : 0.0001, t, 0.15); rv.frequency.setTargetAtTime(base * 1.07, t, 0.1); // rival close by
+      if (!on) return; s = s || {}; var t = ac.currentTime, base = s.hill ? 80 + v * 10 : 95 + v * 14; // v: 0..10; low and quiet
+      o.frequency.setTargetAtTime(base, t, 0.08); o2.frequency.setTargetAtTime(base / 2, t, 0.08); o3.frequency.setTargetAtTime(base * 1.5, t, 0.08);
+      lfoG.gain.setTargetAtTime(0, t, 0.2);
+      f.frequency.setTargetAtTime(380 + v * 35, t, 0.1);
+      out.gain.setTargetAtTime(v > 0.2 ? 0.02 + v * 0.0025 : 0.0001, t, 0.1);
+      nzG.gain.setTargetAtTime(s.scrape ? 0.22 : 0.015 + v * 0.004, t, 0.05); nzF.frequency.setTargetAtTime(s.scrape ? 4200 : 1200 + v * 120, t, 0.05); // soft whir, or hiss on the wall
+      rvG.gain.setTargetAtTime(s.near ? 0.06 : 0.0001, t, 0.15); rv.frequency.setTargetAtTime(base * 1.12, t, 0.1); // rival close by
     },
+    off: function () { try { return localStorage.getItem("m4wd.engineOff") === "1"; } catch (e) { return false; } },
+    toggle: function () { var x = !this.off(); try { localStorage.setItem("m4wd.engineOff", x ? "1" : "0"); } catch (e) {} if (x) this.stop(); else this.start(); return x; },
     stop: function () { if (!on) return; on = false; var parts = [o, o2, o3, lfo, nz, rv], O = out; try { O.gain.setTargetAtTime(0.0001, ac.currentTime, 0.05); } catch (e) {} setTimeout(function () { parts.forEach(function (x) { try { x.stop(); } catch (e) {} }); try { O.disconnect(); } catch (e) {} }, 300); }
   };
 })();
@@ -1321,11 +1373,34 @@ var Race = {
   hud: function () {
     var me = this.cars[0].r;
     $("#hLap").innerHTML = bi("第 " + Math.min(this.laps, me.lap + 1) + " / " + this.laps + " 圈", "Lap " + Math.min(this.laps, me.lap + 1) + " / " + this.laps);
+    this.board();
     if (this.mode !== "race") { $("#hPos").innerHTML = "<span class='chip me'>" + bi("測試跑道", "Test run") + "</span>"; return; }
-    var L = this.laps, tl = TRACK.len;
-    $("#hPos").innerHTML = this.order().map(function (c, i) { // place, name, lap x/3 and a progress bar for every racer
-      var r = c.r, f = r.done ? 1 : Math.min(1, (r.lap * tl + r.s) / (L * tl)), lap = r.done ? L : Math.min(L, r.lap + 1);
-      return "<span class='chip prog" + (c.who === "lucas" ? " me" : "") + "'>" + (i + 1) + ". " + CAST[c.who].en + " " + (r.out ? "💥" : r.done ? "🏁" : lap + "/" + L) + "<i style='width:" + Math.round(f * 100) + "%;background:" + (c.col ? CarArt.COL[c.col].main : "#1c7ed6") + "'></i></span>"; }).join(" ");
+    $("#hPos").innerHTML = "";
+  },
+  /* v2.7: racer cards with faces + names (bottom-left of the track) and Lucas's speed gauge (bottom-right), laid over the empty infield */
+  board: function () {
+    var self = this, wrap = $("#sRace .rwrap"), cv = $("#raceCv"), bd = $("#rBoard"), gg = $("#rGauge");
+    if (!bd) { bd = document.createElement("div"); bd.id = "rBoard"; wrap.appendChild(bd); gg = document.createElement("div"); gg.id = "rGauge"; wrap.appendChild(gg); }
+    var key = this.mode + ":" + this.cars.map(function (c) { return c.who; }).join();
+    if (bd.__key !== key) { bd.__key = key;
+      bd.innerHTML = this.mode !== "race" ? "" : this.cars.map(function (c) { var w = CAST[c.who] || { en: c.who, zh: c.who }, col = c.col ? CarArt.COL[c.col].main : "#1c7ed6";
+        return "<div class='rc" + (c.who === "lucas" ? " me" : "") + "' data-w='" + c.who + "' style='--tc:" + col + "'><b class='pl'></b>" + (w.img ? "<img src='" + A(w.img) + "' alt=''>" : "<span class='fc'>" + (w.ic || "🙂") + "</span>") +
+          "<span class='nm'>" + zh(w.zh) + "<small>" + esc(w.en) + "</small></span><span class='lp'></span><i class='bar'><i></i></i></div>"; }).join("");
+      gg.innerHTML = "<svg viewBox='0 0 120 70'><path d='M10 64 A50 50 0 0 1 110 64' fill='none' stroke='#fff' stroke-width='12' stroke-linecap='round'/><path class='arc' d='M10 64 A50 50 0 0 1 110 64' fill='none' stroke='url(#gG)' stroke-width='12' stroke-linecap='round' pathLength='100' stroke-dasharray='0 100'/>" +
+        "<defs><linearGradient id='gG'><stop offset='0' stop-color='#40c057'/><stop offset='.6' stop-color='#fab005'/><stop offset='1' stop-color='#e03131'/></linearGradient></defs><line class='nd' x1='60' y1='64' x2='60' y2='22' stroke='#222' stroke-width='4' stroke-linecap='round'/><circle cx='60' cy='64' r='6' fill='#222'/></svg><div class='sp'></div><div class='fl'></div>";
+    }
+    var r = cv.getBoundingClientRect(), w0 = wrap.getBoundingClientRect(), small = r.width < 760 || r.height < 420;
+    bd.style.left = (r.left - w0.left + 6) + "px"; bd.style.bottom = (w0.bottom - r.bottom + 6) + "px"; bd.classList.toggle("sm", small);
+    gg.style.left = (r.left - w0.left + (small ? 162 : 250)) + "px"; gg.style.bottom = (w0.bottom - r.bottom + 6) + "px"; gg.classList.toggle("sm", small);
+    if (this.mode === "race") { var L = this.laps, tl = TRACK.len, medals = ["🥇", "🥈", "🥉", "4"];
+      this.order().forEach(function (c, i) { var el = bd.querySelector("[data-w='" + c.who + "']"); if (!el) return; var r = c.r, f = r.done ? 1 : Math.min(1, (r.lap * tl + r.s) / (L * tl)), lap = r.done ? L : Math.min(L, r.lap + 1);
+        el.style.order = i; el.querySelector(".pl").textContent = medals[i] || (i + 1); el.querySelector(".lp").textContent = r.out ? "💥" : r.done ? "🏁" : lap + "/" + L; el.querySelector(".bar i").style.width = Math.round(f * 100) + "%"; }); }
+    var me = this.cars[0].r, k = me.out || !me.st ? 0 : Math.max(0, Math.min(1, me.v / 26));
+    gg.querySelector(".arc").setAttribute("stroke-dasharray", Math.round(k * 100) + " 100");
+    gg.querySelector(".nd").setAttribute("transform", "rotate(" + Math.round(-90 + k * 180) + " 60 64)");
+    gg.querySelector(".sp").innerHTML = "<b>" + Math.round(me.v * 3.6) + "</b> km/h";
+    gg.querySelector(".fl").textContent = me.st && me.v > me.st.top * 0.92 ? "🔥" : "";
+    bd.style.display = gg.style.display = CUR === "sRace" ? "" : "none";
   },
   /* 3/4 view: the track is tilted away from you (K squashes depth) and the hill really rises (Z units). */
   K: 0.58, HZ: 7, TH: 0.9,
@@ -1639,26 +1714,26 @@ function rr(x, X, Y, W, H, R) { x.beginPath(); x.moveTo(X + R, Y); x.arcTo(X + W
 /* Money is NT$. Real Taiwan hobby-shop prices; a job shift pays NT$100-150, so a good motor takes ~3 shifts. */
 /* 20 more bodies (ChatGPT art, top view, assets/b/<id>_<color>.webp). st: v = top speed, c = curve grip, a = push (start + hills). */
 var C2BODIES = [
-  { v: "muscle", price: 450, zh: "肌肉車", en: "Muscle Car", art: true, st: { v: 1.0, c: 0.98, a: 1.12 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "armored", price: 400, zh: "裝甲車", en: "Armored Racer", art: true, st: { v: 0.94, c: 1.1, a: 0.97 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "crocodile", price: 460, zh: "鱷魚", en: "Crocodile", art: true, st: { v: 0.99, c: 1.07, a: 1.03 }, cols: ["orig", "red", "yellow", "blue", "purple"] },
-  { v: "rhino", price: 480, zh: "犀牛", en: "Rhino", art: true, st: { v: 0.97, c: 1.08, a: 1.08 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "muscle", price: 420, zh: "肌肉車", en: "Muscle Car", art: true, st: { v: 1.0, c: 0.98, a: 1.12 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "armored", price: 300, zh: "裝甲車", en: "Armored Racer", art: true, st: { v: 0.96, c: 1.12, a: 1.0 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "crocodile", price: 380, zh: "鱷魚", en: "Crocodile", art: true, st: { v: 0.99, c: 1.07, a: 1.03 }, cols: ["orig", "red", "yellow", "blue", "purple"] },
+  { v: "rhino", price: 460, zh: "犀牛", en: "Rhino", art: true, st: { v: 0.97, c: 1.08, a: 1.08 }, cols: ["orig", "red", "green", "blue", "purple"] },
   { v: "beetle", price: 500, zh: "獨角仙", en: "Beetle", art: true, st: { v: 0.98, c: 1.06, a: 1.1 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "shark", price: 520, zh: "鯊魚", en: "Shark", art: true, st: { v: 1.05, c: 1.02, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "lunar_rover", price: 540, zh: "月球車", en: "Lunar Rover", art: true, st: { v: 0.95, c: 1.06, a: 1.15 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "wolf", price: 560, zh: "野狼", en: "Wolf", art: true, st: { v: 1.04, c: 1.03, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "tiger", price: 580, zh: "老虎", en: "Tiger", art: true, st: { v: 1.03, c: 1.04, a: 1.04 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "formula", price: 600, zh: "方程式", en: "Formula Racer", art: true, st: { v: 1.06, c: 1.04, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
-  { v: "cobra", price: 600, zh: "眼鏡蛇", en: "Cobra", art: true, st: { v: 1.06, c: 1.0, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
-  { v: "scorpion", price: 620, zh: "蠍子", en: "Scorpion", art: true, st: { v: 1.02, c: 1.06, a: 1.04 }, cols: ["orig", "red", "yellow", "green", "blue"] },
-  { v: "manta", price: 640, zh: "魟魚", en: "Manta Ray", art: true, st: { v: 1.08, c: 0.97, a: 0.98 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "snow_leopard", price: 720, zh: "雪豹", en: "Snow Leopard", art: true, st: { v: 1.05, c: 1.05, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "falcon", price: 760, zh: "獵鷹", en: "Falcon", art: true, st: { v: 1.09, c: 0.98, a: 1.0 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "robot", price: 780, zh: "機器人", en: "Robot", art: true, st: { v: 1.04, c: 1.04, a: 1.06 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "stealth", price: 820, zh: "隱形戰機", en: "Stealth Jet", art: true, st: { v: 1.1, c: 0.96, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "blue"] },
-  { v: "rocket", price: 880, zh: "火箭", en: "Rocket", art: true, st: { v: 1.12, c: 0.94, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
-  { v: "dragon", price: 1500, zh: "神龍", en: "Dragon", art: true, st: { v: 1.1, c: 1.05, a: 1.05 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
-  { v: "phoenix", price: 1500, zh: "鳳凰", en: "Phoenix", art: true, st: { v: 1.12, c: 1.04, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] }
+  { v: "shark", price: 420, zh: "鯊魚", en: "Shark", art: true, st: { v: 1.05, c: 1.02, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "lunar_rover", price: 500, zh: "月球車", en: "Lunar Rover", art: true, st: { v: 0.95, c: 1.06, a: 1.15 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "wolf", price: 460, zh: "野狼", en: "Wolf", art: true, st: { v: 1.04, c: 1.03, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "tiger", price: 500, zh: "老虎", en: "Tiger", art: true, st: { v: 1.03, c: 1.04, a: 1.04 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "formula", price: 500, zh: "方程式", en: "Formula Racer", art: true, st: { v: 1.06, c: 1.04, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "cobra", price: 480, zh: "眼鏡蛇", en: "Cobra", art: true, st: { v: 1.06, c: 1.0, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "scorpion", price: 500, zh: "蠍子", en: "Scorpion", art: true, st: { v: 1.02, c: 1.06, a: 1.04 }, cols: ["orig", "red", "yellow", "green", "blue"] },
+  { v: "manta", price: 340, zh: "魟魚", en: "Manta Ray", art: true, st: { v: 1.08, c: 0.97, a: 0.98 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "snow_leopard", price: 540, zh: "雪豹", en: "Snow Leopard", art: true, st: { v: 1.05, c: 1.05, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "falcon", price: 460, zh: "獵鷹", en: "Falcon", art: true, st: { v: 1.09, c: 0.98, a: 1.0 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "robot", price: 580, zh: "機器人", en: "Robot", art: true, st: { v: 1.04, c: 1.04, a: 1.06 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "stealth", price: 440, zh: "隱形戰機", en: "Stealth Jet", art: true, st: { v: 1.1, c: 0.96, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "blue"] },
+  { v: "rocket", price: 460, zh: "火箭", en: "Rocket", art: true, st: { v: 1.12, c: 0.94, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "dragon", price: 1100, zh: "神龍", en: "Dragon", art: true, st: { v: 1.15, c: 1.07, a: 1.07 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "phoenix", price: 1100, zh: "鳳凰", en: "Phoenix", art: true, st: { v: 1.17, c: 1.06, a: 1.05 }, cols: ["orig", "yellow", "green", "blue", "purple"] }
 ];
 C2BODIES.forEach(function (b) { b.d = bodyTags(b.st); });
 function bodyTags(st) {
@@ -1670,7 +1745,7 @@ function bodyTags(st) {
   var en = e.join(", "); return [z.join("、") + "。", en.charAt(0).toUpperCase() + en.slice(1) + "."];
 }
 var C2 = {
-  START_MONEY: 800,       // red-envelope (紅包) savings
+  START_MONEY: 2000,       // red-envelope (紅包) savings
   ALLOWANCE: 100,         // from Dad every Sunday, if the week's test got an A
   SHOP_TESTS: 3,          // test runs per store visit
   TOOLBOX: 3,             // spare parts he can bring to a cup
@@ -1681,43 +1756,43 @@ var C2 = {
     body: [
       { v: "boxy", price: 0, zh: "方塊車殼", en: "Box body", d: ["套件附的，比較擋風。", "Comes in the kit. Catches more wind."] },
       { v: "sleek", price: 320, zh: "閃電車殼", en: "Arrow body", d: ["流線型，風阻比較小，跑比較快。", "Smooth shape, less wind, a bit faster."] },
-      { v: "aero", price: 560, zh: "噴射車殼", en: "Jet body", d: ["最低最尖，風阻最小。", "Lowest and pointiest. Least wind."] }].concat(C2BODIES),
+      { v: "aero", price: 440, zh: "噴射車殼", en: "Jet body", d: ["最低最尖，風阻最小。", "Lowest and pointiest. Least wind."] }].concat(C2BODIES),
     motor: [
       { v: "normal", price: 0, zh: "普通馬達", en: "Stock motor", d: ["套件附的，速度普通。", "Comes in the kit. Normal speed."] },
-      { v: "turbo", price: 380, zh: "高速馬達", en: "Turbo motor", d: ["轉得快，直線很快。", "Spins fast. Great on straights."] },
-      { v: "torque", price: 420, zh: "扭力馬達", en: "Torque motor", d: ["力氣大，爬坡最強。", "Strong push. Best on hills."] },
-      { v: "hyper", price: 650, zh: "超級馬達", en: "Hyper motor", d: ["最快，可是爬坡比較沒力。", "Fastest, but weaker on hills."] },
-      { v: "rev", price: 300, zh: "轉速馬達", en: "Rev motor", d: ["比普通快一點，也有一點力氣。", "A bit faster and a bit stronger than stock."] },
-      { v: "light", price: 520, zh: "輕快馬達", en: "Light-dash motor", d: ["很快，爬坡也還可以。", "Very fast, OK on hills."] },
-      { v: "sprint", price: 900, zh: "衝刺馬達", en: "Sprint motor", d: ["直線最快！爬坡很沒力。", "Fastest on straights! Weak on hills."] },
-      { v: "mach", price: 1100, zh: "音速馬達", en: "Mach motor", d: ["又快又有力，最貴。", "Fast and strong. Most expensive."] }],
+      { v: "turbo", price: 480, zh: "高速馬達", en: "Turbo motor", d: ["轉得快，直線很快。", "Spins fast. Great on straights."] },
+      { v: "torque", price: 560, zh: "扭力馬達", en: "Torque motor", d: ["力氣大，爬坡最強。", "Strong push. Best on hills."] },
+      { v: "hyper", price: 520, zh: "超級馬達", en: "Hyper motor", d: ["很快，可是爬坡比較沒力。", "Very fast, but weaker on hills."] },
+      { v: "rev", price: 250, zh: "轉速馬達", en: "Rev motor", d: ["比普通快一點，也有一點力氣。", "A bit faster and a bit stronger than stock."] },
+      { v: "light", price: 680, zh: "輕快馬達", en: "Light-dash motor", d: ["很快，爬坡也還可以。", "Very fast, OK on hills."] },
+      { v: "sprint", price: 860, zh: "衝刺馬達", en: "Sprint motor", d: ["直線最快！爬坡很沒力。", "Fastest on straights! Weak on hills."] },
+      { v: "mach", price: 1150, zh: "音速馬達", en: "Mach motor", d: ["又快又有力，最貴。", "Fast and strong. Most expensive."] }],
     gear: [
       { v: "speed", price: 0, zh: "高速齒輪", en: "Speed gears", d: ["套件附的，直線快，爬坡慢。", "Comes in the kit. Fast, weak on hills."] },
-      { v: "power", price: 150, zh: "力量齒輪", en: "Power gears", d: ["比較慢，可是很有力氣。", "Slower, but strong."] },
-      { v: "mid", price: 180, zh: "中速齒輪", en: "Middle gears", d: ["速度和力氣都中等。", "A bit of both."] },
-      { v: "super", price: 200, zh: "超高速齒輪", en: "Super-speed gears", d: ["直線更快，爬坡更慢。", "Even faster, even weaker on hills."] },
-      { v: "climb", price: 200, zh: "爬坡齒輪", en: "Climbing gears", d: ["慢，可是上坡最強。", "Slow, but best up hills."] }],
+      { v: "power", price: 260, zh: "力量齒輪", en: "Power gears", d: ["比較慢，可是很有力氣。", "Slower, but strong."] },
+      { v: "mid", price: 200, zh: "中速齒輪", en: "Middle gears", d: ["速度和力氣都中等。", "A bit of both."] },
+      { v: "super", price: 140, zh: "超高速齒輪", en: "Super-speed gears", d: ["直線更快，爬坡更慢。", "Even faster, even weaker on hills."] },
+      { v: "climb", price: 300, zh: "爬坡齒輪", en: "Climbing gears", d: ["慢，可是上坡最強。", "Slow, but best up hills."] }],
     tire: [
       { v: "hard", price: 0, zh: "硬輪胎", en: "Hard tires", d: ["套件附的，容易滑。", "Comes in the kit. Slippery."] },
       { v: "soft", price: 160, zh: "軟輪胎", en: "Soft tires", d: ["抓地力好，過彎穩。", "Good grip in curves."] },
       { v: "low", price: 220, zh: "低摩擦輪胎", en: "Low-friction tires", d: ["直線滾得快，抓地力中等。", "Roll fast on straights, medium grip."] },
-      { v: "sponge", price: 240, zh: "海綿輪胎", en: "Sponge tires", d: ["抓地力最好，直線慢一點。", "Best grip, a little slower."] },
-      { v: "slick", price: 260, zh: "光頭輪胎", en: "Slick tires", d: ["直線很快，彎道容易滑。", "Fast on straights, slides in curves."] },
-      { v: "spike", price: 180, zh: "釘釘輪胎", en: "Spike tires", d: ["咬住地面，爬坡比較有力。", "Bites the road. Better on hills."] },
-      { v: "large", price: 300, zh: "大直徑輪胎", en: "Big tires", d: ["輪子大跑得快，可是起步和爬坡比較慢。", "Big wheels go fast, but start and climb slower."] }],
+      { v: "sponge", price: 300, zh: "海綿輪胎", en: "Sponge tires", d: ["抓地力最好，直線慢一點。", "Best grip, a little slower."] },
+      { v: "slick", price: 140, zh: "光頭輪胎", en: "Slick tires", d: ["直線很快，彎道容易滑。", "Fast on straights, slides in curves."] },
+      { v: "spike", price: 200, zh: "釘釘輪胎", en: "Spike tires", d: ["咬住地面，爬坡比較有力。", "Bites the road. Better on hills."] },
+      { v: "large", price: 260, zh: "大直徑輪胎", en: "Big tires", d: ["輪子大跑得快，可是起步和爬坡比較慢。", "Big wheels go fast, but start and climb slower."] }],
     roller: [
       { v: "no", price: 0, zh: "沒有滾輪", en: "No rollers", d: ["過彎太快會飛出去！", "Too fast in a curve and it flies off!"] },
       { v: "yes", price: 140, zh: "兩個滾輪", en: "2 rollers", d: ["靠著牆滑過彎道。", "Slides along the wall in curves."] },
-      { v: "four", price: 260, zh: "四個滾輪", en: "4 rollers", d: ["前後都有，彎道最穩，有一點重。", "Front and back. Steadiest, a little heavy."] },
+      { v: "four", price: 280, zh: "四個滾輪", en: "4 rollers", d: ["前後都有，彎道最穩，有一點重。", "Front and back. Steadiest, a little heavy."] },
       { v: "plastic", price: 80, zh: "塑膠滾輪", en: "Plastic rollers", d: ["最便宜，不太滑順。", "Cheapest. Not very smooth."] },
       { v: "alu", price: 220, zh: "鋁合金滾輪", en: "Aluminum rollers", d: ["兩個，比普通的滑順。", "Two rollers, smoother than normal."] },
       { v: "bearing", price: 420, zh: "軸承滾輪", en: "Ball-bearing rollers", d: ["四個超滑順，彎道最快。", "Four super-smooth rollers. Fastest in curves."] }],
     wing: [
       { v: "none", price: 0, zh: "沒有尾翼", en: "No wing", d: ["比較輕。", "Lighter."] },
       { v: "small", price: 150, zh: "小尾翼", en: "Small wing", d: ["風把車子往下壓，過彎穩一點。", "Wind pushes the car down. A bit steadier."] },
-      { v: "big", price: 280, zh: "大尾翼", en: "Big wing", d: ["彎道很穩，直線慢一點點。", "Very steady in curves, slightly slower."] },
-      { v: "fin", price: 120, zh: "鯊魚鰭", en: "Shark fin", d: ["小小的，幾乎不擋風。", "Tiny. Almost no wind."] },
-      { v: "air", price: 220, zh: "前擾流板", en: "Front air dam", d: ["把車頭往下壓。", "Pushes the nose down."] },
+      { v: "big", price: 260, zh: "大尾翼", en: "Big wing", d: ["彎道很穩，直線慢一點點。", "Very steady in curves, slightly slower."] },
+      { v: "fin", price: 80, zh: "鯊魚鰭", en: "Shark fin", d: ["小小的，幾乎不擋風。", "Tiny. Almost no wind."] },
+      { v: "air", price: 180, zh: "前擾流板", en: "Front air dam", d: ["把車頭往下壓。", "Pushes the nose down."] },
       { v: "dual", price: 380, zh: "雙層尾翼", en: "Double wing", d: ["彎道最穩，直線慢一些。", "Steadiest in curves, slower on straights."] }]
   },
   // school week 1 (Mon-Thu lessons, Fri test). Each question: [zh, en], answers [[zh,en]...], c = right index, why [zh,en]
@@ -1762,13 +1837,15 @@ var C2 = {
         { id: "w1s5", q: ["四驅車要裝幾顆電池？", "How many batteries does a Mini 4WD car use?"], a: [["2 顆", "2"], ["1 顆", "1"], ["5 顆", "5"]], c: 0, why: ["四驅車用 2 顆三號電池。", "It uses 2 AA batteries."] },
         { id: "w1s6", q: ["電池快沒電了，車子會…", "When the batteries are almost empty, the car…"], a: [["跑得很慢", "goes slowly"], ["跑更快", "goes faster"], ["飛起來", "flies"]], c: 0, why: ["電不夠，馬達就沒力氣。", "Less power makes a weaker motor."] }] },
     { day: 1, sub: ["數學", "Math"], ic: "🕘", title: ["看時鐘", "Reading the clock"], tip: ["在家試試看：看看家裡的時鐘，現在是幾點？", "Try at home: look at a clock. What time is it now?"],
-      cards: [["短針告訴我們幾點，長針告訴我們幾分。", "The short hand shows the hour. The long hand shows the minutes."],
-        ["長針指著 12，就是整點。長針指著 6，就是半點。", "Long hand on 12 means o'clock. Long hand on 6 means half past."],
-        ["比賽 9 點開始，要提早 30 分鐘，8 點半就到。", "The race starts at 9:00. Come 30 minutes early, at 8:30."]],
+      cards: [["短針告訴我們幾點，長針告訴我們幾分。", "The short hand shows the hour. The long hand shows the minutes.", "3:00"],
+        ["長針指著 12，就是整點。長針指著 6，就是半點。", "Long hand on 12 means o'clock. Long hand on 6 means half past.", "6:30"],
+        ["比賽 9 點開始，要提早 30 分鐘，8 點半就到。", "The race starts at 9:00. Come 30 minutes early, at 8:30.", "8:30"]],
       quiz: [
-        { id: "w1m4", q: ["短針指著 3，長針指著 12，是幾點？", "Short hand on 3, long hand on 12. What time is it?"], a: [["3:00", "3:00"], ["12:00", "12:00"], ["3:30", "3:30"]], c: 0, why: ["長針在 12 是整點，短針在 3，就是 3 點。", "Long hand on 12 means o'clock, short hand on 3: 3:00."] },
-        { id: "w1m5", q: ["長針指著 6，是…", "The long hand on 6 means…"], a: [["半點", "half past"], ["整點", "o'clock"], ["6 點", "6 o'clock"]], c: 0, why: ["長針走到 6 是走了半圈，就是半點。", "Halfway around is half past."] },
-        { id: "w1m6", q: ["比賽 9 點開始，要提早 30 分鐘到，幾點要到？", "The race starts at 9:00. Arrive 30 minutes early. When?"], a: [["8:30", "8:30"], ["9:30", "9:30"], ["8:00", "8:00"]], c: 0, why: ["9 點往前 30 分鐘是 8 點半。", "30 minutes before 9:00 is 8:30."] }] },
+        { id: "w1m4", clock: "3:00", q: ["短針指著 3，長針指著 12，是幾點？", "Short hand on 3, long hand on 12. What time is it?"], a: [["3:00", "3:00"], ["12:00", "12:00"], ["3:30", "3:30"]], c: 0, why: ["長針在 12 是整點，短針在 3，就是 3 點。", "Long hand on 12 means o'clock, short hand on 3: 3:00."] },
+        { id: "w1m5", clock: "4:30", q: ["長針指著 6，是…", "The long hand on 6 means…"], a: [["半點", "half past"], ["整點", "o'clock"], ["6 點", "6 o'clock"]], c: 0, why: ["長針走到 6 是走了半圈，就是半點。", "Halfway around is half past."] },
+        { id: "w1m6", q: ["比賽 9 點開始，要提早 30 分鐘到，幾點要到？", "The race starts at 9:00. Arrive 30 minutes early. When?"], a: [["8:30", "8:30"], ["9:30", "9:30"], ["8:00", "8:00"]], c: 0, why: ["9 點往前 30 分鐘是 8 點半。", "30 minutes before 9:00 is 8:30."] },
+        { id: "w1m7", clock: "7:30", q: ["這個時鐘是幾點？", "What time does this clock show?"], a: [["7:30", "7:30"], ["6:30", "6:30"], ["8:30", "8:30"]], c: 0, why: ["長針在 6 是半點，短針在 7 和 8 中間，就是 7 點半。", "Long hand on 6 is half past. Short hand between 7 and 8: 7:30."] },
+        { id: "w1m8", clock: "10:00", q: ["這個時鐘是幾點？", "What time does this clock show?"], a: [["10:00", "10:00"], ["12:10", "12:10"], ["2:00", "2:00"]], c: 0, why: ["短針指 10，長針指 12，就是 10 點整。", "Short hand on 10, long hand on 12: 10:00."] }] },
     { day: 2, sub: ["英文", "English"], ic: "🎨", title: ["隊伍的顏色", "Team colors"], tip: ["在家試試看：用英文說出你衣服的顏色！", "Try at home: say the colors of your clothes in English!"],
       cards: [["blue 是藍色，我們隊的顏色。", "blue: our team's color."],
         ["red 紅色，green 綠色，yellow 黃色。", "red, green, yellow."],
@@ -1886,6 +1963,16 @@ var C2 = {
     ["你算錢好快喔！", "You count money so fast!"], ["我兒子也很喜歡四驅車。", "My son loves Mini 4WD cars too."], ["這裡的東西最好吃了。", "The food here is the best."],
     ["今天天氣真好！", "What a nice day today!"], ["你長大想做什麼？", "What do you want to be when you grow up?"], ["下次我還要再來！", "I'll come back next time!"],
     ["聽說星期六有比賽，加油喔！", "I heard there's a race on Saturday. Good luck!"], ["你是小幫手嗎？好棒！", "Are you the little helper? Great job!"]],
+  // noodle shop customers (boys and men in Lucas's game). Art: assets/cust/<id>.webp (Gemini); emoji until the art exists
+  CUST: [
+    { id: "grandpa", ic: "👴", zh: "阿公", en: "Grandpa", pitch: 0.8, hi: ["小朋友好！", "Hello, little one!"] },
+    { id: "office", ic: "👨‍💼", zh: "上班族叔叔", en: "Office uncle", pitch: 1, hi: ["我趕時間！", "I'm in a hurry!"] },
+    { id: "student", ic: "🧑‍🎓", zh: "大哥哥", en: "Big brother", pitch: 1.1, hi: ["嗨！", "Hi!"] },
+    { id: "police", ic: "👮‍♂️", zh: "警察伯伯", en: "Police officer", pitch: 0.9, hi: ["辛苦了！", "Thanks for your hard work!"] },
+    { id: "builder", ic: "👷‍♂️", zh: "工人叔叔", en: "Builder", pitch: 0.85, hi: ["好餓喔！", "I'm so hungry!"] },
+    { id: "mailman", ic: "🧔", zh: "郵差叔叔", en: "Mail carrier", pitch: 0.95, hi: ["送完信了！", "Done delivering letters!"] },
+    { id: "boy", ic: "👦", zh: "小弟弟", en: "Little boy", pitch: 1.35, hi: ["哥哥好！", "Hi, big brother!"] },
+    { id: "farmer", ic: "👨‍🌾", zh: "農夫爺爺", en: "Farmer grandpa", pitch: 0.8, hi: ["今天收成很好！", "Great harvest today!"] }],
   CASH: [500, 100, 50, 10, 5], // Taiwan bills and coins Lucas uses to collect the bill
   // car wash job (week 2): wash steps in order + a price board
   WASH: { steps: [["💦", "噴水", "Spray water"], ["🧼", "抹肥皂", "Add soap"], ["🧽", "刷一刷", "Scrub"], ["🚿", "沖乾淨", "Rinse"], ["🧻", "擦乾", "Dry"]],
@@ -2192,8 +2279,29 @@ var C2S = { // state helpers
   give: function (c, slot, v) { c.owned[slot + ":" + v] = (c.owned[slot + ":" + v] || 0) + 1; },
   part: function (slot, v) { return C2.PARTS[slot].filter(function (p) { return p.v === v; })[0]; },
   cupThisWeek: function (c) { var w = this.week(c); return C2.CUPS.filter(function (u) { return u.week === w; })[0]; },
+  sellPrice: function (p) { return Math.round(p.price * 0.8 / 5) * 5; },
+  lvl: function (c, id) { return Math.min(4, this.week(c) - 1 + Math.floor(((c.shifts || {})[id] || 0) / 3)); }, // job level 0-4
+  shiftDone: function (c, id, was) { c.shifts = c.shifts || {}; c.shifts[id] = (c.shifts[id] || 0) + 1; return this.lvl(c, id) > was; },
   testA: function (c) { var t = c.tests[this.week(c)]; return !!(t && t.a); }
 };
+function clockSVG(t) { // "h:mm" -> analog clock face for the clock lessons
+  var hm = t.split(":"), h = +hm[0] % 12, m = +hm[1], ha = (h + m / 60) * 30, ma = m * 6, n = "";
+  for (var k = 1; k <= 12; k++) { var a = k * 30 * Math.PI / 180; n += "<text x='" + (50 + 37 * Math.sin(a)).toFixed(1) + "' y='" + (54 - 37 * Math.cos(a)).toFixed(1) + "' text-anchor='middle' font-size='11' font-weight='800'>" + k + "</text>"; }
+  var hand = function (deg, len, w, col) { var a = deg * Math.PI / 180; return "<line x1='50' y1='50' x2='" + (50 + len * Math.sin(a)).toFixed(1) + "' y2='" + (50 - len * Math.cos(a)).toFixed(1) + "' stroke='" + col + "' stroke-width='" + w + "' stroke-linecap='round'/>"; };
+  return "<div class='clockpic'><svg viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='#fff' stroke='#222' stroke-width='5'/>" + n + hand(ma, 34, 3.5, "#1c7ed6") + hand(ha, 22, 6, "#e03131") + "<circle cx='50' cy='50' r='4' fill='#222'/></svg></div>";
+}
+function R(n) { return (Math.random() * n) | 0; }
+function stars(l) { return "⭐".repeat(l + 1); }
+function lvlNote(up, id) { var l = C2S.lvl(C2S.get(), id); return up ? "<div class='tip lvup'>🆙 " + bi("升級了！現在是 " + stars(l) + "，工作變難，薪水多 10 元！", "Level up! Now " + stars(l) + ": harder work, NT$10 more pay!") + "</div>" : ""; }
+function seqBind(order) { // tap buttons in a given order; a wrong tap counts as a try but the button stays
+  var fn = function (cd, right, wrong) { var i = 0;
+    $$("[data-a]", cd).forEach(function (b) { b.onclick = function () { if (b.classList.contains("ok")) return;
+      if (b.dataset.a === String(order[i])) { b.classList.add("ok"); b.insertAdjacentHTML("beforeend", "<em class='ord'>" + (i + 1) + "</em>"); sfx("tap"); i++; if (i >= order.length) right(); }
+      else { b.classList.add("no"); setTimeout(function () { b.classList.remove("no"); }, 700); wrong(null); } }; }); };
+  fn.order = order; return fn;
+}
+function seqReveal(order) { return function (cd) { $$("[data-a]", cd).forEach(function (b) { var k = order.map(String).indexOf(b.dataset.a); if (k >= 0 && !b.classList.contains("ok")) { b.classList.add("ok"); b.insertAdjacentHTML("beforeend", "<em class='ord'>" + (k + 1) + "</em>"); } }); }; }
+function custFace(w) { return "<span class='cface'><img src='assets/cust/" + w.id + ".webp' alt='' onerror='this.remove()'><i>" + w.ic + "</i></span>"; }
 function money(n) { return "NT$" + n; }
 function chunks(items, n) { var out = ""; for (var i = 0; i < items.length; i += n) out += "<div class='c2parts compact'>" + items.slice(i, i + n).join("") + "</div>"; return out; }
 function partCols() { var cd = $("#c2Card"); return Math.max(3, Math.floor(((cd && cd.clientWidth) || 600) - 40) / 128 | 0); } // one row per block
@@ -2331,7 +2439,7 @@ var C2G = {
     function card() {
       if (i >= L.cards.length) return quiz();
       var cd = L.cards[i];
-      self.card("<div class='c2sub'>" + L.ic + " " + bi(L.sub[0], L.sub[1]) + "</div>" + self.say("teacher", cd[0], cd[1]) + "<div class='act'><button class='btn white' id='lAgain'>🔊</button><button class='btn blue' id='lNext'>" + bi("下一張", "Next") + " ▶</button></div>");
+      self.card("<div class='c2sub'>" + L.ic + " " + bi(L.sub[0], L.sub[1]) + "</div>" + (cd[2] ? "<div class='wclk'>" + self.say("teacher", cd[0], cd[1]) + clockSVG(cd[2]) + "</div>" : self.say("teacher", cd[0], cd[1])) + "<div class='act'><button class='btn white' id='lAgain'>🔊</button><button class='btn blue' id='lNext'>" + bi("下一張", "Next") + " ▶</button></div>");
       $("#lNext").onclick = function () { sfx("tap"); Read.stop(); i++; card(); };
       $("#lAgain").onclick = function () { Read.pair(cd[0], cd[1], CAST.teacher.pitch); };
     }
@@ -2369,7 +2477,7 @@ var C2G = {
     function one() {
       if (i >= qs.length) return done(pts, qs.length * 2);
       var q = qs[i], tries = 0, order = q.a.map(function (_, j) { return j; }).sort(function () { return Math.random() - 0.5; });
-      var cd = self.card("<div class='c2sub'>" + bi(title[0], title[1]) + " " + (i + 1) + " / " + qs.length + "</div><div class='quiz'><div class='qq'>" + bi(q.q[0], q.q[1]) + "</div><div class='ans'>" +
+      var cd = self.card("<div class='c2sub'>" + bi(title[0], title[1]) + " " + (i + 1) + " / " + qs.length + "</div><div class='quiz'>" + (q.clock ? "<div class='wclk'><div class='qq'>" + bi(q.q[0], q.q[1]) + "</div>" + clockSVG(q.clock) + "</div>" : "<div class='qq'>" + bi(q.q[0], q.q[1]) + "</div>") + "<div class='ans'>" +
         order.map(function (j) { return "<button class='btn' data-j='" + j + "'>" + bi(q.a[j][0], q.a[j][1]) + "</button>"; }).join("") + "</div><div class='why'></div></div><div class='act'></div>");
       Read.pair(q.q[0], q.q[1]);
       $$(".ans .btn", cd).forEach(function (b) {
@@ -2484,7 +2592,10 @@ var C2G = {
     if (tab === "buy") {
       body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return p.price > 0; }).sort(byPrice).map(function (p) {
         var own = C2S.has(c, cur, p.v), price = Math.max(0, p.price - (c.coupon || 0));
-        return "<button class='opt" + (own ? " own" : "") + (self.sel === cur + ":" + p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + "<img class='thumb' src='" + partImg(cur, p) + "' alt=''>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span>" + partTags(cur, p.v) + "</button>";
+        var on = self.sel === cur + ":" + p.v, kitPart = C2.KIT.build[cur] === p.v;
+        var tag = own ? (on && !kitPart ? "<span class='mbuy sell' role='button' data-sell='1' aria-label='Sell'>💰 " + bi("賣", "Sell") + " " + C2S.sellPrice(p) + "</span>" : "✅ " + bi("已經有了", "Owned"))
+          : on ? "<span class='mbuy' role='button' data-buy='1' aria-label='Buy'>🛒 " + price + "</span>" : money(price); // the small Buy / Sell button replaces the price line
+        return "<button class='opt" + (own ? " own" : "") + (on ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + "<img class='thumb' src='" + partImg(cur, p) + "' alt=''>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + tag + "</span>" + partTags(cur, p.v) + "</button>";
       }), partCols());
     } else if (tab === "equip") {
       body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).sort(byPrice).map(function (p) {
@@ -2505,14 +2616,18 @@ var C2G = {
     }
     var pinned = body.indexOf("<div class='c2slots'>") === 0 ? body.slice(0, body.indexOf("</div>") + 6) : "";
     if (pinned) body = body.slice(pinned.length);
-    var cd = this.card("<div class='pin'>" + tabs + pinned + "</div>" + body + "<div class='act'><button class='btn white' id='bOut'>🗺 " + bi("離開模型店", "Leave the store") + "</button></div>");
+    var same = self._shopAt === tab + ":" + cur; self._shopAt = tab + ":" + cur; // stay on the same page when re-drawing the same list
+    var cd = this.card("<div class='pin'>" + tabs + pinned + "</div>" + body + "<div class='act'><button class='btn white' id='bOut'>🗺 " + bi("離開模型店", "Leave the store") + "</button></div>",
+      tab === "buy" && self.sel ? { find: function () { var e = $("#c2Card .opt.sel"); return e && e.closest(".c2parts"); } } : { keep: same });
     if (tab === "buy" && self.sel && self.sel.split(":")[0] === cur) self.showPick();
     $$(".c2paint .paint", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); c.build.paint = b.dataset.p; save(); self.shop("equip"); }; });
     $$(".c2slots .chip", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); self.shopSlot = b.dataset.sl; self.shop(tab); }; });
     $$(".c2tabs .btn", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); Read.stop(); self.sel = null; self.shop(b.dataset.t); }; });
     $("#bOut").onclick = function () { Read.stop(); self.advance(); };
     $$(".opt", cd).forEach(function (b) {
-      if (tab === "buy") b.onclick = function () { sfx("tap"); self.sel = b.dataset.s + ":" + b.dataset.v; self.shop("buy"); }; // select first, buy from the side panel
+      if (tab === "buy") b.onclick = function (ev) { // select first; the small Buy / Sell button sits inside the selected item
+        var t = ev.target.closest(".mbuy"); if (t) { ev.stopPropagation(); return t.dataset.sell ? self.sell(b.dataset.s, b.dataset.v) : self.buy(b.dataset.s, b.dataset.v); }
+        sfx("tap"); self.sel = b.dataset.s + ":" + b.dataset.v; self.shop("buy"); };
       if (tab === "equip") b.onclick = function () { sfx("tap"); c.build[b.dataset.s] = b.dataset.v; c.toolbox = c.toolbox.filter(function (k) { return k !== b.dataset.s + ":" + b.dataset.v; }); save(); self.shop("equip"); };
       if (tab === "box") b.onclick = function () { var k = b.dataset.k, i = c.toolbox.indexOf(k); if (i >= 0) c.toolbox.splice(i, 1); else if (c.toolbox.length < C2.TOOLBOX) c.toolbox.push(k); else { sfx("buzz"); return; } sfx("tap"); save(); self.shop("box"); };
       if (tab === "test") b.onclick = function () {
@@ -2530,14 +2645,25 @@ var C2G = {
     var diff = [["speed", "🚀"], ["hill", "⛰️"], ["grip", "🌀"], ["safe", "🛡️"]].map(function (d) { var dv = b1[d[0]] - b0[d[0]]; return Math.abs(dv) < 0.01 ? "" : "<span class='chip' style='background:" + (dv > 0 ? "#d3f9d8" : "#ffe3e3") + "'>" + d[1] + (dv > 0 ? "▲" : "▼") + "</span>"; }).join(" ");
     var st = $("#c2Stats"), box = document.createElement("div"); box.className = "pick";
     box.innerHTML = "<b>" + bi(p.zh, p.en) + "</b><div class='pd'>" + bi(p.d[0], p.d[1]) + "</div><div>" + (diff || bi("跟現在差不多", "About the same")) + "</div>" +
-      (own ? "<div class='pr'>✅ " + bi("已經有了", "Owned") + "</div>" : "<button class='btn red' id='pkBuy'>🛒 " + bi("買", "Buy") + " " + money(price) + "</button>");
+      (own ? "<div class='pr'>✅ " + bi("已經有了", "Owned") + "</div>" : "<div class='pr'>" + money(price) + "</div>");
     st.insertBefore(box, st.firstChild);
-    if ($("#pkBuy")) $("#pkBuy").onclick = function () {
-      if (c.money < price) { sfx("buzz"); return Read.pair("錢不夠，去打工賺錢吧！還差 " + (price - c.money) + " 元。", "Not enough money. Work to earn " + money(price - c.money) + " more!"); }
-      c.money -= price; c.coupon = 0; C2S.give(c, sl, v); c.build[sl] = v; if (sl === "body") c.build.paint = "orig"; save(); sfx("win"); self.sel = null; self.shop("buy");
-      Read.pair("買好了，已經裝在車上！", "Bought and fitted to your car!");
-    };
     Read.pair(p.zh + "。" + p.d[0], p.en + ". " + p.d[1]);
+  },
+  buy: function (sl, v) {
+    var c = C2S.get(), p = C2S.part(sl, v), price = Math.max(0, p.price - (c.coupon || 0));
+    if (c.money < price) { sfx("buzz"); return Read.pair("錢不夠，去打工賺錢吧！還差 " + (price - c.money) + " 元。", "Not enough money. Work to earn " + money(price - c.money) + " more!"); }
+    c.money -= price; c.coupon = 0; C2S.give(c, sl, v); c.build[sl] = v; if (sl === "body") c.build.paint = "orig"; save(); sfx("win"); this.shop("buy");
+    Read.pair("買好了，已經裝在車上！", "Bought and fitted to your car!");
+  },
+  sell: function (sl, v) { // sell an owned part back for 80%; if it was on the car, the kit part goes back on
+    var c = C2S.get(), self = this, p = C2S.part(sl, v), get = C2S.sellPrice(p);
+    ovl("<div class='big'>💰</div><div style='text-align:center;margin-top:8px'>" + bi("把" + p.zh + "賣回給店裡，拿回 " + get + " 元？（買的價錢的八成）", "Sell the " + p.en + " back to the store for " + money(get) + "? (80% of the price)") + "</div><div class='act'><button class='btn white' id='slN'>" + bi("先不要", "Not now") + "</button><button class='btn red' id='slY'>" + bi("賣！", "Sell!") + "</button></div>");
+    Read.pair("賣掉" + p.zh + "，拿回 " + get + " 元？", "Sell the " + p.en + " for NT$" + get + "?");
+    $("#slN").onclick = function () { closeOvl(); Read.stop(); };
+    $("#slY").onclick = function () { closeOvl(); Read.stop();
+      var k = sl + ":" + v; c.owned[k] = Math.max(0, (c.owned[k] || 1) - 1); c.money += get; c.toolbox = c.toolbox.filter(function (x) { return x !== k; });
+      if (c.build[sl] === v && !C2S.has(c, sl, v)) { c.build[sl] = C2.KIT.build[sl]; if (sl === "body") c.build.paint = "orig"; }
+      save(); sfx("win"); self.shop("buy"); Read.pair("賣掉了，拿回 " + get + " 元。", "Sold! You got NT$" + get + " back."); };
   },
   confirm: function (q, yes, no, extra) {
     ovl((extra || "<div class='big'>🛒</div>") + "<div style='text-align:center;margin-top:8px'>" + bi(q[0], q[1]) + "</div><div class='act'><button class='btn white' id='cfN'>" + bi("先不要", "Not now") + "</button><button class='btn red' id='cfY'>" + bi("買！", "Buy!") + "</button></div>");
@@ -2564,184 +2690,242 @@ var C2G = {
     this.frame(["打工", "Work"]);
     var wk = C2S.week(C2S.get()), isOpen = function (j) { return j.open || wk >= j.week; };
     var cd = this.card("<div class='c2sub'>" + bi("選一個工作（一次工作用掉一段時間）", "Pick a job (one job uses one time slot)") + "</div><div class='c2jobs'>" + C2.JOBS.map(function (j) {
-      return "<button class='opt" + (isOpen(j) ? "" : " off") + "' data-j='" + j.id + "'><span class='ic'>" + j.ic + "</span>" + bi(j.zh, j.en) + "<span class='pr'>" + (isOpen(j) ? money(j.pay) + "+" : "🔒 " + bi("第" + j.week + "週開放", "Opens week " + j.week)) + "</span></button>";
+      return "<button class='opt" + (isOpen(j) ? "" : " off") + "' data-j='" + j.id + "'><span class='ic'>" + j.ic + "</span>" + bi(j.zh, j.en) + "<span class='pr'>" + (isOpen(j) ? money(j.pay + 10 * C2S.lvl(C2S.get(), j.id)) + "+ " + stars(C2S.lvl(C2S.get(), j.id)) : "🔒 " + bi("第" + j.week + "週開放", "Opens week " + j.week)) + "</span></button>";
     }).join("") + "</div><div class='act'><button class='btn white' id='wBack'>🗺 " + bi("回地圖", "Back to map") + "</button></div>");
     $$(".opt", cd).forEach(function (b) { b.onclick = function () { if (b.classList.contains("off")) { sfx("buzz"); return Read.pair("這個工作第二週才開放！", "This job opens in week 2!"); } sfx("tap"); ({ noodle: self.noodle, deliver: self.deliver, bank: self.bank, wash: self.wash, books: self.books })[b.dataset.j].call(self); }; });
     $("#wBack").onclick = function () { Read.stop(); self.town(); };
   },
   /* noodle shop: make the tray for each order, then pick the right total */
+  /* noodle shop: the customer talks in a bubble on the same page as the menu and the till */
   noodle: function () {
-    var self = this, c = C2S.get(), n = 0, tips = 0, N = 5, last = [];
+    var self = this, c = C2S.get(), n = 0, tips = 0, N = 5, last = [], lastC = "", lvl = C2S.lvl(c, "noodle");
+    var MW = { bowl: ["碗", "bowl"], plate: ["盤", "plate"], cup: ["杯", "cup"], steamer: ["籠", "basket"] };
     this.frame(["麵店幫忙", "Noodle shop"]);
-    var faces = ["👦", "👴", "👨", "🧑", "👨‍🦱", "👱‍♂️", "👨‍🦳", "🧔"];
-    function talk(face, z, e, extra, btn, go) { // a customer speaking, like a dialog
-      var cd = self.card("<div class='c2say cust'><span class='ic'>" + face + "</span><div class='bubble'>" + bi(z, e) + "</div></div>" + (extra || "") + "<div class='act'><button class='btn blue' id='tNext'>" + bi(btn[0], btn[1]) + " ▶</button></div>");
-      Read.pair(z, e); $("#tNext").onclick = function () { sfx("tap"); Read.stop(); go(); }; return cd;
-    }
     function customer() {
       if (n >= N) return pay();
-      // 2-3 dishes for the first customers, up to 4 later; all different, and not the same dishes as last time
-      var k = n < 2 ? 2 + (Math.random() < 0.5 ? 1 : 0) : 2 + (Math.random() * 3 | 0);
+      var cu = C2.CUST.filter(function (x) { return x.id !== lastC; }), who = cu[R(cu.length)]; lastC = who.id;
+      // more dishes as Lucas levels up; level 2+ can order two of one dish; level 1+ can pay with a big bill and want change
+      var k = [[2, 3], [2, 4], [3, 4], [3, 5], [4, 5]][lvl], cnt = k[0] + R(k[1] - k[0] + 1);
       var pool = C2.MENU.filter(function (m) { return last.indexOf(m.id) < 0; }).sort(function () { return Math.random() - 0.5; });
-      var want = pool.slice(0, k); last = want.map(function (m) { return m.id; });
-      var tray = [], tries = 0, perfect = true, face = faces[(Math.random() * faces.length) | 0]; self._want = want; // for automated tests
-      var oz = want.map(function (m) { return m.zh; }).join("、"), oe = want.map(function (m) { return m.en; }).join(", ");
-      talk(face, "你好！我要" + oz + "，謝謝！", "Hi! I'd like " + oe + ", please!", "", ["好的，馬上來", "Coming right up"], draw);
-      function draw() {
-        var cd = self.card("<div class='pin c2say cust sm'><span class='ic'>" + face + "</span><div class='bubble'><small>🍜 " + (n + 1) + " / " + N + "</small> " + bi("我要：" + oz, "I'd like: " + oe) + "</div></div>" +
+      var kinds = pool.slice(0, cnt), dbl = lvl >= 2 && Math.random() < 0.45 ? kinds[0] : null; if (dbl && cnt >= 5) kinds.pop();
+      var want = kinds.slice(); if (dbl) want.push(dbl);
+      last = kinds.map(function (m) { return m.id; });
+      var change = lvl >= 1 && Math.random() < 0.5, tray = [], tries = 0, perfect = true; self._want = want; // for automated tests
+      var line = function (m) { var two = dbl && m.id === dbl.id; return { z: (two ? "2 " + MW[m.d][0] : "") + m.zh, e: (two ? "2 × " : "") + m.en }; };
+      var oz = kinds.map(function (m) { return line(m).z; }).join("、"), oe = kinds.map(function (m) { return line(m).e; }).join(", ");
+      var face = function (sm, z, e) { return "<div class='pin c2say cust" + (sm ? " sm" : "") + "'>" + custFace(who) + "<div class='bubble'><small>🍜 " + (n + 1) + " / " + N + " · " + bi(who.zh, who.en) + "</small><br>" + bi(z, e) + "</div></div>"; };
+      var say = [who.hi[0] + "我要" + oz + "，謝謝！", who.hi[1] + " I'd like " + oe + ", please!"];
+      draw(say, true);
+      function draw(msg, speak) {
+        var cd = self.card(face(true, msg[0], msg[1]) +
           "<div class='menu'>" + C2.MENU.map(function (m) { return "<button class='opt' data-m='" + m.id + "'>" + dish(m) + "<span class='mn'>" + zh(m.zh) + "<small>" + esc(m.en) + "</small></span><span class='pr'>" + m.p + "</span></button>"; }).join("") + "</div>" +
           "<div class='pin tray'>" + (tray.length ? tray.map(function (m, i) { return "<button class='tchip' data-i='" + i + "' aria-label='remove'>" + dish(m, true) + "<b>✕</b></button>"; }).join("") : bi("點菜單，把菜放到托盤上", "Tap the menu to put food on the tray")) + "</div>" +
           "<div class='act'><button class='btn white' id='nAgain'>🔊</button><button class='btn blue' id='nDone'>" + bi("送餐", "Serve") + " ▶</button></div>");
-        $$(".menu .opt", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); if (tray.length < 5) tray.push(C2.MENU.filter(function (m) { return m.id === b.dataset.m; })[0]); draw(); }; });
-        $$(".tray .tchip", cd).forEach(function (b) { b.onclick = function () { tray.splice(+b.dataset.i, 1); draw(); }; });
-        $("#nAgain").onclick = function () { Read.pair("我要：" + oz, "I'd like: " + oe); };
+        if (speak) Read.pair(msg[0], msg[1], who.pitch);
+        $$(".menu .opt", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); if (tray.length < 6) tray.push(C2.MENU.filter(function (m) { return m.id === b.dataset.m; })[0]); draw(msg); }; });
+        $$(".tray .tchip", cd).forEach(function (b) { b.onclick = function () { tray.splice(+b.dataset.i, 1); draw(msg); }; });
+        $("#nAgain").onclick = function () { Read.pair(say[0], say[1], who.pitch); };
         $("#nDone").onclick = function () {
           var a = want.map(function (m) { return m.id; }).sort().join(), t = tray.map(function (m) { return m.id; }).sort().join();
-          if (a === t) { sfx("ding"); return talk(face, "看起來好好吃！一共多少錢？", "Looks yummy! How much is it?", "", ["我來算", "Let me count"], bill); }
+          if (a === t) { sfx("ding"); return bill(); }
           tries++; perfect = false; sfx("buzz");
-          if (tries >= 2) { tray = want.slice(); draw(); talk(face, "我要的是：" + oz + "。沒關係！一共多少錢？", "I wanted: " + oe + ". That's OK! How much is it?", "<div class='tray'>" + want.map(function (m) { return dish(m, true); }).join("") + "</div>", ["我來算", "Let me count"], bill); }
-          else Read.pair("不太對喔，我要：" + oz, "Not quite. I'd like: " + oe);
+          if (tries >= 2) { tray = want.slice(); return bill(["我要的是：" + oz + "。沒關係！", "I wanted: " + oe + ". That's OK! "]); }
+          draw(["不太對喔，我要：" + oz, "Not quite. I'd like: " + oe], true);
         };
       }
-      function bill() { // collect the money with bills and coins (numbers only in the sum)
-        var sum = want.reduce(function (s, m) { return s + m.p; }, 0), paid = [], bt = 0;
-        function draw2(msg) {
+      function bill(pre) { // exact money, or (level 1+) the customer pays with a big bill and Lucas gives change
+        var sum = want.reduce(function (s, m) { return s + m.p; }, 0), giv = sum <= 100 ? 100 : sum <= 500 ? 500 : 1000;
+        if (giv === sum) change = false;
+        var target = change ? giv - sum : sum, paid = [], bt = 0, over = false;
+        var ask = change ? ["一共 " + sum + " 元對嗎？我付 " + giv + " 元，請找錢。", "That's NT$" + sum + ", right? Here's NT$" + giv + ". My change, please."] : ["看起來好好吃！一共多少錢？", "Looks yummy! How much is it?"];
+        if (pre) ask = [pre[0] + ask[0], pre[1] + ask[1]];
+        function draw2(msg, talkNow, end) {
           var got = paid.reduce(function (a, b) { return a + b; }, 0);
-          var cd = self.card("<div class='c2sub cashq'>🧾 " + bi("收錢：用錢幣和鈔票湊出一共多少", "Collect the money: make the total with bills and coins") + "</div>" +
-            "<div class='bill2 pin'>" + want.map(function (m) { return "<b>" + m.p + "</b>"; }).join(" + ") + " = ?</div>" +
-            "<div class='cashbar pin'>" + C2.CASH.map(function (v) { return "<button class='cashb' data-v='" + v + "' aria-label='" + v + "'>" + cash(v) + "</button>"; }).join("") + "</div>" +
+          var cd = self.card(face(true, (end || ask)[0], (end || ask)[1]) +
+            "<div class='bill2 pin'>" + (change ? "<b>" + giv + "</b> − (" + want.map(function (m) { return m.p; }).join(" + ") + ") = ?" : want.map(function (m) { return "<b>" + m.p + "</b>"; }).join(" + ") + " = ?") + "</div>" +
+            (end ? "" : "<div class='c2sub cashq'>🧾 " + (change ? bi("找錢：用錢幣和鈔票湊出要找多少", "Give change: make the change with bills and coins") : bi("收錢：用錢幣和鈔票湊出一共多少", "Collect the money: make the total with bills and coins")) + "</div>" +
+            "<div class='cashbar pin'>" + C2.CASH.map(function (v) { return "<button class='cashb' data-v='" + v + "' aria-label='" + v + "'>" + cash(v) + "</button>"; }).join("") + "</div>") +
             "<div class='till pin'>💰 " + (paid.length ? paid.map(function (v, i) { return "<button class='tchip' data-i='" + i + "'>" + cash(v) + "</button>"; }).join("") : bi("點上面的錢放進收銀台", "Tap the money to put it in the till")) + "<span class='got'>= " + got + "</span></div>" +
             (msg ? "<div class='tip'>" + msg + "</div>" : "") +
-            "<div class='act'><button class='btn white' id='cClr'>↺ " + bi("清空", "Clear") + "</button><button class='btn blue' id='cOk'>" + bi("收好了", "Done") + " ▶</button></div>");
+            (end ? "<div class='act'><button class='btn blue' id='cNext'>" + (n >= N ? bi("下班", "Finish shift") : bi("謝謝光臨！下一位", "Thank you! Next")) + " ▶</button></div>"
+              : "<div class='act'><button class='btn white' id='cClr'>↺ " + bi("清空", "Clear") + "</button><button class='btn blue' id='cOk'>" + bi(change ? "找好了" : "收好了", "Done") + " ▶</button></div>"));
+          if (talkNow) Read.pair(talkNow[0], talkNow[1], who.pitch);
+          if (end) { $("#cNext").onclick = function () { sfx("tap"); Read.stop(); customer(); }; return; }
           $$(".cashb", cd).forEach(function (b) { b.onclick = function () { if (paid.length < 14) { paid.push(+b.dataset.v); sfx("tap"); draw2(); } }; });
           $$(".till .tchip", cd).forEach(function (b) { b.onclick = function () { paid.splice(+b.dataset.i, 1); draw2(); }; });
           $("#cClr").onclick = function () { paid = []; draw2(); };
           $("#cOk").onclick = function () {
-            bt++;
-            if (got === sum) { sfx("ding"); if (perfect && bt === 1) tips += C2.TIP; return thanks(sum, perfect && bt === 1); }
+            if (over) return; bt++;
+            if (got === target) { sfx("ding"); over = true; return thanks(perfect && bt === 1); }
             sfx("buzz");
-            if (bt >= 2) { var left = sum, ans = []; C2.CASH.forEach(function (v) { while (left >= v) { ans.push(v); left -= v; } }); paid = ans; draw2("👉 " + want.map(function (m) { return m.p; }).join(" + ") + " = " + sum); return setTimeout(function () { thanks(sum, false); }, 2200); }
-            var hint = got < sum ? ["還不夠，再加一點。", "Not enough yet. Add more."] : ["太多了，拿掉一些。", "Too much. Take some away."];
-            Read.pair(hint[0], hint[1]); draw2(bi(hint[0], hint[1]));
+            if (bt >= 2) { over = true; var left = target, ans = []; C2.CASH.forEach(function (v) { while (left >= v) { ans.push(v); left -= v; } }); paid = ans;
+              var w = change ? giv + " − " + sum + " = " + target : want.map(function (m) { return m.p; }).join(" + ") + " = " + sum; draw2("👉 " + w, ["答案是 " + target + " 元。", "The answer is NT$" + target + "."]); return setTimeout(function () { thanks(false); }, 2400); }
+            var hint = got < target ? ["還不夠，再加一點。", "Not enough yet. Add more."] : ["太多了，拿掉一些。", "Too much. Take some away."];
+            draw2(bi(hint[0], hint[1]), hint);
           };
         }
-        draw2();
-      }
-      function thanks(sum, tip) { // pay, say thanks, a little small talk
-        var t = C2.TALK[(Math.random() * C2.TALK.length) | 0];
-        n++;
-        talk(face, "給你 " + sum + " 元。" + (tip ? "這 10 元小費給你！" : "") + t[0], "Here's NT$" + sum + "." + (tip ? " And NT$10 tip for you!" : "") + " " + t[1], tip ? "<div class='tip'>💰 +" + money(C2.TIP) + " " + bi("小費", "tip") + "</div>" : "", n >= N ? ["下班", "Finish shift"] : ["謝謝光臨！下一位", "Thank you! Next"], customer);
+        function thanks(tip) { // thanks + small talk in the same bubble
+          var t = C2.TALK[R(C2.TALK.length)]; n++; if (tip) tips += C2.TIP;
+          var e = [(change ? "謝謝你找錢！" : "給你 " + sum + " 元。") + (tip ? "這 10 元小費給你！" : "") + t[0], (change ? "Thanks for the change!" : "Here's NT$" + sum + ".") + (tip ? " And NT$10 tip for you!" : "") + " " + t[1]];
+          draw2(tip ? "💰 +" + money(C2.TIP) + " " + bi("小費", "tip") : "", e, e);
+        }
+        draw2("", ask);
       }
     }
     function pay() {
-      var job = C2.JOBS[0], got = job.pay + tips; c.money += got; save(); sfx("win");
+      var job = C2.JOBS[0], pay = job.pay + 10 * lvl, got = pay + tips, up = C2S.shiftDone(c, "noodle", lvl); c.money += got; save(); sfx("win");
       self.frame(["下班了", "Shift done"]);
-      self.card("<div class='big'>💰 +" + money(got) + "</div>" + self.say("boss", "做得很好！薪水 " + job.pay + " 元，小費 " + tips + " 元。", "Great work! Pay NT$" + job.pay + ", tips NT$" + tips + ".") +
+      self.card("<div class='big'>💰 +" + money(got) + "</div>" + self.say("boss", "做得很好！薪水 " + pay + " 元，小費 " + tips + " 元。", "Great work! Pay NT$" + pay + ", tips NT$" + tips + ".") + lvlNote(up, "noodle") +
         "<div class='tip'>💡 " + bi("生活小技巧：去店裡買東西時，先算算看總共多少錢！", "Try it next time you shop: add up the total before you pay!") + "</div><div class='act'><button class='btn blue' id='pOk'>" + bi("回家路上", "Head out") + " ▶</button></div>");
       $("#pOk").onclick = function () { Read.stop(); self.advance(); };
     }
     customer();
   },
-  /* a job made of N small questions: two tries, NT$10 bonus for each first-try answer */
-  job: function (job, N, make, tip) {
-    var self = this, c = C2S.get(), n = 0, bonus = 0;
+  /* a job made of N rounds. Each job has several round kinds ({min: level, f(lvl)}); a random one is picked each round, never the same kind twice in a row.
+     f returns {say, ans, why, html} (tap [data-a]); or adds bind(cd, right, wrong) for its own controls and reveal(cd) for the answer. */
+  job: function (job, N, kinds, tip) {
+    var self = this, c = C2S.get(), n = 0, bonus = 0, lvl = C2S.lvl(c, job.id), lastK = -1;
     this.frame([job.zh, job.en]);
     function one() {
       if (n >= N) {
-        var got = job.pay + bonus; c.money += got; save(); sfx("win"); self.frame(["下班了", "Shift done"]);
-        self.card("<div class='big'>💰 +" + money(got) + "</div><div style='text-align:center'>" + bi("薪水 " + job.pay + " 元，獎金 " + bonus + " 元", "Pay NT$" + job.pay + ", bonus NT$" + bonus) + "</div><div class='tip'>💡 " + bi(tip[0], tip[1]) + "</div><div class='act'><button class='btn blue' id='jOk'>" + bi("回家路上", "Head out") + " ▶</button></div>");
+        var pay = job.pay + 10 * lvl, got = pay + bonus, up = C2S.shiftDone(c, job.id, lvl); c.money += got; save(); sfx("win"); self.frame(["下班了", "Shift done"]);
+        self.card("<div class='big'>💰 +" + money(got) + "</div><div style='text-align:center'>" + bi("薪水 " + pay + " 元，獎金 " + bonus + " 元", "Pay NT$" + pay + ", bonus NT$" + bonus) + "</div>" + lvlNote(up, job.id) + "<div class='tip'>💡 " + bi(tip[0], tip[1]) + "</div><div class='act'><button class='btn blue' id='jOk'>" + bi("回家路上", "Head out") + " ▶</button></div>");
         $("#jOk").onclick = function () { Read.stop(); self.advance(); }; return;
       }
-      var q = make(n), tries = 0;
-      var cd = self.card("<div class='pin c2sub'>" + job.ic + " " + (n + 1) + " / " + N + "　" + bi(q.say[0], q.say[1]) + "</div>" + q.html + "<div class='why'></div>");
+      var av = kinds.map(function (k, i) { return k.min <= lvl ? i : -1; }).filter(function (i) { return i >= 0; });
+      var ok = av.length > 1 ? av.filter(function (i) { return i !== lastK; }) : av, ki = ok[R(ok.length)]; lastK = ki;
+      var q = kinds[ki].f(lvl), tries = 0, done = false; self._q = q; // for automated tests
+      var cd = self.card("<div class='pin c2sub'>" + job.ic + " " + (n + 1) + " / " + N + " <span class='lv'>" + stars(lvl) + "</span>　" + bi(q.say[0], q.say[1]) + "</div>" + q.html + "<div class='why'></div>");
       Read.pair(q.say[0], q.say[1]);
-      $$("[data-a]", cd).forEach(function (b) { b.onclick = function () {
-        if (b.disabled) return; tries++;
-        if (b.dataset.a === String(q.ans)) { b.classList.add("ok"); sfx("ding"); if (tries === 1) bonus += 10; n++; Read.pair("答對了！", "Right!"); setTimeout(one, 900); return; }
-        b.classList.add("no"); b.disabled = true; sfx("buzz");
-        if (tries >= 2) { $$("[data-a]", cd).forEach(function (x) { if (x.dataset.a === String(q.ans)) x.classList.add("ok"); }); $(".why", cd).innerHTML = "<div class='tip'>👉 " + bi(q.why[0], q.why[1]) + "</div>"; Read.pair(q.why[0], q.why[1]); n++; setTimeout(one, 2600); }
-        else Read.pair("再試一次！", "Try again!");
-      }; });
+      function right(b) { if (done) return; done = true; if (b) b.classList.add("ok"); sfx("ding"); if (tries === 0) bonus += 10; n++; Read.pair("答對了！", "Right!"); setTimeout(one, 1000); }
+      function wrong(b, hint) {
+        if (done) return; tries++; if (b) { b.classList.add("no"); b.disabled = true; } sfx("buzz");
+        if (tries >= 2) { done = true; if (q.reveal) q.reveal(cd); else $$("[data-a]", cd).forEach(function (x) { if (x.dataset.a === String(q.ans)) x.classList.add("ok"); });
+          $(".why", cd).innerHTML = "<div class='tip'>👉 " + bi(q.why[0], q.why[1]) + "</div>"; Read.pair(q.why[0], q.why[1]); n++; setTimeout(one, 3000); }
+        else { var h = hint || ["再試一次！", "Try again!"]; if (hint) $(".why", cd).innerHTML = "<div class='tip'>" + bi(h[0], h[1]) + "</div>"; Read.pair(h[0], h[1]); }
+      }
+      if (q.bind) q.bind(cd, right, wrong);
+      else $$("[data-a]", cd).forEach(function (b) { b.onclick = function () { if (b.disabled) return; if (b.dataset.a === String(q.ans)) right(b); else wrong(b); }; });
     }
     one();
   },
-  deliver: function () { // read the label (sometimes a math clue) and tap the right house
+  deliver: function () { // house numbers: clues with + and −, across the street, next door, and routes in order
     var cols = ["#ff8787", "#74c0fc", "#8ce99a", "#ffd43b", "#b197fc", "#ffa94d"];
-    this.job(C2.JOBS[1], 5, function (i) {
-      var start = 2 + 2 * (Math.random() * 10 | 0), odd = [], even = [];
-      for (var k = 0; k < 6; k++) { odd.push(start + 1 + 2 * k); even.push(start + 2 * k); }
-      var all = odd.concat(even), ans = all[(Math.random() * all.length) | 0], say, why;
-      if (i < 2) { say = ["包裹要送到 " + ans + " 號。", "This package goes to number " + ans + "."]; why = ["門牌是 " + ans + " 號的房子。", "The house with number " + ans + "."]; }
-      else { var d = i % 2 ? 2 : 4, base = ans - d; if (all.indexOf(base) < 0) { base = ans + d; say = ["送到比 " + base + " 號小 " + d + " 號的房子。", "Deliver to the house " + d + " less than number " + base + "."]; why = [base + " − " + d + " = " + ans, base + " − " + d + " = " + ans]; }
-        else { say = ["送到比 " + base + " 號大 " + d + " 號的房子。", "Deliver to the house " + d + " more than number " + base + "."]; why = [base + " + " + d + " = " + ans, base + " + " + d + " = " + ans]; } }
-      function row(list) { return "<div class='street'>" + list.map(function (h, k) { return "<button class='house' data-a='" + h + "' style='background:" + cols[(h + k) % cols.length] + "'><span>🏠</span><b>" + h + "</b></button>"; }).join("") + "</div>"; }
-      return { say: say, ans: ans, why: why, html: row(odd) + "<div class='road'>🚚 · · · · · · · · · ·</div>" + row(even) };
-    }, ["看門牌：一邊是單數，一邊是雙數！", "Look at house numbers: odd on one side, even on the other!"]);
+    function street(lvl) { var big = lvl >= 3 ? 100 + 2 * R(140) : lvl >= 1 ? 20 + 2 * R(30) : 2 + 2 * R(10), odd = [], even = [];
+      for (var k = 0; k < 6; k++) { odd.push(big + 1 + 2 * k); even.push(big + 2 * k); } return { odd: odd, even: even, all: odd.concat(even) }; }
+    function draw(s, mark) { var row = function (list) { return "<div class='street'>" + list.map(function (h, k) { return "<button class='house' data-a='" + h + "' style='background:" + cols[(h + k) % cols.length] + "'><span>" + (mark && mark[h] ? mark[h] : "🏠") + "</span><b>" + h + "</b></button>"; }).join("") + "</div>"; };
+      return row(s.odd) + "<div class='road'>🚚 · · · · · · · · · ·</div>" + row(s.even); }
+    this.job(C2.JOBS[1], 6, [
+      { min: 0, f: function (lvl) { // math clue
+        var s = street(lvl), ans = s.all[R(12)], d = [3, 4, 6, 8, 10][Math.min(4, lvl + R(2))] + (lvl >= 2 ? R(5) : 0), base, say, why;
+        if (R(2)) { base = ans + d; say = ["送到比 " + base + " 號小 " + d + " 號的房子。", "Deliver to the house " + d + " less than number " + base + "."]; why = [base + " − " + d + " = " + ans, base + " − " + d + " = " + ans]; }
+        else { base = ans - d; say = ["送到比 " + base + " 號大 " + d + " 號的房子。", "Deliver to the house " + d + " more than number " + base + "."]; why = [base + " + " + d + " = " + ans, base + " + " + d + " = " + ans]; }
+        return { say: say, ans: ans, why: why, html: draw(s) }; } },
+      { min: 0, f: function (lvl) { // across the street
+        var s = street(lvl), k = R(6), ans = s.even[k], from = s.odd[k], m = {};
+        if (R(2)) { ans = s.odd[k]; from = s.even[k]; } m[from] = "⭐";
+        return { say: ["送到 " + from + " 號⭐對面的房子。", "Deliver to the house across the street from number " + from + " ⭐."], ans: ans, why: [from + " 號對面是 " + ans + " 號。", "Across from " + from + " is " + ans + "."], html: draw(s, m) }; } },
+      { min: 0, f: function (lvl) { // next door, same side: ± 2
+        var s = street(lvl), side = R(2) ? s.odd : s.even, k = 1 + R(4), from = side[k], dir = R(2) ? 1 : -1, ans = side[k + dir];
+        return { say: ["送到 " + from + " 號隔壁，號碼比較" + (dir > 0 ? "大" : "小") + "的那一家。", "Deliver next door to number " + from + ", the " + (dir > 0 ? "bigger" : "smaller") + " number."], ans: ans, why: ["同一邊的門牌差 2：" + from + (dir > 0 ? " + 2 = " : " − 2 = ") + ans, "Same-side numbers go up by 2: " + from + (dir > 0 ? " + 2 = " : " − 2 = ") + ans], html: draw(s) }; } },
+      { min: 0, f: function (lvl) { // route: tap 3-4 houses from smallest to biggest
+        var s = street(lvl), m = 3 + (lvl >= 2 ? 1 : 0), pick = s.all.slice().sort(function () { return Math.random() - 0.5; }).slice(0, m), order = pick.slice().sort(function (a, b) { return a - b; }), mark = {};
+        pick.forEach(function (h) { mark[h] = "📦"; });
+        return { say: ["有 " + m + " 個包裹📦。從最小的號碼送到最大的號碼！", "You have " + m + " packages 📦. Deliver from the smallest number to the biggest!"], why: ["順序：" + order.join(" → "), "Order: " + order.join(" → ")], html: draw(s, mark), bind: seqBind(order), reveal: seqReveal(order) }; } },
+      { min: 2, f: function (lvl) { // two-step clue
+        var s = street(lvl), ans = s.all[R(12)], a = 10 + R(10), b = a - (2 + R(6)), base = ans - a + b;
+        return { say: ["從 " + base + " 號開始，先加 " + a + "，再減 " + b + "。送到哪一家？", "Start at number " + base + ". Add " + a + ", then take away " + b + ". Which house?"], ans: ans, why: [base + " + " + a + " − " + b + " = " + ans, base + " + " + a + " − " + b + " = " + ans], html: draw(s) }; } }
+    ], ["看門牌：一邊是單數，一邊是雙數！", "Look at house numbers: odd on one side, even on the other!"]);
   },
-  bank: function () { // count a pile of bills and coins
-    this.job(C2.JOBS[2], 5, function (i) {
-      var pile = [], kinds = i < 2 ? [100, 50, 10] : [500, 100, 50, 10, 5], k = 3 + (Math.random() * (i < 2 ? 2 : 4) | 0);
-      for (var j = 0; j < k; j++) pile.push(kinds[(Math.random() * kinds.length) | 0]);
-      pile.sort(function (a, b) { return b - a; });
-      var sum = pile.reduce(function (a, b) { return a + b; }, 0), opts = [sum, sum + (i < 2 ? 10 : 50), sum - (sum > 60 ? 50 : -100)];
-      opts = opts.filter(function (v, x) { return opts.indexOf(v) === x; }).sort(function () { return Math.random() - 0.5; });
-      return { say: ["客人要存錢，一共有多少？", "A customer is saving money. How much is it?"], ans: sum, why: [pile.join(" + ") + " = " + sum, pile.join(" + ") + " = " + sum],
-        html: "<div class='till pile'>" + pile.map(cash).join("") + "</div><div class='quiz'><div class='ans'>" + opts.map(function (v) { return "<button class='btn' data-a='" + v + "'>" + money(v) + "</button>"; }).join("") + "</div></div>" };
-    }, ["數錢時，先數大的鈔票，再數小的錢幣。", "When counting money, start with the big bills, then the small coins."]);
+  bank: function () { // count piles, make an amount, swap bills, compare piles
+    function pile(lvl) { var p = [], kinds = lvl >= 2 ? [1000, 500, 100, 50, 10, 5, 1] : lvl >= 1 ? [500, 100, 50, 10, 5] : [100, 50, 10, 5], k = 3 + R(2 + lvl);
+      for (var j = 0; j < k; j++) p.push(kinds[R(kinds.length)]); return p.sort(function (a, b) { return b - a; }); }
+    var sumOf = function (p) { return p.reduce(function (a, b) { return a + b; }, 0); };
+    var opts3 = function (v, d) { var o = [v, v + d, v - d > 0 ? v - d : v + 2 * d]; return o.sort(function () { return Math.random() - 0.5; }).map(function (x) { return "<button class='btn' data-a='" + x + "'>" + money(x) + "</button>"; }).join(""); };
+    this.job(C2.JOBS[2], 5, [
+      { min: 0, f: function (lvl) { var p = pile(lvl), s = sumOf(p);
+        return { say: ["客人要存錢，一共有多少？", "A customer is saving money. How much is it?"], ans: s, why: [p.join(" + ") + " = " + s, p.join(" + ") + " = " + s], html: "<div class='till pile'>" + p.map(cash).join("") + "</div><div class='quiz'><div class='ans'>" + opts3(s, lvl >= 2 ? 5 : 10) + "</div></div>" }; } },
+      { min: 0, f: function (lvl) { // make an amount with the cash buttons
+        var t = (lvl >= 2 ? 100 + R(18) * 50 + R(2) * 5 : lvl >= 1 ? 50 + R(15) * 25 : 30 + R(12) * 10), paid = [], few = lvl >= 2, greedy = [], left = t;
+        C2.CASH.forEach(function (v) { while (left >= v) { greedy.push(v); left -= v; } });
+        return { say: ["客人要領 " + t + " 元。" + (few ? "用最少張數湊出來！" : "湊出來給他！"), "A customer wants NT$" + t + "." + (few ? " Make it with the fewest pieces!" : " Make it for him!")],
+          why: ["可以這樣：" + greedy.join(" + "), "Like this: " + greedy.join(" + ")],
+          html: "<div class='cashbar'>" + C2.CASH.map(function (v) { return "<button class='cashb' data-v='" + v + "'>" + cash(v) + "</button>"; }).join("") + "</div><div class='till' id='bTill'></div><div class='act'><button class='btn white' id='bClr'>↺</button><button class='btn blue' id='bOk'>" + bi("給客人", "Hand over") + " ▶</button></div>",
+          bind: function (cd, right, wrong) {
+            function show() { $("#bTill", cd).innerHTML = "💰 " + paid.map(function (v, i) { return "<button class='tchip' data-i='" + i + "'>" + cash(v) + "</button>"; }).join("") + "<span class='got'>= " + sumOf(paid) + "</span>"; $$("#bTill .tchip", cd).forEach(function (b) { b.onclick = function () { paid.splice(+b.dataset.i, 1); show(); }; }); }
+            $$(".cashb", cd).forEach(function (b) { b.onclick = function () { if (paid.length < 14) { paid.push(+b.dataset.v); sfx("tap"); show(); } }; });
+            $("#bClr", cd).onclick = function () { paid = []; show(); };
+            $("#bOk", cd).onclick = function () { var g = sumOf(paid); if (g === t && (!few || paid.length <= greedy.length)) return right(); wrong(null, g !== t ? (g < t ? ["還不夠，再加一點。", "Not enough yet."] : ["太多了，拿掉一些。", "Too much."]) : ["金額對了，但可以用更少張！", "Right amount, but you can use fewer pieces!"]); };
+            show(); },
+          reveal: function (cd) { $("#bTill", cd).innerHTML = "💰 " + greedy.map(cash).join("") + "<span class='got'>= " + t + "</span>"; } }; } },
+      { min: 0, f: function (lvl) { // swap a bill for smaller money
+        var sw = [[100, 10], [50, 10], [100, 50], [500, 100], [100, 5], [1000, 100], [500, 50], [1000, 500]][Math.min(7, R(3) + lvl)], ans = sw[0] / sw[1];
+        return { say: ["一張 " + sw[0] + " 元可以換幾個 " + sw[1] + " 元？", "One NT$" + sw[0] + " can be swapped for how many NT$" + sw[1] + "?"], ans: ans, why: [ans + " 個 " + sw[1] + " 元是 " + sw[0] + " 元。", ans + " × " + sw[1] + " = " + sw[0]],
+          html: "<div class='till pile'>" + cash(sw[0]) + " ➡️ ❓ × " + cash(sw[1]) + "</div><div class='quiz'><div class='ans'>" + [ans, ans * 2, ans + 5].sort(function () { return Math.random() - 0.5; }).map(function (v) { return "<button class='btn' data-a='" + v + "'>" + v + "</button>"; }).join("") + "</div></div>" }; } },
+      { min: 1, f: function (lvl) { // which pile is more?
+        var a = pile(lvl), b = pile(lvl); while (sumOf(a) === sumOf(b)) b = pile(lvl); var big = sumOf(a) > sumOf(b) ? "A" : "B";
+        return { say: ["哪一堆錢比較多？", "Which pile has more money?"], ans: big, why: ["A = " + sumOf(a) + "，B = " + sumOf(b), "A = " + sumOf(a) + ", B = " + sumOf(b)],
+          html: "<div class='quiz'><div class='ans'><button class='btn' data-a='A'><b>A</b> " + a.map(cash).join("") + "</button><button class='btn' data-a='B'><b>B</b> " + b.map(cash).join("") + "</button></div></div>" }; } }
+    ], ["數錢時，先數大的鈔票，再數小的錢幣。", "When counting money, start with the big bills, then the small coins."]);
   },
-  wash: function () { // count mud, next wash step, then the price board
-    var W = C2.WASH, P = W.price, R = function (n) { return (Math.random() * n) | 0; }, mix = function (a) { return a.filter(function (v, x) { return a.indexOf(v) === x; }).sort(function () { return Math.random() - 0.5; }); };
+  wash: function () { // scrub mud, wash steps, price board, waiting time
+    var W = C2.WASH, P = W.price, mix = function (a) { return a.filter(function (v, x) { return a.indexOf(v) === x; }).sort(function () { return Math.random() - 0.5; }); };
     var board = "<div class='wboard'><b>🧽 " + bi("價目表", "Prices") + "</b><span>🚗 " + bi("小車", "Small car") + " " + money(P.small) + "</span><span>🚙 " + bi("大車", "Big car") + " " + money(P.big) + "</span><span>✨ " + bi("打蠟", "Wax") + " +" + money(P.wax) + "</span></div>";
     var nums = function (opts, fmt) { return "<div class='quiz'><div class='ans'>" + opts.map(function (v) { return "<button class='btn' data-a='" + v + "'>" + (fmt ? fmt(v) : v) + "</button>"; }).join("") + "</div></div>"; };
-    this.job(C2.JOBS[3], 5, function (i) {
-      if (i === 0) { // count the mud spots
-        var k = 3 + R(5), spots = "";
-        for (var j = 0; j < k; j++) spots += "<i style='left:" + (10 + (j * 80 / k) + R(6)) + "%;top:" + (18 + R(50)) + "%'></i>";
-        return { say: ["這台車有幾個泥巴點？", "How many mud spots are on this car?"], ans: k, why: ["一個一個數：一共 " + k + " 個。", "Count them one by one: " + k + "."],
-          html: "<div class='wcar'><span>🚙</span>" + spots + "</div>" + nums(mix([k, k + 1, k - 1])) };
-      }
-      if (i === 1) { // which step comes next?
-        var at = 1 + R(W.steps.length - 1), others = [];
-        W.steps.forEach(function (s, x) { if (x !== at) others.push(x); });
-        others.sort(function () { return Math.random() - 0.5; });
-        var opts = mix([at, others[0], others[1]]);
-        return { say: ["洗車的下一步是什麼？", "What is the next wash step?"], ans: at, why: ["順序：" + W.steps.map(function (s) { return s[1]; }).join("、"), "Order: " + W.steps.map(function (s) { return s[2]; }).join(", ")],
-          html: "<div class='wsteps'>" + W.steps.slice(0, at).map(function (s, x) { return "<span>" + (x + 1) + ". " + s[0] + " " + bi(s[1], s[2]) + "</span>"; }).join("") + "<span class='q'>" + (at + 1) + ". ❓</span></div>" +
-            "<div class='quiz'><div class='ans'>" + opts.map(function (x) { var s = W.steps[x]; return "<button class='btn' data-a='" + x + "'>" + s[0] + " " + bi(s[1], s[2]) + "</button>"; }).join("") + "</div></div>" };
-      }
-      // price board math: one car + wax, two cars, then change from a bill
-      var big = R(2) === 1, wax = i !== 3 && R(2) === 1, car = big ? P.big : P.small, cz = big ? "大車" : "小車", ce = big ? "a big car" : "a small car";
-      if (i === 3) { var big2 = R(2) === 1, car2 = big2 ? P.big : P.small, sum2 = car + car2;
-        return { say: ["一台" + cz + "和一台" + (big2 ? "大車" : "小車") + "，一共多少錢？", "One " + (big ? "big" : "small") + " car and one " + (big2 ? "big" : "small") + " car. How much in all?"], ans: sum2, why: [car + " + " + car2 + " = " + sum2, car + " + " + car2 + " = " + sum2],
-          html: board + nums(mix([sum2, sum2 + 10, sum2 - 30 > 0 ? sum2 - 30 : sum2 + 30]), money) };
-      }
-      var cost = car + (wax ? P.wax : 0);
-      if (i === 2) return { say: ["客人要洗" + cz + (wax ? "，還要打蠟" : "") + "。要多少錢？", "Wash " + ce + (wax ? " with wax" : "") + ". How much?"], ans: cost, why: [wax ? car + " + " + P.wax + " = " + cost : cz + "是 " + car + " 元。", wax ? car + " + " + P.wax + " = " + cost : "A " + (big ? "big" : "small") + " car is NT$" + car + "."],
-        html: board + nums(mix([cost, cost + 20, cost === P.small ? 110 : cost - 30]), money) };
-      var paid = cost > 100 ? 500 : 100, ch = paid - cost;
-      return { say: ["洗" + cz + (wax ? "加打蠟" : "") + "，客人付 " + paid + " 元，要找多少？", "Wash " + ce + (wax ? " with wax" : "") + ". The customer pays NT$" + paid + ". How much change?"], ans: ch, why: [paid + " − " + cost + " = " + ch, paid + " − " + cost + " = " + ch],
-        html: board + "<div class='till pile'>" + cash(paid) + "</div>" + nums(mix([ch, ch + 10, ch + 30]), money) };
-    }, ["洗東西要照順序：先沖水、抹肥皂、刷一刷，最後沖乾淨！", "Try it when you wash your hands: water, soap, scrub, then rinse!"]);
+    var stepBtn = function (x) { var s = W.steps[x]; return "<button class='btn' data-a='" + x + "'>" + s[0] + " " + bi(s[1], s[2]) + "</button>"; };
+    this.job(C2.JOBS[3], 5, [
+      { min: 0, f: function (lvl) { // scrub every mud spot, then say how many
+        var k = 4 + R(3 + lvl * 2), spots = "", cells = []; for (var cc = 0; cc < 15; cc++) cells.push(cc); cells.sort(function () { return Math.random() - 0.5; });
+        for (var j = 0; j < k; j++) spots += "<button class='mud' style='left:" + (10 + (cells[j] % 5) * 15 + R(3)) + "%;top:" + (40 + ((cells[j] / 5) | 0) * 13 + R(2)) + "%' aria-label='mud'></button>";
+        return { say: ["把泥巴全部刷掉！刷完說說看，一共刷了幾個？", "Scrub off every mud spot! Then: how many did you scrub?"], ans: k, why: ["一共 " + k + " 個泥巴點。", "There were " + k + " mud spots."],
+          html: "<div class='wcar'><span>🚙</span>" + spots + "</div><div class='mudq' style='visibility:hidden'>" + nums(mix([k, k + 1, k - 1])) + "</div>",
+          bind: function (cd, right, wrong) {
+            var left = k; $$(".mud", cd).forEach(function (m) { m.onclick = function () { if (m.classList.contains("clean")) return; m.classList.add("clean"); sfx("pop"); left--; if (!left) { $(".mudq", cd).style.visibility = "visible"; Read.pair("刷好了！一共幾個？", "All clean! How many?"); } }; });
+            $$("[data-a]", cd).forEach(function (b) { b.onclick = function () { if (b.disabled) return; if (b.dataset.a === String(k)) right(b); else wrong(b); }; }); },
+          reveal: function (cd) { $(".mudq", cd).style.visibility = "visible"; $$("[data-a]", cd).forEach(function (x) { if (x.dataset.a === String(k)) x.classList.add("ok"); }); } }; } },
+      { min: 0, f: function (lvl) { // next step / missing step
+        var at = 1 + R(W.steps.length - 1), others = []; W.steps.forEach(function (s, x) { if (x !== at) others.push(x); }); others.sort(function () { return Math.random() - 0.5; });
+        var miss = lvl >= 1 && R(2), row = W.steps.map(function (s, x) { return x === at ? "<span class='q'>" + (x + 1) + ". ❓</span>" : (!miss && x > at) ? "" : "<span>" + (x + 1) + ". " + s[0] + " " + bi(s[1], s[2]) + "</span>"; }).join("");
+        return { say: miss ? ["哪一個步驟不見了？", "Which wash step is missing?"] : ["洗車的下一步是什麼？", "What is the next wash step?"], ans: at, why: ["順序：" + W.steps.map(function (s) { return s[1]; }).join("、"), "Order: " + W.steps.map(function (s) { return s[2]; }).join(", ")],
+          html: "<div class='wsteps'>" + row + "</div><div class='quiz'><div class='ans'>" + mix([at, others[0], others[1]]).map(stepBtn).join("") + "</div></div>" }; } },
+      { min: 1, f: function (lvl) { // put the steps in order
+        var order = [0, 1, 2, 3, 4].slice(0, 3 + Math.min(2, lvl - 1)), shown = order.slice().sort(function () { return Math.random() - 0.5; });
+        return { say: ["照順序點洗車的步驟！", "Tap the wash steps in the right order!"], why: ["順序：" + order.map(function (x) { return W.steps[x][1]; }).join(" → "), "Order: " + order.map(function (x) { return W.steps[x][2]; }).join(" → ")],
+          html: "<div class='quiz'><div class='ans'>" + shown.map(stepBtn).join("") + "</div></div>", bind: seqBind(order), reveal: seqReveal(order) }; } },
+      { min: 0, f: function (lvl) { // price board math
+        var big = R(2), wax = R(2), car = big ? P.big : P.small, cz = big ? "大車" : "小車", ce = big ? "big car" : "small car", cost = car + (wax ? P.wax : 0);
+        if (lvl >= 1 && R(2)) { var m = 2 + R(lvl >= 3 ? 3 : 2), tot = cost * m;
+          return { say: [m + " 台" + cz + (wax ? "都要打蠟" : "") + "，一共多少錢？", m + " " + ce + "s" + (wax ? ", all with wax" : "") + ". How much in all?"], ans: tot, why: [cost + " × " + m + " = " + tot, cost + " × " + m + " = " + tot], html: board + nums(mix([tot, tot + cost, tot - 30]), money) }; }
+        if (lvl >= 1) { var paid = cost > 100 ? 500 : 100, ch = paid - cost;
+          return { say: ["洗" + cz + (wax ? "加打蠟" : "") + "，客人付 " + paid + " 元，要找多少？", "Wash a " + ce + (wax ? " with wax" : "") + ". The customer pays NT$" + paid + ". How much change?"], ans: ch, why: [paid + " − " + cost + " = " + ch, paid + " − " + cost + " = " + ch], html: board + "<div class='till pile'>" + cash(paid) + "</div>" + nums(mix([ch, ch + 10, ch + 30]), money) }; }
+        return { say: ["客人要洗" + cz + (wax ? "，還要打蠟" : "") + "。要多少錢？", "Wash a " + ce + (wax ? " with wax" : "") + ". How much?"], ans: cost, why: [wax ? car + " + " + P.wax + " = " + cost : cz + "是 " + car + " 元。", wax ? car + " + " + P.wax + " = " + cost : "A " + ce + " is NT$" + car + "."], html: board + nums(mix([cost, cost + 20, cost === P.small ? 110 : cost - 30]), money) }; } },
+      { min: 2, f: function (lvl) { // waiting time
+        var per = [5, 10, 15][R(3)], q = 2 + R(3), t = per * q;
+        return { say: ["洗一台車要 " + per + " 分鐘。前面有 " + q + " 台車，要等幾分鐘？", "Each wash takes " + per + " minutes. There are " + q + " cars ahead. How long is the wait?"], ans: t, why: [per + " × " + q + " = " + t, per + " × " + q + " = " + t],
+          html: "<div class='wsteps'>" + Array(q + 1).join("<span>🚗 ⏱" + per + "</span>") + "<span class='q'>🚙 ❓</span></div>" + nums(mix([t, t + per, t - per]), function (v) { return v + " min"; }) }; } }
+    ], ["洗東西要照順序：先沖水、抹肥皂、刷一刷，最後沖乾淨！", "Try it when you wash your hands: water, soap, scrub, then rinse!"]);
   },
-  books: function () { // shelve books by number, by first letter, and fill the gap
-    var R = function (n) { return (Math.random() * n) | 0; }, B = C2.BOOKS, AZ = C2.SHELF_AZ, cols = ["#ffc9c9", "#a5d8ff", "#b2f2bb", "#ffec99"];
-    var shelves = function (labels) { return "<div class='shelves'>" + labels.map(function (t, x) { return "<button class='shelf' data-a='" + x + "' style='background:" + cols[x] + "'><span>📚</span><b>" + t + "</b></button>"; }).join("") + "</div>"; };
-    this.job(C2.JOBS[4], 5, function (i) {
-      if (i < 2) { // number shelves 1-20, 21-40...
-        var n = 1 + R(80), s = Math.floor((n - 1) / 20), lab = [0, 1, 2, 3].map(function (x) { return (x * 20 + 1) + "–" + (x * 20 + 20); });
-        return { say: ["這本書是 " + n + " 號，要放哪一層？", "This is book number " + n + ". Which shelf?"], ans: s, why: [n + " 在 " + lab[s] + " 中間。", n + " is between " + lab[s].replace("–", " and ") + "."],
-          html: "<div class='bookc'>📕 <b>#" + n + "</b></div>" + shelves(lab) };
-      }
-      if (i < 4) { // English title, first letter A-F, G-L...
-        var t = B[R(B.length)], L = t[0], s2 = 0;
-        AZ.forEach(function (r, x) { if (L >= r[0] && L <= r[1]) s2 = x; });
-        return { say: ["這本書叫 " + t + "，第一個字母是 " + L + "。要放哪一層？", "This book is called " + t + ". It starts with " + L + ". Which shelf?"], ans: s2, why: [L + " 在 " + AZ[s2][0] + " 到 " + AZ[s2][1] + " 中間。", L + " comes between " + AZ[s2][0] + " and " + AZ[s2][1] + "."],
-          html: "<div class='bookc'>📘 <b><u>" + L + "</u>" + t.slice(1) + "</b></div>" + shelves(AZ.map(function (r) { return r[0] + "–" + r[1]; })) };
-      }
-      var st = 10 + R(80), gap = 1 + R(3), row = [0, 1, 2, 3, 4].map(function (x) { return x === gap ? "<span class='q'>❓</span>" : "<span>📗 " + (st + x) + "</span>"; }).join(""), ans = st + gap;
-      return { say: ["書要照號碼排。缺了哪一本？", "Books go in number order. Which one is missing?"], ans: ans, why: [(st + gap - 1) + " 的下一個是 " + ans + "。", "After " + (st + gap - 1) + " comes " + ans + "."],
-        html: "<div class='wsteps'>" + row + "</div><div class='quiz'><div class='ans'>" + [ans, ans + 2, ans - 2].sort(function () { return Math.random() - 0.5; }).map(function (v) { return "<button class='btn' data-a='" + v + "'>📗 " + v + "</button>"; }).join("") + "</div></div>" };
-    }, ["去圖書館時，看看書背上的號碼和字母，就知道書放在哪裡！", "Next time you're at the library, look at the numbers and letters on the book spines!"]);
+  books: function () { // number shelves, A-Z shelves, gaps, ABC order, counting books
+    var B = C2.BOOKS, AZ = C2.SHELF_AZ, cols = ["#ffc9c9", "#a5d8ff", "#b2f2bb", "#ffec99"];
+    var shelves = function (labels) { return "<div class='shelves'>" + labels.map(function (t, x) { return "<button class='bshelf' data-a='" + x + "' style='background:" + cols[x] + "'><span>📚</span><b>" + t + "</b></button>"; }).join("") + "</div>"; };
+    this.job(C2.JOBS[4], 5, [
+      { min: 0, f: function (lvl) { var w = [20, 25, 50, 50, 100][lvl], n = 1 + R(w * 4), s = Math.floor((n - 1) / w), lab = [0, 1, 2, 3].map(function (x) { return (x * w + 1) + "–" + (x * w + w); });
+        return { say: ["這本書是 " + n + " 號，要放哪一層？", "This is book number " + n + ". Which shelf?"], ans: s, why: [n + " 在 " + lab[s] + " 中間。", n + " is between " + lab[s].replace("–", " and ") + "."], html: "<div class='bookc'>📕 <b>#" + n + "</b></div>" + shelves(lab) }; } },
+      { min: 0, f: function (lvl) { var t = B[R(B.length)], L = t[0], s2 = 0; AZ.forEach(function (r, x) { if (L >= r[0] && L <= r[1]) s2 = x; });
+        return { say: lvl >= 2 ? ["這本書叫 " + t + "。要放哪一層？", "This book is called " + t + ". Which shelf?"] : ["這本書叫 " + t + "，第一個字母是 " + L + "。要放哪一層？", "This book is called " + t + ". It starts with " + L + ". Which shelf?"], ans: s2, why: [L + " 在 " + AZ[s2][0] + " 到 " + AZ[s2][1] + " 中間。", L + " comes between " + AZ[s2][0] + " and " + AZ[s2][1] + "."],
+          html: "<div class='bookc'>📘 <b>" + (lvl >= 2 ? t : "<u>" + L + "</u>" + t.slice(1)) + "</b></div>" + shelves(AZ.map(function (r) { return r[0] + "–" + r[1]; })) }; } },
+      { min: 0, f: function (lvl) { var step = [1, 2, 5, 10, 25][Math.min(4, lvl + R(2))], st = step * (2 + R(20)), gap = 1 + R(3), ans = st + gap * step;
+        var row = [0, 1, 2, 3, 4].map(function (x) { return x === gap ? "<span class='q'>❓</span>" : "<span>📗 " + (st + x * step) + "</span>"; }).join("");
+        return { say: ["書要照號碼排。缺了哪一本？", "The books are in number order. Which one is missing?"], ans: ans, why: [step > 1 ? "每本多 " + step + "：" + (ans - step) + " + " + step + " = " + ans : (ans - 1) + " 的下一個是 " + ans + "。", step > 1 ? "Count by " + step + "s: " + (ans - step) + " + " + step + " = " + ans : "After " + (ans - 1) + " comes " + ans + "."],
+          html: "<div class='wsteps'>" + row + "</div><div class='quiz'><div class='ans'>" + [ans, ans + 1, ans - 1].sort(function () { return Math.random() - 0.5; }).map(function (v) { return "<button class='btn' data-a='" + v + "'>📗 " + v + "</button>"; }).join("") + "</div></div>" }; } },
+      { min: 1, f: function (lvl) { // ABC order: tap 3-4 titles
+        var m = lvl >= 3 ? 4 : 3, pick = B.slice().sort(function () { return Math.random() - 0.5; }).slice(0, m), order = pick.slice().sort();
+        return { say: ["照 ABC 的順序，把書排上架！", "Put the books on the shelf in ABC order!"], why: ["ABC 順序：" + order.join(" → "), "ABC order: " + order.join(" → ")],
+          html: "<div class='quiz'><div class='ans'>" + pick.map(function (t) { return "<button class='btn' data-a='" + t + "'>📘 " + t + "</button>"; }).join("") + "</div></div>", bind: seqBind(order), reveal: seqReveal(order) }; } },
+      { min: 1, f: function (lvl) { var per = 3 + R(lvl >= 3 ? 7 : 4), sh = 2 + R(3), t = per * sh;
+        return { say: ["每一層放 " + per + " 本書，" + sh + " 層一共幾本？", "Each shelf holds " + per + " books. How many on " + sh + " shelves?"], ans: t, why: [per + " × " + sh + " = " + t, per + " × " + sh + " = " + t],
+          html: "<div class='bshelfs'>" + Array(sh + 1).join("<div>" + Array(per + 1).join("📕") + "</div>") + "</div><div class='quiz'><div class='ans'>" + [t, t + per, t - per].sort(function () { return Math.random() - 0.5; }).map(function (v) { return "<button class='btn' data-a='" + v + "'>" + v + "</button>"; }).join("") + "</div></div>" }; } }
+    ], ["去圖書館時，看看書背上的號碼和字母，就知道書放在哪裡！", "Next time you're at the library, look at the numbers and letters on the book spines!"]);
   },
   /* ---------- the cup ---------- */
   cup: function () {
@@ -2851,6 +3035,8 @@ Object.keys(C2G.LOCS).forEach(function (k) {
   $("#dNext").onclick = function (e) { e.stopPropagation(); storyNext(); };
   $("#dlg").onclick = storyNext;
   $("#dSay").onclick = function (e) { e.stopPropagation(); var ln = SCENES[Story.key].lines[Story.i]; Read.pair(ln[1], ln[2], CAST[ln[0]].pitch); };
+  var engLbl = function () { $("#engBtn").textContent = Engine.off() ? "🏎️🔇" : "🏎️🔈"; }; engLbl();
+  $("#engBtn").onclick = function () { sfx("tap"); var off = Engine.toggle(); engLbl(); Read.pair(off ? "引擎聲關掉了" : "引擎聲打開了", off ? "Engine sound off" : "Engine sound on"); };
   $("#camBtn").onclick = function () { sfx("tap"); Race.camMode = { auto: "chase", chase: "iso", iso: "auto" }[Race.camMode]; DB.settings = DB.settings || {}; DB.settings.cam = Race.camMode; DB.save(); Race.camLabel(); Race.camT = -9; var c = Race.CAMS[Race.camMode]; Read.pair(c[1], c[2]); };
   $("#cheer").onclick = function () {
     sfx("pop"); var c = Race.cars && Race.cars[0];
@@ -2883,6 +3069,6 @@ window.__test = {
   }
 };
 </script>
-<div id="kaVer" data-v="2.6" data-d="2026-11-28">v2.6 · 2026-11-28</div>
+<div id="kaVer" data-v="2.7" data-d="2026-11-28">v2.7 · 2026-11-28</div>
 </body>
 </html>

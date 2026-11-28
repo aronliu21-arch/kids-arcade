@@ -43,6 +43,8 @@
   $("#dNext").onclick = function (e) { e.stopPropagation(); storyNext(); };
   $("#dlg").onclick = storyNext;
   $("#dSay").onclick = function (e) { e.stopPropagation(); var ln = SCENES[Story.key].lines[Story.i]; Read.pair(ln[1], ln[2], CAST[ln[0]].pitch); };
+  var engLbl = function () { $("#engBtn").textContent = Engine.off() ? "🏎️🔇" : "🏎️🔈"; }; engLbl();
+  $("#engBtn").onclick = function () { sfx("tap"); var off = Engine.toggle(); engLbl(); Read.pair(off ? "引擎聲關掉了" : "引擎聲打開了", off ? "Engine sound off" : "Engine sound on"); };
   $("#camBtn").onclick = function () { sfx("tap"); Race.camMode = { auto: "chase", chase: "iso", iso: "auto" }[Race.camMode]; DB.settings = DB.settings || {}; DB.settings.cam = Race.camMode; DB.save(); Race.camLabel(); Race.camT = -9; var c = Race.CAMS[Race.camMode]; Read.pair(c[1], c[2]); };
   $("#cheer").onclick = function () {
     sfx("pop"); var c = Race.cars && Race.cars[0];

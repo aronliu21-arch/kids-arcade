@@ -1,11 +1,11 @@
 /* ===== Car physics (simple, kid-explainable) and the track ===== */
 var PHYS = {
-  motor: { normal: { v: 1.0, t: 1.0 }, rev: { v: 1.15, t: 1.2 }, turbo: { v: 1.25, t: 1.15 }, torque: { v: 1.12, t: 1.45 }, light: { v: 1.3, t: 1.08 }, hyper: { v: 1.4, t: 0.95 }, sprint: { v: 1.5, t: 0.88 }, mach: { v: 1.46, t: 1.12 } },
-  gear: { speed: { top: 1.1, tq: 0.8 }, power: { top: 1.0, tq: 1.3 }, mid: { top: 1.05, tq: 1.05 }, super: { top: 1.16, tq: 0.68 }, climb: { top: 0.94, tq: 1.55 } },
-  tire: { hard: { grip: 0.75, roll: 1.03 }, soft: { grip: 1.1, roll: 0.97 }, low: { grip: 0.95, roll: 1.08 }, sponge: { grip: 1.18, roll: 0.93 }, slick: { grip: 0.86, roll: 1.11 }, spike: { grip: 1.0, roll: 0.99, tq: 1.15 }, large: { grip: 0.88, roll: 1.13, tq: 0.88 } },
+  motor: { normal: { v: 1.0, t: 1.0 }, rev: { v: 1.1, t: 1.15 }, turbo: { v: 1.25, t: 1.15 }, torque: { v: 1.1, t: 1.5 }, light: { v: 1.32, t: 1.2 }, hyper: { v: 1.48, t: 0.94 }, sprint: { v: 1.58, t: 0.97 }, mach: { v: 1.5, t: 1.32 } },
+  gear: { speed: { top: 1.1, tq: 0.8 }, power: { top: 1.0, tq: 1.3 }, mid: { top: 1.06, tq: 1.05 }, super: { top: 1.2, tq: 0.78 }, climb: { top: 0.92, tq: 1.55 } },
+  tire: { hard: { grip: 0.75, roll: 1.03 }, soft: { grip: 1.1, roll: 0.97 }, low: { grip: 0.98, roll: 1.07 }, sponge: { grip: 1.22, roll: 0.98 }, slick: { grip: 0.84, roll: 1.1 }, spike: { grip: 1.0, roll: 0.99, tq: 1.1 }, large: { grip: 0.95, roll: 1.14, tq: 0.95 } },
   body: { sleek: 1.04, boxy: 0.96, aero: 1.07 },
-  roller: { yes: 1.35, no: 1.0, four: 1.48, plastic: 1.25, alu: 1.42, bearing: 1.56 },
-  wing: { none: { c: 1, v: 1 }, fin: { c: 1.03, v: 1.0 }, small: { c: 1.06, v: 0.99 }, air: { c: 1.08, v: 0.985 }, big: { c: 1.13, v: 0.97 }, dual: { c: 1.17, v: 0.955 } },
+  roller: { yes: 1.35, no: 1.0, four: 1.55, plastic: 1.25, alu: 1.45, bearing: 1.7 },
+  wing: { none: { c: 1, v: 1 }, fin: { c: 1.03, v: 1.0 }, small: { c: 1.06, v: 0.99 }, air: { c: 1.08, v: 0.995 }, big: { c: 1.14, v: 0.975 }, dual: { c: 1.2, v: 0.965 } },
   CRASH_NO_ROLLERS: 9,   // without rollers, faster than this in a curve = course out
   CURVE: 10.2,           // curve speed limit with rollers = CURVE * grip * roller * wing (radius 11)
   BASE: 15

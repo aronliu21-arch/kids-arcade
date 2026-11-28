@@ -2,26 +2,26 @@
 /* Money is NT$. Real Taiwan hobby-shop prices; a job shift pays NT$100-150, so a good motor takes ~3 shifts. */
 /* 20 more bodies (ChatGPT art, top view, assets/b/<id>_<color>.webp). st: v = top speed, c = curve grip, a = push (start + hills). */
 var C2BODIES = [
-  { v: "muscle", price: 450, zh: "肌肉車", en: "Muscle Car", art: true, st: { v: 1.0, c: 0.98, a: 1.12 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "armored", price: 400, zh: "裝甲車", en: "Armored Racer", art: true, st: { v: 0.94, c: 1.1, a: 0.97 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "crocodile", price: 460, zh: "鱷魚", en: "Crocodile", art: true, st: { v: 0.99, c: 1.07, a: 1.03 }, cols: ["orig", "red", "yellow", "blue", "purple"] },
-  { v: "rhino", price: 480, zh: "犀牛", en: "Rhino", art: true, st: { v: 0.97, c: 1.08, a: 1.08 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "muscle", price: 420, zh: "肌肉車", en: "Muscle Car", art: true, st: { v: 1.0, c: 0.98, a: 1.12 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "armored", price: 300, zh: "裝甲車", en: "Armored Racer", art: true, st: { v: 0.96, c: 1.12, a: 1.0 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "crocodile", price: 380, zh: "鱷魚", en: "Crocodile", art: true, st: { v: 0.99, c: 1.07, a: 1.03 }, cols: ["orig", "red", "yellow", "blue", "purple"] },
+  { v: "rhino", price: 460, zh: "犀牛", en: "Rhino", art: true, st: { v: 0.97, c: 1.08, a: 1.08 }, cols: ["orig", "red", "green", "blue", "purple"] },
   { v: "beetle", price: 500, zh: "獨角仙", en: "Beetle", art: true, st: { v: 0.98, c: 1.06, a: 1.1 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "shark", price: 520, zh: "鯊魚", en: "Shark", art: true, st: { v: 1.05, c: 1.02, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "lunar_rover", price: 540, zh: "月球車", en: "Lunar Rover", art: true, st: { v: 0.95, c: 1.06, a: 1.15 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "wolf", price: 560, zh: "野狼", en: "Wolf", art: true, st: { v: 1.04, c: 1.03, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "tiger", price: 580, zh: "老虎", en: "Tiger", art: true, st: { v: 1.03, c: 1.04, a: 1.04 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "formula", price: 600, zh: "方程式", en: "Formula Racer", art: true, st: { v: 1.06, c: 1.04, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
-  { v: "cobra", price: 600, zh: "眼鏡蛇", en: "Cobra", art: true, st: { v: 1.06, c: 1.0, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
-  { v: "scorpion", price: 620, zh: "蠍子", en: "Scorpion", art: true, st: { v: 1.02, c: 1.06, a: 1.04 }, cols: ["orig", "red", "yellow", "green", "blue"] },
-  { v: "manta", price: 640, zh: "魟魚", en: "Manta Ray", art: true, st: { v: 1.08, c: 0.97, a: 0.98 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "snow_leopard", price: 720, zh: "雪豹", en: "Snow Leopard", art: true, st: { v: 1.05, c: 1.05, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "falcon", price: 760, zh: "獵鷹", en: "Falcon", art: true, st: { v: 1.09, c: 0.98, a: 1.0 }, cols: ["orig", "red", "green", "blue", "purple"] },
-  { v: "robot", price: 780, zh: "機器人", en: "Robot", art: true, st: { v: 1.04, c: 1.04, a: 1.06 }, cols: ["orig", "red", "yellow", "green", "purple"] },
-  { v: "stealth", price: 820, zh: "隱形戰機", en: "Stealth Jet", art: true, st: { v: 1.1, c: 0.96, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "blue"] },
-  { v: "rocket", price: 880, zh: "火箭", en: "Rocket", art: true, st: { v: 1.12, c: 0.94, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
-  { v: "dragon", price: 1500, zh: "神龍", en: "Dragon", art: true, st: { v: 1.1, c: 1.05, a: 1.05 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
-  { v: "phoenix", price: 1500, zh: "鳳凰", en: "Phoenix", art: true, st: { v: 1.12, c: 1.04, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] }
+  { v: "shark", price: 420, zh: "鯊魚", en: "Shark", art: true, st: { v: 1.05, c: 1.02, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "lunar_rover", price: 500, zh: "月球車", en: "Lunar Rover", art: true, st: { v: 0.95, c: 1.06, a: 1.15 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "wolf", price: 460, zh: "野狼", en: "Wolf", art: true, st: { v: 1.04, c: 1.03, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "tiger", price: 500, zh: "老虎", en: "Tiger", art: true, st: { v: 1.03, c: 1.04, a: 1.04 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "formula", price: 500, zh: "方程式", en: "Formula Racer", art: true, st: { v: 1.06, c: 1.04, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "cobra", price: 480, zh: "眼鏡蛇", en: "Cobra", art: true, st: { v: 1.06, c: 1.0, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "scorpion", price: 500, zh: "蠍子", en: "Scorpion", art: true, st: { v: 1.02, c: 1.06, a: 1.04 }, cols: ["orig", "red", "yellow", "green", "blue"] },
+  { v: "manta", price: 340, zh: "魟魚", en: "Manta Ray", art: true, st: { v: 1.08, c: 0.97, a: 0.98 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "snow_leopard", price: 540, zh: "雪豹", en: "Snow Leopard", art: true, st: { v: 1.05, c: 1.05, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "falcon", price: 460, zh: "獵鷹", en: "Falcon", art: true, st: { v: 1.09, c: 0.98, a: 1.0 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "robot", price: 580, zh: "機器人", en: "Robot", art: true, st: { v: 1.04, c: 1.04, a: 1.06 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "stealth", price: 440, zh: "隱形戰機", en: "Stealth Jet", art: true, st: { v: 1.1, c: 0.96, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "blue"] },
+  { v: "rocket", price: 460, zh: "火箭", en: "Rocket", art: true, st: { v: 1.12, c: 0.94, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "dragon", price: 1100, zh: "神龍", en: "Dragon", art: true, st: { v: 1.15, c: 1.07, a: 1.07 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "phoenix", price: 1100, zh: "鳳凰", en: "Phoenix", art: true, st: { v: 1.17, c: 1.06, a: 1.05 }, cols: ["orig", "yellow", "green", "blue", "purple"] }
 ];
 C2BODIES.forEach(function (b) { b.d = bodyTags(b.st); });
 function bodyTags(st) {
@@ -33,7 +33,7 @@ function bodyTags(st) {
   var en = e.join(", "); return [z.join("、") + "。", en.charAt(0).toUpperCase() + en.slice(1) + "."];
 }
 var C2 = {
-  START_MONEY: 800,       // red-envelope (紅包) savings
+  START_MONEY: 2000,       // red-envelope (紅包) savings
   ALLOWANCE: 100,         // from Dad every Sunday, if the week's test got an A
   SHOP_TESTS: 3,          // test runs per store visit
   TOOLBOX: 3,             // spare parts he can bring to a cup
@@ -44,43 +44,43 @@ var C2 = {
     body: [
       { v: "boxy", price: 0, zh: "方塊車殼", en: "Box body", d: ["套件附的，比較擋風。", "Comes in the kit. Catches more wind."] },
       { v: "sleek", price: 320, zh: "閃電車殼", en: "Arrow body", d: ["流線型，風阻比較小，跑比較快。", "Smooth shape, less wind, a bit faster."] },
-      { v: "aero", price: 560, zh: "噴射車殼", en: "Jet body", d: ["最低最尖，風阻最小。", "Lowest and pointiest. Least wind."] }].concat(C2BODIES),
+      { v: "aero", price: 440, zh: "噴射車殼", en: "Jet body", d: ["最低最尖，風阻最小。", "Lowest and pointiest. Least wind."] }].concat(C2BODIES),
     motor: [
       { v: "normal", price: 0, zh: "普通馬達", en: "Stock motor", d: ["套件附的，速度普通。", "Comes in the kit. Normal speed."] },
-      { v: "turbo", price: 380, zh: "高速馬達", en: "Turbo motor", d: ["轉得快，直線很快。", "Spins fast. Great on straights."] },
-      { v: "torque", price: 420, zh: "扭力馬達", en: "Torque motor", d: ["力氣大，爬坡最強。", "Strong push. Best on hills."] },
-      { v: "hyper", price: 650, zh: "超級馬達", en: "Hyper motor", d: ["最快，可是爬坡比較沒力。", "Fastest, but weaker on hills."] },
-      { v: "rev", price: 300, zh: "轉速馬達", en: "Rev motor", d: ["比普通快一點，也有一點力氣。", "A bit faster and a bit stronger than stock."] },
-      { v: "light", price: 520, zh: "輕快馬達", en: "Light-dash motor", d: ["很快，爬坡也還可以。", "Very fast, OK on hills."] },
-      { v: "sprint", price: 900, zh: "衝刺馬達", en: "Sprint motor", d: ["直線最快！爬坡很沒力。", "Fastest on straights! Weak on hills."] },
-      { v: "mach", price: 1100, zh: "音速馬達", en: "Mach motor", d: ["又快又有力，最貴。", "Fast and strong. Most expensive."] }],
+      { v: "turbo", price: 480, zh: "高速馬達", en: "Turbo motor", d: ["轉得快，直線很快。", "Spins fast. Great on straights."] },
+      { v: "torque", price: 560, zh: "扭力馬達", en: "Torque motor", d: ["力氣大，爬坡最強。", "Strong push. Best on hills."] },
+      { v: "hyper", price: 520, zh: "超級馬達", en: "Hyper motor", d: ["很快，可是爬坡比較沒力。", "Very fast, but weaker on hills."] },
+      { v: "rev", price: 250, zh: "轉速馬達", en: "Rev motor", d: ["比普通快一點，也有一點力氣。", "A bit faster and a bit stronger than stock."] },
+      { v: "light", price: 680, zh: "輕快馬達", en: "Light-dash motor", d: ["很快，爬坡也還可以。", "Very fast, OK on hills."] },
+      { v: "sprint", price: 860, zh: "衝刺馬達", en: "Sprint motor", d: ["直線最快！爬坡很沒力。", "Fastest on straights! Weak on hills."] },
+      { v: "mach", price: 1150, zh: "音速馬達", en: "Mach motor", d: ["又快又有力，最貴。", "Fast and strong. Most expensive."] }],
     gear: [
       { v: "speed", price: 0, zh: "高速齒輪", en: "Speed gears", d: ["套件附的，直線快，爬坡慢。", "Comes in the kit. Fast, weak on hills."] },
-      { v: "power", price: 150, zh: "力量齒輪", en: "Power gears", d: ["比較慢，可是很有力氣。", "Slower, but strong."] },
-      { v: "mid", price: 180, zh: "中速齒輪", en: "Middle gears", d: ["速度和力氣都中等。", "A bit of both."] },
-      { v: "super", price: 200, zh: "超高速齒輪", en: "Super-speed gears", d: ["直線更快，爬坡更慢。", "Even faster, even weaker on hills."] },
-      { v: "climb", price: 200, zh: "爬坡齒輪", en: "Climbing gears", d: ["慢，可是上坡最強。", "Slow, but best up hills."] }],
+      { v: "power", price: 260, zh: "力量齒輪", en: "Power gears", d: ["比較慢，可是很有力氣。", "Slower, but strong."] },
+      { v: "mid", price: 200, zh: "中速齒輪", en: "Middle gears", d: ["速度和力氣都中等。", "A bit of both."] },
+      { v: "super", price: 140, zh: "超高速齒輪", en: "Super-speed gears", d: ["直線更快，爬坡更慢。", "Even faster, even weaker on hills."] },
+      { v: "climb", price: 300, zh: "爬坡齒輪", en: "Climbing gears", d: ["慢，可是上坡最強。", "Slow, but best up hills."] }],
     tire: [
       { v: "hard", price: 0, zh: "硬輪胎", en: "Hard tires", d: ["套件附的，容易滑。", "Comes in the kit. Slippery."] },
       { v: "soft", price: 160, zh: "軟輪胎", en: "Soft tires", d: ["抓地力好，過彎穩。", "Good grip in curves."] },
       { v: "low", price: 220, zh: "低摩擦輪胎", en: "Low-friction tires", d: ["直線滾得快，抓地力中等。", "Roll fast on straights, medium grip."] },
-      { v: "sponge", price: 240, zh: "海綿輪胎", en: "Sponge tires", d: ["抓地力最好，直線慢一點。", "Best grip, a little slower."] },
-      { v: "slick", price: 260, zh: "光頭輪胎", en: "Slick tires", d: ["直線很快，彎道容易滑。", "Fast on straights, slides in curves."] },
-      { v: "spike", price: 180, zh: "釘釘輪胎", en: "Spike tires", d: ["咬住地面，爬坡比較有力。", "Bites the road. Better on hills."] },
-      { v: "large", price: 300, zh: "大直徑輪胎", en: "Big tires", d: ["輪子大跑得快，可是起步和爬坡比較慢。", "Big wheels go fast, but start and climb slower."] }],
+      { v: "sponge", price: 300, zh: "海綿輪胎", en: "Sponge tires", d: ["抓地力最好，直線慢一點。", "Best grip, a little slower."] },
+      { v: "slick", price: 140, zh: "光頭輪胎", en: "Slick tires", d: ["直線很快，彎道容易滑。", "Fast on straights, slides in curves."] },
+      { v: "spike", price: 200, zh: "釘釘輪胎", en: "Spike tires", d: ["咬住地面，爬坡比較有力。", "Bites the road. Better on hills."] },
+      { v: "large", price: 260, zh: "大直徑輪胎", en: "Big tires", d: ["輪子大跑得快，可是起步和爬坡比較慢。", "Big wheels go fast, but start and climb slower."] }],
     roller: [
       { v: "no", price: 0, zh: "沒有滾輪", en: "No rollers", d: ["過彎太快會飛出去！", "Too fast in a curve and it flies off!"] },
       { v: "yes", price: 140, zh: "兩個滾輪", en: "2 rollers", d: ["靠著牆滑過彎道。", "Slides along the wall in curves."] },
-      { v: "four", price: 260, zh: "四個滾輪", en: "4 rollers", d: ["前後都有，彎道最穩，有一點重。", "Front and back. Steadiest, a little heavy."] },
+      { v: "four", price: 280, zh: "四個滾輪", en: "4 rollers", d: ["前後都有，彎道最穩，有一點重。", "Front and back. Steadiest, a little heavy."] },
       { v: "plastic", price: 80, zh: "塑膠滾輪", en: "Plastic rollers", d: ["最便宜，不太滑順。", "Cheapest. Not very smooth."] },
       { v: "alu", price: 220, zh: "鋁合金滾輪", en: "Aluminum rollers", d: ["兩個，比普通的滑順。", "Two rollers, smoother than normal."] },
       { v: "bearing", price: 420, zh: "軸承滾輪", en: "Ball-bearing rollers", d: ["四個超滑順，彎道最快。", "Four super-smooth rollers. Fastest in curves."] }],
     wing: [
       { v: "none", price: 0, zh: "沒有尾翼", en: "No wing", d: ["比較輕。", "Lighter."] },
       { v: "small", price: 150, zh: "小尾翼", en: "Small wing", d: ["風把車子往下壓，過彎穩一點。", "Wind pushes the car down. A bit steadier."] },
-      { v: "big", price: 280, zh: "大尾翼", en: "Big wing", d: ["彎道很穩，直線慢一點點。", "Very steady in curves, slightly slower."] },
-      { v: "fin", price: 120, zh: "鯊魚鰭", en: "Shark fin", d: ["小小的，幾乎不擋風。", "Tiny. Almost no wind."] },
-      { v: "air", price: 220, zh: "前擾流板", en: "Front air dam", d: ["把車頭往下壓。", "Pushes the nose down."] },
+      { v: "big", price: 260, zh: "大尾翼", en: "Big wing", d: ["彎道很穩，直線慢一點點。", "Very steady in curves, slightly slower."] },
+      { v: "fin", price: 80, zh: "鯊魚鰭", en: "Shark fin", d: ["小小的，幾乎不擋風。", "Tiny. Almost no wind."] },
+      { v: "air", price: 180, zh: "前擾流板", en: "Front air dam", d: ["把車頭往下壓。", "Pushes the nose down."] },
       { v: "dual", price: 380, zh: "雙層尾翼", en: "Double wing", d: ["彎道最穩，直線慢一些。", "Steadiest in curves, slower on straights."] }]
   },
   // school week 1 (Mon-Thu lessons, Fri test). Each question: [zh, en], answers [[zh,en]...], c = right index, why [zh,en]
@@ -125,13 +125,15 @@ var C2 = {
         { id: "w1s5", q: ["四驅車要裝幾顆電池？", "How many batteries does a Mini 4WD car use?"], a: [["2 顆", "2"], ["1 顆", "1"], ["5 顆", "5"]], c: 0, why: ["四驅車用 2 顆三號電池。", "It uses 2 AA batteries."] },
         { id: "w1s6", q: ["電池快沒電了，車子會…", "When the batteries are almost empty, the car…"], a: [["跑得很慢", "goes slowly"], ["跑更快", "goes faster"], ["飛起來", "flies"]], c: 0, why: ["電不夠，馬達就沒力氣。", "Less power makes a weaker motor."] }] },
     { day: 1, sub: ["數學", "Math"], ic: "🕘", title: ["看時鐘", "Reading the clock"], tip: ["在家試試看：看看家裡的時鐘，現在是幾點？", "Try at home: look at a clock. What time is it now?"],
-      cards: [["短針告訴我們幾點，長針告訴我們幾分。", "The short hand shows the hour. The long hand shows the minutes."],
-        ["長針指著 12，就是整點。長針指著 6，就是半點。", "Long hand on 12 means o'clock. Long hand on 6 means half past."],
-        ["比賽 9 點開始，要提早 30 分鐘，8 點半就到。", "The race starts at 9:00. Come 30 minutes early, at 8:30."]],
+      cards: [["短針告訴我們幾點，長針告訴我們幾分。", "The short hand shows the hour. The long hand shows the minutes.", "3:00"],
+        ["長針指著 12，就是整點。長針指著 6，就是半點。", "Long hand on 12 means o'clock. Long hand on 6 means half past.", "6:30"],
+        ["比賽 9 點開始，要提早 30 分鐘，8 點半就到。", "The race starts at 9:00. Come 30 minutes early, at 8:30.", "8:30"]],
       quiz: [
-        { id: "w1m4", q: ["短針指著 3，長針指著 12，是幾點？", "Short hand on 3, long hand on 12. What time is it?"], a: [["3:00", "3:00"], ["12:00", "12:00"], ["3:30", "3:30"]], c: 0, why: ["長針在 12 是整點，短針在 3，就是 3 點。", "Long hand on 12 means o'clock, short hand on 3: 3:00."] },
-        { id: "w1m5", q: ["長針指著 6，是…", "The long hand on 6 means…"], a: [["半點", "half past"], ["整點", "o'clock"], ["6 點", "6 o'clock"]], c: 0, why: ["長針走到 6 是走了半圈，就是半點。", "Halfway around is half past."] },
-        { id: "w1m6", q: ["比賽 9 點開始，要提早 30 分鐘到，幾點要到？", "The race starts at 9:00. Arrive 30 minutes early. When?"], a: [["8:30", "8:30"], ["9:30", "9:30"], ["8:00", "8:00"]], c: 0, why: ["9 點往前 30 分鐘是 8 點半。", "30 minutes before 9:00 is 8:30."] }] },
+        { id: "w1m4", clock: "3:00", q: ["短針指著 3，長針指著 12，是幾點？", "Short hand on 3, long hand on 12. What time is it?"], a: [["3:00", "3:00"], ["12:00", "12:00"], ["3:30", "3:30"]], c: 0, why: ["長針在 12 是整點，短針在 3，就是 3 點。", "Long hand on 12 means o'clock, short hand on 3: 3:00."] },
+        { id: "w1m5", clock: "4:30", q: ["長針指著 6，是…", "The long hand on 6 means…"], a: [["半點", "half past"], ["整點", "o'clock"], ["6 點", "6 o'clock"]], c: 0, why: ["長針走到 6 是走了半圈，就是半點。", "Halfway around is half past."] },
+        { id: "w1m6", q: ["比賽 9 點開始，要提早 30 分鐘到，幾點要到？", "The race starts at 9:00. Arrive 30 minutes early. When?"], a: [["8:30", "8:30"], ["9:30", "9:30"], ["8:00", "8:00"]], c: 0, why: ["9 點往前 30 分鐘是 8 點半。", "30 minutes before 9:00 is 8:30."] },
+        { id: "w1m7", clock: "7:30", q: ["這個時鐘是幾點？", "What time does this clock show?"], a: [["7:30", "7:30"], ["6:30", "6:30"], ["8:30", "8:30"]], c: 0, why: ["長針在 6 是半點，短針在 7 和 8 中間，就是 7 點半。", "Long hand on 6 is half past. Short hand between 7 and 8: 7:30."] },
+        { id: "w1m8", clock: "10:00", q: ["這個時鐘是幾點？", "What time does this clock show?"], a: [["10:00", "10:00"], ["12:10", "12:10"], ["2:00", "2:00"]], c: 0, why: ["短針指 10，長針指 12，就是 10 點整。", "Short hand on 10, long hand on 12: 10:00."] }] },
     { day: 2, sub: ["英文", "English"], ic: "🎨", title: ["隊伍的顏色", "Team colors"], tip: ["在家試試看：用英文說出你衣服的顏色！", "Try at home: say the colors of your clothes in English!"],
       cards: [["blue 是藍色，我們隊的顏色。", "blue: our team's color."],
         ["red 紅色，green 綠色，yellow 黃色。", "red, green, yellow."],
@@ -249,6 +251,16 @@ var C2 = {
     ["你算錢好快喔！", "You count money so fast!"], ["我兒子也很喜歡四驅車。", "My son loves Mini 4WD cars too."], ["這裡的東西最好吃了。", "The food here is the best."],
     ["今天天氣真好！", "What a nice day today!"], ["你長大想做什麼？", "What do you want to be when you grow up?"], ["下次我還要再來！", "I'll come back next time!"],
     ["聽說星期六有比賽，加油喔！", "I heard there's a race on Saturday. Good luck!"], ["你是小幫手嗎？好棒！", "Are you the little helper? Great job!"]],
+  // noodle shop customers (boys and men in Lucas's game). Art: assets/cust/<id>.webp (Gemini); emoji until the art exists
+  CUST: [
+    { id: "grandpa", ic: "👴", zh: "阿公", en: "Grandpa", pitch: 0.8, hi: ["小朋友好！", "Hello, little one!"] },
+    { id: "office", ic: "👨‍💼", zh: "上班族叔叔", en: "Office uncle", pitch: 1, hi: ["我趕時間！", "I'm in a hurry!"] },
+    { id: "student", ic: "🧑‍🎓", zh: "大哥哥", en: "Big brother", pitch: 1.1, hi: ["嗨！", "Hi!"] },
+    { id: "police", ic: "👮‍♂️", zh: "警察伯伯", en: "Police officer", pitch: 0.9, hi: ["辛苦了！", "Thanks for your hard work!"] },
+    { id: "builder", ic: "👷‍♂️", zh: "工人叔叔", en: "Builder", pitch: 0.85, hi: ["好餓喔！", "I'm so hungry!"] },
+    { id: "mailman", ic: "🧔", zh: "郵差叔叔", en: "Mail carrier", pitch: 0.95, hi: ["送完信了！", "Done delivering letters!"] },
+    { id: "boy", ic: "👦", zh: "小弟弟", en: "Little boy", pitch: 1.35, hi: ["哥哥好！", "Hi, big brother!"] },
+    { id: "farmer", ic: "👨‍🌾", zh: "農夫爺爺", en: "Farmer grandpa", pitch: 0.8, hi: ["今天收成很好！", "Great harvest today!"] }],
   CASH: [500, 100, 50, 10, 5], // Taiwan bills and coins Lucas uses to collect the bill
   // car wash job (week 2): wash steps in order + a price board
   WASH: { steps: [["💦", "噴水", "Spray water"], ["🧼", "抹肥皂", "Add soap"], ["🧽", "刷一刷", "Scrub"], ["🚿", "沖乾淨", "Rinse"], ["🧻", "擦乾", "Dry"]],

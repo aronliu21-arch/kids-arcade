@@ -76,25 +76,27 @@ var Engine = (function () {
   function noise() { var b = ac.createBuffer(1, ac.sampleRate, ac.sampleRate), d = b.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; var s = ac.createBufferSource(); s.buffer = b; s.loop = true; return s; }
   return {
     start: function () {
-      if (on || KAKit.muted()) return; ac = KAKit.ac(); if (!ac) return; on = true;
+      if (on || KAKit.muted() || Engine.off()) return; ac = KAKit.ac(); if (!ac) return; on = true;
       out = ac.createGain(); out.gain.value = 0.0001; out.connect(ac.destination);
       f = ac.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 1600; f.Q.value = 4; g = ac.createGain(); g.gain.value = 1; f.connect(g).connect(out);
-      o = ac.createOscillator(); o.type = "sawtooth"; o2 = ac.createOscillator(); o2.type = "square"; o3 = ac.createOscillator(); o3.type = "triangle";
-      var g2 = ac.createGain(); g2.gain.value = 0.5; o.connect(f); o2.connect(g2).connect(f); o3.connect(f);
+      o = ac.createOscillator(); o.type = "triangle"; o2 = ac.createOscillator(); o2.type = "sine"; o3 = ac.createOscillator(); o3.type = "sine"; // soft motor tone (v2.7: no sawtooth/square buzz)
+      var g2 = ac.createGain(); g2.gain.value = 0.6; o.connect(f); o2.connect(g2).connect(f); o3.connect(f);
       lfo = ac.createOscillator(); lfo.frequency.value = 6; lfoG = ac.createGain(); lfoG.gain.value = 0; lfo.connect(lfoG); lfoG.connect(o.frequency); lfoG.connect(o3.frequency);
       nz = noise(); nzF = ac.createBiquadFilter(); nzF.type = "bandpass"; nzF.frequency.value = 3000; nzF.Q.value = 1.5; nzG = ac.createGain(); nzG.gain.value = 0.0001; nz.connect(nzF).connect(nzG).connect(out);
       rv = ac.createOscillator(); rv.type = "sawtooth"; rvG = ac.createGain(); rvG.gain.value = 0.0001; var rf = ac.createBiquadFilter(); rf.type = "lowpass"; rf.frequency.value = 1200; rv.connect(rf).connect(rvG).connect(out);
       [o, o2, o3, lfo, nz, rv].forEach(function (x) { x.start(); });
     },
     set: function (v, s) {
-      if (!on) return; s = s || {}; var t = ac.currentTime, base = s.hill ? 150 + v * 26 : 180 + v * 40; // v: 0..10
-      o.frequency.setTargetAtTime(base, t, 0.06); o2.frequency.setTargetAtTime(base / 2, t, 0.06); o3.frequency.setTargetAtTime(base * 2.01, t, 0.06);
-      lfoG.gain.setTargetAtTime(v > 8 ? 9 : 2, t, 0.2); lfo.frequency.setTargetAtTime(4 + v, t, 0.2); // wobble when flat out
-      f.frequency.setTargetAtTime(900 + v * 160, t, 0.1);
-      out.gain.setTargetAtTime(v > 0.2 ? 0.05 + v * 0.008 : 0.0001, t, 0.08);
-      nzG.gain.setTargetAtTime(s.scrape ? 0.5 : 0.04 + v * 0.01, t, 0.04); nzF.frequency.setTargetAtTime(s.scrape ? 5200 : 2000 + v * 200, t, 0.05); // whir, or hiss on the wall
-      rvG.gain.setTargetAtTime(s.near ? 0.35 : 0.0001, t, 0.15); rv.frequency.setTargetAtTime(base * 1.07, t, 0.1); // rival close by
+      if (!on) return; s = s || {}; var t = ac.currentTime, base = s.hill ? 80 + v * 10 : 95 + v * 14; // v: 0..10; low and quiet
+      o.frequency.setTargetAtTime(base, t, 0.08); o2.frequency.setTargetAtTime(base / 2, t, 0.08); o3.frequency.setTargetAtTime(base * 1.5, t, 0.08);
+      lfoG.gain.setTargetAtTime(0, t, 0.2);
+      f.frequency.setTargetAtTime(380 + v * 35, t, 0.1);
+      out.gain.setTargetAtTime(v > 0.2 ? 0.02 + v * 0.0025 : 0.0001, t, 0.1);
+      nzG.gain.setTargetAtTime(s.scrape ? 0.22 : 0.015 + v * 0.004, t, 0.05); nzF.frequency.setTargetAtTime(s.scrape ? 4200 : 1200 + v * 120, t, 0.05); // soft whir, or hiss on the wall
+      rvG.gain.setTargetAtTime(s.near ? 0.06 : 0.0001, t, 0.15); rv.frequency.setTargetAtTime(base * 1.12, t, 0.1); // rival close by
     },
+    off: function () { try { return localStorage.getItem("m4wd.engineOff") === "1"; } catch (e) { return false; } },
+    toggle: function () { var x = !this.off(); try { localStorage.setItem("m4wd.engineOff", x ? "1" : "0"); } catch (e) {} if (x) this.stop(); else this.start(); return x; },
     stop: function () { if (!on) return; on = false; var parts = [o, o2, o3, lfo, nz, rv], O = out; try { O.gain.setTargetAtTime(0.0001, ac.currentTime, 0.05); } catch (e) {} setTimeout(function () { parts.forEach(function (x) { try { x.stop(); } catch (e) {} }); try { O.disconnect(); } catch (e) {} }, 300); }
   };
 })();
