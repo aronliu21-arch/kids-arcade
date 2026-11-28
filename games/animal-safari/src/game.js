@@ -869,7 +869,7 @@ function bindControls() {
   document.addEventListener('visibilitychange', () => { if (document.hidden) { AU.stop(); AU.music(false); } else AU.music(G.screen !== 'scene'); });
   document.addEventListener('gesturestart', e => e.preventDefault());
   $('#pSay').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); bounce($('#pSay')); if (G.lastPrompt) AU.say(G.lastPrompt); });
-  $('#pAlt').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); bounce($('#pAlt')); const L = G.lastPrompt && LINES[G.lastPrompt]; if (L) { if (DB.lang === 'zh') AU.raw(L.en, 'en'); else AU.raw(L.zh, 'zh'); } });
+  $('#pAlt').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); bounce($('#pAlt')); const L = G.lastPrompt && LINES[G.lastPrompt]; if (L) { if (DB.lang === 'zh') AU.clipEn(G.lastPrompt); else AU.raw(L.zh, 'zh'); } });
   $('#mHome').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.sfx('tap'); show('map'); });
   $('#mReplay').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); if (M.replay) M.replay(); else if (M.last) msay(M.last[0], M.last[1]); });
   $('#mAlt').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); const t = M.altText && M.altText(); if (t) AU.raw(t[0], t[1]); });

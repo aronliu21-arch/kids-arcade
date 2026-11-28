@@ -95,6 +95,18 @@ const AU = (function () {
   }
   async function seq(keys, opts) { for (const k of keys) { if (!(await say(k, opts))) return false; } return true; }
   // speak raw text (zhuyin sound for a symbol in Chinese mode)
+  // replay a line's recorded English clip (EN button in Chinese mode); device voice only if no clip
+  async function clipEn(key) {
+    const line = LINES[key]; if (!line) return true;
+    stop(); const my = token; if (DB.muted || FAST) { await wait(300); return true; }
+    const buf = await timeout(load(key), 3000); if (my !== token) return false;
+    if (buf && ac) {
+      speaking = true;
+      await new Promise(res => { if (ac.state !== 'running') ac.resume(); const s = ac.createBufferSource(); s.buffer = buf; s.connect(voxG); src = s; s.onended = () => { if (src === s) src = null; res(); }; s.start(0); setTimeout(res, buf.duration * 1000 + 600); });
+      speaking = false; return my === token;
+    }
+    await tts(line.sp || line.en, 'en', 1.05, my); return my === token;
+  }
   async function raw(text, lang) { stop(); const my = token; if (DB.muted || FAST) { await wait(300); return true; } await tts(text, lang, 1.1, my); return my === token; }
 
   /* --- synthesized sound effects (no files) --- */
@@ -153,5 +165,5 @@ const AU = (function () {
     play(); musTimer = setInterval(play, beat * 4 * 1000);
   }
   function duck(on) { if (ac && musicOn) musG.gain.setTargetAtTime(on ? .05 : .16, ac.currentTime, .15); }
-  return { skip: () => { if (speaking && Date.now() - started > 700) stop(); }, unlock, say, seq, raw, stop, sfx, music, preload, load, duck, isSpeaking: () => speaking, FAST };
+  return { skip: () => { if (speaking && Date.now() - started > 700) stop(); }, unlock, say, seq, raw, clipEn, stop, sfx, music, preload, load, duck, isSpeaking: () => speaking, FAST };
 })();
