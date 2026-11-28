@@ -20,15 +20,20 @@ var C2G = {
     $("#c2When").innerHTML = "📅 " + bi("第" + C2S.week(c) + "週 " + d[0] + " " + (c.slot > 2 ? "晚上" : sl[0]), "Week " + C2S.week(c) + " · " + d[1] + " · " + (c.slot > 2 ? "Night" : sl[1]));
     $("#c2Money").textContent = "💰 " + money(c.money);
     $("#c2Title").innerHTML = title ? bi(title[0], title[1]) : "";
-    this.drawCar(); show("sC2");
+    show("sC2"); this.drawCar(); // show first: a hidden canvas has no size
   },
   drawCar: function (b) {
     var c = C2S.get(), cv = $("#c2Car"), st = $("#c2Stats"); b = b || c.build;
     var r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
     cv.width = Math.max(10, r.width * d); cv.height = Math.max(10, r.height * d);
     var x = cv.getContext("2d"); x.clearRect(0, 0, cv.width, cv.height);
-    if (!b) { st.innerHTML = "<b>" + bi("還沒有車", "No car yet") + "</b><div>" + bi("先去模型店買底盤套件！", "Buy a chassis kit at the store first!") + "</div>"; return; }
     var W = cv.width, H = cv.height, s = Math.min(W * 0.42, H * 0.5);
+    if (!b) { // no car yet: show the starter kit faded, with where to get it
+      x.globalAlpha = 0.28; CarArt.draw(x, C2.KIT.build, "rear", W * 0.3, H * 0.8, s * 0.9, { col: "blue" }); CarArt.draw(x, C2.KIT.build, "top", W * 0.76, H * 0.45, Math.min(W * 0.2, H * 0.45), { col: "blue", center: true });
+      x.globalAlpha = 1; x.textAlign = "center"; x.fillStyle = "#1864ab"; x.font = "900 " + Math.round(H * 0.11) + "px system-ui,sans-serif";
+      x.fillText("🏪 " + C2.KIT.price + " → 🚗", W / 2, H * 0.94);
+      st.innerHTML = "<b>" + bi("還沒有車", "No car yet") + "</b><div>" + bi("放學後去模型店買底盤套件，就有自己的車了！", "After school, buy the chassis kit at the store to get your own car!") + "</div>"; return;
+    }
     CarArt.draw(x, b, "rear", W * 0.3, H * 0.88, s, { col: "blue" });   // chase-cam view
     CarArt.draw(x, b, "top", W * 0.76, H * 0.5, Math.min(W * 0.22, H * 0.5), { col: "blue", center: true }); // top view
     renderStats(st, b);
