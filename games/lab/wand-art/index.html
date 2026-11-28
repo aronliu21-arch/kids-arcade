@@ -3258,8 +3258,11 @@ if(Y3ART.pen.pen2){ Object.assign(Y2ART.foe,{pen2:[...Y3ART.pen.pen2,275]}); if(
 // the three new places now have their own paintings
 ['roost','arena','clock'].forEach(k=>{ if(typeof BG_ALIAS!=='undefined') delete BG_ALIAS[k]; delete Y3_ALIAS[k]; ART_BG[k]=1; });
 Object.assign(BG_FALLBACK,{roost:'tower',arena:'courtyard',clock:'hall'});
+// battle helpers were drawn before this file loaded: redraw flying Pip with the flying picture
+Object.values(FOES).forEach(f=>(f.helpers||[]).forEach(h=>{ if(h.emoji==='🪶'&&typeof h.x==='string') Object.defineProperty(h,'x',{get:()=>PIP(512,400,.45,{expr:'happy',fly:true}),configurable:true});
+ else if(typeof h.x==='string'&&h.x.length&&h.emoji==='🔥'&&/Ember hit it together/.test(h.msg||'')) Object.defineProperty(h,'x',{get:()=>D2(880,200,.4,{fly:true}),configurable:true}); }));
 </script>
-<div id="kaVer" data-v="2.4" data-d="2026-11-27" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.4 · 2026-11-27</div>
+<div id="kaVer" data-v="2.5" data-d="2026-11-27" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v2.5 · 2026-11-27</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>

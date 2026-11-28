@@ -12,3 +12,6 @@ if(Y3ART.pen.pen2){ Object.assign(Y2ART.foe,{pen2:[...Y3ART.pen.pen2,275]}); if(
 // the three new places now have their own paintings
 ['roost','arena','clock'].forEach(k=>{ if(typeof BG_ALIAS!=='undefined') delete BG_ALIAS[k]; delete Y3_ALIAS[k]; ART_BG[k]=1; });
 Object.assign(BG_FALLBACK,{roost:'tower',arena:'courtyard',clock:'hall'});
+// battle helpers were drawn before this file loaded: redraw flying Pip with the flying picture
+Object.values(FOES).forEach(f=>(f.helpers||[]).forEach(h=>{ if(h.emoji==='🪶'&&typeof h.x==='string') Object.defineProperty(h,'x',{get:()=>PIP(512,400,.45,{expr:'happy',fly:true}),configurable:true});
+ else if(typeof h.x==='string'&&h.x.length&&h.emoji==='🔥'&&/Ember hit it together/.test(h.msg||'')) Object.defineProperty(h,'x',{get:()=>D2(880,200,.4,{fly:true}),configurable:true}); }));
