@@ -1,11 +1,11 @@
 // Battles: every move is powered by a question. Two tries, then the answer is shown.
 let QS = null;
-function askQuestion(subject) {
+function askQuestion(subject, label) {
   return new Promise(res => {
     const q = Q.next(subject, S.kid, S.seen); S.stats.asked++;
     QS = { q, tries: 0, res, seq: [], done: false }; if (window.KA) { KA.setKid(S.kid); KA.shown(); }
     const sub = Q.SUBJECTS[q.subject];
-    $('qStyle').textContent = `${sub.style} · ${sub.name}`;
+    $('qStyle').textContent = `${label ? label + ' · ' : ''}${sub.style} · ${sub.name}`;
     wordify($('qText'), q.q); $('qWhy').hidden = true; $('qNext').hidden = true; $('qMsg').textContent = q.type === 'order' ? 'Tap them one by one' : 'Tap a word to hear it';
     $('qBig').hidden = !q.big; $('qBig').textContent = q.big || ''; $('qBig').className = (q.bigSmall ? 'small ' : '') + (q.sub ? 'hasSub' : ''); $('qSub').hidden = !q.sub; $('qSub').textContent = q.sub || '';
     const box = $('qChoices'); box.innerHTML = ''; box.className = q.type + (q.zh ? ' zh' : '') + (q.emoji ? ' emoji' : ''); box.style.gridTemplateColumns = q.type === 'order' ? `repeat(${q.items.length}, 1fr)` : '';
@@ -64,7 +64,7 @@ async function beginBattle(e, ent) {
   G.busy = true; Snd.play('battle');
   await tween(0.35, k => { G.fade = k; });
   G.mode = 'battle'; G.parts = [];
-  G.B = { e, ent, subject: WORLDS[G.world].subject, hx: -300, ex: 300, lx: 0, eHit: 0, hHit: 0, shake: 0, eScale: 1, orb: null, lock: true, swing: 0, rest: [0, 0, 0, 0], fx: null, chill: false, guard: (ARMORS[S.armor].perks || []).includes('guard') };
+  G.B = { e, ent, subject: WORLDS[G.world].subject, hx: -300, ex: 300, lx: 0, eHit: 0, hHit: 0, shake: 0, eScale: 1, orb: null, lock: true, swing: 0, rest: [0, 0, 0, 0], fx: null, lastAnimations: {}, comboUsed: false, chill: false, guard: (ARMORS[S.armor].perks || []).includes('guard') };
   setMood(e.wild ? 'surprised' : 'determined', 1.6); $('battle').hidden = false; showHUD(false); setLog(e.wild ? `A wild ${e.name} jumped out of the grass!` : e.boss ? `${e.name} blocks the way!` : `A ${e.name} drifts closer…`); renderMoves();
   tween(0.5, k => { G.B.hx = -300 * (1 - k); G.B.ex = 300 * (1 - k); });
   await tween(0.35, k => { G.fade = 1 - k; });
@@ -111,22 +111,62 @@ function renderMoves() {
   const moves = [
     ['strike', { knight: '⚔️', mage: '🪄', ranger: '🏹' }[S.cls] || '⚔️', weaponLook(S.weapon, S.cls).name, `Power ${heroAtk()}`, true],
     ['skill', { fire: '🔥', water: '💧', leaf: '🍃', star: '⭐' }[sp.el], knownMoves(l) > 1 ? `${lumiName(l)}'s Skills` : MOVES[l.sp][0], (knownMoves(l) > 1 ? `${knownMoves(l)} skills` : `Power ${lumiPower(l)}`) + (m > 1 ? ' · strong!' : m < 1 ? ' · weak' : ''), true],
+    ['combo', '✦', 'Combo Attack', B.comboUsed ? 'Used this battle' : '2 questions · once per battle', !B.comboUsed],
     ['capture', '🔮', 'Capture', !e.wild ? 'Wild Lumis only' : S.orb < 1 ? 'No orbs left' : canCap ? `${S.orb} orbs` : 'Weaken it first', canCap],
     ['potion', '🧪', 'Potion', S.potion ? `${S.potion} left` : 'None left', S.potion > 0 && S.hp < maxHP()],
     ['swap', '🔁', 'Swap Lumi', lumiName(l), S.party.length > 1],
     ['run', '🏃', 'Run', e.boss ? 'No escape!' : 'Leave battle', !e.boss],
   ];
-  $('bMoves').innerHTML = moves.map(m => `<button class="move m-${m[0]}" data-m="${m[0]}" ${m[4] && !B.lock ? '' : 'disabled'}><img class="move-icon" src="art/icon-${m[0]}.webp" alt=""><b>${m[2]}</b><small>${m[3]}</small></button>`).join('');
+  $('bMoves').innerHTML = moves.map(m => `<button class="move m-${m[0]}" data-m="${m[0]}" ${m[4] && !B.lock ? '' : 'disabled'}>${m[0] === "combo" ? '<span class="combo-icon" aria-hidden="true">✦</span>' : `<img class="move-icon" src="art/icon-${m[0]}.webp" alt="">`}<b>${m[2]}</b><small>${m[3]}</small></button>`).join('');
   $('bMoves').querySelectorAll('button').forEach(b => b.addEventListener('click', () => doMove(b.dataset.m)));
+}
+function nextAttackAnimation(B, family) {
+  const last = B.lastAnimations[family];
+  const roll = Math.floor(Math.random() * (last === undefined ? 5 : 4));
+  return B.lastAnimations[family] = last !== undefined && roll >= last ? roll + 1 : roll;
+}
+function playAttack(B, name, family, from, to, duration, color) {
+  const variant = nextAttackAnimation(B, family);
+  return tween(duration, k => {
+    const arc = Math.sin(Math.PI * k);
+    const rise = [0, arc * 10, arc * 52, Math.abs(Math.sin(3 * Math.PI * k)) * 16, arc * 25][variant];
+    B.fx = k < 1 ? { name, variant, k, s: from, t: to, color, family, rise } : null;
+  });
+}
+async function comboAttack(B) {
+  const first = await askQuestion(B.subject, 'Combo 1 of 2');
+  if (G.B !== B) return;
+  const second = await askQuestion(B.subject, 'Combo 2 of 2');
+  if (G.B !== B) return;
+  if (!first.ok || !second.ok) { setLog('Combo missed. Both answers need to be correct.'); await wait(.65); return; }
+  const sp = SPECIES[activeLumi().sp];
+  const effect = ['Twin Comet', 'Prism Storm', 'Dawn Break'][Math.floor(Math.random() * 3)];
+  const damage = Math.max(1, Math.round((heroAtk() + lumiPower(activeLumi()) * elemMult(sp.el, B.e.el)) * (1 + .35 * Math.min(first.mult, second.mult))));
+  setLog(effect + '!');
+  Snd.play('skill');
+  await tween(1.15, k => {
+    B.fx = k < 1 ? { combo: effect, k, s: [275,315], t: [720,300], color: Art.EL[sp.el] } : null;
+    B.hx = Math.sin(Math.PI * k) * 47;
+    B.lx = Math.sin(Math.PI * k) * 85;
+  });
+  B.e.hp = Math.max(0, B.e.hp - damage);
+  B.eHit = .32; Snd.play('hit');
+  burst(720, 260, Art.EL[sp.el], 24);
+  floater(720, 205, '-' + damage, '#ffe6a2', 37);
+  await wait(.35);
 }
 async function doMove(kind, tier) {
   const B = G.B; if (!B || B.lock) return; const e = B.e, n = KIDS[S.kid].name;
   Snd.play('tap');
   if (kind === 'swap') { await teamPanel(true); renderMoves(); return; }
   if (kind === 'skill' && tier === undefined) { if (knownMoves(activeLumi()) > 1) { tier = await movePanel(); if (tier == null || G.B !== B || B.lock) return; } else tier = 0; }
-  B.lock = true; renderMoves();
+  if (kind === 'combo' && B.comboUsed) return;
+  B.lock = true;
+  if (kind === 'combo') B.comboUsed = true;
+  renderMoves();
   if (kind === 'run') { setLog(`${n} got away safely.`); await wait(0.6); return leaveBattle(); }
-  const r = await askQuestion(B.subject);
+  if (kind === 'combo') await comboAttack(B);
+  const r = kind === 'combo' ? null : await askQuestion(B.subject);
   if (kind === 'strike' || kind === 'skill') {
     const l = activeLumi(), sp = SPECIES[l.sp];
     const mv = kind === 'skill' ? MOVES[l.sp][tier] : '';
@@ -142,8 +182,8 @@ async function doMove(kind, tier) {
       setMood('determined', 2);
       if (kind === 'strike') tween(0.3, k => { B.swing = -Math.sin(k * Math.PI) * 1.6; });
       await tween(0.2, k => { B[key] = k * reach; });
-      if (kind === 'skill') { B.rest[tier] = MOVE_REST[tier]; Snd.play('skill'); await playFx(sp.el + (tier + 1), [391, 340], [720, 300], FX.DUR[tier + 1]); if (tier >= 2) B.shake = tier === 3 ? 0.7 : 0.45; }
-      else { const wk = weaponLook(S.weapon, S.cls).kind; await playFx(wk, [505, 330], [720, 300], wk === 'boomerang' ? 0.8 : 0.48); }
+      if (kind === 'skill') { B.rest[tier] = MOVE_REST[tier]; Snd.play('skill'); await playAttack(B, sp.el + (tier + 1), 'skill', [391, 340], [720, 300], FX.DUR[tier + 1], Art.EL[sp.el]); if (tier >= 2) B.shake = tier === 3 ? 0.7 : 0.45; }
+      else { const wk = weaponLook(S.weapon, S.cls).kind; await playAttack(B, wk, 'strike', [505, 330], [720, 300], wk === 'boomerang' ? 0.8 : 0.48, '#ffe7a5'); }
       Snd.play('hit'); e.hp = Math.max(0, e.hp - dmg); B.eHit = 0.25;
       burst(720, 280, kind === 'strike' ? '#fff' : Art.EL[sp.el], 18); floater(720, 210, '-' + dmg, r.mult === 1 ? '#ffe066' : '#fff', r.mult === 1 ? 34 : 26);
       if (lucky) floater(720, 160, '🍀 Lucky!', '#8ce99a', 26);
@@ -174,7 +214,10 @@ async function doMove(kind, tier) {
   const ap = ARMORS[S.armor].perks || [];
   if (B.chill) { dmg = Math.max(1, Math.round(dmg / 2)); B.chill = false; }
   const blocked = B.guard; if (blocked) { dmg = 0; B.guard = false; }
-  if (e.wild) await tween(0.2, k => { B.ex = -k * 260; }); else await playFx('fogball', [690, 290], [215, 300], 0.55);
+  if (e.wild) {
+    const effect = playAttack(B, 'tackle', 'enemy', [690,290], [215,300], .24, Art.EL[e.el]);
+    await tween(.24, k => { B.ex = -k * 260; }); await effect;
+  } else await playAttack(B, 'fogball', 'enemy', [690, 290], [215, 300], .55, '#c79afb');
   if (blocked) { Snd.play('ok'); burst(215, 300, '#7fe3ff', 20); floater(210, 220, '💎 Blocked!', '#c5f6fa', 26); setLog(`${n}'s Crystal Guard blocked the attack!`); }
   else { setMood('hurt', 1); Snd.play('hurt'); S.hp = Math.max(0, S.hp - dmg); B.hHit = 0.25; B.shake = 0.3; floater(210, 220, '-' + dmg, '#ff8787'); setLog(`${e.name} ${e.wild ? 'tackles' : 'hurls fog at'} ${n}!`); }
   updateHUD();

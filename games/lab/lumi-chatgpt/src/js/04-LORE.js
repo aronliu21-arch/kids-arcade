@@ -449,10 +449,6 @@ const Art = (() => {
       else if (!bossArt && e.name !== 'Mixling') c.filter = e.el === 'fire' ? 'hue-rotate(48deg)' : e.el === 'leaf' ? 'hue-rotate(115deg)' : 'none';
       Storybook.sprite(c, sprite, 0, 2, boss ? 76 : 54, boss ? 98 : 72);
       c.filter = 'none';
-      if (e.sym && e.name !== 'Mixling') {
-        c.font = `900 ${boss ? 17 : 13}px system-ui`; c.textAlign = 'center'; c.fillStyle = '#fff7de';
-        c.strokeStyle = '#291b3b'; c.lineWidth = 2; c.strokeText(e.sym, 0, -12); c.fillText(e.sym, 0, -12);
-      }
       if (boss && !bossArt) {
         star(c, 0, -78, 9, '#ffd783', '#714927', 1.7);
         star(c, 0, -78, 4, '#ff9d75');
@@ -476,7 +472,6 @@ const Art = (() => {
     for (const sx of [-1, 1]) { c.save(); c.shadowColor = e.eye || '#ffe066'; c.shadowBlur = 10; c.beginPath(); c.moveTo(sx * R0 * 0.18, ey + 2); c.lineTo(sx * R0 * 0.62, ey - 6); c.lineTo(sx * R0 * 0.62, ey + 5); c.quadraticCurveTo(sx * R0 * 0.4, ey + 9, sx * R0 * 0.18, ey + 2); c.fillStyle = e.eye || '#ffe066'; c.fill(); c.restore(); ell(c, sx * R0 * 0.44, ey + 1.5, 2, 2.6, INK); }
     // mouth
     c.beginPath(); c.moveTo(-R0 * 0.35, ey + 15); for (let i = 1; i <= 6; i++) c.lineTo(-R0 * 0.35 + i * R0 * 0.7 / 6, ey + 15 + (i % 2 ? 5 : 0)); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
-    if (e.sym) { c.fillStyle = 'rgba(255,255,255,.85)'; c.font = `900 ${boss ? 18 : 12}px system-ui`; c.textAlign = 'center'; c.fillText(e.sym, 0, -H * 0.14); }
     if (boss) { c.beginPath(); const cy0 = -H - 2; c.moveTo(-16, cy0); c.lineTo(-18, cy0 - 16); c.lineTo(-8, cy0 - 7); c.lineTo(0, cy0 - 20); c.lineTo(8, cy0 - 7); c.lineTo(18, cy0 - 16); c.lineTo(16, cy0); c.closePath(); c.fillStyle = '#ffd43b'; c.fill(); c.strokeStyle = '#e67700'; c.lineWidth = 1.5; c.stroke(); ell(c, 0, cy0 - 8, 2.6, 2.6, '#e03131'); }
     c.restore();
   }

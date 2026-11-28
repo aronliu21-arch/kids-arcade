@@ -131,7 +131,7 @@ h3 { font: 800 13px var(--font-b); letter-spacing: .08em; text-transform: upperc
 /* battle */
 #battle { position: absolute; left: 0; right: 0; bottom: 0; height: 138px; background: linear-gradient(rgba(21, 19, 31, .0), rgba(21, 19, 31, .9) 30%); padding: 0 12px 10px; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; }
 #bLog { color: #fff; font-size: 19px; font-weight: 800; text-shadow: 0 2px 0 var(--ink); min-height: 26px; padding-left: 6px; }
-#bMoves { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; min-height: 84px; }
+#bMoves { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; min-height: 84px; }
 .move { background: var(--panel); border: 4px solid var(--ink); border-radius: 16px; box-shadow: 0 5px 0 var(--ink); min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2px 4px; line-height: 1.1; }
 .move span { font-size: 24px; }
 .move b { font: 400 16px var(--font-d); }
@@ -270,6 +270,9 @@ button.armed { outline: 4px solid var(--gold); outline-offset: 3px; animation: a
 .avatar[aria-pressed="true"] { background: #fff0c5; }
 .row .armor-icon { width: 60px; height: 60px; flex: none; object-fit: contain; padding: 3px; }
 #dlgMeFace { background: #e3cda8; }
+
+.m-combo { background: #4e3e72; border-color: #e7c67c; }
+.combo-icon { color: #ffe3a0; line-height: 34px; font-size: 33px !important; }
 </style>
 <div id="wrap">
   <div id="stage">
@@ -383,7 +386,7 @@ const Storybook = (() => {
   }
 
   const people = {
-    'Elder Lumen': 'elder-lumen', 'Baker Pim': 'baker-pim', 'Farmer Jo': 'farmer-jo',
+    'Old Tally': 'old-tally', 'Elder Lumen': 'elder-lumen', 'Baker Pim': 'baker-pim', 'Farmer Jo': 'farmer-jo',
     'Shopkeeper Brom': 'brom', 'Healer Rosa': 'rosa', Wick: 'wick', 'Captain Marlow': 'marlow',
     'Mapmaker Marta': 'marta', 'Old Tick': 'tick', 'Brushmaster Lan': 'lan',
     'Little Fen': 'little-fen', 'Lantern Kid Yu': 'lantern-kid-yu',
@@ -400,11 +403,12 @@ const Storybook = (() => {
     Summitar: 'summitar', Gearon: 'gearon', Dunedrake: 'dunedrake', Pandaroo: 'pandaroo', Lanternix: 'lanternix',
   };
   const trees = { round: null, palm: 'palm', pine: 'pine', cactus: 'cactus', bamboo: 'bamboo', dead: 'dead' };
-  const enemies = { wisp: 'mixling', bat: 'fog-bat', golem: 'fog-golem', slime: 'fog-slime', knight: 'fog-knight' };
+  const enemies = { wisp: 'mixling', bat: 'fog-bat-v2', golem: 'fog-golem', slime: 'fog-slime', knight: 'fog-knight' };
   const bosses = {
     'Count Muddle': 'count-muddle', 'Captain Fib': 'captain-fib', 'Baron Nowhere': 'baron-nowhere',
     'The Tangler': 'tangler', 'Empress Smudge': 'empress-smudge', 'King Mumble': 'king-mumble',
   };
+  image('old-tally');
   image('battle-hub'); image('battle-w1');
   Object.values(lumis).forEach(image);
   image('echo-evolved');
@@ -1495,10 +1499,6 @@ const Art = (() => {
       else if (!bossArt && e.name !== 'Mixling') c.filter = e.el === 'fire' ? 'hue-rotate(48deg)' : e.el === 'leaf' ? 'hue-rotate(115deg)' : 'none';
       Storybook.sprite(c, sprite, 0, 2, boss ? 76 : 54, boss ? 98 : 72);
       c.filter = 'none';
-      if (e.sym && e.name !== 'Mixling') {
-        c.font = `900 ${boss ? 17 : 13}px system-ui`; c.textAlign = 'center'; c.fillStyle = '#fff7de';
-        c.strokeStyle = '#291b3b'; c.lineWidth = 2; c.strokeText(e.sym, 0, -12); c.fillText(e.sym, 0, -12);
-      }
       if (boss && !bossArt) {
         star(c, 0, -78, 9, '#ffd783', '#714927', 1.7);
         star(c, 0, -78, 4, '#ff9d75');
@@ -1522,7 +1522,6 @@ const Art = (() => {
     for (const sx of [-1, 1]) { c.save(); c.shadowColor = e.eye || '#ffe066'; c.shadowBlur = 10; c.beginPath(); c.moveTo(sx * R0 * 0.18, ey + 2); c.lineTo(sx * R0 * 0.62, ey - 6); c.lineTo(sx * R0 * 0.62, ey + 5); c.quadraticCurveTo(sx * R0 * 0.4, ey + 9, sx * R0 * 0.18, ey + 2); c.fillStyle = e.eye || '#ffe066'; c.fill(); c.restore(); ell(c, sx * R0 * 0.44, ey + 1.5, 2, 2.6, INK); }
     // mouth
     c.beginPath(); c.moveTo(-R0 * 0.35, ey + 15); for (let i = 1; i <= 6; i++) c.lineTo(-R0 * 0.35 + i * R0 * 0.7 / 6, ey + 15 + (i % 2 ? 5 : 0)); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
-    if (e.sym) { c.fillStyle = 'rgba(255,255,255,.85)'; c.font = `900 ${boss ? 18 : 12}px system-ui`; c.textAlign = 'center'; c.fillText(e.sym, 0, -H * 0.14); }
     if (boss) { c.beginPath(); const cy0 = -H - 2; c.moveTo(-16, cy0); c.lineTo(-18, cy0 - 16); c.lineTo(-8, cy0 - 7); c.lineTo(0, cy0 - 20); c.lineTo(8, cy0 - 7); c.lineTo(18, cy0 - 16); c.lineTo(16, cy0); c.closePath(); c.fillStyle = '#ffd43b'; c.fill(); c.strokeStyle = '#e67700'; c.lineWidth = 1.5; c.stroke(); ell(c, 0, cy0 - 8, 2.6, 2.6, '#e03131'); }
     c.restore();
   }
@@ -1930,7 +1929,7 @@ const Portraits = (() => {
       } else bust(c, p.v, p.mood, t, talk);
     }
     else if (p.type === 'hero') playerPortrait(c, p.kid === S.kid ? S : loadSave(p.kid), PW, PH, t, talk);
-    else if (p.type === 'owl') { c.translate(140 - 95 * 2.2, 176 - 80 * 2.2); c.scale(2.2, 2.2); Animals.owl(c, t); }
+    else if (p.type === 'owl') Storybook.sprite(c, 'old-tally', PW / 2, PH + Math.sin(t * 2) * 3, 315, PW - 8);
     else if (p.type === 'fog') Art.fog(c, p.def, 140, p.def.boss ? 352 : 330, p.def.boss ? 2.9 : 3.3, t, false);
     else if (p.type === 'voice') { const g = c.createRadialGradient(140, 200, 10, 140, 200, 150); g.addColorStop(0, 'rgba(43,29,92,.95)'); g.addColorStop(1, 'rgba(43,29,92,0)'); c.fillStyle = g; c.fillRect(0, 0, PW, PH); for (const sx of [-1, 1]) { c.save(); c.shadowColor = '#ff6b6b'; c.shadowBlur = 20; c.globalAlpha = 0.6 + Math.sin(t * 2) * 0.3; E(c, 140 + sx * 30, 190, 12, 7, '#ff6b6b', sx * 0.3); c.restore(); } }
     c.restore();
@@ -2034,10 +2033,59 @@ const FX = (() => {
     crossbow(c, k, s, t) { const q = ease(seg(k, 0, 0.45)), a = 1 - seg(k, 0.45, 1); c.save(); c.globalAlpha = a; c.strokeStyle = 'rgba(255,255,255,.6)'; c.lineWidth = 3; c.beginPath(); c.moveTo(s[0], s[1] - 30); c.lineTo(lerp(s[0], t[0], q), lerp(s[1] - 30, t[1] - 16, q)); c.stroke(); c.restore(); if (q < 1) { c.save(); c.translate(lerp(s[0], t[0], q), lerp(s[1] - 30, t[1] - 16, q)); c.rotate(Math.atan2(t[1] - s[1] + 14, t[0] - s[0])); c.fillStyle = '#e8a33d'; c.fillRect(-26, -2, 26, 4); c.beginPath(); c.moveTo(8, 0); c.lineTo(-2, -6); c.lineTo(-2, 6); c.fillStyle = '#dee2e6'; c.fill(); c.restore(); } else { const e = seg(k, 0.45, 1); ring(c, t[0], t[1] - 16, e * 80, '#ffd43b', 6 * (1 - e), 1 - e); } },
     // ---- enemies ----
     fogball(c, k, s, t, T) { for (let i = 0; i < 3; i++) { const q = seg(k, i * 0.12, 0.7 + i * 0.12); if (q <= 0 || q >= 1) continue; const [x, y] = arc(s, t, q, 60); c.save(); c.globalAlpha = 0.85; glow(c, '#5f3dc4', 16); Art.ell(c, x, y, 22 - i * 4, 18 - i * 3, i % 2 ? '#7048e8' : '#3b2f6b'); c.restore(); } },
-    tackle() { },
+    tackle(c, k, s, t) {
+      const x = lerp(s[0], t[0], ease(k));
+      for (let i = 0; i < 3; i++) ring(c, x + i * 12, t[1], 8 + 18 * k, '#fff3ce', 2, (1 - k) * .6);
+    },
   };
   const DUR = { 1: 0.75, 2: 1.05, 3: 1.6, 4: 2.1 };
-  return { draw, DUR };
+  function trails(c, kind, k, s, t, col) {
+    c.save(); c.strokeStyle = col; c.fillStyle = col;
+    c.lineCap = 'round'; c.lineWidth = 5; glow(c, col, 14);
+    c.globalAlpha = Math.sin(Math.PI * k) * .9;
+    if (kind === 1) {
+      const x = lerp(s[0], t[0], ease(k)), y = lerp(s[1], t[1], k);
+      for (const side of [-1,1]) {
+        c.beginPath(); c.moveTo(x - 75, y - side * 42); c.quadraticCurveTo(x - 20, y - side * 35, x + 20, y + side * 38); c.stroke();
+      }
+    } else if (kind === 2) {
+      for (let i = 0; i < 5; i++) {
+        const [x,y] = arc(s, t, Math.max(0, k - i * .05), 118);
+        Art.star(c, x, y, 11 - i * 1.5, col);
+      }
+    } else if (kind === 3) {
+      for (let i = 0; i < 9; i++) {
+        const a = i * TAU / 9 + k * 5, r = 17 + k * 80;
+        const x = lerp(s[0], t[0], ease(k));
+        Art.ell(c, x + Math.cos(a) * r, t[1] + Math.sin(a) * r * .6, 5, 5, col);
+      }
+    } else if (kind === 4) {
+      const x = lerp(s[0], t[0], ease(k));
+      for (let i = 0; i < 3; i++) ring(c, x - i * 28, t[1], 14 + k * 54, col, 4, c.globalAlpha);
+    }
+    c.restore();
+  }
+  function battle(c, f, time) {
+    if (f.combo) {
+      const {k, s, t, color} = f;
+      if (f.combo === 'Twin Comet') {
+        trails(c, 2, k, s, t, color);
+        trails(c, 2, k, [s[0], s[1]+56], t, '#ffe8ad');
+      } else if (f.combo === 'Prism Storm') {
+        trails(c, 3, k, s, t, color);
+        trails(c, 3, k, t, t, '#fff0c9');
+      } else {
+        trails(c, 4, k, s, t, '#ffe8ad');
+        trails(c, 1, k, s, t, color);
+      }
+      const impact = seg(k, .58, 1);
+      if (impact > 0) ring(c, t[0], t[1] + 30, 22 + impact * 120, color, 6 * (1 - impact), 1 - impact);
+      return;
+    }
+    draw[f.name]?.(c, f.k, f.s, f.t, time);
+    if (f.variant) trails(c, f.variant, f.k, f.s, f.t, f.color);
+  }
+  return { draw, DUR, battle };
 })();
 // Sound effects and music, all synthesized with the Web Audio API.
 const Snd = (() => {
@@ -2632,12 +2680,12 @@ function drawWorld(c) {
 }
 // Battles: every move is powered by a question. Two tries, then the answer is shown.
 let QS = null;
-function askQuestion(subject) {
+function askQuestion(subject, label) {
   return new Promise(res => {
     const q = Q.next(subject, S.kid, S.seen); S.stats.asked++;
     QS = { q, tries: 0, res, seq: [], done: false }; if (window.KA) { KA.setKid(S.kid); KA.shown(); }
     const sub = Q.SUBJECTS[q.subject];
-    $('qStyle').textContent = `${sub.style} · ${sub.name}`;
+    $('qStyle').textContent = `${label ? label + ' · ' : ''}${sub.style} · ${sub.name}`;
     wordify($('qText'), q.q); $('qWhy').hidden = true; $('qNext').hidden = true; $('qMsg').textContent = q.type === 'order' ? 'Tap them one by one' : 'Tap a word to hear it';
     $('qBig').hidden = !q.big; $('qBig').textContent = q.big || ''; $('qBig').className = (q.bigSmall ? 'small ' : '') + (q.sub ? 'hasSub' : ''); $('qSub').hidden = !q.sub; $('qSub').textContent = q.sub || '';
     const box = $('qChoices'); box.innerHTML = ''; box.className = q.type + (q.zh ? ' zh' : '') + (q.emoji ? ' emoji' : ''); box.style.gridTemplateColumns = q.type === 'order' ? `repeat(${q.items.length}, 1fr)` : '';
@@ -2696,7 +2744,7 @@ async function beginBattle(e, ent) {
   G.busy = true; Snd.play('battle');
   await tween(0.35, k => { G.fade = k; });
   G.mode = 'battle'; G.parts = [];
-  G.B = { e, ent, subject: WORLDS[G.world].subject, hx: -300, ex: 300, lx: 0, eHit: 0, hHit: 0, shake: 0, eScale: 1, orb: null, lock: true, swing: 0, rest: [0, 0, 0, 0], fx: null, chill: false, guard: (ARMORS[S.armor].perks || []).includes('guard') };
+  G.B = { e, ent, subject: WORLDS[G.world].subject, hx: -300, ex: 300, lx: 0, eHit: 0, hHit: 0, shake: 0, eScale: 1, orb: null, lock: true, swing: 0, rest: [0, 0, 0, 0], fx: null, lastAnimations: {}, comboUsed: false, chill: false, guard: (ARMORS[S.armor].perks || []).includes('guard') };
   setMood(e.wild ? 'surprised' : 'determined', 1.6); $('battle').hidden = false; showHUD(false); setLog(e.wild ? `A wild ${e.name} jumped out of the grass!` : e.boss ? `${e.name} blocks the way!` : `A ${e.name} drifts closer…`); renderMoves();
   tween(0.5, k => { G.B.hx = -300 * (1 - k); G.B.ex = 300 * (1 - k); });
   await tween(0.35, k => { G.fade = 1 - k; });
@@ -2743,22 +2791,62 @@ function renderMoves() {
   const moves = [
     ['strike', { knight: '⚔️', mage: '🪄', ranger: '🏹' }[S.cls] || '⚔️', weaponLook(S.weapon, S.cls).name, `Power ${heroAtk()}`, true],
     ['skill', { fire: '🔥', water: '💧', leaf: '🍃', star: '⭐' }[sp.el], knownMoves(l) > 1 ? `${lumiName(l)}'s Skills` : MOVES[l.sp][0], (knownMoves(l) > 1 ? `${knownMoves(l)} skills` : `Power ${lumiPower(l)}`) + (m > 1 ? ' · strong!' : m < 1 ? ' · weak' : ''), true],
+    ['combo', '✦', 'Combo Attack', B.comboUsed ? 'Used this battle' : '2 questions · once per battle', !B.comboUsed],
     ['capture', '🔮', 'Capture', !e.wild ? 'Wild Lumis only' : S.orb < 1 ? 'No orbs left' : canCap ? `${S.orb} orbs` : 'Weaken it first', canCap],
     ['potion', '🧪', 'Potion', S.potion ? `${S.potion} left` : 'None left', S.potion > 0 && S.hp < maxHP()],
     ['swap', '🔁', 'Swap Lumi', lumiName(l), S.party.length > 1],
     ['run', '🏃', 'Run', e.boss ? 'No escape!' : 'Leave battle', !e.boss],
   ];
-  $('bMoves').innerHTML = moves.map(m => `<button class="move m-${m[0]}" data-m="${m[0]}" ${m[4] && !B.lock ? '' : 'disabled'}><img class="move-icon" src="art/icon-${m[0]}.webp" alt=""><b>${m[2]}</b><small>${m[3]}</small></button>`).join('');
+  $('bMoves').innerHTML = moves.map(m => `<button class="move m-${m[0]}" data-m="${m[0]}" ${m[4] && !B.lock ? '' : 'disabled'}>${m[0] === "combo" ? '<span class="combo-icon" aria-hidden="true">✦</span>' : `<img class="move-icon" src="art/icon-${m[0]}.webp" alt="">`}<b>${m[2]}</b><small>${m[3]}</small></button>`).join('');
   $('bMoves').querySelectorAll('button').forEach(b => b.addEventListener('click', () => doMove(b.dataset.m)));
+}
+function nextAttackAnimation(B, family) {
+  const last = B.lastAnimations[family];
+  const roll = Math.floor(Math.random() * (last === undefined ? 5 : 4));
+  return B.lastAnimations[family] = last !== undefined && roll >= last ? roll + 1 : roll;
+}
+function playAttack(B, name, family, from, to, duration, color) {
+  const variant = nextAttackAnimation(B, family);
+  return tween(duration, k => {
+    const arc = Math.sin(Math.PI * k);
+    const rise = [0, arc * 10, arc * 52, Math.abs(Math.sin(3 * Math.PI * k)) * 16, arc * 25][variant];
+    B.fx = k < 1 ? { name, variant, k, s: from, t: to, color, family, rise } : null;
+  });
+}
+async function comboAttack(B) {
+  const first = await askQuestion(B.subject, 'Combo 1 of 2');
+  if (G.B !== B) return;
+  const second = await askQuestion(B.subject, 'Combo 2 of 2');
+  if (G.B !== B) return;
+  if (!first.ok || !second.ok) { setLog('Combo missed. Both answers need to be correct.'); await wait(.65); return; }
+  const sp = SPECIES[activeLumi().sp];
+  const effect = ['Twin Comet', 'Prism Storm', 'Dawn Break'][Math.floor(Math.random() * 3)];
+  const damage = Math.max(1, Math.round((heroAtk() + lumiPower(activeLumi()) * elemMult(sp.el, B.e.el)) * (1 + .35 * Math.min(first.mult, second.mult))));
+  setLog(effect + '!');
+  Snd.play('skill');
+  await tween(1.15, k => {
+    B.fx = k < 1 ? { combo: effect, k, s: [275,315], t: [720,300], color: Art.EL[sp.el] } : null;
+    B.hx = Math.sin(Math.PI * k) * 47;
+    B.lx = Math.sin(Math.PI * k) * 85;
+  });
+  B.e.hp = Math.max(0, B.e.hp - damage);
+  B.eHit = .32; Snd.play('hit');
+  burst(720, 260, Art.EL[sp.el], 24);
+  floater(720, 205, '-' + damage, '#ffe6a2', 37);
+  await wait(.35);
 }
 async function doMove(kind, tier) {
   const B = G.B; if (!B || B.lock) return; const e = B.e, n = KIDS[S.kid].name;
   Snd.play('tap');
   if (kind === 'swap') { await teamPanel(true); renderMoves(); return; }
   if (kind === 'skill' && tier === undefined) { if (knownMoves(activeLumi()) > 1) { tier = await movePanel(); if (tier == null || G.B !== B || B.lock) return; } else tier = 0; }
-  B.lock = true; renderMoves();
+  if (kind === 'combo' && B.comboUsed) return;
+  B.lock = true;
+  if (kind === 'combo') B.comboUsed = true;
+  renderMoves();
   if (kind === 'run') { setLog(`${n} got away safely.`); await wait(0.6); return leaveBattle(); }
-  const r = await askQuestion(B.subject);
+  if (kind === 'combo') await comboAttack(B);
+  const r = kind === 'combo' ? null : await askQuestion(B.subject);
   if (kind === 'strike' || kind === 'skill') {
     const l = activeLumi(), sp = SPECIES[l.sp];
     const mv = kind === 'skill' ? MOVES[l.sp][tier] : '';
@@ -2774,8 +2862,8 @@ async function doMove(kind, tier) {
       setMood('determined', 2);
       if (kind === 'strike') tween(0.3, k => { B.swing = -Math.sin(k * Math.PI) * 1.6; });
       await tween(0.2, k => { B[key] = k * reach; });
-      if (kind === 'skill') { B.rest[tier] = MOVE_REST[tier]; Snd.play('skill'); await playFx(sp.el + (tier + 1), [391, 340], [720, 300], FX.DUR[tier + 1]); if (tier >= 2) B.shake = tier === 3 ? 0.7 : 0.45; }
-      else { const wk = weaponLook(S.weapon, S.cls).kind; await playFx(wk, [505, 330], [720, 300], wk === 'boomerang' ? 0.8 : 0.48); }
+      if (kind === 'skill') { B.rest[tier] = MOVE_REST[tier]; Snd.play('skill'); await playAttack(B, sp.el + (tier + 1), 'skill', [391, 340], [720, 300], FX.DUR[tier + 1], Art.EL[sp.el]); if (tier >= 2) B.shake = tier === 3 ? 0.7 : 0.45; }
+      else { const wk = weaponLook(S.weapon, S.cls).kind; await playAttack(B, wk, 'strike', [505, 330], [720, 300], wk === 'boomerang' ? 0.8 : 0.48, '#ffe7a5'); }
       Snd.play('hit'); e.hp = Math.max(0, e.hp - dmg); B.eHit = 0.25;
       burst(720, 280, kind === 'strike' ? '#fff' : Art.EL[sp.el], 18); floater(720, 210, '-' + dmg, r.mult === 1 ? '#ffe066' : '#fff', r.mult === 1 ? 34 : 26);
       if (lucky) floater(720, 160, '🍀 Lucky!', '#8ce99a', 26);
@@ -2806,7 +2894,10 @@ async function doMove(kind, tier) {
   const ap = ARMORS[S.armor].perks || [];
   if (B.chill) { dmg = Math.max(1, Math.round(dmg / 2)); B.chill = false; }
   const blocked = B.guard; if (blocked) { dmg = 0; B.guard = false; }
-  if (e.wild) await tween(0.2, k => { B.ex = -k * 260; }); else await playFx('fogball', [690, 290], [215, 300], 0.55);
+  if (e.wild) {
+    const effect = playAttack(B, 'tackle', 'enemy', [690,290], [215,300], .24, Art.EL[e.el]);
+    await tween(.24, k => { B.ex = -k * 260; }); await effect;
+  } else await playAttack(B, 'fogball', 'enemy', [690, 290], [215, 300], .55, '#c79afb');
   if (blocked) { Snd.play('ok'); burst(215, 300, '#7fe3ff', 20); floater(210, 220, '💎 Blocked!', '#c5f6fa', 26); setLog(`${n}'s Crystal Guard blocked the attack!`); }
   else { setMood('hurt', 1); Snd.play('hurt'); S.hp = Math.max(0, S.hp - dmg); B.hHit = 0.25; B.shake = 0.3; floater(210, 220, '-' + dmg, '#ff8787'); setLog(`${e.name} ${e.wild ? 'tackles' : 'hurls fog at'} ${n}!`); }
   updateHUD();
@@ -2880,13 +2971,14 @@ function drawBattle(c) {
     c.fillStyle = pal.hill; c.beginPath(); c.moveTo(-20, 290); for (let x = -20; x <= W + 20; x += 40) c.lineTo(x, 262 - Math.sin(x * 0.009 + 2) * 18); c.lineTo(W + 20, 290); c.fill();
     const gr = c.createLinearGradient(0, 280, 0, H); gr.addColorStop(0, pal.g1); gr.addColorStop(1, Art.shade(pal.g1, -0.3)); c.fillStyle = gr; c.fillRect(-20, 280, W + 40, H);
   }
+  const lift = family => B.fx?.family === family ? B.fx.rise : 0;
   // enemy
-  if (B.eScale > 0.02) { c.save(); c.translate(720 + B.ex, 356); c.scale(B.eScale, B.eScale); if (e.wild) Art.lumi(c, SPECIES[e.sp], 0, 0, 2.6, t, false, true); else Art.fog(c, e, 0, 0, e.boss ? 2.3 : 2.4, t, B.eHit > 0); if (e.wild && B.eHit > 0) { c.globalAlpha = 0.5; Art.ell(c, 0, -50, 55, 55, '#fff'); } c.restore(); }
+  if (B.eScale > 0.02) { c.save(); c.translate(720 + B.ex, 356 - lift('enemy')); c.scale(B.eScale, B.eScale); if (e.wild) Art.lumi(c, SPECIES[e.sp], 0, 0, 2.6, t, false, true); else Art.fog(c, e, 0, 0, e.boss ? 2.3 : 2.4, t, B.eHit > 0); if (e.wild && B.eHit > 0) { c.globalAlpha = 0.5; Art.ell(c, 0, -50, 55, 55, '#fff'); } c.restore(); }
   // team
   const l = activeLumi();
-  Art.lumi(c, SPECIES[l.sp], 345 + B.hx * 0.6 + B.lx, 384, 1.7, t, isEvo(l), false);
-  c.save(); if (B.hHit > 0) c.globalAlpha = 0.55 + Math.sin(t * 60) * 0.3; Art.hero(c, 205 + B.hx, 376, 1.6, heroLook({ swing: B.swing, badge: true, sceneArt: true })); c.restore();
-  if (B.fx) FX.draw[B.fx.name](c, B.fx.k, B.fx.s, B.fx.t, t);
+  Art.lumi(c, SPECIES[l.sp], 345 + B.hx * 0.6 + B.lx, 384 - lift('skill'), 1.7, t, isEvo(l), false);
+  c.save(); if (B.hHit > 0) c.globalAlpha = 0.55 + Math.sin(t * 60) * 0.3; Art.hero(c, 205 + B.hx, 376 - lift('strike'), 1.6, heroLook({ swing: B.swing, badge: true, sceneArt: true })); c.restore();
+  if (B.fx) FX.battle(c, B.fx, t);
   if (B.orb) { const k = B.orb.k, ox = 240 + (720 - 240) * k, oy = 300 - Math.sin(k * Math.PI) * 190 + (k * 0); c.save(); c.shadowColor = '#e599f7'; c.shadowBlur = 16; Art.ell(c, ox, oy, 13, 13, '#e599f7', '#15131f', 3); c.restore(); Art.ell(c, ox - 4, oy - 4, 4, 4, '#fff'); }
   drawParts(c);
   c.restore();
@@ -3132,8 +3224,8 @@ function drawEnding(c) {
     c.fillStyle = '#69b55d'; c.beginPath(); c.ellipse(W / 2, 570, 680, 180, 0, 0, 6.283); c.fill();
     lantern(c, W / 2, 392, 1.6, E.scene >= 2, false);
     WORLD_ORDER.slice(0, 5).forEach((id, i) => { const a = t * 0.8 + i * 1.257, r = E.scene >= 2 ? 105 : 190; Art.crystal(c, W / 2 + Math.cos(a) * r, 250 + Math.sin(a) * r * 0.45, 17, WORLDS[id].crystal, t); });
-    Art.villager(c, { col: '#7048e8', hair: '#adb5bd', hat: 'elder', ph: 3 }, 800, 452, 1.7, t);
-    Art.villager(c, { col: '#5f3dc4', hair: '#343a40', ph: 1, sad: E.scene < 2 }, 680, 452, 1.35, t);
+    Art.villager(c, { name: 'Elder Lumen', col: '#7048e8', hair: '#adb5bd', hat: 'elder', ph: 3 }, 800, 452, 1.7, t);
+    Art.villager(c, { name: 'Wick', col: '#5f3dc4', hair: '#343a40', ph: 1, sad: E.scene < 2 }, 680, 452, 1.35, t);
     if (E.scene >= 3) Art.lumi(c, SPECIES.echo, 590, 462, 1.6, t, true, true);
     if (E.scene >= 2 && Math.random() < 0.1) burst(W / 2, 160, '#fff9db', 3);
   }
@@ -3259,6 +3351,6 @@ requestAnimationFrame(frame);
 </script>
 
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="0.3" data-d="2026-11-28" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v0.3 · 2026-11-28</div>
+<div id="kaVer" data-v="0.4" data-d="2026-11-28" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v0.4 · 2026-11-28</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body></html>

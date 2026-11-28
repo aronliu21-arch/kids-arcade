@@ -46,7 +46,7 @@ const Storybook = (() => {
   }
 
   const people = {
-    'Elder Lumen': 'elder-lumen', 'Baker Pim': 'baker-pim', 'Farmer Jo': 'farmer-jo',
+    'Old Tally': 'old-tally', 'Elder Lumen': 'elder-lumen', 'Baker Pim': 'baker-pim', 'Farmer Jo': 'farmer-jo',
     'Shopkeeper Brom': 'brom', 'Healer Rosa': 'rosa', Wick: 'wick', 'Captain Marlow': 'marlow',
     'Mapmaker Marta': 'marta', 'Old Tick': 'tick', 'Brushmaster Lan': 'lan',
     'Little Fen': 'little-fen', 'Lantern Kid Yu': 'lantern-kid-yu',
@@ -63,11 +63,12 @@ const Storybook = (() => {
     Summitar: 'summitar', Gearon: 'gearon', Dunedrake: 'dunedrake', Pandaroo: 'pandaroo', Lanternix: 'lanternix',
   };
   const trees = { round: null, palm: 'palm', pine: 'pine', cactus: 'cactus', bamboo: 'bamboo', dead: 'dead' };
-  const enemies = { wisp: 'mixling', bat: 'fog-bat', golem: 'fog-golem', slime: 'fog-slime', knight: 'fog-knight' };
+  const enemies = { wisp: 'mixling', bat: 'fog-bat-v2', golem: 'fog-golem', slime: 'fog-slime', knight: 'fog-knight' };
   const bosses = {
     'Count Muddle': 'count-muddle', 'Captain Fib': 'captain-fib', 'Baron Nowhere': 'baron-nowhere',
     'The Tangler': 'tangler', 'Empress Smudge': 'empress-smudge', 'King Mumble': 'king-mumble',
   };
+  image('old-tally');
   image('battle-hub'); image('battle-w1');
   Object.values(lumis).forEach(image);
   image('echo-evolved');

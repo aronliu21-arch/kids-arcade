@@ -87,8 +87,57 @@ const FX = (() => {
     crossbow(c, k, s, t) { const q = ease(seg(k, 0, 0.45)), a = 1 - seg(k, 0.45, 1); c.save(); c.globalAlpha = a; c.strokeStyle = 'rgba(255,255,255,.6)'; c.lineWidth = 3; c.beginPath(); c.moveTo(s[0], s[1] - 30); c.lineTo(lerp(s[0], t[0], q), lerp(s[1] - 30, t[1] - 16, q)); c.stroke(); c.restore(); if (q < 1) { c.save(); c.translate(lerp(s[0], t[0], q), lerp(s[1] - 30, t[1] - 16, q)); c.rotate(Math.atan2(t[1] - s[1] + 14, t[0] - s[0])); c.fillStyle = '#e8a33d'; c.fillRect(-26, -2, 26, 4); c.beginPath(); c.moveTo(8, 0); c.lineTo(-2, -6); c.lineTo(-2, 6); c.fillStyle = '#dee2e6'; c.fill(); c.restore(); } else { const e = seg(k, 0.45, 1); ring(c, t[0], t[1] - 16, e * 80, '#ffd43b', 6 * (1 - e), 1 - e); } },
     // ---- enemies ----
     fogball(c, k, s, t, T) { for (let i = 0; i < 3; i++) { const q = seg(k, i * 0.12, 0.7 + i * 0.12); if (q <= 0 || q >= 1) continue; const [x, y] = arc(s, t, q, 60); c.save(); c.globalAlpha = 0.85; glow(c, '#5f3dc4', 16); Art.ell(c, x, y, 22 - i * 4, 18 - i * 3, i % 2 ? '#7048e8' : '#3b2f6b'); c.restore(); } },
-    tackle() { },
+    tackle(c, k, s, t) {
+      const x = lerp(s[0], t[0], ease(k));
+      for (let i = 0; i < 3; i++) ring(c, x + i * 12, t[1], 8 + 18 * k, '#fff3ce', 2, (1 - k) * .6);
+    },
   };
   const DUR = { 1: 0.75, 2: 1.05, 3: 1.6, 4: 2.1 };
-  return { draw, DUR };
+  function trails(c, kind, k, s, t, col) {
+    c.save(); c.strokeStyle = col; c.fillStyle = col;
+    c.lineCap = 'round'; c.lineWidth = 5; glow(c, col, 14);
+    c.globalAlpha = Math.sin(Math.PI * k) * .9;
+    if (kind === 1) {
+      const x = lerp(s[0], t[0], ease(k)), y = lerp(s[1], t[1], k);
+      for (const side of [-1,1]) {
+        c.beginPath(); c.moveTo(x - 75, y - side * 42); c.quadraticCurveTo(x - 20, y - side * 35, x + 20, y + side * 38); c.stroke();
+      }
+    } else if (kind === 2) {
+      for (let i = 0; i < 5; i++) {
+        const [x,y] = arc(s, t, Math.max(0, k - i * .05), 118);
+        Art.star(c, x, y, 11 - i * 1.5, col);
+      }
+    } else if (kind === 3) {
+      for (let i = 0; i < 9; i++) {
+        const a = i * TAU / 9 + k * 5, r = 17 + k * 80;
+        const x = lerp(s[0], t[0], ease(k));
+        Art.ell(c, x + Math.cos(a) * r, t[1] + Math.sin(a) * r * .6, 5, 5, col);
+      }
+    } else if (kind === 4) {
+      const x = lerp(s[0], t[0], ease(k));
+      for (let i = 0; i < 3; i++) ring(c, x - i * 28, t[1], 14 + k * 54, col, 4, c.globalAlpha);
+    }
+    c.restore();
+  }
+  function battle(c, f, time) {
+    if (f.combo) {
+      const {k, s, t, color} = f;
+      if (f.combo === 'Twin Comet') {
+        trails(c, 2, k, s, t, color);
+        trails(c, 2, k, [s[0], s[1]+56], t, '#ffe8ad');
+      } else if (f.combo === 'Prism Storm') {
+        trails(c, 3, k, s, t, color);
+        trails(c, 3, k, t, t, '#fff0c9');
+      } else {
+        trails(c, 4, k, s, t, '#ffe8ad');
+        trails(c, 1, k, s, t, color);
+      }
+      const impact = seg(k, .58, 1);
+      if (impact > 0) ring(c, t[0], t[1] + 30, 22 + impact * 120, color, 6 * (1 - impact), 1 - impact);
+      return;
+    }
+    draw[f.name]?.(c, f.k, f.s, f.t, time);
+    if (f.variant) trails(c, f.variant, f.k, f.s, f.t, f.color);
+  }
+  return { draw, DUR, battle };
 })();
