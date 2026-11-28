@@ -11,7 +11,7 @@ const ANIMALS = {
 };
 const SUSPECTS = ['tiger', 'monkey', 'elephant', 'zebra', 'parrot', 'giraffe'];
 const CLUE_ORDER = ['patch', 'part', 'shadow'];
-const ITEM_IMG = {berries: 'berry', apples: 'apple', bananas: 'banana', eggs: 'egg', gems: 'gem', stars: 'star', cherries: 'cherry'};
+const ITEM_IMG = {berries: 'berry1', apples: 'apple', bananas: 'banana1', eggs: 'egg1', gems: 'gem', stars: 'star', cherries: 'cherry1'};
 // object kinds. h = display height as a share of the stage height. acts = activities it can host as a clue.
 const KINDS = {
   log:        {img: 'log', h: .15, acts: ['count', 'add'], items: ['berries', 'cherries', 'apples'], sur: 'star'},

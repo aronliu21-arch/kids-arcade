@@ -345,6 +345,47 @@ body.portrait .kAn{max-width:31%}
 /* v1.3: new sharp backgrounds already have foreground plants */
 #fg{display:none}
 
+/* v1.5: guide hand on the next real clue, bigger tap areas, replay buttons in puzzles */
+.obj::after{content:"";position:absolute;inset:-18% -22%}
+.obj.target img{animation:tgtPulse 1.1s ease-in-out infinite;filter:drop-shadow(0 0 10px #fff6a0) drop-shadow(0 0 18px #ffd43b)}
+@keyframes tgtPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.guideHand{position:absolute;left:50%;top:-58%;font-size:clamp(44px,8vmin,72px);line-height:1;transform:translateX(-30%) rotate(180deg);pointer-events:none;z-index:40;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));animation:handTap 1s ease-in-out infinite}
+.obj.hang .guideHand{top:auto;bottom:-70%;transform:translateX(-30%)}
+@keyframes handTap{0%,100%{margin-top:0}50%{margin-top:14px}}
+.obj.hang .guideHand{animation-name:handTapUp}
+@keyframes handTapUp{0%,100%{margin-bottom:0}50%{margin-bottom:14px}}
+.pSayRow{position:absolute;right:10px;top:10px;z-index:30;display:flex;gap:8px}
+.pSay{width:clamp(52px,8vmin,64px);height:clamp(52px,8vmin,64px);border-radius:50%;background:#2fa39a;border:4px solid #fff;box-shadow:0 5px 0 #1c6b65;display:grid;place-items:center;color:#fff;font-weight:900;font-size:22px}
+.pSay svg{width:60%;height:60%;fill:#fff}
+.pSay.alt{background:#f08c00;box-shadow:0 5px 0 #a35f00}
+.pSay:active{transform:translateY(3px)}
+
+/* v1.5: zoo jobs are big picture tiles (the picture shows what you'll do) */
+.jobs{height:clamp(130px,25vh,230px);gap:2vw;padding:0 2.5vw}
+.job{flex-direction:column;justify-content:center;gap:2px;padding:6px 6px 4px;max-width:300px;border-radius:26px}
+.job img{height:78%;max-width:92%;width:auto}
+.job .jn{flex:none;text-align:center;font-size:clamp(13px,1.9vmin,18px)}
+#map .cards{bottom:calc(max(14px,var(--safeB)) + clamp(144px,27vh,248px))}
+body.portrait .jobs{height:clamp(250px,34vh,420px);gap:12px;padding:0 4vw}
+body.portrait .job{flex:1 1 42%;max-width:none}
+body.portrait #map .cards{bottom:calc(max(14px,var(--safeB)) + clamp(266px,36vh,440px))}
+@media (max-height:420px){.jobs{height:84px;gap:10px}.job{padding:3px;border-radius:16px}.job img{height:100%}.job .jn{display:none}#map .cards{bottom:calc(max(8px,var(--safeB)) + 94px)}}
+body.portrait .jobs{flex-wrap:wrap;align-content:stretch}
+body.portrait .job{height:calc(50% - 6px);min-height:0}
+body.portrait .job img{height:76%}
+.guideHand.inPanel{top:auto;transform:translate(-30%,0);z-index:20;animation:handTapUp 1s ease-in-out infinite}
+.guideHand.onArrow{top:auto;bottom:-62%;left:50%;transform:translateX(-30%);animation:handTapUp 1s ease-in-out infinite}
+.arrow{overflow:visible}
+
+/* v1.5: zoo job hands + other-language replay */
+#mHud .hud.alt{font-weight:900;font-size:22px;color:#fff;background:#f08c00;border-color:#fff}
+.mHand{position:absolute;z-index:55;pointer-events:none;font-size:clamp(46px,8vmin,72px);line-height:1;transform:translate(-30%,0);filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));animation:handTapUp 1s ease-in-out infinite}
+.mHand.drag{animation:none;transform:none;margin:-10px 0 0 -20px}
+.mHand.sweep{left:30%;top:45%;animation:sweep 2.6s ease-in-out 2}
+@keyframes sweep{0%{transform:translate(0,0)}50%{transform:translate(28vw,-6vh)}100%{transform:translate(0,0)}}
+.okBtn.glow{animation:pulse 1s infinite;box-shadow:0 7px 0 #1d6b1a,0 0 0 8px rgba(255,212,59,.8)}
+#mBody .mAn{pointer-events:auto}
+
 </style>
 </head>
 <body>
@@ -389,7 +430,7 @@ body.portrait .kAn{max-width:31%}
     <div id="bubble" class="bubble"><img src="art/coco_happy.webp" alt=""><div class="txt"></div></div>
     <button class="arrow left" id="arL" aria-label="Walk left"><svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/></svg></button>
     <button class="arrow right" id="arR" aria-label="Walk right"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/></svg></button>
-    <div id="panel" class="panelWrap"><div class="panel"><div class="pBody" id="pBody"></div></div></div>
+    <div id="panel" class="panelWrap"><div class="panel"><div class="pBody" id="pBody"></div><div class="pSayRow"><button id="pSay" class="pSay" aria-label="Say it again"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg></button><button id="pAlt" class="pSay alt" aria-label="Say it in the other language">中</button></div></div></div>
   </section>
 
   <!-- zoo jobs (mini games) -->
@@ -399,6 +440,7 @@ body.portrait .kAn{max-width:31%}
     <div id="mHud">
       <button class="hud home" id="mHome" aria-label="Map"><svg viewBox="0 0 24 24"><path d="M12 3l10 9h-3v8h-5v-6h-4v6H5v-8H2z"/></svg></button>
       <div id="mStars"></div>
+      <button class="hud alt" id="mAlt" aria-label="Say it in the other language">中</button>
       <button class="hud" id="mReplay" aria-label="Say it again"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg></button>
     </div>
     <div id="mCap"></div>
@@ -414,7 +456,7 @@ body.portrait .kAn{max-width:31%}
   <div id="settings" class="modal"></div>
   <div id="rotateHint"></div>
 </div>
-<div id="kaVer" data-v="1.4" data-d="2026-11-27">v1.4 · 2026-11-27</div>
+<div id="kaVer" data-v="1.5" data-d="2026-11-27">v1.5 · 2026-11-27</div>
 <script src="../../voice.js"></script>
 <script src="../../kit.js"></script>
 <script src="../../tracker.js"></script>
@@ -435,7 +477,7 @@ const ANIMALS = {
 };
 const SUSPECTS = ['tiger', 'monkey', 'elephant', 'zebra', 'parrot', 'giraffe'];
 const CLUE_ORDER = ['patch', 'part', 'shadow'];
-const ITEM_IMG = {berries: 'berry', apples: 'apple', bananas: 'banana', eggs: 'egg', gems: 'gem', stars: 'star', cherries: 'cherry'};
+const ITEM_IMG = {berries: 'berry1', apples: 'apple', bananas: 'banana1', eggs: 'egg1', gems: 'gem', stars: 'star', cherries: 'cherry1'};
 // object kinds. h = display height as a share of the stage height. acts = activities it can host as a clue.
 const KINDS = {
   log:        {img: 'log', h: .15, acts: ['count', 'add'], items: ['berries', 'cherries', 'apples'], sur: 'star'},
@@ -651,7 +693,7 @@ const AU = (function () {
     play(); musTimer = setInterval(play, beat * 4 * 1000);
   }
   function duck(on) { if (ac && musicOn) musG.gain.setTargetAtTime(on ? .05 : .16, ac.currentTime, .15); }
-  return { skip: () => { if (speaking && Date.now() - started > 1200) stop(); }, unlock, say, seq, raw, stop, sfx, music, preload, load, duck, isSpeaking: () => speaking, FAST };
+  return { skip: () => { if (speaking && Date.now() - started > 700) stop(); }, unlock, say, seq, raw, stop, sfx, music, preload, load, duck, isSpeaking: () => speaking, FAST };
 })();
 
 /* ---------- Animal Safari Detective: main game ---------- */
@@ -809,6 +851,11 @@ function newCase(areaId) {
   if (addO) addO.act = 'add';
   const countO = cands.find(o => !o.act && KINDS[o.kind].acts.includes('count'));
   if (countO) countO.act = 'count';
+  // the first real clue is the closest thing to where Leo starts (no hunting through decoys first)
+  const ground = objs.filter(o => !o.hot && !KINDS[o.kind].hang && !o.bob).sort((p, q) => p.fx - q.fx);
+  const firstAct = ground.find(o => o.act);
+  // (second spot from the left: the first one is under Leo when he arrives)
+  if (ground.length > 1 && firstAct && firstAct !== ground[1]) { const g = ground[1]; [g.fx, firstAct.fx] = [firstAct.fx, g.fx]; [g.fy, firstAct.fy] = [firstAct.fy, g.fy]; [g.scale, firstAct.scale] = [firstAct.scale, g.scale]; }
   objs.forEach(o => {
     if (o.act === 'count') { o.item = pick(KINDS[o.kind].items); o.n = rnd(3, 8); }
     if (o.act === 'add') { o.item = pick(KINDS[o.kind].items); o.a = rnd(1, 5); o.b = rnd(1, Math.min(5, 10 - o.a)); if (o.a + o.b < 3) o.b = 3 - o.a; }
@@ -825,15 +872,17 @@ function startArea(areaId) {
   const w = $('#world'); w.querySelectorAll('.obj,.chr,.fall,.decal,.flyer').forEach(e => e.remove());
   $('#fx').innerHTML = '';
   $('#bg').src = IMG(S.A.bg);
-  S.objs = []; S.decos = [];
+  S.objs = []; S.decos = []; S.guideFor = S.guideEl = null;
   measure();
   // characters
   S.leo = {x: 0, dir: 1, target: null, walking: false, t: 0, el: el('div', 'chr leo', w)};
   S.leo.el.innerHTML = '<div class="shadow"></div><img class="f0" src="' + IMG('leo') + '"><img class="f1" src="' + IMG('leo_walk1') + '"><img class="f2" src="' + IMG('leo_walk2') + '"><img class="f3" src="' + IMG('leo_walk3') + '">';
   S.coco = {x: 0, dir: 1, el: el('div', 'chr coco', w), hop: 0};
   S.coco.el.innerHTML = '<div class="shadow"></div><img class="f0" src="' + IMG('coco') + '"><img class="f1" src="' + IMG('coco_side') + '">';
-  onTap(S.leo.el, () => { if (!G.busy) { hop(S.leo.el); AU.say('sur_leo'); } });
-  onTap(S.coco.el, () => { if (!G.busy) { hop(S.coco.el); AU.sfx('boing'); AU.say('sur_coco'); } });
+  // a tap on Leo or Coco that lands on a thing behind them goes to that thing
+  const under = ev => S.objs.find(o => !o.hot && o.el && !(o.done && o.act) && (r => ev.clientX > r.left && ev.clientX < r.right && ev.clientY > r.top && ev.clientY < r.bottom)(o.el.getBoundingClientRect()));
+  onTap(S.leo.el, ev => { const o = under(ev); if (o) { tapObj(o); return; } if (!G.busy) { hop(S.leo.el); AU.say('sur_leo'); } });
+  onTap(S.coco.el, ev => { const o = under(ev); if (o) { tapObj(o); return; } if (!G.busy) { hop(S.coco.el); AU.sfx('boing'); AU.say('sur_coco'); } });
   S.leo.el.style.zIndex = 22; S.coco.el.style.zIndex = 21;
   // objects
   S.kase.objs.forEach(makeObj);
@@ -852,10 +901,11 @@ function startArea(areaId) {
   if (DB.lang === 'en') AU.preload(pre.filter(x => LINES[x]));
   // walk in, then the mystery
   (async () => {
-    G.busy = true; await wait(300);
+    G.busy = true; S.walkIn = true; await wait(300);
     walkTo(minX() + S.leo.h * .55);
     await wait(900);
-    G.busy = false;
+    G.busy = false; S.walkIn = false;
+    setTimeout(() => { if (G.screen === 'scene' && !G.busy && !G.panelOpen) showGuide(); }, 1500);
     await AU.say('intro_' + areaId, {prompt: true});
     if (!DB.walkHelp && G.screen === 'scene') { DB.walkHelp = 1; DB.save(); $('#arR').classList.add('nudge'); await AU.say('walk_help'); $('#arR').classList.remove('nudge'); }
     G.poke();
@@ -951,7 +1001,10 @@ function dropItems(o, item, n) { // fruit falls from a branch to the ground
 function clearGround() { (S.ground || []).forEach(f => anim(f, [{opacity: 1}, {opacity: 0}], {duration: 300}).then(() => f.remove())); S.ground = null; }
 
 async function tapObj(o) {
+  if (G.panelOpen) return;
+  if (G.busy) { if (S.queued) return; S.queued = o; for (let i = 0; i < 50 && G.busy; i++) await wait(100); S.queued = null; } // a tap while Leo is busy still counts
   if (G.busy || G.panelOpen) return;
+  hideGuide();
   G.poke(); AU.sfx('tap');
   if (o.hot) { await surprise(o); return; }
   if (o.done && o.act) { wobble(o.el); AU.say('looked_here'); return; }
@@ -1104,13 +1157,30 @@ function render() {
   // footprints light up as Leo walks over them
 }
 
+/* ---------- guide: a pointing hand + pulse on the next real clue ---------- */
+function nextTarget() {
+  const left = S.objs.filter(o => o.act && !o.done);
+  left.sort((a, b) => Math.abs(a.x - S.leo.x) - Math.abs(b.x - S.leo.x));
+  return left[0];
+}
+function showGuide() {
+  const o = nextTarget(); if (!o || !o.el) return;
+  if (S.guideFor === o && !(S.guideArrow && o.x > S.cam + 40 && o.x < S.cam + V.w - 40)) return;
+  hideGuide(); S.guideFor = o;
+  o.el.classList.add('target');
+  const hand = el('div', 'guideHand', o.el, '👆'); S.guideEl = hand;
+  const onScreen = o.x > S.cam + 40 && o.x < S.cam + V.w - 40;
+  if (!onScreen) { const ar = o.x > S.leo.x ? $('#arR') : $('#arL'); ar.classList.add('nudge'); setTimeout(() => ar.classList.remove('nudge'), 3000); S.guideArrow = el('div', 'guideHand onArrow', ar, '👆'); }
+}
+function hideGuide() { if (S.guideFor && S.guideFor.el) S.guideFor.el.classList.remove('target'); if (S.guideEl) S.guideEl.remove(); if (S.guideArrow) S.guideArrow.remove(); S.guideFor = S.guideEl = S.guideArrow = null; }
+
 /* ---------- hints ---------- */
 let hintN = 0;
 function hintTick() {
   if (G.busy || G.panelOpen || AU.isSpeaking() || S.keys || S.leo.target != null) return;
   const idle = Date.now() - G.lastPoke;
   // little twinkles on things you have not tried yet (after a few seconds of looking)
-  if (idle > 5000) S.objs.forEach(o => { if (!o.hot && !o.done && !o.tried && o.tw) o.tw.style.display = 'block'; });
+  if (idle > 3500) showGuide();
   if (idle < 9000) return;
   G.poke(); hintN++;
   const left = S.objs.filter(o => o.act && !o.done);
@@ -1147,7 +1217,8 @@ function renderTray() {
 
 /* ---------- activity panel ---------- */
 function openPanel() {
-  G.panelOpen = true; const p = $('#panel'); p.classList.add('on');
+  G.panelOpen = true; const p = $('#panel'); p.classList.add('on'); hideGuide();
+  $('#pAlt').textContent = DB.lang === 'zh' ? 'EN' : '中';
   const b = $('#pBody'); b.innerHTML = '';
   return b;
 }
@@ -1238,17 +1309,22 @@ async function actAdd(o) {
   const inBas = gridPos(n, {x: w * .2, y: h * .44, w: w * .66, h: h * .22}, size * .9, n > 5 ? Math.ceil(n / 2) : n);
   let moved = 0;
   await new Promise(res => {
-    const move = (grp, pad, off) => { if (grp.moved) return; grp.moved = 1; moved++; AU.sfx('whoosh'); pad.style.transition = 'opacity .5s'; pad.style.opacity = .35;
+    let move = (grp, pad, off) => { if (grp.moved) return; grp.moved = 1; moved++; AU.sfx('whoosh'); pad.style.transition = 'opacity .5s'; pad.style.opacity = .35;
       grp.forEach((it, i) => { const [x, y] = inBas[off + i]; it.style.left = x + 'px'; it.style.top = y + 'px'; it.style.width = it.style.height = size * .9 + 'px'; });
       if (moved === 2) setTimeout(res, FASTMODE ? 30 : 700); };
     const hit = (grp, pad, off) => ev => { ev && ev.stopPropagation && ev.stopPropagation(); AU.unlock(); G.poke(); move(grp, pad, off); };
     padL.onpointerdown = hit(A, padL, 0); A.forEach(it => it.onpointerdown = hit(A, padL, 0));
     padR.onpointerdown = hit(B, padR, a); B.forEach(it => it.onpointerdown = hit(B, padR, a));
     padL.style.animation = padR.style.animation = 'pulse 1.2s infinite';
+    const hand = el('div', 'guideHand inPanel', b, '👆'), point = pad => { const r = pad.getBoundingClientRect(), br = b.getBoundingClientRect(); hand.style.left = r.left - br.left + r.width * .5 + 'px'; hand.style.top = r.top - br.top + r.height * .55 + 'px'; };
+    point(padL); M.addHand = hand;
+    // forgiving: a tap anywhere above the basket picks the group on that side
+    b.onpointerdown = ev => { if (moved >= 2) return; const br = b.getBoundingClientRect(), y = ev.clientY - br.top, x = ev.clientX - br.left; if (y > h * .46 || ev.target.closest('.pSayRow,.pCoco')) return; if (x < w / 2) hit(A, padL, 0)(ev); else hit(B, padR, a)(ev); };
+    const move0 = move; move = (grp, pad, off) => { move0(grp, pad, off); if (moved === 1) point(grp === A ? padR : padL); if (moved === 2) hand.remove(); };
     S.act.solveStep = () => { if (!A.moved) hit(A, padL, 0)(); else hit(B, padR, a)(); };
     AU.say('add_push', {prompt: true});
   });
-  padL.style.animation = padR.style.animation = 'none';
+  padL.style.animation = padR.style.animation = 'none'; b.onpointerdown = null;
   const eq = el('div', 'eq', b); eq.style.top = h * .14 + 'px'; eq.innerHTML = a + ' + ' + c + ' = <b>?</b>';
   padL.remove(); padR.remove();
   all.forEach(it => it.onpointerdown = ev => { ev.stopPropagation(); ev.preventDefault(); bounce(it); AU.sfx('count'); });
@@ -1273,7 +1349,7 @@ async function actSound(o) {
   onTap(teach, () => AU.say('sound_teach'));
   if (!(await AU.say('sound_teach'))) { if (!G.panelOpen) return false; }
   if (!G.panelOpen) return false;
-  anim(teach, [{transform: 'scale(1)'}, {transform: 'scale(.7) translate(22%,-30%)', opacity: .8}], {duration: 400});
+  await anim(teach, [{transform: 'scale(1)', opacity: 1}, {transform: 'scale(.4)', opacity: 0}], {duration: 300}); teach.remove();
   }
   // ask
   const ans = zh ? ANIMAL_INFO[wit].zy : ANIMAL_INFO[wit].letter;
@@ -1305,20 +1381,24 @@ async function actSound(o) {
 /* ---------- clue reveal ---------- */
 async function revealClue() {
   const {b, w, h} = pDims(); b.innerHTML = ''; el('div', 'burst', b);
+  b.onpointerdown = () => AU.stop(); // tap to skip ahead
+  G.lastPrompt = null;
   const type = CLUE_ORDER[S.clues.length], size = Math.min(w * .5, h * .6);
   const card = el('div', 'clueCard ' + (type === 'shadow' ? 'shadow shadowBg' : ''), b, clueHTML(type, size));
   placeAbs(card, (w - size) / 2, (h - size) / 2 - h * .04, size);
   AU.sfx('sparkle');
-  await anim(card, [{transform: 'scale(0) rotate(-20deg)'}, {transform: 'scale(1) rotate(0)'}], {duration: 600, easing: 'cubic-bezier(.3,1.5,.6,1)'});
+  await anim(card, [{transform: 'scale(0) rotate(-20deg)'}, {transform: 'scale(1) rotate(0)'}], {duration: 380, easing: 'cubic-bezier(.3,1.5,.6,1)'});
   addCoco(b);
   await AU.say(type === 'shadow' ? 'shadow' : type + '_' + S.kase.culprit);
   await wait(100);
   // fly to the tray
   const slot = $('#tray').children[S.clues.length], r1 = card.getBoundingClientRect(), r2 = slot.getBoundingClientRect();
-  await anim(card, [{transform: 'none'}, {transform: 'translate(' + (r2.left + r2.width / 2 - (r1.left + r1.width / 2)) + 'px,' + (r2.top + r2.height / 2 - (r1.top + r1.height / 2)) + 'px) scale(' + r2.width / r1.width + ')'}], {duration: FASTMODE ? 30 : 700, easing: 'ease-in'});
+  await anim(card, [{transform: 'none'}, {transform: 'translate(' + (r2.left + r2.width / 2 - (r1.left + r1.width / 2)) + 'px,' + (r2.top + r2.height / 2 - (r1.top + r1.height / 2)) + 'px) scale(' + r2.width / r1.width + ')'}], {duration: FASTMODE ? 30 : 450, easing: 'ease-in'});
+  b.onpointerdown = null;
   S.clues.push(type); renderTray(); AU.sfx('ding');
   closePanel();
   await AU.say('clue_' + S.clues.length);
+  if (S.clues.length < 3) setTimeout(() => { if (G.screen === 'scene' && !G.busy && !G.panelOpen) showGuide(); }, 600);
 }
 
 /* ---------- solve the mystery ---------- */
@@ -1363,7 +1443,9 @@ async function celebrate() {
   for (let i = 0; i < 40; i++) { const c = el('div', 'confetti', b); c.style.left = Math.random() * 100 + '%'; c.style.background = pick(['#ffd43b', '#ff6b6b', '#4dabf7', '#69db7c', '#f783ac', '#2fa39a']); c.style.animationDelay = Math.random() * 1.2 + 's'; }
   addCoco(b);
   AU.sfx('fanfare');
+  b.onpointerdown = () => AU.stop();
   await AU.say('solved_' + k.area + '_' + a);
+  b.onpointerdown = null;
   // the animal joins the scene
   showCulpritInScene();
   b.classList.remove('celebrate');
@@ -1466,8 +1548,17 @@ function bindControls() {
   });
   // hold the arrows to walk
   const hold = (b, d) => {
-    const on = e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); if (G.busy || G.panelOpen) return; S.keys = d; b.classList.add('press'); try { b.setPointerCapture(e.pointerId); } catch (x) {} };
-    const off = () => { if (S.keys === d) S.keys = 0; b.classList.remove('press'); };
+    let t0 = 0;
+    const on = e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); G.poke(); if (G.busy || G.panelOpen) return; t0 = Date.now(); S.keys = d; b.classList.add('press'); try { b.setPointerCapture(e.pointerId); } catch (x) {} };
+    const off = () => {
+      const quick = t0 && Date.now() - t0 < 300; t0 = 0;
+      if (S.keys === d) S.keys = 0; b.classList.remove('press');
+      if (!quick || G.busy || G.panelOpen) return;
+      // one tap on an arrow walks all the way to the next thing to look at
+      const o = nextTarget(); hideGuide();
+      if (o && Math.sign(o.x - S.leo.x) === d) walkTo(o.x - d * (o.w * .5 + S.leo.h * .3), () => showGuide());
+      else walkTo(S.leo.x + d * V.w * .5);
+    };
     b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
   };
   hold($('#arL'), -1); hold($('#arR'), 1);
@@ -1475,8 +1566,11 @@ function bindControls() {
   window.addEventListener('keyup', e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') S.keys = 0; });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { AU.stop(); AU.music(false); } else AU.music(G.screen !== 'scene'); });
   document.addEventListener('gesturestart', e => e.preventDefault());
+  $('#pSay').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); bounce($('#pSay')); if (G.lastPrompt) AU.say(G.lastPrompt); });
+  $('#pAlt').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); bounce($('#pAlt')); const L = G.lastPrompt && LINES[G.lastPrompt]; if (L) { if (DB.lang === 'zh') AU.raw(L.en, 'en'); else AU.raw(L.zh, 'zh'); } });
   $('#mHome').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.sfx('tap'); show('map'); });
   $('#mReplay').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); if (M.replay) M.replay(); else if (M.last) msay(M.last[0], M.last[1]); });
+  $('#mAlt').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); const t = M.altText && M.altText(); if (t) AU.raw(t[0], t[1]); });
   // a tap cuts a long line short (after it has played a moment), so Milo never has to wait
   document.addEventListener('pointerdown', e => { if (G.screen === 'scene' && !e.target.closest('.hud')) AU.skip(); }, true);
 }
@@ -1509,7 +1603,7 @@ window.__test = {
    Zookeeper says (listening to spoken Chinese). New lines are spoken with the device voices. */
 
 // pictures that exist in art/ ; anything else falls back to an emoji until its art is added
-const ART_OK = new Set(['banana', 'berry', 'apple', 'star', 'fish', 'leaf', 'carrot', 'poop', 'sponge', 'pillow']);
+const ART_OK = new Set(['banana1', 'berry1', 'apple', 'star', 'fish', 'leaf', 'carrot', 'poop', 'sponge', 'pillow']);
 const EMOJI = {fish: '🐟', leaf: '🍃', carrot: '🥕', poop: '💩', sponge: '🧽', pillow: '🛏️', heart: '❤️'};
 function thing(name, parent, cls) {
   if (ART_OK.has(name)) { const i = el('img', 'thing ' + (cls || ''), parent); i.src = IMG(name); i.alt = ''; i.draggable = false; return i; }
@@ -1531,8 +1625,8 @@ const zyHTML = s => [...s].map(c => ZYMAP[c] ? '<ruby>' + c + '<rt>' + ZYMAP[c] 
 
 /* --- animal words --- */
 const AN = {
-  monkey:   {en: 'monkey', pl: 'monkeys', zh: '猴子', food: 'banana', fen: 'bananas', fzh: '香蕉', mw: '根', size: 1},
-  parrot:   {en: 'parrot', pl: 'parrots', zh: '鸚鵡', food: 'berry', fen: 'berries', fzh: '藍莓', mw: '顆', size: 0},
+  monkey:   {en: 'monkey', pl: 'monkeys', zh: '猴子', food: 'banana1', fen: 'bananas', fzh: '香蕉', mw: '根', size: 1},
+  parrot:   {en: 'parrot', pl: 'parrots', zh: '鸚鵡', food: 'berry1', fen: 'berries', fzh: '藍莓', mw: '顆', size: 0},
   elephant: {en: 'elephant', pl: 'elephants', zh: '大象', food: 'apple', fen: 'apples', fzh: '蘋果', mw: '顆', size: 2},
   tiger:    {en: 'tiger', pl: 'tigers', zh: '老虎', food: 'fish', fen: 'fish', fzh: '魚', mw: '條', size: 2},
   giraffe:  {en: 'giraffe', pl: 'giraffes', zh: '長頸鹿', food: 'leaf', fen: 'leaves', fzh: '葉子', mw: '片', size: 2},
@@ -1557,7 +1651,7 @@ function renderJobs() {
   if (!DB.jobs) DB.jobs = {};
   JOB_IDS.forEach(id => {
     const J = JOBS[id], b = el('button', 'job', j);
-    el('img', '', b).src = IMG(J.icon);
+    el('img', '', b).src = IMG('job_' + id);
     el('div', 'jn', b, DB.lang === 'zh' ? zyHTML(J.zh) : esc(J.en));
     const n = DB.jobs[id] || 0; if (n) el('div', 'jc', b, '★' + n);
     b.setAttribute('aria-label', J.en);
@@ -1568,7 +1662,7 @@ function renderJobs() {
 /* --- speech + caption --- */
 function cap2(en, zh) { const c = $('#mCap'); if (!c) return; c.innerHTML = DB.lang === 'zh' ? zyHTML(zh) : esc(en) + '<small>' + zyHTML(zh) + '</small>'; c.classList.add('show'); }
 function msay(en, zh) { cap2(en, zh); const t = M.capT = (M.capT || 0) + 1; return AU.raw(DB.lang === 'zh' ? zh : en, DB.lang === 'zh' ? 'zh' : 'en').then(r => { setTimeout(() => { if (M.capT === t) $('#mCap').classList.remove('show'); }, 2500); return r; }); }
-function mprompt(en, zh) { M.last = [en, zh]; return msay(en, zh); }
+function mprompt(en, zh) { M.last = [en, zh]; M.altText = () => DB.lang === 'zh' ? [en, 'en'] : [zh, 'zh']; return msay(en, zh); }
 
 function stars() {
   const s = $('#mStars'); s.innerHTML = '';
@@ -1585,9 +1679,23 @@ function tapWait(els, sid) { // resolves with the element tapped (or null if the
 const place = (e, x, y, hgt) => { Object.assign(e.style, {left: x + '%', top: y + '%'}); if (hgt != null) e.style.height = hgt + '%'; return e; };
 function animalImg(id, parent, cls) { const i = el('img', 'mAn ' + (cls || ''), parent); i.src = IMG(ANIMALS[id].img); i.alt = id; i.draggable = false; i.dataset.a = id; return i; }
 
+/* pointing hand: point at a thing, or show a drag from one thing to another */
+function handAt(e, parent) {
+  const b = parent || $('#mBody'), r = e.getBoundingClientRect(), br = b.getBoundingClientRect();
+  const h = el('div', 'mHand', b, '👆'); h.style.left = r.left - br.left + r.width * .45 + 'px'; h.style.top = r.top - br.top + r.height * .6 + 'px'; return h;
+}
+function handDrag(a, z, parent) {
+  const b = parent || $('#mBody'), br = b.getBoundingClientRect(), r1 = a.getBoundingClientRect(), r2 = z.getBoundingClientRect();
+  const h = el('div', 'mHand drag', b, '👆'), x1 = r1.left - br.left + r1.width * .45, y1 = r1.top - br.top + r1.height * .5, x2 = r2.left - br.left + r2.width * .45, y2 = r2.top - br.top + r2.height * .5;
+  h.style.left = x1 + 'px'; h.style.top = y1 + 'px';
+  h.anim = anim(h, [{transform: 'translate(0,0)', opacity: 0}, {transform: 'translate(0,0)', opacity: 1, offset: .15}, {transform: 'translate(' + (x2 - x1) + 'px,' + (y2 - y1) + 'px)', opacity: 1, offset: .75}, {transform: 'translate(' + (x2 - x1) + 'px,' + (y2 - y1) + 'px)', opacity: 0}], {duration: 1800, iterations: Infinity, fill: 'none'});
+  return h;
+}
+const dropHands = () => document.querySelectorAll('#mBody .mHand').forEach(x => x.remove());
+
 function startJob(id) {
   M.sid++; M.job = id; M.got = 0; M.last = null; M.solve = null; if (M.cancel) M.cancel();
-  show('mini');
+  show('mini'); M.altText = null; $('#mAlt').textContent = DB.lang === 'zh' ? 'EN' : '中';
   const J = JOBS[id];
   $('#mBg').style.backgroundImage = 'url(' + IMG(J.bg) + ')';
   $('#mini').className = 'screen on job-' + id;
@@ -1634,19 +1742,23 @@ async function runFeed(sid) {
       for (let i = 0; i < Math.max(eaten, miss >= 2 ? n : 0); i++) { const s = el('div', 'slot' + (i < eaten ? ' full' : ' ghost'), tum); if (i < eaten) { thing(A.food, s); el('span', 'k', s, String(i + 1)); } }
     };
     redrawTummy();
+    if (r === 0) handAt(bas.querySelector('.src'));
+    let okT = 0;
     const feedOne = () => {
       if (eaten >= 10 || !alive(sid)) return;
+      dropHands(); clearTimeout(okT); ok.classList.remove('glow'); okT = setTimeout(() => { if (alive(sid) && eaten) ok.classList.add('glow'); }, 3000);
       eaten++; AU.sfx('count'); redrawTummy(); hop(an); AU.say('num_' + eaten);
     };
     bas.querySelectorAll('.src').forEach(f => f.onpointerdown = ev => { ev.preventDefault(); ev.stopPropagation(); AU.unlock(); bounce(f); feedOne(); });
     const say1 = add
-      ? [cap(A.en) + ' wants ' + a + ' ' + (a === 1 ? A.food : A.fen) + ', and ' + c + ' more!', A.zh + '想吃' + a + A.mw + A.fzh + ',再' + c + A.mw + '!']
+      ? [cap(A.en) + ' wants ' + a + ' ' + (a === 1 ? ({bananas: 'banana', berries: 'berry', apples: 'apple', leaves: 'leaf', carrots: 'carrot'}[A.fen] || A.fen) : A.fen) + ', and ' + c + ' more!', A.zh + '想吃' + a + A.mw + A.fzh + ',再' + c + A.mw + '!']
       : [cap(A.en) + ' wants ' + n + ' ' + A.fen + '!', A.zh + '想吃' + n + A.mw + A.fzh + '!'];
     mprompt(say1[0] + ' Then tap the check.', say1[1] + '餵好了就點勾勾。');
     M.solve = () => { eaten = n; redrawTummy(); ok.onpointerdown && ok.onpointerdown({preventDefault() {}, stopPropagation() {}}); };
     while (true) {
       const t = await tapWait([ok, an], sid);
       if (!t || !alive(sid)) return;
+      clearTimeout(okT); ok.classList.remove('glow');
       try { window.KA && KA.answer({q: (add ? a + '+' + c : 'feed ' + n), given: eaten, expected: n, correct: eaten === n, tryNo: miss + 1, qid: 'feed-' + (add ? a + '+' + c : n), topic: add ? 'adding' : 'counting'}); } catch (e) {}
       if (eaten === n) {
         AU.sfx('ding'); hop(an); tum.querySelectorAll('.slot').forEach(s => anim(s, [{transform: 'scale(1)'}, {transform: 'scale(0)'}], {duration: 400}));
@@ -1688,6 +1800,7 @@ async function runNight(sid) {
     const lit = e => { const r = e.getBoundingClientRect(), br = b.getBoundingClientRect(), x = r.left - br.left + r.width / 2, y = r.top - br.top + r.height / 2, R = Math.min(br.width, br.height) * .26; return Math.hypot(x - M.light[0], y - M.light[1]) < R + r.width * .3; };
     const name = n + ' ' + AN[target].pl;
     mprompt('Find ' + name + '!', '找出' + n + '隻' + AN[target].zh + '!');
+    if (r === 0) { const sweep = el('div', 'mHand sweep', b, '👆'); setTimeout(() => sweep.remove(), 5200); }
     M.solve = () => { const e = els.find(x => x.dataset.a === target && !x.found); if (e) { const r = e.getBoundingClientRect(), br = b.getBoundingClientRect(); setLight(r.left - br.left + r.width / 2, r.top - br.top + r.height / 2); e.onpointerdown({preventDefault() {}, stopPropagation() {}, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2}); } };
     await new Promise(res => {
       els.forEach(e => e.onpointerdown = ev => {
@@ -1727,6 +1840,7 @@ async function runPoop(sid) {
   AU.sfx('boing');
   await mprompt('Uh oh! Poop everywhere! Big poop for big animals, tiny poop for tiny animals!', '糟糕!到處都是便便!大大的便便給大動物,小小的便便給小動物!');
   let left = poops.length, sel = null, miss = 0;
+  { const p0 = poops.find(p => +p.dataset.s === 2) || poops[0]; const home = homes.find(hh => hh.dataset.a === SZ[+p0.dataset.s].id); handDrag(p0, home.querySelector('.pail')); }
   const homeAt = (x, y) => homes.find(h => { const r = h.getBoundingClientRect(); return x > r.left - 20 && x < r.right + 20 && y > r.top - 30 && y < r.bottom + 20; });
   const drop = async (p, h) => {
     const s = +p.dataset.s, want = SZ.findIndex(z => z.id === h.dataset.a);
@@ -1748,7 +1862,7 @@ async function runPoop(sid) {
   poops.forEach(p => {
     p.home = [p.style.left, p.style.top];
     p.onpointerdown = ev => {
-      ev.preventDefault(); ev.stopPropagation(); AU.unlock(); G.poke();
+      ev.preventDefault(); ev.stopPropagation(); AU.unlock(); G.poke(); dropHands();
       const br = b.getBoundingClientRect(), ox = ev.clientX - p.getBoundingClientRect().left, oy = ev.clientY - p.getBoundingClientRect().top;
       let moved = false; p.style.transition = 'none'; p.classList.add('drag'); try { p.setPointerCapture(ev.pointerId); } catch (e) {}
       p.onpointermove = e2 => { moved = true; p.style.left = (e2.clientX - br.left - ox) + 'px'; p.style.top = (e2.clientY - br.top - oy) + 'px'; };
@@ -1770,7 +1884,7 @@ async function runPoop(sid) {
 
 /* =========== 4. Zookeeper says: hear a Chinese command, give the right thing to the right animal =========== */
 const TOOLS = {
-  food:   {pic: 'banana', zh: a => '請餵' + a + '吃東西', en: a => 'Feed the ' + a + '!', ok: ['Yum yum!', '好好吃!']},
+  food:   {pic: 'banana1', zh: a => '請餵' + a + '吃東西', en: a => 'Feed the ' + a + '!', ok: ['Yum yum!', '好好吃!']},
   sponge: {pic: 'sponge', zh: a => '請幫' + a + '洗澡', en: a => 'Give the ' + a + ' a bath!', ok: ['Splish splash! So clean!', '洗得好乾淨!']},
   heart:  {pic: 'heart', zh: a => '請抱抱' + a, en: a => 'Give the ' + a + ' a hug!', ok: ['I love you too!', '我也愛你!']},
   pillow: {pic: 'pillow', zh: a => '請讓' + a + '睡覺', en: a => 'Put the ' + a + ' to sleep!', ok: ['Zzz… good night!', '呼呼…晚安!']},
@@ -1806,10 +1920,11 @@ async function runKeeper(sid) {
     let id, tk; do { id = pick(ids); tk = pick(Object.keys(TOOLS)); } while (id + tk === last); last = id + tk;
     const T = TOOLS[tk], zh = T.zh(AN[id].zh), en = T.en(AN[id].en);
     const speak = async withEn => { cap2(en, zh); await AU.raw(zh, 'zh'); if (withEn && DB.lang !== 'zh' && alive(sid)) await AU.raw(en, 'en'); };
-    M.last = null; M.replay = () => speak(false);
+    M.last = null; M.replay = () => speak(false); M.altText = () => [en, 'en'];
     M.solve = () => give(tools.find(x => x.dataset.t === tk), ans.find(x => x.dataset.a === id));
     speak(false);
-    let miss = 0, v = await waitGive(), hit = null;
+    if (r === 0) setTimeout(() => { if (alive(sid) && cur) handDrag(tools.find(x => x.dataset.t === tk), ans.find(x => x.dataset.a === id)); }, 1200);
+    let miss = 0, v = await waitGive(), hit = null; dropHands();
     while (v && alive(sid)) {
       const [t, a, , aEl] = v;
       try { window.KA && KA.answer({q: zh, given: t + ' > ' + a, expected: tk + ' > ' + id, correct: t === tk && a === id, tryNo: miss + 1, qid: 'keeper-' + tk + '-' + id, topic: 'chinese listening'}); } catch (e) {}

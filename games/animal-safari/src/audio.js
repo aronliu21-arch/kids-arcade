@@ -153,5 +153,5 @@ const AU = (function () {
     play(); musTimer = setInterval(play, beat * 4 * 1000);
   }
   function duck(on) { if (ac && musicOn) musG.gain.setTargetAtTime(on ? .05 : .16, ac.currentTime, .15); }
-  return { skip: () => { if (speaking && Date.now() - started > 1200) stop(); }, unlock, say, seq, raw, stop, sfx, music, preload, load, duck, isSpeaking: () => speaking, FAST };
+  return { skip: () => { if (speaking && Date.now() - started > 700) stop(); }, unlock, say, seq, raw, stop, sfx, music, preload, load, duck, isSpeaking: () => speaking, FAST };
 })();

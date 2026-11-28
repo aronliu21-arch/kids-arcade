@@ -153,6 +153,11 @@ function newCase(areaId) {
   if (addO) addO.act = 'add';
   const countO = cands.find(o => !o.act && KINDS[o.kind].acts.includes('count'));
   if (countO) countO.act = 'count';
+  // the first real clue is the closest thing to where Leo starts (no hunting through decoys first)
+  const ground = objs.filter(o => !o.hot && !KINDS[o.kind].hang && !o.bob).sort((p, q) => p.fx - q.fx);
+  const firstAct = ground.find(o => o.act);
+  // (second spot from the left: the first one is under Leo when he arrives)
+  if (ground.length > 1 && firstAct && firstAct !== ground[1]) { const g = ground[1]; [g.fx, firstAct.fx] = [firstAct.fx, g.fx]; [g.fy, firstAct.fy] = [firstAct.fy, g.fy]; [g.scale, firstAct.scale] = [firstAct.scale, g.scale]; }
   objs.forEach(o => {
     if (o.act === 'count') { o.item = pick(KINDS[o.kind].items); o.n = rnd(3, 8); }
     if (o.act === 'add') { o.item = pick(KINDS[o.kind].items); o.a = rnd(1, 5); o.b = rnd(1, Math.min(5, 10 - o.a)); if (o.a + o.b < 3) o.b = 3 - o.a; }
@@ -169,15 +174,17 @@ function startArea(areaId) {
   const w = $('#world'); w.querySelectorAll('.obj,.chr,.fall,.decal,.flyer').forEach(e => e.remove());
   $('#fx').innerHTML = '';
   $('#bg').src = IMG(S.A.bg);
-  S.objs = []; S.decos = [];
+  S.objs = []; S.decos = []; S.guideFor = S.guideEl = null;
   measure();
   // characters
   S.leo = {x: 0, dir: 1, target: null, walking: false, t: 0, el: el('div', 'chr leo', w)};
   S.leo.el.innerHTML = '<div class="shadow"></div><img class="f0" src="' + IMG('leo') + '"><img class="f1" src="' + IMG('leo_walk1') + '"><img class="f2" src="' + IMG('leo_walk2') + '"><img class="f3" src="' + IMG('leo_walk3') + '">';
   S.coco = {x: 0, dir: 1, el: el('div', 'chr coco', w), hop: 0};
   S.coco.el.innerHTML = '<div class="shadow"></div><img class="f0" src="' + IMG('coco') + '"><img class="f1" src="' + IMG('coco_side') + '">';
-  onTap(S.leo.el, () => { if (!G.busy) { hop(S.leo.el); AU.say('sur_leo'); } });
-  onTap(S.coco.el, () => { if (!G.busy) { hop(S.coco.el); AU.sfx('boing'); AU.say('sur_coco'); } });
+  // a tap on Leo or Coco that lands on a thing behind them goes to that thing
+  const under = ev => S.objs.find(o => !o.hot && o.el && !(o.done && o.act) && (r => ev.clientX > r.left && ev.clientX < r.right && ev.clientY > r.top && ev.clientY < r.bottom)(o.el.getBoundingClientRect()));
+  onTap(S.leo.el, ev => { const o = under(ev); if (o) { tapObj(o); return; } if (!G.busy) { hop(S.leo.el); AU.say('sur_leo'); } });
+  onTap(S.coco.el, ev => { const o = under(ev); if (o) { tapObj(o); return; } if (!G.busy) { hop(S.coco.el); AU.sfx('boing'); AU.say('sur_coco'); } });
   S.leo.el.style.zIndex = 22; S.coco.el.style.zIndex = 21;
   // objects
   S.kase.objs.forEach(makeObj);
@@ -196,10 +203,11 @@ function startArea(areaId) {
   if (DB.lang === 'en') AU.preload(pre.filter(x => LINES[x]));
   // walk in, then the mystery
   (async () => {
-    G.busy = true; await wait(300);
+    G.busy = true; S.walkIn = true; await wait(300);
     walkTo(minX() + S.leo.h * .55);
     await wait(900);
-    G.busy = false;
+    G.busy = false; S.walkIn = false;
+    setTimeout(() => { if (G.screen === 'scene' && !G.busy && !G.panelOpen) showGuide(); }, 1500);
     await AU.say('intro_' + areaId, {prompt: true});
     if (!DB.walkHelp && G.screen === 'scene') { DB.walkHelp = 1; DB.save(); $('#arR').classList.add('nudge'); await AU.say('walk_help'); $('#arR').classList.remove('nudge'); }
     G.poke();
@@ -295,7 +303,10 @@ function dropItems(o, item, n) { // fruit falls from a branch to the ground
 function clearGround() { (S.ground || []).forEach(f => anim(f, [{opacity: 1}, {opacity: 0}], {duration: 300}).then(() => f.remove())); S.ground = null; }
 
 async function tapObj(o) {
+  if (G.panelOpen) return;
+  if (G.busy) { if (S.queued) return; S.queued = o; for (let i = 0; i < 50 && G.busy; i++) await wait(100); S.queued = null; } // a tap while Leo is busy still counts
   if (G.busy || G.panelOpen) return;
+  hideGuide();
   G.poke(); AU.sfx('tap');
   if (o.hot) { await surprise(o); return; }
   if (o.done && o.act) { wobble(o.el); AU.say('looked_here'); return; }
@@ -448,13 +459,30 @@ function render() {
   // footprints light up as Leo walks over them
 }
 
+/* ---------- guide: a pointing hand + pulse on the next real clue ---------- */
+function nextTarget() {
+  const left = S.objs.filter(o => o.act && !o.done);
+  left.sort((a, b) => Math.abs(a.x - S.leo.x) - Math.abs(b.x - S.leo.x));
+  return left[0];
+}
+function showGuide() {
+  const o = nextTarget(); if (!o || !o.el) return;
+  if (S.guideFor === o && !(S.guideArrow && o.x > S.cam + 40 && o.x < S.cam + V.w - 40)) return;
+  hideGuide(); S.guideFor = o;
+  o.el.classList.add('target');
+  const hand = el('div', 'guideHand', o.el, '👆'); S.guideEl = hand;
+  const onScreen = o.x > S.cam + 40 && o.x < S.cam + V.w - 40;
+  if (!onScreen) { const ar = o.x > S.leo.x ? $('#arR') : $('#arL'); ar.classList.add('nudge'); setTimeout(() => ar.classList.remove('nudge'), 3000); S.guideArrow = el('div', 'guideHand onArrow', ar, '👆'); }
+}
+function hideGuide() { if (S.guideFor && S.guideFor.el) S.guideFor.el.classList.remove('target'); if (S.guideEl) S.guideEl.remove(); if (S.guideArrow) S.guideArrow.remove(); S.guideFor = S.guideEl = S.guideArrow = null; }
+
 /* ---------- hints ---------- */
 let hintN = 0;
 function hintTick() {
   if (G.busy || G.panelOpen || AU.isSpeaking() || S.keys || S.leo.target != null) return;
   const idle = Date.now() - G.lastPoke;
   // little twinkles on things you have not tried yet (after a few seconds of looking)
-  if (idle > 5000) S.objs.forEach(o => { if (!o.hot && !o.done && !o.tried && o.tw) o.tw.style.display = 'block'; });
+  if (idle > 3500) showGuide();
   if (idle < 9000) return;
   G.poke(); hintN++;
   const left = S.objs.filter(o => o.act && !o.done);
@@ -491,7 +519,8 @@ function renderTray() {
 
 /* ---------- activity panel ---------- */
 function openPanel() {
-  G.panelOpen = true; const p = $('#panel'); p.classList.add('on');
+  G.panelOpen = true; const p = $('#panel'); p.classList.add('on'); hideGuide();
+  $('#pAlt').textContent = DB.lang === 'zh' ? 'EN' : '中';
   const b = $('#pBody'); b.innerHTML = '';
   return b;
 }
@@ -582,17 +611,22 @@ async function actAdd(o) {
   const inBas = gridPos(n, {x: w * .2, y: h * .44, w: w * .66, h: h * .22}, size * .9, n > 5 ? Math.ceil(n / 2) : n);
   let moved = 0;
   await new Promise(res => {
-    const move = (grp, pad, off) => { if (grp.moved) return; grp.moved = 1; moved++; AU.sfx('whoosh'); pad.style.transition = 'opacity .5s'; pad.style.opacity = .35;
+    let move = (grp, pad, off) => { if (grp.moved) return; grp.moved = 1; moved++; AU.sfx('whoosh'); pad.style.transition = 'opacity .5s'; pad.style.opacity = .35;
       grp.forEach((it, i) => { const [x, y] = inBas[off + i]; it.style.left = x + 'px'; it.style.top = y + 'px'; it.style.width = it.style.height = size * .9 + 'px'; });
       if (moved === 2) setTimeout(res, FASTMODE ? 30 : 700); };
     const hit = (grp, pad, off) => ev => { ev && ev.stopPropagation && ev.stopPropagation(); AU.unlock(); G.poke(); move(grp, pad, off); };
     padL.onpointerdown = hit(A, padL, 0); A.forEach(it => it.onpointerdown = hit(A, padL, 0));
     padR.onpointerdown = hit(B, padR, a); B.forEach(it => it.onpointerdown = hit(B, padR, a));
     padL.style.animation = padR.style.animation = 'pulse 1.2s infinite';
+    const hand = el('div', 'guideHand inPanel', b, '👆'), point = pad => { const r = pad.getBoundingClientRect(), br = b.getBoundingClientRect(); hand.style.left = r.left - br.left + r.width * .5 + 'px'; hand.style.top = r.top - br.top + r.height * .55 + 'px'; };
+    point(padL); M.addHand = hand;
+    // forgiving: a tap anywhere above the basket picks the group on that side
+    b.onpointerdown = ev => { if (moved >= 2) return; const br = b.getBoundingClientRect(), y = ev.clientY - br.top, x = ev.clientX - br.left; if (y > h * .46 || ev.target.closest('.pSayRow,.pCoco')) return; if (x < w / 2) hit(A, padL, 0)(ev); else hit(B, padR, a)(ev); };
+    const move0 = move; move = (grp, pad, off) => { move0(grp, pad, off); if (moved === 1) point(grp === A ? padR : padL); if (moved === 2) hand.remove(); };
     S.act.solveStep = () => { if (!A.moved) hit(A, padL, 0)(); else hit(B, padR, a)(); };
     AU.say('add_push', {prompt: true});
   });
-  padL.style.animation = padR.style.animation = 'none';
+  padL.style.animation = padR.style.animation = 'none'; b.onpointerdown = null;
   const eq = el('div', 'eq', b); eq.style.top = h * .14 + 'px'; eq.innerHTML = a + ' + ' + c + ' = <b>?</b>';
   padL.remove(); padR.remove();
   all.forEach(it => it.onpointerdown = ev => { ev.stopPropagation(); ev.preventDefault(); bounce(it); AU.sfx('count'); });
@@ -617,7 +651,7 @@ async function actSound(o) {
   onTap(teach, () => AU.say('sound_teach'));
   if (!(await AU.say('sound_teach'))) { if (!G.panelOpen) return false; }
   if (!G.panelOpen) return false;
-  anim(teach, [{transform: 'scale(1)'}, {transform: 'scale(.7) translate(22%,-30%)', opacity: .8}], {duration: 400});
+  await anim(teach, [{transform: 'scale(1)', opacity: 1}, {transform: 'scale(.4)', opacity: 0}], {duration: 300}); teach.remove();
   }
   // ask
   const ans = zh ? ANIMAL_INFO[wit].zy : ANIMAL_INFO[wit].letter;
@@ -649,20 +683,24 @@ async function actSound(o) {
 /* ---------- clue reveal ---------- */
 async function revealClue() {
   const {b, w, h} = pDims(); b.innerHTML = ''; el('div', 'burst', b);
+  b.onpointerdown = () => AU.stop(); // tap to skip ahead
+  G.lastPrompt = null;
   const type = CLUE_ORDER[S.clues.length], size = Math.min(w * .5, h * .6);
   const card = el('div', 'clueCard ' + (type === 'shadow' ? 'shadow shadowBg' : ''), b, clueHTML(type, size));
   placeAbs(card, (w - size) / 2, (h - size) / 2 - h * .04, size);
   AU.sfx('sparkle');
-  await anim(card, [{transform: 'scale(0) rotate(-20deg)'}, {transform: 'scale(1) rotate(0)'}], {duration: 600, easing: 'cubic-bezier(.3,1.5,.6,1)'});
+  await anim(card, [{transform: 'scale(0) rotate(-20deg)'}, {transform: 'scale(1) rotate(0)'}], {duration: 380, easing: 'cubic-bezier(.3,1.5,.6,1)'});
   addCoco(b);
   await AU.say(type === 'shadow' ? 'shadow' : type + '_' + S.kase.culprit);
   await wait(100);
   // fly to the tray
   const slot = $('#tray').children[S.clues.length], r1 = card.getBoundingClientRect(), r2 = slot.getBoundingClientRect();
-  await anim(card, [{transform: 'none'}, {transform: 'translate(' + (r2.left + r2.width / 2 - (r1.left + r1.width / 2)) + 'px,' + (r2.top + r2.height / 2 - (r1.top + r1.height / 2)) + 'px) scale(' + r2.width / r1.width + ')'}], {duration: FASTMODE ? 30 : 700, easing: 'ease-in'});
+  await anim(card, [{transform: 'none'}, {transform: 'translate(' + (r2.left + r2.width / 2 - (r1.left + r1.width / 2)) + 'px,' + (r2.top + r2.height / 2 - (r1.top + r1.height / 2)) + 'px) scale(' + r2.width / r1.width + ')'}], {duration: FASTMODE ? 30 : 450, easing: 'ease-in'});
+  b.onpointerdown = null;
   S.clues.push(type); renderTray(); AU.sfx('ding');
   closePanel();
   await AU.say('clue_' + S.clues.length);
+  if (S.clues.length < 3) setTimeout(() => { if (G.screen === 'scene' && !G.busy && !G.panelOpen) showGuide(); }, 600);
 }
 
 /* ---------- solve the mystery ---------- */
@@ -707,7 +745,9 @@ async function celebrate() {
   for (let i = 0; i < 40; i++) { const c = el('div', 'confetti', b); c.style.left = Math.random() * 100 + '%'; c.style.background = pick(['#ffd43b', '#ff6b6b', '#4dabf7', '#69db7c', '#f783ac', '#2fa39a']); c.style.animationDelay = Math.random() * 1.2 + 's'; }
   addCoco(b);
   AU.sfx('fanfare');
+  b.onpointerdown = () => AU.stop();
   await AU.say('solved_' + k.area + '_' + a);
+  b.onpointerdown = null;
   // the animal joins the scene
   showCulpritInScene();
   b.classList.remove('celebrate');
@@ -810,8 +850,17 @@ function bindControls() {
   });
   // hold the arrows to walk
   const hold = (b, d) => {
-    const on = e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); if (G.busy || G.panelOpen) return; S.keys = d; b.classList.add('press'); try { b.setPointerCapture(e.pointerId); } catch (x) {} };
-    const off = () => { if (S.keys === d) S.keys = 0; b.classList.remove('press'); };
+    let t0 = 0;
+    const on = e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); G.poke(); if (G.busy || G.panelOpen) return; t0 = Date.now(); S.keys = d; b.classList.add('press'); try { b.setPointerCapture(e.pointerId); } catch (x) {} };
+    const off = () => {
+      const quick = t0 && Date.now() - t0 < 300; t0 = 0;
+      if (S.keys === d) S.keys = 0; b.classList.remove('press');
+      if (!quick || G.busy || G.panelOpen) return;
+      // one tap on an arrow walks all the way to the next thing to look at
+      const o = nextTarget(); hideGuide();
+      if (o && Math.sign(o.x - S.leo.x) === d) walkTo(o.x - d * (o.w * .5 + S.leo.h * .3), () => showGuide());
+      else walkTo(S.leo.x + d * V.w * .5);
+    };
     b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
   };
   hold($('#arL'), -1); hold($('#arR'), 1);
@@ -819,8 +868,11 @@ function bindControls() {
   window.addEventListener('keyup', e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') S.keys = 0; });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { AU.stop(); AU.music(false); } else AU.music(G.screen !== 'scene'); });
   document.addEventListener('gesturestart', e => e.preventDefault());
+  $('#pSay').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); bounce($('#pSay')); if (G.lastPrompt) AU.say(G.lastPrompt); });
+  $('#pAlt').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); bounce($('#pAlt')); const L = G.lastPrompt && LINES[G.lastPrompt]; if (L) { if (DB.lang === 'zh') AU.raw(L.en, 'en'); else AU.raw(L.zh, 'zh'); } });
   $('#mHome').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.sfx('tap'); show('map'); });
   $('#mReplay').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); if (M.replay) M.replay(); else if (M.last) msay(M.last[0], M.last[1]); });
+  $('#mAlt').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); AU.unlock(); const t = M.altText && M.altText(); if (t) AU.raw(t[0], t[1]); });
   // a tap cuts a long line short (after it has played a moment), so Milo never has to wait
   document.addEventListener('pointerdown', e => { if (G.screen === 'scene' && !e.target.closest('.hud')) AU.skip(); }, true);
 }

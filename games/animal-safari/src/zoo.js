@@ -3,7 +3,7 @@
    Zookeeper says (listening to spoken Chinese). New lines are spoken with the device voices. */
 
 // pictures that exist in art/ ; anything else falls back to an emoji until its art is added
-const ART_OK = new Set(['banana', 'berry', 'apple', 'star', 'fish', 'leaf', 'carrot', 'poop', 'sponge', 'pillow']);
+const ART_OK = new Set(['banana1', 'berry1', 'apple', 'star', 'fish', 'leaf', 'carrot', 'poop', 'sponge', 'pillow']);
 const EMOJI = {fish: '🐟', leaf: '🍃', carrot: '🥕', poop: '💩', sponge: '🧽', pillow: '🛏️', heart: '❤️'};
 function thing(name, parent, cls) {
   if (ART_OK.has(name)) { const i = el('img', 'thing ' + (cls || ''), parent); i.src = IMG(name); i.alt = ''; i.draggable = false; return i; }
@@ -25,8 +25,8 @@ const zyHTML = s => [...s].map(c => ZYMAP[c] ? '<ruby>' + c + '<rt>' + ZYMAP[c] 
 
 /* --- animal words --- */
 const AN = {
-  monkey:   {en: 'monkey', pl: 'monkeys', zh: '猴子', food: 'banana', fen: 'bananas', fzh: '香蕉', mw: '根', size: 1},
-  parrot:   {en: 'parrot', pl: 'parrots', zh: '鸚鵡', food: 'berry', fen: 'berries', fzh: '藍莓', mw: '顆', size: 0},
+  monkey:   {en: 'monkey', pl: 'monkeys', zh: '猴子', food: 'banana1', fen: 'bananas', fzh: '香蕉', mw: '根', size: 1},
+  parrot:   {en: 'parrot', pl: 'parrots', zh: '鸚鵡', food: 'berry1', fen: 'berries', fzh: '藍莓', mw: '顆', size: 0},
   elephant: {en: 'elephant', pl: 'elephants', zh: '大象', food: 'apple', fen: 'apples', fzh: '蘋果', mw: '顆', size: 2},
   tiger:    {en: 'tiger', pl: 'tigers', zh: '老虎', food: 'fish', fen: 'fish', fzh: '魚', mw: '條', size: 2},
   giraffe:  {en: 'giraffe', pl: 'giraffes', zh: '長頸鹿', food: 'leaf', fen: 'leaves', fzh: '葉子', mw: '片', size: 2},
@@ -51,7 +51,7 @@ function renderJobs() {
   if (!DB.jobs) DB.jobs = {};
   JOB_IDS.forEach(id => {
     const J = JOBS[id], b = el('button', 'job', j);
-    el('img', '', b).src = IMG(J.icon);
+    el('img', '', b).src = IMG('job_' + id);
     el('div', 'jn', b, DB.lang === 'zh' ? zyHTML(J.zh) : esc(J.en));
     const n = DB.jobs[id] || 0; if (n) el('div', 'jc', b, '★' + n);
     b.setAttribute('aria-label', J.en);
@@ -62,7 +62,7 @@ function renderJobs() {
 /* --- speech + caption --- */
 function cap2(en, zh) { const c = $('#mCap'); if (!c) return; c.innerHTML = DB.lang === 'zh' ? zyHTML(zh) : esc(en) + '<small>' + zyHTML(zh) + '</small>'; c.classList.add('show'); }
 function msay(en, zh) { cap2(en, zh); const t = M.capT = (M.capT || 0) + 1; return AU.raw(DB.lang === 'zh' ? zh : en, DB.lang === 'zh' ? 'zh' : 'en').then(r => { setTimeout(() => { if (M.capT === t) $('#mCap').classList.remove('show'); }, 2500); return r; }); }
-function mprompt(en, zh) { M.last = [en, zh]; return msay(en, zh); }
+function mprompt(en, zh) { M.last = [en, zh]; M.altText = () => DB.lang === 'zh' ? [en, 'en'] : [zh, 'zh']; return msay(en, zh); }
 
 function stars() {
   const s = $('#mStars'); s.innerHTML = '';
@@ -79,9 +79,23 @@ function tapWait(els, sid) { // resolves with the element tapped (or null if the
 const place = (e, x, y, hgt) => { Object.assign(e.style, {left: x + '%', top: y + '%'}); if (hgt != null) e.style.height = hgt + '%'; return e; };
 function animalImg(id, parent, cls) { const i = el('img', 'mAn ' + (cls || ''), parent); i.src = IMG(ANIMALS[id].img); i.alt = id; i.draggable = false; i.dataset.a = id; return i; }
 
+/* pointing hand: point at a thing, or show a drag from one thing to another */
+function handAt(e, parent) {
+  const b = parent || $('#mBody'), r = e.getBoundingClientRect(), br = b.getBoundingClientRect();
+  const h = el('div', 'mHand', b, '👆'); h.style.left = r.left - br.left + r.width * .45 + 'px'; h.style.top = r.top - br.top + r.height * .6 + 'px'; return h;
+}
+function handDrag(a, z, parent) {
+  const b = parent || $('#mBody'), br = b.getBoundingClientRect(), r1 = a.getBoundingClientRect(), r2 = z.getBoundingClientRect();
+  const h = el('div', 'mHand drag', b, '👆'), x1 = r1.left - br.left + r1.width * .45, y1 = r1.top - br.top + r1.height * .5, x2 = r2.left - br.left + r2.width * .45, y2 = r2.top - br.top + r2.height * .5;
+  h.style.left = x1 + 'px'; h.style.top = y1 + 'px';
+  h.anim = anim(h, [{transform: 'translate(0,0)', opacity: 0}, {transform: 'translate(0,0)', opacity: 1, offset: .15}, {transform: 'translate(' + (x2 - x1) + 'px,' + (y2 - y1) + 'px)', opacity: 1, offset: .75}, {transform: 'translate(' + (x2 - x1) + 'px,' + (y2 - y1) + 'px)', opacity: 0}], {duration: 1800, iterations: Infinity, fill: 'none'});
+  return h;
+}
+const dropHands = () => document.querySelectorAll('#mBody .mHand').forEach(x => x.remove());
+
 function startJob(id) {
   M.sid++; M.job = id; M.got = 0; M.last = null; M.solve = null; if (M.cancel) M.cancel();
-  show('mini');
+  show('mini'); M.altText = null; $('#mAlt').textContent = DB.lang === 'zh' ? 'EN' : '中';
   const J = JOBS[id];
   $('#mBg').style.backgroundImage = 'url(' + IMG(J.bg) + ')';
   $('#mini').className = 'screen on job-' + id;
@@ -128,19 +142,23 @@ async function runFeed(sid) {
       for (let i = 0; i < Math.max(eaten, miss >= 2 ? n : 0); i++) { const s = el('div', 'slot' + (i < eaten ? ' full' : ' ghost'), tum); if (i < eaten) { thing(A.food, s); el('span', 'k', s, String(i + 1)); } }
     };
     redrawTummy();
+    if (r === 0) handAt(bas.querySelector('.src'));
+    let okT = 0;
     const feedOne = () => {
       if (eaten >= 10 || !alive(sid)) return;
+      dropHands(); clearTimeout(okT); ok.classList.remove('glow'); okT = setTimeout(() => { if (alive(sid) && eaten) ok.classList.add('glow'); }, 3000);
       eaten++; AU.sfx('count'); redrawTummy(); hop(an); AU.say('num_' + eaten);
     };
     bas.querySelectorAll('.src').forEach(f => f.onpointerdown = ev => { ev.preventDefault(); ev.stopPropagation(); AU.unlock(); bounce(f); feedOne(); });
     const say1 = add
-      ? [cap(A.en) + ' wants ' + a + ' ' + (a === 1 ? A.food : A.fen) + ', and ' + c + ' more!', A.zh + '想吃' + a + A.mw + A.fzh + ',再' + c + A.mw + '!']
+      ? [cap(A.en) + ' wants ' + a + ' ' + (a === 1 ? ({bananas: 'banana', berries: 'berry', apples: 'apple', leaves: 'leaf', carrots: 'carrot'}[A.fen] || A.fen) : A.fen) + ', and ' + c + ' more!', A.zh + '想吃' + a + A.mw + A.fzh + ',再' + c + A.mw + '!']
       : [cap(A.en) + ' wants ' + n + ' ' + A.fen + '!', A.zh + '想吃' + n + A.mw + A.fzh + '!'];
     mprompt(say1[0] + ' Then tap the check.', say1[1] + '餵好了就點勾勾。');
     M.solve = () => { eaten = n; redrawTummy(); ok.onpointerdown && ok.onpointerdown({preventDefault() {}, stopPropagation() {}}); };
     while (true) {
       const t = await tapWait([ok, an], sid);
       if (!t || !alive(sid)) return;
+      clearTimeout(okT); ok.classList.remove('glow');
       try { window.KA && KA.answer({q: (add ? a + '+' + c : 'feed ' + n), given: eaten, expected: n, correct: eaten === n, tryNo: miss + 1, qid: 'feed-' + (add ? a + '+' + c : n), topic: add ? 'adding' : 'counting'}); } catch (e) {}
       if (eaten === n) {
         AU.sfx('ding'); hop(an); tum.querySelectorAll('.slot').forEach(s => anim(s, [{transform: 'scale(1)'}, {transform: 'scale(0)'}], {duration: 400}));
@@ -182,6 +200,7 @@ async function runNight(sid) {
     const lit = e => { const r = e.getBoundingClientRect(), br = b.getBoundingClientRect(), x = r.left - br.left + r.width / 2, y = r.top - br.top + r.height / 2, R = Math.min(br.width, br.height) * .26; return Math.hypot(x - M.light[0], y - M.light[1]) < R + r.width * .3; };
     const name = n + ' ' + AN[target].pl;
     mprompt('Find ' + name + '!', '找出' + n + '隻' + AN[target].zh + '!');
+    if (r === 0) { const sweep = el('div', 'mHand sweep', b, '👆'); setTimeout(() => sweep.remove(), 5200); }
     M.solve = () => { const e = els.find(x => x.dataset.a === target && !x.found); if (e) { const r = e.getBoundingClientRect(), br = b.getBoundingClientRect(); setLight(r.left - br.left + r.width / 2, r.top - br.top + r.height / 2); e.onpointerdown({preventDefault() {}, stopPropagation() {}, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2}); } };
     await new Promise(res => {
       els.forEach(e => e.onpointerdown = ev => {
@@ -221,6 +240,7 @@ async function runPoop(sid) {
   AU.sfx('boing');
   await mprompt('Uh oh! Poop everywhere! Big poop for big animals, tiny poop for tiny animals!', '糟糕!到處都是便便!大大的便便給大動物,小小的便便給小動物!');
   let left = poops.length, sel = null, miss = 0;
+  { const p0 = poops.find(p => +p.dataset.s === 2) || poops[0]; const home = homes.find(hh => hh.dataset.a === SZ[+p0.dataset.s].id); handDrag(p0, home.querySelector('.pail')); }
   const homeAt = (x, y) => homes.find(h => { const r = h.getBoundingClientRect(); return x > r.left - 20 && x < r.right + 20 && y > r.top - 30 && y < r.bottom + 20; });
   const drop = async (p, h) => {
     const s = +p.dataset.s, want = SZ.findIndex(z => z.id === h.dataset.a);
@@ -242,7 +262,7 @@ async function runPoop(sid) {
   poops.forEach(p => {
     p.home = [p.style.left, p.style.top];
     p.onpointerdown = ev => {
-      ev.preventDefault(); ev.stopPropagation(); AU.unlock(); G.poke();
+      ev.preventDefault(); ev.stopPropagation(); AU.unlock(); G.poke(); dropHands();
       const br = b.getBoundingClientRect(), ox = ev.clientX - p.getBoundingClientRect().left, oy = ev.clientY - p.getBoundingClientRect().top;
       let moved = false; p.style.transition = 'none'; p.classList.add('drag'); try { p.setPointerCapture(ev.pointerId); } catch (e) {}
       p.onpointermove = e2 => { moved = true; p.style.left = (e2.clientX - br.left - ox) + 'px'; p.style.top = (e2.clientY - br.top - oy) + 'px'; };
@@ -264,7 +284,7 @@ async function runPoop(sid) {
 
 /* =========== 4. Zookeeper says: hear a Chinese command, give the right thing to the right animal =========== */
 const TOOLS = {
-  food:   {pic: 'banana', zh: a => '請餵' + a + '吃東西', en: a => 'Feed the ' + a + '!', ok: ['Yum yum!', '好好吃!']},
+  food:   {pic: 'banana1', zh: a => '請餵' + a + '吃東西', en: a => 'Feed the ' + a + '!', ok: ['Yum yum!', '好好吃!']},
   sponge: {pic: 'sponge', zh: a => '請幫' + a + '洗澡', en: a => 'Give the ' + a + ' a bath!', ok: ['Splish splash! So clean!', '洗得好乾淨!']},
   heart:  {pic: 'heart', zh: a => '請抱抱' + a, en: a => 'Give the ' + a + ' a hug!', ok: ['I love you too!', '我也愛你!']},
   pillow: {pic: 'pillow', zh: a => '請讓' + a + '睡覺', en: a => 'Put the ' + a + ' to sleep!', ok: ['Zzz… good night!', '呼呼…晚安!']},
@@ -300,10 +320,11 @@ async function runKeeper(sid) {
     let id, tk; do { id = pick(ids); tk = pick(Object.keys(TOOLS)); } while (id + tk === last); last = id + tk;
     const T = TOOLS[tk], zh = T.zh(AN[id].zh), en = T.en(AN[id].en);
     const speak = async withEn => { cap2(en, zh); await AU.raw(zh, 'zh'); if (withEn && DB.lang !== 'zh' && alive(sid)) await AU.raw(en, 'en'); };
-    M.last = null; M.replay = () => speak(false);
+    M.last = null; M.replay = () => speak(false); M.altText = () => [en, 'en'];
     M.solve = () => give(tools.find(x => x.dataset.t === tk), ans.find(x => x.dataset.a === id));
     speak(false);
-    let miss = 0, v = await waitGive(), hit = null;
+    if (r === 0) setTimeout(() => { if (alive(sid) && cur) handDrag(tools.find(x => x.dataset.t === tk), ans.find(x => x.dataset.a === id)); }, 1200);
+    let miss = 0, v = await waitGive(), hit = null; dropHands();
     while (v && alive(sid)) {
       const [t, a, , aEl] = v;
       try { window.KA && KA.answer({q: zh, given: t + ' > ' + a, expected: tk + ' > ' + id, correct: t === tk && a === id, tryNo: miss + 1, qid: 'keeper-' + tk + '-' + id, topic: 'chinese listening'}); } catch (e) {}
