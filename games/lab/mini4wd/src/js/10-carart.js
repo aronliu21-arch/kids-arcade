@@ -26,6 +26,28 @@ var CarArt = {
     else x.drawImage(im, (cx - wid / 2) * w, (bottom - hh) * w, wid * w, hh * w);
     return hh;
   },
+  // Chapter 2 art bodies (top view only from ChatGPT): assets/b/<id>_<color>.webp
+  artBody: function (b) { var id = b.body, f = typeof C2BODIES !== "undefined" && C2BODIES.filter(function (x) { return x.v === id; })[0]; if (!f) return null;
+    var im = img("b/" + id + "_" + (f.cols.indexOf(b.paint) >= 0 ? b.paint : "orig")); return im.complete && im.naturalWidth ? im : null; },
+  isArt: function (b) { return typeof C2BODIES !== "undefined" && C2BODIES.some(function (x) { return x.v === b.body; }); },
+  _tc: {},
+  topCanvas: function (b, col) { // the whole top-view car drawn once into a canvas (re-made when more images load)
+    var key = JSON.stringify([b.body, b.paint, b.tire, b.roller, b.wing, b.motor, b.gear, b.sticker, col]), e = this._tc[key];
+    if (e && e.n === IMGN) return e.cv;
+    var W = 96, cv = (e && e.cv) || document.createElement("canvas"); cv.width = W * 1.3; cv.height = W * 1.8;
+    var x = cv.getContext("2d"); x.clearRect(0, 0, cv.width, cv.height); this.draw(x, b, "top", cv.width / 2, cv.height / 2, W, { col: col, center: true });
+    this._tc[key] = { cv: cv, n: IMGN, dk: null }; return cv;
+  },
+  _dk: {},
+  dark: function (src, key) { // a darker copy of a car picture, used for the sides of the car
+    var e = null; for (var k in this._tc) if (this._tc[k].cv === src) e = this._tc[k];
+    if (e && e.dk && e.dkn === e.n) return e.dk;
+    if (!e && key && this._dk[key]) return this._dk[key];
+    var cv = document.createElement("canvas"); cv.width = src.width || src.naturalWidth; cv.height = src.height || src.naturalHeight;
+    var x = cv.getContext("2d"); x.drawImage(src, 0, 0, cv.width, cv.height); x.globalCompositeOperation = "source-atop"; x.fillStyle = "rgba(10,20,40,.55)"; x.fillRect(0, 0, cv.width, cv.height);
+    if (e) { e.dk = cv; e.dkn = e.n; } else if (key) this._dk[key] = cv;
+    return cv;
+  },
   img: function (n) { if (!this.LAYERS[n]) return null; var im = img("L_" + n); return im.complete && im.naturalWidth ? im : null; },
   _tint: {},
   tinted: function (n, im, col) { // recolor the blue art to a team color (blue parts only; white, black and red stay)
@@ -86,7 +108,15 @@ var CarArt = {
     R(-0.42, -0.2, 0.84, 0.1, 0.03, "#343a40");
     // body shell
     var top = -0.72;
-    if (this.lay(x, "rear_body_" + body, w, this.cn)) top = this.LAYERS["rear_body_" + body][1];
+    var ab = this.isArt(b) ? this.artBody(b) : null;
+    if (ab) { // seen from behind and a little above: the top art squashed, standing on dark sides
+      var bw = 0.9, bh = bw * ab.naturalHeight / ab.naturalWidth * 0.42, side = 0.16, by0 = -0.1;
+      var dk = this.dark(ab, "art:" + ab.src);
+      for (var i = 0; i < 6; i++) x.drawImage(dk, -bw / 2 * w, (by0 - side * i / 5 - bh) * w, bw * w, bh * w);
+      x.drawImage(ab, -bw / 2 * w, (by0 - side - bh) * w, bw * w, bh * w);
+      top = by0 - side - bh;
+    }
+    else if (this.lay(x, "rear_body_" + body, w, this.cn)) top = this.LAYERS["rear_body_" + body][1];
     else {
       x.lineWidth = lw; x.strokeStyle = "#111"; x.fillStyle = c.main; x.beginPath();
       if (body === "boxy") { x.moveTo(-0.38 * w, -0.2 * w); x.lineTo(-0.34 * w, -0.62 * w); x.lineTo(0.34 * w, -0.62 * w); x.lineTo(0.38 * w, -0.2 * w); top = -0.62; }
@@ -139,7 +169,9 @@ var CarArt = {
       rp.forEach(function (p) { x.lineWidth = lw; x.strokeStyle = "#111"; x.beginPath(); x.moveTo(p[0] * 0.3 * w, p[1] * w); x.lineTo(p[0] * 0.5 * w, p[1] * w); x.stroke(); x.beginPath(); x.arc(p[0] * 0.53 * w, p[1] * w, 0.07 * w, 0, 7); x.fillStyle = "#dee2e6"; x.fill(); x.stroke(); });
     }
     // body
-    if (!this.lay(x, "top_body_" + body, w, this.cn)) {
+    var abt = this.isArt(b) ? this.artBody(b) : null;
+    if (abt) { var bl = 1.5, bwid = bl * abt.naturalWidth / abt.naturalHeight; x.drawImage(abt, -bwid / 2 * w, -bl / 2 * w, bwid * w, bl * w); }
+    else if (!this.lay(x, "top_body_" + body, w, this.cn)) {
       x.lineWidth = lw; x.strokeStyle = "#111"; x.fillStyle = c.main; x.beginPath();
       if (body === "boxy") { rr(x, -0.32 * w, -0.72 * w, 0.64 * w, 1.4 * w, 0.12 * w); }
       else if (body === "sleek") { x.moveTo(0, -0.8 * w); x.quadraticCurveTo(0.34 * w, -0.5 * w, 0.32 * w, 0.66 * w); x.lineTo(-0.32 * w, 0.66 * w); x.quadraticCurveTo(-0.34 * w, -0.5 * w, 0, -0.8 * w); }

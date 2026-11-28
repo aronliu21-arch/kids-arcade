@@ -1,5 +1,37 @@
 /* ===== Chapter 2 data: parts store, money, school, job, cups, events (all bilingual) ===== */
 /* Money is NT$. Real Taiwan hobby-shop prices; a job shift pays NT$100-150, so a good motor takes ~3 shifts. */
+/* 20 more bodies (ChatGPT art, top view, assets/b/<id>_<color>.webp). st: v = top speed, c = curve grip, a = push (start + hills). */
+var C2BODIES = [
+  { v: "muscle", price: 450, zh: "肌肉車", en: "Muscle Car", art: true, st: { v: 1.0, c: 0.98, a: 1.12 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "armored", price: 400, zh: "裝甲車", en: "Armored Racer", art: true, st: { v: 0.94, c: 1.1, a: 0.97 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "crocodile", price: 460, zh: "鱷魚", en: "Crocodile", art: true, st: { v: 0.99, c: 1.07, a: 1.03 }, cols: ["orig", "red", "yellow", "blue", "purple"] },
+  { v: "rhino", price: 480, zh: "犀牛", en: "Rhino", art: true, st: { v: 0.97, c: 1.08, a: 1.08 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "beetle", price: 500, zh: "獨角仙", en: "Beetle", art: true, st: { v: 0.98, c: 1.06, a: 1.1 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "shark", price: 520, zh: "鯊魚", en: "Shark", art: true, st: { v: 1.05, c: 1.02, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "lunar_rover", price: 540, zh: "月球車", en: "Lunar Rover", art: true, st: { v: 0.95, c: 1.06, a: 1.15 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "wolf", price: 560, zh: "野狼", en: "Wolf", art: true, st: { v: 1.04, c: 1.03, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "tiger", price: 580, zh: "老虎", en: "Tiger", art: true, st: { v: 1.03, c: 1.04, a: 1.04 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "formula", price: 600, zh: "方程式", en: "Formula Racer", art: true, st: { v: 1.06, c: 1.04, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "cobra", price: 600, zh: "眼鏡蛇", en: "Cobra", art: true, st: { v: 1.06, c: 1.0, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "scorpion", price: 620, zh: "蠍子", en: "Scorpion", art: true, st: { v: 1.02, c: 1.06, a: 1.04 }, cols: ["orig", "red", "yellow", "green", "blue"] },
+  { v: "manta", price: 640, zh: "魟魚", en: "Manta Ray", art: true, st: { v: 1.08, c: 0.97, a: 0.98 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "snow_leopard", price: 720, zh: "雪豹", en: "Snow Leopard", art: true, st: { v: 1.05, c: 1.05, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "falcon", price: 760, zh: "獵鷹", en: "Falcon", art: true, st: { v: 1.09, c: 0.98, a: 1.0 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "robot", price: 780, zh: "機器人", en: "Robot", art: true, st: { v: 1.04, c: 1.04, a: 1.06 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "stealth", price: 820, zh: "隱形戰機", en: "Stealth Jet", art: true, st: { v: 1.1, c: 0.96, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "blue"] },
+  { v: "rocket", price: 880, zh: "火箭", en: "Rocket", art: true, st: { v: 1.12, c: 0.94, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "dragon", price: 1500, zh: "神龍", en: "Dragon", art: true, st: { v: 1.1, c: 1.05, a: 1.05 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "phoenix", price: 1500, zh: "鳳凰", en: "Phoenix", art: true, st: { v: 1.12, c: 1.04, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] }
+];
+C2BODIES.forEach(function (b) { b.d = bodyTags(b.st); });
+function bodyTags(st) {
+  var z = [], e = [];
+  if (st.v >= 1.08) { z.push("超快"); e.push("very fast"); } else if (st.v >= 1.04) { z.push("快"); e.push("fast"); } else if (st.v <= 0.97) { z.push("比較慢"); e.push("slower"); }
+  if (st.c >= 1.05) { z.push("過彎很穩"); e.push("very steady in curves"); } else if (st.c <= 0.97) { z.push("過彎會滑"); e.push("slides in curves"); }
+  if (st.a >= 1.08) { z.push("爬坡很強"); e.push("strong on hills"); } else if (st.a >= 1.04) { z.push("起步快"); e.push("quick start"); }
+  if (!z.length) { z.push("平衡"); e.push("balanced"); }
+  var en = e.join(", "); return [z.join("、") + "。", en.charAt(0).toUpperCase() + en.slice(1) + "."];
+}
 var C2 = {
   START_MONEY: 800,       // red-envelope (紅包) savings
   ALLOWANCE: 100,         // from Dad every Sunday, if the week's test got an A
@@ -12,7 +44,7 @@ var C2 = {
     body: [
       { v: "boxy", price: 0, zh: "方塊車殼", en: "Box body", d: ["套件附的，比較擋風。", "Comes in the kit. Catches more wind."] },
       { v: "sleek", price: 320, zh: "閃電車殼", en: "Arrow body", d: ["流線型，風阻比較小，跑比較快。", "Smooth shape, less wind, a bit faster."] },
-      { v: "aero", price: 560, zh: "噴射車殼", en: "Jet body", d: ["最低最尖，風阻最小。", "Lowest and pointiest. Least wind."] }],
+      { v: "aero", price: 560, zh: "噴射車殼", en: "Jet body", d: ["最低最尖，風阻最小。", "Lowest and pointiest. Least wind."] }].concat(C2BODIES),
     motor: [
       { v: "normal", price: 0, zh: "普通馬達", en: "Stock motor", d: ["套件附的，速度普通。", "Comes in the kit. Normal speed."] },
       { v: "turbo", price: 380, zh: "高速馬達", en: "Turbo motor", d: ["轉得快，直線很快。", "Spins fast. Great on straights."] },
@@ -89,8 +121,8 @@ var C2 = {
   // cups: week, track, rivals, entry fee, prizes. Rivals get a small random luck each race, so nobody always wins.
   CUPS: [
     { id: "c1", week: 1, track: "oval", zh: "社區盃", en: "Neighborhood Cup", tier: 1, fee: 100, laps: 3,
-      rivals: [{ who: "kai", build: { motor: "turbo", gear: "speed", tire: "soft", roller: "yes", body: "boxy", wing: "none" } },
-        { who: "benny", build: { motor: "turbo", gear: "mid", tire: "low", roller: "yes", body: "sleek", wing: "none" } }],
+      rivals: [{ who: "kai", build: { motor: "turbo", gear: "speed", tire: "soft", roller: "yes", body: "armored", paint: "orig", wing: "none" } },
+        { who: "benny", build: { motor: "turbo", gear: "mid", tire: "low", roller: "yes", body: "wolf", paint: "yellow", wing: "none" } }],
       prize: [500, 300, 200], trophy: ["🥇", "🥈", "🥉"] },
     { id: "c2", week: 2, track: "twisty", zh: "城市盃", en: "City Cup", tier: 2, fee: 150, soon: true },
     { id: "c3", week: 3, track: "hills", zh: "山區盃", en: "Mountain Cup", tier: 3, fee: 200, soon: true },

@@ -34,7 +34,7 @@ var Pager = {
     var keep = opt.keep ? (card.__pg || 0) : 0;
     var nav = card.querySelector(".pgnav"), act = card.__act;
     if (nav) { if (act && act.__home) { act.__home.insertBefore(act, act.__next || null); act.style.display = ""; } nav.remove(); }
-    var blocks = opt.blocks ? opt.blocks() : $$(":scope > *", card).filter(function (b) { return !b.classList.contains("act"); });
+    var blocks = opt.blocks ? opt.blocks() : $$(":scope > *", card).filter(function (b) { return !b.classList.contains("act") && !b.classList.contains("pin"); }); // .pin blocks stay on every page
     act = opt.act ? opt.act() : card.querySelector(":scope > .act");
     blocks.forEach(function (b) { b.style.display = ""; b.style.zoom = ""; });
     card.classList.remove("paged"); card.__pages = null; card.__act = null;
@@ -47,6 +47,7 @@ var Pager = {
     card.appendChild(nav); card.classList.add("paged");
     var cs = getComputedStyle(card);
     var avail = card.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - nav.offsetHeight - 10;
+    $$(":scope > .pin", card).forEach(function (pn) { avail -= pn.getBoundingClientRect().height + 6; });
     var pages = [[]], h = 0;
     blocks.forEach(function (b) {
       var bs = getComputedStyle(b), bh = b.getBoundingClientRect().height + parseFloat(bs.marginTop) + parseFloat(bs.marginBottom);

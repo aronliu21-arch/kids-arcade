@@ -11,6 +11,7 @@ var C2S = { // state helpers
   testA: function (c) { var t = c.tests[this.week(c)]; return !!(t && t.a); }
 };
 function money(n) { return "NT$" + n; }
+function chunks(items, n) { var out = ""; for (var i = 0; i < items.length; i += n) out += "<div class='c2parts'>" + items.slice(i, i + n).join("") + "</div>"; return out; } // small blocks so the pager can split long lists
 
 var C2G = {
   /* ---------- screen frame ---------- */
@@ -236,14 +237,17 @@ var C2G = {
     }
     var cur = this.shopSlot || "motor", slotBar = "<div class='c2slots'>" + C2.SLOTS.map(function (sl) { return "<button class='chip" + (sl[0] === cur ? " on" : "") + "' data-sl='" + sl[0] + "'>" + bi(sl[1], sl[2]) + "</button>"; }).join("") + "</div>";
     if (tab === "buy") {
-      body = slotBar + "<div class='c2parts'>" + C2.PARTS[cur].filter(function (p) { return p.price > 0; }).map(function (p) {
+      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return p.price > 0; }).map(function (p) {
         var own = C2S.has(c, cur, p.v), price = Math.max(0, p.price - (c.coupon || 0));
-        return "<button class='opt" + (own ? " own" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span></button>";
-      }).join("") + "</div>";
+        return "<button class='opt" + (own ? " own" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + (p.art ? "<img class='thumb' src='" + A("b/" + p.v + "_orig") + "' alt=''>" : cur === "body" ? "<img class='thumb' src='" + A("L_top_body_" + p.v) + "' alt=''>" : "") + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span></button>";
+      }), innerWidth > 900 ? 4 : 3);
     } else if (tab === "equip") {
-      body = slotBar + "<div class='c2parts'>" + C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).map(function (p) {
-        return "<button class='opt" + (c.build[cur] === p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small></button>";
-      }).join("") + "</div>";
+      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).map(function (p) {
+        return "<button class='opt" + (c.build[cur] === p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + (p.art ? "<img class='thumb' src='" + A("b/" + p.v + "_" + (p.v === c.build.body && c.build.paint ? c.build.paint : "orig")) + "' alt=''>" : "") + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small></button>";
+      }), innerWidth > 900 ? 4 : 3);
+      var cb = C2S.part("body", c.build.body);
+      if (cur === "body" && cb && cb.art) body = slotBar + "<div class='c2sub'>🎨 " + bi("車殼顏色（免費換）", "Body color (free to change)") + "</div><div class='c2paint'>" + cb.cols.map(function (k) {
+        return "<button class='paint" + ((c.build.paint || "orig") === k ? " on" : "") + "' data-p='" + k + "'><img src='" + A("b/" + cb.v + "_" + k) + "' alt='" + k + "'></button>"; }).join("") + "</div>" + body.slice(slotBar.length); // paint row goes under the pinned slot bar
     } else if (tab === "test") {
       body = "<div class='c2sub'>" + bi("選一條跑道測試（這次還能測 " + this.shopRuns + " 次）", "Pick a track to test (" + this.shopRuns + " runs left this visit)") + "</div><div class='c2tracks'>" + ["oval", "twisty", "hills"].map(function (id) {
         var T = TRACKS[id], b = c.best[id];
@@ -254,7 +258,10 @@ var C2G = {
       body = "<div class='c2sub'>" + bi("選最多 " + C2.TOOLBOX + " 個備用零件帶去比賽，比賽前可以換。", "Pick up to " + C2.TOOLBOX + " spare parts to bring to the cup. You can swap them in before the race.") + "</div><div class='c2parts'>" +
         (spares.length ? spares.map(function (k) { var a = k.split(":"), p = C2S.part(a[0], a[1]); return "<button class='opt" + (c.toolbox.indexOf(k) >= 0 ? " sel" : "") + "' data-k='" + k + "'>" + bi(p.zh, p.en) + "</button>"; }).join("") : "<i>" + bi("沒有備用零件（裝在車上的不算）", "No spare parts (parts on the car don't count)") + "</i>") + "</div>";
     }
-    var cd = this.card(tabs + body + "<div class='act'><button class='btn white' id='bOut'>🗺 " + bi("離開模型店", "Leave the store") + "</button></div>");
+    var pinned = body.indexOf("<div class='c2slots'>") === 0 ? body.slice(0, body.indexOf("</div>") + 6) : "";
+    if (pinned) body = body.slice(pinned.length);
+    var cd = this.card("<div class='pin'>" + tabs + pinned + "</div>" + body + "<div class='act'><button class='btn white' id='bOut'>🗺 " + bi("離開模型店", "Leave the store") + "</button></div>");
+    $$(".c2paint .paint", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); c.build.paint = b.dataset.p; save(); self.shop("equip"); }; });
     $$(".c2slots .chip", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); self.shopSlot = b.dataset.sl; self.shop(tab); }; });
     $$(".c2tabs .btn", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); Read.stop(); self.shop(b.dataset.t); }; });
     $("#bOut").onclick = function () { Read.stop(); self.advance(); };
@@ -265,7 +272,7 @@ var C2G = {
         self.drawCar(Object.assign({}, c.build, (function () { var o = {}; o[s] = v; return o; })())); // preview it on the car
         if (c.money < price) { sfx("buzz"); return Read.pair("錢不夠，去打工賺錢吧！還差 " + (price - c.money) + " 元。", "Not enough money. Work to earn " + money(price - c.money) + " more!"); }
         self.confirm(["買 " + p.zh + "，" + price + " 元？", "Buy " + p.en + " for " + money(price) + "?"], function () {
-          c.money -= price; c.coupon = 0; C2S.give(c, s, v); c.build[s] = v; save(); sfx("win"); self.shop("buy");
+          c.money -= price; c.coupon = 0; C2S.give(c, s, v); c.build[s] = v; if (s === "body") c.build.paint = "orig"; save(); sfx("win"); self.shop("buy");
         }, function () { self.shop("buy"); });
       };
       if (tab === "equip") b.onclick = function () { sfx("tap"); c.build[b.dataset.s] = b.dataset.v; c.toolbox = c.toolbox.filter(function (k) { return k !== b.dataset.s + ":" + b.dataset.v; }); save(); self.shop("equip"); };

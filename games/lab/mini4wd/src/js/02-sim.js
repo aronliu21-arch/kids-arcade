@@ -10,15 +10,21 @@ var PHYS = {
   CURVE: 10.2,           // curve speed limit with rollers = CURVE * grip * roller * wing (radius 11)
   BASE: 15
 };
+function bodyStat(id) { // classic bodies are a number (top speed); Chapter 2 bodies have {v, c, a}
+  if (typeof PHYS.body[id] === "number") return { v: PHYS.body[id], c: 1, a: 1 };
+  var f = typeof C2BODIES !== "undefined" && C2BODIES.filter(function (x) { return x.v === id; })[0];
+  return f ? f.st : { v: 1, c: 1, a: 1 };
+}
 function carStats(b) {
   var m = PHYS.motor[b.motor], g = PHYS.gear[b.gear], t = PHYS.tire[b.tire], wg = PHYS.wing[b.wing || "none"], rl = PHYS.roller[b.roller] || 1;
-  var top = PHYS.BASE * m.v * g.top * t.roll * PHYS.body[b.body] * wg.v * (b.roller === "four" ? 0.985 : 1) * (b.luck || 1);
-  var torque = m.t * g.tq;
+  var bs = bodyStat(b.body);
+  var top = PHYS.BASE * m.v * g.top * t.roll * bs.v * wg.v * (b.roller === "four" ? 0.985 : 1) * (b.luck || 1);
+  var torque = m.t * g.tq * bs.a;
   return {
     top: top,
     accel: 9 * torque,
     hill: 0.75 * torque, // uncapped: steep tracks divide it (classic track caps at 1)
-    curve: b.roller !== "no" ? PHYS.CURVE * t.grip * rl * wg.c : PHYS.CRASH_NO_ROLLERS * wg.c,
+    curve: (b.roller !== "no" ? PHYS.CURVE * t.grip * rl * wg.c : PHYS.CRASH_NO_ROLLERS * wg.c) * bs.c,
     rollers: b.roller !== "no"
   };
 }

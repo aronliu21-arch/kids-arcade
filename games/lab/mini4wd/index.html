@@ -246,6 +246,12 @@ button{font:inherit;cursor:pointer;color:inherit}
 }
 .c2slots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}.c2slots .chip{min-height:44px;border:3px solid var(--ink);border-radius:12px;background:#fff;padding:2px 10px;font:inherit;font-weight:800}
 .c2slots .chip.on{background:#ffd43b}
+.opt .thumb{display:block;height:56px;margin:0 auto 4px;object-fit:contain}
+.c2paint{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.c2paint .paint{width:56px;height:62px;border:3px solid var(--ink);border-radius:12px;background:#fff;padding:2px}.c2paint .paint img{height:100%;object-fit:contain}
+.c2paint .paint.on{background:#ffd43b;box-shadow:0 0 0 3px #ffd43b}
+@media (max-height:500px),(max-width:600px){.opt .thumb{height:44px}}
+@media (max-height:500px){.c2parts .opt small{display:none}.c2tabs,.c2slots{margin-bottom:3px;gap:4px}.c2tabs .btn,.c2slots .chip{min-height:44px;padding:2px 8px;font-size:13px}}
 </style>
 </head>
 <body>
@@ -332,6 +338,8 @@ var ZYR={"你贏不了的":"ㄋㄧˇ ㄧㄥˊ ㄅㄨˋ ㄌㄧㄠˇ ˙ㄉㄜ"};
 /* Chapter 2 additions (hand-checked Taiwan readings; build.py regenerates all with pypinyin when installed) */
 Object.assign(ZYC,{"份":"ㄈㄣˋ","中": "ㄓㄨㄥ", "二": "ㄦˋ", "互": "ㄏㄨˋ", "五": "ㄨˇ", "些": "ㄒㄧㄝ", "亮": "ㄌㄧㄤˋ", "人": "ㄖㄣˊ", "今": "ㄐㄧㄣ", "付": "ㄈㄨˋ", "休": "ㄒㄧㄡ", "低": "ㄉㄧ", "作": "ㄗㄨㄛˋ", "修": "ㄒㄧㄡ", "俯": "ㄈㄨˇ", "傲": "ㄠˋ", "價": "ㄐㄧㄚˋ", "元": "ㄩㄢˊ", "入": "ㄖㄨˋ", "共": "ㄍㄨㄥˋ", "券": "ㄑㄩㄢˋ", "剩": "ㄕㄥˋ", "功": "ㄍㄨㄥ", "努": "ㄋㄨˇ", "包": "ㄅㄠ", "參": "ㄘㄢ", "合": "ㄏㄜˊ", "噴": "ㄆㄣ", "因": "ㄧㄣ", "圖": "ㄊㄨˊ", "城": "ㄔㄥˊ", "報": "ㄅㄠˋ", "壓": "ㄧㄚ", "天": "ㄊㄧㄢ", "套": "ㄊㄠˋ", "奶": "ㄋㄞˇ", "字": "ㄗˋ", "客": "ㄎㄜˋ", "宮": "ㄍㄨㄥ", "射": "ㄕㄜˋ", "少": "ㄕㄠˇ", "尖": "ㄐㄧㄢ", "尾": "ㄨㄟˇ", "山": "ㄕㄢ", "峰": "ㄈㄥ", "工": "ㄍㄨㄥ", "巧": "ㄑㄧㄠˇ", "已": "ㄧˇ", "市": "ㄕˋ", "師": "ㄕ", "平": "ㄆㄧㄥˊ", "幾": "ㄐㄧˇ", "張": "ㄓㄤ", "強": "ㄑㄧㄤˊ", "彩": "ㄘㄞˇ", "從": "ㄘㄨㄥˊ", "急": "ㄐㄧˊ", "恭": "ㄍㄨㄥ", "息": "˙ㄒㄧ", "應": "ㄧㄥ", "打": "ㄉㄚˇ", "托": "ㄊㄨㄛ", "扭": "ㄋㄧㄡˇ", "找": "ㄓㄠˇ", "技": "ㄐㄧˋ", "折": "ㄓㄜˊ", "擋": "ㄉㄤˇ", "收": "ㄕㄡ", "數": "ㄕㄨˇ", "文": "ㄨㄣˊ", "早": "ㄗㄠˇ", "明": "ㄇㄧㄥˊ", "晚": "ㄨㄢˇ", "普": "ㄆㄨˇ", "書": "ㄕㄨ", "末": "ㄇㄛˋ", "果": "ㄍㄨㄛˇ", "校": "ㄒㄧㄠˋ", "標": "ㄅㄧㄠ", "段": "ㄉㄨㄢˋ", "洗": "ㄒㄧˇ", "活": "ㄏㄨㄛˊ", "爸": "ㄅㄚˋ", "牛": "ㄋㄧㄡˊ", "物": "ㄨˋ", "獎": "ㄐㄧㄤˇ", "王": "ㄨㄤˊ", "珍": "ㄓㄣ", "珠": "ㄓㄨ", "班": "ㄅㄢ", "現": "ㄒㄧㄢˋ", "理": "ㄌㄧˇ", "發": "ㄈㄚ", "目": "ㄇㄨˋ", "真": "ㄓㄣ", "睡": "ㄕㄨㄟˋ", "神": "ㄕㄣˊ", "禮": "ㄌㄧˇ", "秘": "ㄇㄧˋ", "移": "ㄧˊ", "章": "ㄓㄤ", "等": "ㄉㄥˇ", "算": "ㄙㄨㄢˋ", "箱": "ㄒㄧㄤ", "精": "ㄐㄧㄥ", "紀": "ㄐㄧˋ", "紙": "ㄓˇ", "級": "ㄐㄧˊ", "經": "ㄐㄧㄥ", "維": "ㄨㄟˊ", "總": "ㄗㄨㄥˇ", "習": "ㄒㄧˊ", "翼": "ㄧˋ", "老": "ㄌㄠˇ", "考": "ㄎㄠˇ", "聽": "ㄊㄧㄥ", "肉": "ㄖㄡˋ", "舊": "ㄐㄧㄡˋ", "英": "ㄧㄥ", "茶": "ㄔㄚˊ", "菜": "ㄘㄞˋ", "薪": "ㄒㄧㄣ", "藏": "ㄘㄤˊ", "行": "ㄒㄧㄥˊ", "表": "ㄅㄧㄠˇ", "複": "ㄈㄨˋ", "視": "ㄕˋ", "覺": "ㄐㄧㄠˋ", "許": "ㄒㄩˇ", "詞": "ㄘˊ", "該": "ㄍㄞ", "語": "ㄩˇ", "說": "ㄕㄨㄛ", "課": "ㄎㄜˋ", "貨": "ㄏㄨㄛˋ", "買": "ㄇㄞˇ", "費": "ㄈㄟˋ", "貼": "ㄊㄧㄝ", "賺": "ㄓㄨㄢˋ", "超": "ㄔㄠ", "迷": "ㄇㄧˊ", "追": "ㄓㄨㄟ", "送": "ㄙㄨㄥˋ", "週": "ㄓㄡ", "適": "ㄕˋ", "部": "ㄅㄨˋ", "金": "ㄐㄧㄣ", "銀": "ㄧㄣˊ", "錄": "ㄌㄨˋ", "錢": "ㄑㄧㄢˊ", "鎮": "ㄓㄣˋ", "鏡": "ㄐㄧㄥˋ", "長": "ㄔㄤˊ", "門": "ㄇㄣˊ", "間": "ㄐㄧㄢ", "闆": "ㄅㄢˇ", "附": "ㄈㄨˋ", "雙": "ㄕㄨㄤ", "離": "ㄌㄧˊ", "頁": "ㄧㄝˋ", "頭": "˙ㄊㄡ", "餃": "ㄐㄧㄠˇ", "餐": "ㄘㄢ", "驕": "ㄐㄧㄠ", "驚": "ㄐㄧㄥ", "麵": "ㄇㄧㄢˋ"});
 Object.assign(ZYR,{"數學": "ㄕㄨˋ ㄒㄩㄝˊ", "銀行": "ㄧㄣˊ ㄏㄤˊ", "爸爸": "ㄅㄚˋ ˙ㄅㄚ", "從頭": "ㄘㄨㄥˊ ㄊㄡˊ", "跑得": "ㄆㄠˇ ˙ㄉㄜ", "爬得": "ㄆㄚˊ ˙ㄉㄜ", "抓得": "ㄓㄨㄚ ˙ㄉㄜ", "休息": "ㄒㄧㄡ ˙ㄒㄧ", "睡覺": "ㄕㄨㄟˋ ㄐㄧㄠˋ"});
+Object.assign(ZYC,{"仙": "ㄒㄧㄢ", "免": "ㄇㄧㄢˇ", "凰": "ㄏㄨㄤˊ", "器": "ㄑㄧˋ", "式": "ㄕˋ", "形": "ㄒㄧㄥˊ", "戰": "ㄓㄢˋ", "月": "ㄩㄝˋ", "步": "ㄅㄨˋ", "犀": "ㄒㄧ", "狼": "ㄌㄤˊ", "獨": "ㄉㄨˊ", "獵": "ㄌㄧㄝˋ", "球": "ㄑㄧㄡˊ", "甲": "ㄐㄧㄚˇ", "眼": "ㄧㄢˇ", "程": "ㄔㄥˊ", "箭": "ㄐㄧㄢˋ", "肌": "ㄐㄧ", "虎": "ㄏㄨˇ", "蛇": "ㄕㄜˊ", "蠍": "ㄒㄧㄝ", "衡": "ㄏㄥˊ", "豹": "ㄅㄠˋ", "野": "ㄧㄝˇ", "隱": "ㄧㄣˇ", "雪": "ㄒㄩㄝˇ", "顏": "ㄧㄢˊ", "魚": "ㄩˊ", "魟": "ㄏㄨㄥˊ", "鯊": "ㄕㄚ", "鱷": "ㄜˋ", "鳳": "ㄈㄥˋ", "鷹": "ㄧㄥ", "龍": "ㄌㄨㄥˊ"});
+Object.assign(ZYR,{"獨角仙": "ㄉㄨˊ ㄐㄧㄠˇ ㄒㄧㄢ", "老虎": "ㄌㄠˇ ㄏㄨˇ"});
 /* ===== Story, parts and science content (all bilingual) ===== */
 var CAST = {
   lucas: { zh: "陸晨", en: "Lucas", img: "p_lucas", col: "#f76707", pitch: 1.25 },
@@ -479,15 +487,21 @@ var PHYS = {
   CURVE: 10.2,           // curve speed limit with rollers = CURVE * grip * roller * wing (radius 11)
   BASE: 15
 };
+function bodyStat(id) { // classic bodies are a number (top speed); Chapter 2 bodies have {v, c, a}
+  if (typeof PHYS.body[id] === "number") return { v: PHYS.body[id], c: 1, a: 1 };
+  var f = typeof C2BODIES !== "undefined" && C2BODIES.filter(function (x) { return x.v === id; })[0];
+  return f ? f.st : { v: 1, c: 1, a: 1 };
+}
 function carStats(b) {
   var m = PHYS.motor[b.motor], g = PHYS.gear[b.gear], t = PHYS.tire[b.tire], wg = PHYS.wing[b.wing || "none"], rl = PHYS.roller[b.roller] || 1;
-  var top = PHYS.BASE * m.v * g.top * t.roll * PHYS.body[b.body] * wg.v * (b.roller === "four" ? 0.985 : 1) * (b.luck || 1);
-  var torque = m.t * g.tq;
+  var bs = bodyStat(b.body);
+  var top = PHYS.BASE * m.v * g.top * t.roll * bs.v * wg.v * (b.roller === "four" ? 0.985 : 1) * (b.luck || 1);
+  var torque = m.t * g.tq * bs.a;
   return {
     top: top,
     accel: 9 * torque,
     hill: 0.75 * torque, // uncapped: steep tracks divide it (classic track caps at 1)
-    curve: b.roller !== "no" ? PHYS.CURVE * t.grip * rl * wg.c : PHYS.CRASH_NO_ROLLERS * wg.c,
+    curve: (b.roller !== "no" ? PHYS.CURVE * t.grip * rl * wg.c : PHYS.CRASH_NO_ROLLERS * wg.c) * bs.c,
     rollers: b.roller !== "no"
   };
 }
@@ -743,7 +757,7 @@ var Pager = {
     var keep = opt.keep ? (card.__pg || 0) : 0;
     var nav = card.querySelector(".pgnav"), act = card.__act;
     if (nav) { if (act && act.__home) { act.__home.insertBefore(act, act.__next || null); act.style.display = ""; } nav.remove(); }
-    var blocks = opt.blocks ? opt.blocks() : $$(":scope > *", card).filter(function (b) { return !b.classList.contains("act"); });
+    var blocks = opt.blocks ? opt.blocks() : $$(":scope > *", card).filter(function (b) { return !b.classList.contains("act") && !b.classList.contains("pin"); }); // .pin blocks stay on every page
     act = opt.act ? opt.act() : card.querySelector(":scope > .act");
     blocks.forEach(function (b) { b.style.display = ""; b.style.zoom = ""; });
     card.classList.remove("paged"); card.__pages = null; card.__act = null;
@@ -756,6 +770,7 @@ var Pager = {
     card.appendChild(nav); card.classList.add("paged");
     var cs = getComputedStyle(card);
     var avail = card.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - nav.offsetHeight - 10;
+    $$(":scope > .pin", card).forEach(function (pn) { avail -= pn.getBoundingClientRect().height + 6; });
     var pages = [[]], h = 0;
     blocks.forEach(function (b) {
       var bs = getComputedStyle(b), bh = b.getBoundingClientRect().height + parseFloat(bs.marginTop) + parseFloat(bs.marginBottom);
@@ -1088,7 +1103,8 @@ var Tune = {
 };
 /* ===== Race: 3/4-view track on a canvas (hill rises, speed trails). The build decides everything; Lucas cheers. ===== */
 var IMG = {};
-function img(n) { if (!IMG[n]) { IMG[n] = new Image(); IMG[n].src = A(n); } return IMG[n]; }
+var IMGN = 0; // how many images have loaded (cached car drawings rebuild when this changes)
+function img(n) { if (!IMG[n]) { IMG[n] = new Image(); IMG[n].onload = function () { IMGN++; }; IMG[n].src = A(n); } return IMG[n]; }
 ["c_blue", "c_red", "c_green", "r_blue", "r_red", "r_green"].forEach(img);
 
 var Race = {
@@ -1183,6 +1199,9 @@ var Race = {
     var b = TRACK.box, m = 7, x0 = b[0] - m, x1 = b[2] + m, y0 = (b[1] - m) * this.K - this.HZ - 3, y1 = (b[3] + m) * this.K + 2.5;
     this.sc = Math.min(cv.width / (x1 - x0), cv.height / (y1 - y0));
     this.ox = (cv.width - (x1 - x0) * this.sc) / 2 - x0 * this.sc; this.oy = (cv.height - (y1 - y0) * this.sc) / 2 - y0 * this.sc;
+    // big tracks: zoom the 2.5D view in and follow Lucas, so the cars are big enough to see
+    this.zf = Math.max(1, Math.min(2.4, (cv.width / this.sc) / 62));
+    this.bgK = Math.min(this.zf, Math.sqrt(12e6 / (cv.width * cv.height))); this.zcam = null;
     if (!this.vmax) { var bb = JSON.parse(JSON.stringify(BEST)); this.vmax = carStats(Object.assign({}, DEFAULT_BUILD, bb)).top * 1.08; }
     this.buildTrack();
   },
@@ -1232,8 +1251,8 @@ var Race = {
   },
   buildTrack: function () {
     var cv = $("#raceCv"), bg = this.bg || (this.bg = document.createElement("canvas")), x = bg.getContext("2d"), self = this, b = TRACK.box;
-    bg.width = cv.width; bg.height = cv.height;
-    x.setTransform(this.sc, 0, 0, this.sc, this.ox, this.oy); x.lineJoin = "round";
+    var K = this.bgK || 1; bg.width = cv.width * K; bg.height = cv.height * K;
+    x.setTransform(this.sc * K, 0, 0, this.sc * K, this.ox * K, this.oy * K); x.lineJoin = "round";
     // the table: green top with a thick front edge
     var g0 = this.P(b[0] - 6, b[1] - 6, 0), g1 = this.P(b[2] + 6, b[3] + 6, 0);
     x.fillStyle = "#1b5e20"; rr(x, g0[0], g0[1] + 1.6, g1[0] - g0[0], g1[1] - g0[1], 3); x.fill();
@@ -1383,8 +1402,14 @@ var Race = {
     var cv = $("#raceCv"), x = cv.getContext("2d"), s = this.sc, self = this, b = TRACK.box;
     this.label = label;
     x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height);
-    if (this.bg) x.drawImage(this.bg, 0, 0);
-    x.setTransform(s, 0, 0, s, this.ox, this.oy); x.lineJoin = "round";
+    var zf = this.zf || 1, tx = 0, ty = 0;
+    if (zf > 1) { // follow Lucas, keep the view inside the table
+      var lp = this.pos(this.cars[0]), q0 = this.P(lp.x, lp.y, lp.z), bx = s * q0[0] + this.ox, by = s * q0[1] + this.oy;
+      var wx = Math.min(0, Math.max(cv.width * (1 - zf), cv.width / 2 - zf * bx)), wy = Math.min(0, Math.max(cv.height * (1 - zf), cv.height * 0.55 - zf * by));
+      if (!this.zcam) this.zcam = [wx, wy]; this.zcam[0] += (wx - this.zcam[0]) * 0.12; this.zcam[1] += (wy - this.zcam[1]) * 0.12; tx = this.zcam[0]; ty = this.zcam[1];
+    }
+    if (this.bg) { var K = this.bgK || 1; x.setTransform(zf / K, 0, 0, zf / K, tx, ty); x.drawImage(this.bg, 0, 0); }
+    x.setTransform(s * zf, 0, 0, s * zf, this.ox * zf + tx, this.oy * zf + ty); x.lineJoin = "round";
     // hill pieces and cars, far to near, so the ramp hides what is behind it
     var items = this.quads().filter(function (q) { return q.hill; }).map(function (q) { return { d: q.d, q: q }; });
     this.cars.forEach(function (c) { var p = self.pos(c); items.push({ d: p.y + 0.01, c: c, p: p }); });
@@ -1414,12 +1439,18 @@ var Race = {
     // shadow on the ground under the car (shows how high it is)
     var sh = this.P(p.x, p.y, 0); x.fillStyle = "rgba(0,0,0," + (0.35 - Math.min(0.2, p.z * 0.02)) + ")";
     x.beginPath(); x.ellipse(sh[0] + p.z * 0.15, sh[1], 1.3 + p.z * 0.04, 0.8 * this.K + p.z * 0.02, 0, 0, 7); x.fill();
+    // the car has height: dark side layers stacked under the bright top, so it stands on the track instead of looking painted on
+    var tc = c.build ? CarArt.topCanvas(c.build, c.col) : (im.complete && im.naturalWidth ? im : null), dk = tc ? CarArt.dark(tc, c.build ? null : c.car) : null;
+    var tw = w, th = tc ? w * tc.height / tc.width : hgt, BODYH = 0.7;
     function sprite(px, py, pz, alpha) {
-      var q = self.P(px, py, pz); x.save(); x.globalAlpha = alpha; x.translate(q[0], q[1]); x.scale(1, self.K); x.rotate(p.h + Math.PI / 2);
-      if (me && alpha === 1) { x.shadowColor = "#ffd43b"; x.shadowBlur = 14 * self.sc / 10; }
-      if (c.build) CarArt.draw(x, c.build, "top", 0, 0, w, { col: c.col, center: true });
-      else if (im.complete && im.naturalWidth) x.drawImage(im, -w / 2, -hgt / 2, w, hgt); else { x.fillStyle = me ? "#1c7ed6" : "#e03131"; x.fillRect(-w / 2, -hgt / 2, w, hgt); }
-      x.restore();
+      function one(z, src, glow) {
+        var q = self.P(px, py, pz + z); x.save(); x.globalAlpha = alpha; x.translate(q[0], q[1]); x.scale(1, self.K); x.rotate(p.h + Math.PI / 2);
+        if (glow) { x.shadowColor = "#ffd43b"; x.shadowBlur = 14 * self.sc / 10; }
+        if (src) x.drawImage(src, -tw / 2, -th / 2, tw, th); else { x.fillStyle = me ? "#1c7ed6" : "#e03131"; x.fillRect(-tw / 2, -th / 2, tw, th); }
+        x.restore();
+      }
+      if (dk && alpha === 1) for (var i = 0; i < 5; i++) one(i * BODYH / 5, dk, false); // ghosts: top only
+      one(BODYH, tc, me && alpha === 1);
     }
     // speed trail: more ghosts and longer when fast
     if (!r.out && r.v > 1) {
@@ -1468,6 +1499,38 @@ var Race = {
 function rr(x, X, Y, W, H, R) { x.beginPath(); x.moveTo(X + R, Y); x.arcTo(X + W, Y, X + W, Y + H, R); x.arcTo(X + W, Y + H, X, Y + H, R); x.arcTo(X, Y + H, X, Y, R); x.arcTo(X, Y, X + W, Y, R); x.closePath(); }
 /* ===== Chapter 2 data: parts store, money, school, job, cups, events (all bilingual) ===== */
 /* Money is NT$. Real Taiwan hobby-shop prices; a job shift pays NT$100-150, so a good motor takes ~3 shifts. */
+/* 20 more bodies (ChatGPT art, top view, assets/b/<id>_<color>.webp). st: v = top speed, c = curve grip, a = push (start + hills). */
+var C2BODIES = [
+  { v: "muscle", price: 450, zh: "肌肉車", en: "Muscle Car", art: true, st: { v: 1.0, c: 0.98, a: 1.12 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "armored", price: 400, zh: "裝甲車", en: "Armored Racer", art: true, st: { v: 0.94, c: 1.1, a: 0.97 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "crocodile", price: 460, zh: "鱷魚", en: "Crocodile", art: true, st: { v: 0.99, c: 1.07, a: 1.03 }, cols: ["orig", "red", "yellow", "blue", "purple"] },
+  { v: "rhino", price: 480, zh: "犀牛", en: "Rhino", art: true, st: { v: 0.97, c: 1.08, a: 1.08 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "beetle", price: 500, zh: "獨角仙", en: "Beetle", art: true, st: { v: 0.98, c: 1.06, a: 1.1 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "shark", price: 520, zh: "鯊魚", en: "Shark", art: true, st: { v: 1.05, c: 1.02, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "lunar_rover", price: 540, zh: "月球車", en: "Lunar Rover", art: true, st: { v: 0.95, c: 1.06, a: 1.15 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "wolf", price: 560, zh: "野狼", en: "Wolf", art: true, st: { v: 1.04, c: 1.03, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "tiger", price: 580, zh: "老虎", en: "Tiger", art: true, st: { v: 1.03, c: 1.04, a: 1.04 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "formula", price: 600, zh: "方程式", en: "Formula Racer", art: true, st: { v: 1.06, c: 1.04, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "cobra", price: 600, zh: "眼鏡蛇", en: "Cobra", art: true, st: { v: 1.06, c: 1.0, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "scorpion", price: 620, zh: "蠍子", en: "Scorpion", art: true, st: { v: 1.02, c: 1.06, a: 1.04 }, cols: ["orig", "red", "yellow", "green", "blue"] },
+  { v: "manta", price: 640, zh: "魟魚", en: "Manta Ray", art: true, st: { v: 1.08, c: 0.97, a: 0.98 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "snow_leopard", price: 720, zh: "雪豹", en: "Snow Leopard", art: true, st: { v: 1.05, c: 1.05, a: 1.02 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "falcon", price: 760, zh: "獵鷹", en: "Falcon", art: true, st: { v: 1.09, c: 0.98, a: 1.0 }, cols: ["orig", "red", "green", "blue", "purple"] },
+  { v: "robot", price: 780, zh: "機器人", en: "Robot", art: true, st: { v: 1.04, c: 1.04, a: 1.06 }, cols: ["orig", "red", "yellow", "green", "purple"] },
+  { v: "stealth", price: 820, zh: "隱形戰機", en: "Stealth Jet", art: true, st: { v: 1.1, c: 0.96, a: 1.0 }, cols: ["orig", "red", "yellow", "green", "blue"] },
+  { v: "rocket", price: 880, zh: "火箭", en: "Rocket", art: true, st: { v: 1.12, c: 0.94, a: 1.0 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "dragon", price: 1500, zh: "神龍", en: "Dragon", art: true, st: { v: 1.1, c: 1.05, a: 1.05 }, cols: ["orig", "yellow", "green", "blue", "purple"] },
+  { v: "phoenix", price: 1500, zh: "鳳凰", en: "Phoenix", art: true, st: { v: 1.12, c: 1.04, a: 1.03 }, cols: ["orig", "yellow", "green", "blue", "purple"] }
+];
+C2BODIES.forEach(function (b) { b.d = bodyTags(b.st); });
+function bodyTags(st) {
+  var z = [], e = [];
+  if (st.v >= 1.08) { z.push("超快"); e.push("very fast"); } else if (st.v >= 1.04) { z.push("快"); e.push("fast"); } else if (st.v <= 0.97) { z.push("比較慢"); e.push("slower"); }
+  if (st.c >= 1.05) { z.push("過彎很穩"); e.push("very steady in curves"); } else if (st.c <= 0.97) { z.push("過彎會滑"); e.push("slides in curves"); }
+  if (st.a >= 1.08) { z.push("爬坡很強"); e.push("strong on hills"); } else if (st.a >= 1.04) { z.push("起步快"); e.push("quick start"); }
+  if (!z.length) { z.push("平衡"); e.push("balanced"); }
+  var en = e.join(", "); return [z.join("、") + "。", en.charAt(0).toUpperCase() + en.slice(1) + "."];
+}
 var C2 = {
   START_MONEY: 800,       // red-envelope (紅包) savings
   ALLOWANCE: 100,         // from Dad every Sunday, if the week's test got an A
@@ -1480,7 +1543,7 @@ var C2 = {
     body: [
       { v: "boxy", price: 0, zh: "方塊車殼", en: "Box body", d: ["套件附的，比較擋風。", "Comes in the kit. Catches more wind."] },
       { v: "sleek", price: 320, zh: "閃電車殼", en: "Arrow body", d: ["流線型，風阻比較小，跑比較快。", "Smooth shape, less wind, a bit faster."] },
-      { v: "aero", price: 560, zh: "噴射車殼", en: "Jet body", d: ["最低最尖，風阻最小。", "Lowest and pointiest. Least wind."] }],
+      { v: "aero", price: 560, zh: "噴射車殼", en: "Jet body", d: ["最低最尖，風阻最小。", "Lowest and pointiest. Least wind."] }].concat(C2BODIES),
     motor: [
       { v: "normal", price: 0, zh: "普通馬達", en: "Stock motor", d: ["套件附的，速度普通。", "Comes in the kit. Normal speed."] },
       { v: "turbo", price: 380, zh: "高速馬達", en: "Turbo motor", d: ["轉得快，直線很快。", "Spins fast. Great on straights."] },
@@ -1557,8 +1620,8 @@ var C2 = {
   // cups: week, track, rivals, entry fee, prizes. Rivals get a small random luck each race, so nobody always wins.
   CUPS: [
     { id: "c1", week: 1, track: "oval", zh: "社區盃", en: "Neighborhood Cup", tier: 1, fee: 100, laps: 3,
-      rivals: [{ who: "kai", build: { motor: "turbo", gear: "speed", tire: "soft", roller: "yes", body: "boxy", wing: "none" } },
-        { who: "benny", build: { motor: "turbo", gear: "mid", tire: "low", roller: "yes", body: "sleek", wing: "none" } }],
+      rivals: [{ who: "kai", build: { motor: "turbo", gear: "speed", tire: "soft", roller: "yes", body: "armored", paint: "orig", wing: "none" } },
+        { who: "benny", build: { motor: "turbo", gear: "mid", tire: "low", roller: "yes", body: "wolf", paint: "yellow", wing: "none" } }],
       prize: [500, 300, 200], trophy: ["🥇", "🥈", "🥉"] },
     { id: "c2", week: 2, track: "twisty", zh: "城市盃", en: "City Cup", tier: 2, fee: 150, soon: true },
     { id: "c3", week: 3, track: "hills", zh: "山區盃", en: "Mountain Cup", tier: 3, fee: 200, soon: true },
@@ -1620,6 +1683,28 @@ var CarArt = {
     else x.drawImage(im, (cx - wid / 2) * w, (bottom - hh) * w, wid * w, hh * w);
     return hh;
   },
+  // Chapter 2 art bodies (top view only from ChatGPT): assets/b/<id>_<color>.webp
+  artBody: function (b) { var id = b.body, f = typeof C2BODIES !== "undefined" && C2BODIES.filter(function (x) { return x.v === id; })[0]; if (!f) return null;
+    var im = img("b/" + id + "_" + (f.cols.indexOf(b.paint) >= 0 ? b.paint : "orig")); return im.complete && im.naturalWidth ? im : null; },
+  isArt: function (b) { return typeof C2BODIES !== "undefined" && C2BODIES.some(function (x) { return x.v === b.body; }); },
+  _tc: {},
+  topCanvas: function (b, col) { // the whole top-view car drawn once into a canvas (re-made when more images load)
+    var key = JSON.stringify([b.body, b.paint, b.tire, b.roller, b.wing, b.motor, b.gear, b.sticker, col]), e = this._tc[key];
+    if (e && e.n === IMGN) return e.cv;
+    var W = 96, cv = (e && e.cv) || document.createElement("canvas"); cv.width = W * 1.3; cv.height = W * 1.8;
+    var x = cv.getContext("2d"); x.clearRect(0, 0, cv.width, cv.height); this.draw(x, b, "top", cv.width / 2, cv.height / 2, W, { col: col, center: true });
+    this._tc[key] = { cv: cv, n: IMGN, dk: null }; return cv;
+  },
+  _dk: {},
+  dark: function (src, key) { // a darker copy of a car picture, used for the sides of the car
+    var e = null; for (var k in this._tc) if (this._tc[k].cv === src) e = this._tc[k];
+    if (e && e.dk && e.dkn === e.n) return e.dk;
+    if (!e && key && this._dk[key]) return this._dk[key];
+    var cv = document.createElement("canvas"); cv.width = src.width || src.naturalWidth; cv.height = src.height || src.naturalHeight;
+    var x = cv.getContext("2d"); x.drawImage(src, 0, 0, cv.width, cv.height); x.globalCompositeOperation = "source-atop"; x.fillStyle = "rgba(10,20,40,.55)"; x.fillRect(0, 0, cv.width, cv.height);
+    if (e) { e.dk = cv; e.dkn = e.n; } else if (key) this._dk[key] = cv;
+    return cv;
+  },
   img: function (n) { if (!this.LAYERS[n]) return null; var im = img("L_" + n); return im.complete && im.naturalWidth ? im : null; },
   _tint: {},
   tinted: function (n, im, col) { // recolor the blue art to a team color (blue parts only; white, black and red stay)
@@ -1680,7 +1765,15 @@ var CarArt = {
     R(-0.42, -0.2, 0.84, 0.1, 0.03, "#343a40");
     // body shell
     var top = -0.72;
-    if (this.lay(x, "rear_body_" + body, w, this.cn)) top = this.LAYERS["rear_body_" + body][1];
+    var ab = this.isArt(b) ? this.artBody(b) : null;
+    if (ab) { // seen from behind and a little above: the top art squashed, standing on dark sides
+      var bw = 0.9, bh = bw * ab.naturalHeight / ab.naturalWidth * 0.42, side = 0.16, by0 = -0.1;
+      var dk = this.dark(ab, "art:" + ab.src);
+      for (var i = 0; i < 6; i++) x.drawImage(dk, -bw / 2 * w, (by0 - side * i / 5 - bh) * w, bw * w, bh * w);
+      x.drawImage(ab, -bw / 2 * w, (by0 - side - bh) * w, bw * w, bh * w);
+      top = by0 - side - bh;
+    }
+    else if (this.lay(x, "rear_body_" + body, w, this.cn)) top = this.LAYERS["rear_body_" + body][1];
     else {
       x.lineWidth = lw; x.strokeStyle = "#111"; x.fillStyle = c.main; x.beginPath();
       if (body === "boxy") { x.moveTo(-0.38 * w, -0.2 * w); x.lineTo(-0.34 * w, -0.62 * w); x.lineTo(0.34 * w, -0.62 * w); x.lineTo(0.38 * w, -0.2 * w); top = -0.62; }
@@ -1733,7 +1826,9 @@ var CarArt = {
       rp.forEach(function (p) { x.lineWidth = lw; x.strokeStyle = "#111"; x.beginPath(); x.moveTo(p[0] * 0.3 * w, p[1] * w); x.lineTo(p[0] * 0.5 * w, p[1] * w); x.stroke(); x.beginPath(); x.arc(p[0] * 0.53 * w, p[1] * w, 0.07 * w, 0, 7); x.fillStyle = "#dee2e6"; x.fill(); x.stroke(); });
     }
     // body
-    if (!this.lay(x, "top_body_" + body, w, this.cn)) {
+    var abt = this.isArt(b) ? this.artBody(b) : null;
+    if (abt) { var bl = 1.5, bwid = bl * abt.naturalWidth / abt.naturalHeight; x.drawImage(abt, -bwid / 2 * w, -bl / 2 * w, bwid * w, bl * w); }
+    else if (!this.lay(x, "top_body_" + body, w, this.cn)) {
       x.lineWidth = lw; x.strokeStyle = "#111"; x.fillStyle = c.main; x.beginPath();
       if (body === "boxy") { rr(x, -0.32 * w, -0.72 * w, 0.64 * w, 1.4 * w, 0.12 * w); }
       else if (body === "sleek") { x.moveTo(0, -0.8 * w); x.quadraticCurveTo(0.34 * w, -0.5 * w, 0.32 * w, 0.66 * w); x.lineTo(-0.32 * w, 0.66 * w); x.quadraticCurveTo(-0.34 * w, -0.5 * w, 0, -0.8 * w); }
@@ -1767,6 +1862,7 @@ var C2S = { // state helpers
   testA: function (c) { var t = c.tests[this.week(c)]; return !!(t && t.a); }
 };
 function money(n) { return "NT$" + n; }
+function chunks(items, n) { var out = ""; for (var i = 0; i < items.length; i += n) out += "<div class='c2parts'>" + items.slice(i, i + n).join("") + "</div>"; return out; } // small blocks so the pager can split long lists
 
 var C2G = {
   /* ---------- screen frame ---------- */
@@ -1992,14 +2088,17 @@ var C2G = {
     }
     var cur = this.shopSlot || "motor", slotBar = "<div class='c2slots'>" + C2.SLOTS.map(function (sl) { return "<button class='chip" + (sl[0] === cur ? " on" : "") + "' data-sl='" + sl[0] + "'>" + bi(sl[1], sl[2]) + "</button>"; }).join("") + "</div>";
     if (tab === "buy") {
-      body = slotBar + "<div class='c2parts'>" + C2.PARTS[cur].filter(function (p) { return p.price > 0; }).map(function (p) {
+      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return p.price > 0; }).map(function (p) {
         var own = C2S.has(c, cur, p.v), price = Math.max(0, p.price - (c.coupon || 0));
-        return "<button class='opt" + (own ? " own" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span></button>";
-      }).join("") + "</div>";
+        return "<button class='opt" + (own ? " own" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + (p.art ? "<img class='thumb' src='" + A("b/" + p.v + "_orig") + "' alt=''>" : cur === "body" ? "<img class='thumb' src='" + A("L_top_body_" + p.v) + "' alt=''>" : "") + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small><span class='pr'>" + (own ? "✅ " + bi("已經有了", "Owned") : money(price)) + "</span></button>";
+      }), innerWidth > 900 ? 4 : 3);
     } else if (tab === "equip") {
-      body = slotBar + "<div class='c2parts'>" + C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).map(function (p) {
-        return "<button class='opt" + (c.build[cur] === p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small></button>";
-      }).join("") + "</div>";
+      body = slotBar + chunks(C2.PARTS[cur].filter(function (p) { return C2S.has(c, cur, p.v); }).map(function (p) {
+        return "<button class='opt" + (c.build[cur] === p.v ? " sel" : "") + "' data-s='" + cur + "' data-v='" + p.v + "'>" + (p.art ? "<img class='thumb' src='" + A("b/" + p.v + "_" + (p.v === c.build.body && c.build.paint ? c.build.paint : "orig")) + "' alt=''>" : "") + bi(p.zh, p.en) + "<small>" + zh(p.d[0]) + "<br>" + esc(p.d[1]) + "</small></button>";
+      }), innerWidth > 900 ? 4 : 3);
+      var cb = C2S.part("body", c.build.body);
+      if (cur === "body" && cb && cb.art) body = slotBar + "<div class='c2sub'>🎨 " + bi("車殼顏色（免費換）", "Body color (free to change)") + "</div><div class='c2paint'>" + cb.cols.map(function (k) {
+        return "<button class='paint" + ((c.build.paint || "orig") === k ? " on" : "") + "' data-p='" + k + "'><img src='" + A("b/" + cb.v + "_" + k) + "' alt='" + k + "'></button>"; }).join("") + "</div>" + body.slice(slotBar.length); // paint row goes under the pinned slot bar
     } else if (tab === "test") {
       body = "<div class='c2sub'>" + bi("選一條跑道測試（這次還能測 " + this.shopRuns + " 次）", "Pick a track to test (" + this.shopRuns + " runs left this visit)") + "</div><div class='c2tracks'>" + ["oval", "twisty", "hills"].map(function (id) {
         var T = TRACKS[id], b = c.best[id];
@@ -2010,7 +2109,10 @@ var C2G = {
       body = "<div class='c2sub'>" + bi("選最多 " + C2.TOOLBOX + " 個備用零件帶去比賽，比賽前可以換。", "Pick up to " + C2.TOOLBOX + " spare parts to bring to the cup. You can swap them in before the race.") + "</div><div class='c2parts'>" +
         (spares.length ? spares.map(function (k) { var a = k.split(":"), p = C2S.part(a[0], a[1]); return "<button class='opt" + (c.toolbox.indexOf(k) >= 0 ? " sel" : "") + "' data-k='" + k + "'>" + bi(p.zh, p.en) + "</button>"; }).join("") : "<i>" + bi("沒有備用零件（裝在車上的不算）", "No spare parts (parts on the car don't count)") + "</i>") + "</div>";
     }
-    var cd = this.card(tabs + body + "<div class='act'><button class='btn white' id='bOut'>🗺 " + bi("離開模型店", "Leave the store") + "</button></div>");
+    var pinned = body.indexOf("<div class='c2slots'>") === 0 ? body.slice(0, body.indexOf("</div>") + 6) : "";
+    if (pinned) body = body.slice(pinned.length);
+    var cd = this.card("<div class='pin'>" + tabs + pinned + "</div>" + body + "<div class='act'><button class='btn white' id='bOut'>🗺 " + bi("離開模型店", "Leave the store") + "</button></div>");
+    $$(".c2paint .paint", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); c.build.paint = b.dataset.p; save(); self.shop("equip"); }; });
     $$(".c2slots .chip", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); self.shopSlot = b.dataset.sl; self.shop(tab); }; });
     $$(".c2tabs .btn", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); Read.stop(); self.shop(b.dataset.t); }; });
     $("#bOut").onclick = function () { Read.stop(); self.advance(); };
@@ -2021,7 +2123,7 @@ var C2G = {
         self.drawCar(Object.assign({}, c.build, (function () { var o = {}; o[s] = v; return o; })())); // preview it on the car
         if (c.money < price) { sfx("buzz"); return Read.pair("錢不夠，去打工賺錢吧！還差 " + (price - c.money) + " 元。", "Not enough money. Work to earn " + money(price - c.money) + " more!"); }
         self.confirm(["買 " + p.zh + "，" + price + " 元？", "Buy " + p.en + " for " + money(price) + "?"], function () {
-          c.money -= price; c.coupon = 0; C2S.give(c, s, v); c.build[s] = v; save(); sfx("win"); self.shop("buy");
+          c.money -= price; c.coupon = 0; C2S.give(c, s, v); c.build[s] = v; if (s === "body") c.build.paint = "orig"; save(); sfx("win"); self.shop("buy");
         }, function () { self.shop("buy"); });
       };
       if (tab === "equip") b.onclick = function () { sfx("tap"); c.build[b.dataset.s] = b.dataset.v; c.toolbox = c.toolbox.filter(function (k) { return k !== b.dataset.s + ":" + b.dataset.v; }); save(); self.shop("equip"); };
@@ -2240,6 +2342,6 @@ window.__test = {
   }
 };
 </script>
-<div id="kaVer" data-v="2.0" data-d="2026-11-27">v2.0 · 2026-11-27</div>
+<div id="kaVer" data-v="2.1" data-d="2026-11-27">v2.1 · 2026-11-27</div>
 </body>
 </html>

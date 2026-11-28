@@ -1,6 +1,7 @@
 /* ===== Race: 3/4-view track on a canvas (hill rises, speed trails). The build decides everything; Lucas cheers. ===== */
 var IMG = {};
-function img(n) { if (!IMG[n]) { IMG[n] = new Image(); IMG[n].src = A(n); } return IMG[n]; }
+var IMGN = 0; // how many images have loaded (cached car drawings rebuild when this changes)
+function img(n) { if (!IMG[n]) { IMG[n] = new Image(); IMG[n].onload = function () { IMGN++; }; IMG[n].src = A(n); } return IMG[n]; }
 ["c_blue", "c_red", "c_green", "r_blue", "r_red", "r_green"].forEach(img);
 
 var Race = {
@@ -95,6 +96,9 @@ var Race = {
     var b = TRACK.box, m = 7, x0 = b[0] - m, x1 = b[2] + m, y0 = (b[1] - m) * this.K - this.HZ - 3, y1 = (b[3] + m) * this.K + 2.5;
     this.sc = Math.min(cv.width / (x1 - x0), cv.height / (y1 - y0));
     this.ox = (cv.width - (x1 - x0) * this.sc) / 2 - x0 * this.sc; this.oy = (cv.height - (y1 - y0) * this.sc) / 2 - y0 * this.sc;
+    // big tracks: zoom the 2.5D view in and follow Lucas, so the cars are big enough to see
+    this.zf = Math.max(1, Math.min(2.4, (cv.width / this.sc) / 62));
+    this.bgK = Math.min(this.zf, Math.sqrt(12e6 / (cv.width * cv.height))); this.zcam = null;
     if (!this.vmax) { var bb = JSON.parse(JSON.stringify(BEST)); this.vmax = carStats(Object.assign({}, DEFAULT_BUILD, bb)).top * 1.08; }
     this.buildTrack();
   },
@@ -144,8 +148,8 @@ var Race = {
   },
   buildTrack: function () {
     var cv = $("#raceCv"), bg = this.bg || (this.bg = document.createElement("canvas")), x = bg.getContext("2d"), self = this, b = TRACK.box;
-    bg.width = cv.width; bg.height = cv.height;
-    x.setTransform(this.sc, 0, 0, this.sc, this.ox, this.oy); x.lineJoin = "round";
+    var K = this.bgK || 1; bg.width = cv.width * K; bg.height = cv.height * K;
+    x.setTransform(this.sc * K, 0, 0, this.sc * K, this.ox * K, this.oy * K); x.lineJoin = "round";
     // the table: green top with a thick front edge
     var g0 = this.P(b[0] - 6, b[1] - 6, 0), g1 = this.P(b[2] + 6, b[3] + 6, 0);
     x.fillStyle = "#1b5e20"; rr(x, g0[0], g0[1] + 1.6, g1[0] - g0[0], g1[1] - g0[1], 3); x.fill();
@@ -295,8 +299,14 @@ var Race = {
     var cv = $("#raceCv"), x = cv.getContext("2d"), s = this.sc, self = this, b = TRACK.box;
     this.label = label;
     x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height);
-    if (this.bg) x.drawImage(this.bg, 0, 0);
-    x.setTransform(s, 0, 0, s, this.ox, this.oy); x.lineJoin = "round";
+    var zf = this.zf || 1, tx = 0, ty = 0;
+    if (zf > 1) { // follow Lucas, keep the view inside the table
+      var lp = this.pos(this.cars[0]), q0 = this.P(lp.x, lp.y, lp.z), bx = s * q0[0] + this.ox, by = s * q0[1] + this.oy;
+      var wx = Math.min(0, Math.max(cv.width * (1 - zf), cv.width / 2 - zf * bx)), wy = Math.min(0, Math.max(cv.height * (1 - zf), cv.height * 0.55 - zf * by));
+      if (!this.zcam) this.zcam = [wx, wy]; this.zcam[0] += (wx - this.zcam[0]) * 0.12; this.zcam[1] += (wy - this.zcam[1]) * 0.12; tx = this.zcam[0]; ty = this.zcam[1];
+    }
+    if (this.bg) { var K = this.bgK || 1; x.setTransform(zf / K, 0, 0, zf / K, tx, ty); x.drawImage(this.bg, 0, 0); }
+    x.setTransform(s * zf, 0, 0, s * zf, this.ox * zf + tx, this.oy * zf + ty); x.lineJoin = "round";
     // hill pieces and cars, far to near, so the ramp hides what is behind it
     var items = this.quads().filter(function (q) { return q.hill; }).map(function (q) { return { d: q.d, q: q }; });
     this.cars.forEach(function (c) { var p = self.pos(c); items.push({ d: p.y + 0.01, c: c, p: p }); });
@@ -326,12 +336,18 @@ var Race = {
     // shadow on the ground under the car (shows how high it is)
     var sh = this.P(p.x, p.y, 0); x.fillStyle = "rgba(0,0,0," + (0.35 - Math.min(0.2, p.z * 0.02)) + ")";
     x.beginPath(); x.ellipse(sh[0] + p.z * 0.15, sh[1], 1.3 + p.z * 0.04, 0.8 * this.K + p.z * 0.02, 0, 0, 7); x.fill();
+    // the car has height: dark side layers stacked under the bright top, so it stands on the track instead of looking painted on
+    var tc = c.build ? CarArt.topCanvas(c.build, c.col) : (im.complete && im.naturalWidth ? im : null), dk = tc ? CarArt.dark(tc, c.build ? null : c.car) : null;
+    var tw = w, th = tc ? w * tc.height / tc.width : hgt, BODYH = 0.7;
     function sprite(px, py, pz, alpha) {
-      var q = self.P(px, py, pz); x.save(); x.globalAlpha = alpha; x.translate(q[0], q[1]); x.scale(1, self.K); x.rotate(p.h + Math.PI / 2);
-      if (me && alpha === 1) { x.shadowColor = "#ffd43b"; x.shadowBlur = 14 * self.sc / 10; }
-      if (c.build) CarArt.draw(x, c.build, "top", 0, 0, w, { col: c.col, center: true });
-      else if (im.complete && im.naturalWidth) x.drawImage(im, -w / 2, -hgt / 2, w, hgt); else { x.fillStyle = me ? "#1c7ed6" : "#e03131"; x.fillRect(-w / 2, -hgt / 2, w, hgt); }
-      x.restore();
+      function one(z, src, glow) {
+        var q = self.P(px, py, pz + z); x.save(); x.globalAlpha = alpha; x.translate(q[0], q[1]); x.scale(1, self.K); x.rotate(p.h + Math.PI / 2);
+        if (glow) { x.shadowColor = "#ffd43b"; x.shadowBlur = 14 * self.sc / 10; }
+        if (src) x.drawImage(src, -tw / 2, -th / 2, tw, th); else { x.fillStyle = me ? "#1c7ed6" : "#e03131"; x.fillRect(-tw / 2, -th / 2, tw, th); }
+        x.restore();
+      }
+      if (dk && alpha === 1) for (var i = 0; i < 5; i++) one(i * BODYH / 5, dk, false); // ghosts: top only
+      one(BODYH, tc, me && alpha === 1);
     }
     // speed trail: more ghosts and longer when fast
     if (!r.out && r.v > 1) {
