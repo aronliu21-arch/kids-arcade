@@ -85,7 +85,7 @@ function refreshMenu() {
   $("#lucasSub").innerHTML = sub;
   $("#bRead").innerHTML = (Read.on ? "🔊 " : "🔇 ") + bi("讀出來", "Read aloud");
 }
-var STAGES = [["shop", "故事：模型店", "Story: hobby shop"], ["garage", "組車", "Build the car"], ["test", "測試跑道", "Test run"], ["park", "比賽日", "Race day"], ["race", "第一場比賽", "Race 1"], ["win", "結局", "Ending"], ["c2", "第二章", "Chapter 2"], ["c2pm", "第二章：下課後", "Ch 2: after school (Mon PM)"], ["c2cup", "第二章：比賽日", "Ch 2: cup day"]];
+var STAGES = [["shop", "故事：模型店", "Story: hobby shop"], ["garage", "組車", "Build the car"], ["test", "測試跑道", "Test run"], ["park", "比賽日", "Race day"], ["race", "第一場比賽", "Race 1"], ["win", "結局", "Ending"], ["c2", "第二章", "Chapter 2"], ["c2pm", "第二章：下課後", "Ch 2: after school (Mon PM)"], ["c2cup", "第二章：比賽日", "Ch 2: cup day"], ["c2w2", "第二章：第二週", "Ch 2: week 2 (Mon)"]];
 function testerMenu() {
   var j = $("#jump");
   j.innerHTML = STAGES.map(function (s) { return "<button class='btn white' data-s='" + s[0] + "'>" + bi(s[1], s[2]) + "</button>"; }).join("");
@@ -132,9 +132,10 @@ function go(stage) {
   else if (stage === "race") Race.start("race");
   else if (stage === "win") playScene("win", finishEpisode);
   else if (stage === "c2") { k.stage = "done"; save(); C2G.start(); }
-  else if (stage === "c2pm" || stage === "c2cup") { // test shortcuts: skip Monday's class
+  else if (stage === "c2pm" || stage === "c2cup" || stage === "c2w2") { // test shortcuts: skip Monday's class
     k.stage = "done"; k.c2 = C2S.fresh(); var c = k.c2; c.intro = true; c.lessons[0] = true; c.slot = 1;
     if (stage === "c2cup") { c.day = 5; c.slot = 0; c.tests[1] = { pct: 1, a: true }; c.money = 1500; c.hasKit = true; c.build = JSON.parse(JSON.stringify(C2.KIT.build)); Object.keys(C2.KIT.build).forEach(function (s2) { C2S.give(c, s2, C2.KIT.build[s2]); }); C2S.give(c, "roller", "yes"); c.build.roller = "yes"; C2S.give(c, "tire", "soft"); c.toolbox = ["tire:soft"]; c.build.tire = "hard"; }
+    if (stage === "c2w2") { c.day = 7; c.slot = 0; c.tests[1] = { pct: 1, a: true }; c.cups.c1 = { place: 1 }; c.money = 800; c.hasKit = true; c.build = JSON.parse(JSON.stringify(C2.KIT.build)); Object.keys(C2.KIT.build).forEach(function (s2) { C2S.give(c, s2, C2.KIT.build[s2]); }); }
     save(); C2G.town();
   }
 }

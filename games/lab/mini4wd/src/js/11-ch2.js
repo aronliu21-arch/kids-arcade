@@ -56,7 +56,7 @@ function trackCard(id, best) {
 var C2G = {
   /* ---------- screen frame ---------- */
   // which music each place plays
-  LOCS: { town: "town", school: "school", lesson: "school", test: "school", quiz: "school", home: "home", sleep: "home", store: "store", shop: "store", event: "store", testResult: "store", work: "work", noodle: "work", job: "work", deliver: "work", bank: "work", cup: "anthem", pit: "anthem", cupResult: "anthem" },
+  LOCS: { town: "town", school: "school", lesson: "school", test: "school", quiz: "school", home: "home", sleep: "home", store: "store", shop: "store", event: "store", testResult: "store", work: "work", noodle: "work", job: "work", deliver: "work", bank: "work", wash: "work", books: "work", cup: "anthem", pit: "anthem", cupResult: "anthem" },
   frame: function (title) {
     var c = C2S.get(), d = C2.DAYS[C2S.dow(c)], sl = C2.SLOTNAMES[Math.min(2, c.slot)];
     $("#c2When").innerHTML = "📅 " + bi("第" + C2S.week(c) + "週 " + d[0] + " " + (c.slot > 2 ? "晚上" : sl[0]), "Week " + C2S.week(c) + " · " + d[1] + " · " + (c.slot > 2 ? "Night" : sl[1]));
@@ -134,12 +134,15 @@ var C2G = {
   /* ---------- school ---------- */
   school: function () {
     var c = C2S.get(), dow = C2S.dow(c), w = C2S.week(c);
-    if (w > 1) { this.frame(["學校", "School"]); this.card(this.say("teacher", "今天複習。下一個單元快準備好了！", "Today we review. The next unit is almost ready!") + "<div class='act'><button class='btn blue' id='sOk'>" + bi("好", "OK") + " ▶</button></div>"); $("#sOk").onclick = function () { Read.stop(); C2G.advance(); }; return; }
-    if (dow < 4) return this.lesson(C2.LESSONS[dow]);
+    var list = this.weekLessons(w);
+    if (!list) { this.frame(["學校", "School"]); this.card(this.say("teacher", "今天複習。下一個單元快準備好了！", "Today we review. The next unit is almost ready!") + "<div class='act'><button class='btn blue' id='sOk'>" + bi("好", "OK") + " ▶</button></div>"); $("#sOk").onclick = function () { Read.stop(); C2G.advance(); }; return; }
+    if (dow < 4) { var today = list.filter(function (L) { return L.day === dow; }), self = this, k = 0;
+      return (function nextL() { var L = today[k]; k++; self.lesson(L, k < today.length ? nextL : null, w + "-" + dow + "-" + (k - 1)); })(); }
     this.test(false);
   },
-  lesson: function (L) {
-    var c = C2S.get(), i = 0, self = this;
+  weekLessons: function (w) { return w === 1 ? C2.LESSONS : (C2.LESSONS_W[w] || null); },
+  lesson: function (L, then, key) {
+    var c = C2S.get(), i = 0, self = this, tip = L.tip || ["在家試試看：數一數家裡有幾個輪子？", "Try at home: how many wheels can you find at home?"];
     this.frame([L.sub[0] + "：" + L.title[0], L.sub[1] + ": " + L.title[1]]);
     function card() {
       if (i >= L.cards.length) return quiz();
@@ -150,15 +153,15 @@ var C2G = {
     }
     function quiz() {
       self.quiz(L.quiz, ["小考", "Quick quiz"], function (pts, max) {
-        c.lessons[L.day] = true; save();
-        self.card(self.say("teacher", "上完課了！你得到 " + pts + " / " + max + " 分。星期五考試會考這些喔。", "Lesson done! You got " + pts + " / " + max + ". Friday's test covers this.") +
-          "<div class='tip'>💡 " + bi("在家試試看：數一數家裡有幾個輪子？", "Try at home: how many wheels can you find at home?") + "</div><div class='act'><button class='btn blue' id='lDone'>" + bi("下課", "Class over") + " ▶</button></div>");
-        sfx("win"); $("#lDone").onclick = function () { Read.stop(); C2G.advance(); };
+        c.lessons[key || L.day] = true; save();
+        self.card(self.say("teacher", (then ? "這節課上完了！你得到 " : "上完課了！你得到 ") + pts + " / " + max + " 分。星期五考試會考這些喔。", "Lesson done! You got " + pts + " / " + max + ". Friday's test covers this.") +
+          "<div class='tip'>💡 " + bi(tip[0], tip[1]) + "</div><div class='act'><button class='btn blue' id='lDone'>" + (then ? bi("下一節課", "Next lesson") : bi("下課", "Class over")) + " ▶</button></div>");
+        sfx("win"); $("#lDone").onclick = function () { Read.stop(); if (then) then(); else C2G.advance(); };
       });
     }
     card();
   },
-  testQs: function () { var q = []; C2.LESSONS.forEach(function (L) { q = q.concat(L.quiz); }); q = q.concat(C2.TEST_EXTRA); return q.sort(function () { return Math.random() - 0.5; }).slice(0, 10); },
+  testQs: function () { var w = C2S.week(C2S.get()), q = []; (this.weekLessons(w) || C2.LESSONS).forEach(function (L) { q = q.concat(L.quiz); }); q = q.concat(w === 1 ? C2.TEST_EXTRA : (C2.TEST_EXTRA_W[w] || [])); return q.sort(function () { return Math.random() - 0.5; }).slice(0, 10); },
   test: function (retake) {
     var c = C2S.get(), w = C2S.week(c), self = this;
     this.frame(retake ? ["在家複習再考", "Study at home: retake"] : ["星期五考試", "Friday test"]);
@@ -375,10 +378,11 @@ var C2G = {
   work: function () {
     var self = this;
     this.frame(["打工", "Work"]);
+    var wk = C2S.week(C2S.get()), isOpen = function (j) { return j.open || wk >= j.week; };
     var cd = this.card("<div class='c2sub'>" + bi("選一個工作（一次工作用掉一段時間）", "Pick a job (one job uses one time slot)") + "</div><div class='c2jobs'>" + C2.JOBS.map(function (j) {
-      return "<button class='opt" + (j.open ? "" : " off") + "' data-j='" + j.id + "'><span class='ic'>" + j.ic + "</span>" + bi(j.zh, j.en) + "<span class='pr'>" + (j.open ? money(j.pay) + "+" : "🔒 " + bi("第" + j.week + "週開放", "Opens week " + j.week)) + "</span></button>";
+      return "<button class='opt" + (isOpen(j) ? "" : " off") + "' data-j='" + j.id + "'><span class='ic'>" + j.ic + "</span>" + bi(j.zh, j.en) + "<span class='pr'>" + (isOpen(j) ? money(j.pay) + "+" : "🔒 " + bi("第" + j.week + "週開放", "Opens week " + j.week)) + "</span></button>";
     }).join("") + "</div><div class='act'><button class='btn white' id='wBack'>🗺 " + bi("回地圖", "Back to map") + "</button></div>");
-    $$(".opt", cd).forEach(function (b) { b.onclick = function () { if (b.classList.contains("off")) { sfx("buzz"); return Read.pair("這個工作第二週才開放！", "This job opens in week 2!"); } sfx("tap"); ({ noodle: self.noodle, deliver: self.deliver, bank: self.bank })[b.dataset.j].call(self); }; });
+    $$(".opt", cd).forEach(function (b) { b.onclick = function () { if (b.classList.contains("off")) { sfx("buzz"); return Read.pair("這個工作第二週才開放！", "This job opens in week 2!"); } sfx("tap"); ({ noodle: self.noodle, deliver: self.deliver, bank: self.bank, wash: self.wash, books: self.books })[b.dataset.j].call(self); }; });
     $("#wBack").onclick = function () { Read.stop(); self.town(); };
   },
   /* noodle shop: make the tray for each order, then pick the right total */
@@ -500,6 +504,60 @@ var C2G = {
       return { say: ["客人要存錢，一共有多少？", "A customer is saving money. How much is it?"], ans: sum, why: [pile.join(" + ") + " = " + sum, pile.join(" + ") + " = " + sum],
         html: "<div class='till pile'>" + pile.map(cash).join("") + "</div><div class='quiz'><div class='ans'>" + opts.map(function (v) { return "<button class='btn' data-a='" + v + "'>" + money(v) + "</button>"; }).join("") + "</div></div>" };
     }, ["數錢時，先數大的鈔票，再數小的錢幣。", "When counting money, start with the big bills, then the small coins."]);
+  },
+  wash: function () { // count mud, next wash step, then the price board
+    var W = C2.WASH, P = W.price, R = function (n) { return (Math.random() * n) | 0; }, mix = function (a) { return a.filter(function (v, x) { return a.indexOf(v) === x; }).sort(function () { return Math.random() - 0.5; }); };
+    var board = "<div class='wboard'><b>🧽 " + bi("價目表", "Prices") + "</b><span>🚗 " + bi("小車", "Small car") + " " + money(P.small) + "</span><span>🚙 " + bi("大車", "Big car") + " " + money(P.big) + "</span><span>✨ " + bi("打蠟", "Wax") + " +" + money(P.wax) + "</span></div>";
+    var nums = function (opts, fmt) { return "<div class='quiz'><div class='ans'>" + opts.map(function (v) { return "<button class='btn' data-a='" + v + "'>" + (fmt ? fmt(v) : v) + "</button>"; }).join("") + "</div></div>"; };
+    this.job(C2.JOBS[3], 5, function (i) {
+      if (i === 0) { // count the mud spots
+        var k = 3 + R(5), spots = "";
+        for (var j = 0; j < k; j++) spots += "<i style='left:" + (10 + (j * 80 / k) + R(6)) + "%;top:" + (18 + R(50)) + "%'></i>";
+        return { say: ["這台車有幾個泥巴點？", "How many mud spots are on this car?"], ans: k, why: ["一個一個數：一共 " + k + " 個。", "Count them one by one: " + k + "."],
+          html: "<div class='wcar'><span>🚙</span>" + spots + "</div>" + nums(mix([k, k + 1, k - 1])) };
+      }
+      if (i === 1) { // which step comes next?
+        var at = 1 + R(W.steps.length - 1), others = [];
+        W.steps.forEach(function (s, x) { if (x !== at) others.push(x); });
+        others.sort(function () { return Math.random() - 0.5; });
+        var opts = mix([at, others[0], others[1]]);
+        return { say: ["洗車的下一步是什麼？", "What is the next wash step?"], ans: at, why: ["順序：" + W.steps.map(function (s) { return s[1]; }).join("、"), "Order: " + W.steps.map(function (s) { return s[2]; }).join(", ")],
+          html: "<div class='wsteps'>" + W.steps.slice(0, at).map(function (s, x) { return "<span>" + (x + 1) + ". " + s[0] + " " + bi(s[1], s[2]) + "</span>"; }).join("") + "<span class='q'>" + (at + 1) + ". ❓</span></div>" +
+            "<div class='quiz'><div class='ans'>" + opts.map(function (x) { var s = W.steps[x]; return "<button class='btn' data-a='" + x + "'>" + s[0] + " " + bi(s[1], s[2]) + "</button>"; }).join("") + "</div></div>" };
+      }
+      // price board math: one car + wax, two cars, then change from a bill
+      var big = R(2) === 1, wax = i !== 3 && R(2) === 1, car = big ? P.big : P.small, cz = big ? "大車" : "小車", ce = big ? "a big car" : "a small car";
+      if (i === 3) { var big2 = R(2) === 1, car2 = big2 ? P.big : P.small, sum2 = car + car2;
+        return { say: ["一台" + cz + "和一台" + (big2 ? "大車" : "小車") + "，一共多少錢？", "One " + (big ? "big" : "small") + " car and one " + (big2 ? "big" : "small") + " car. How much in all?"], ans: sum2, why: [car + " + " + car2 + " = " + sum2, car + " + " + car2 + " = " + sum2],
+          html: board + nums(mix([sum2, sum2 + 10, sum2 - 30 > 0 ? sum2 - 30 : sum2 + 30]), money) };
+      }
+      var cost = car + (wax ? P.wax : 0);
+      if (i === 2) return { say: ["客人要洗" + cz + (wax ? "，還要打蠟" : "") + "。要多少錢？", "Wash " + ce + (wax ? " with wax" : "") + ". How much?"], ans: cost, why: [wax ? car + " + " + P.wax + " = " + cost : cz + "是 " + car + " 元。", wax ? car + " + " + P.wax + " = " + cost : "A " + (big ? "big" : "small") + " car is NT$" + car + "."],
+        html: board + nums(mix([cost, cost + 20, cost === P.small ? 110 : cost - 30]), money) };
+      var paid = cost > 100 ? 500 : 100, ch = paid - cost;
+      return { say: ["洗" + cz + (wax ? "加打蠟" : "") + "，客人付 " + paid + " 元，要找多少？", "Wash " + ce + (wax ? " with wax" : "") + ". The customer pays NT$" + paid + ". How much change?"], ans: ch, why: [paid + " − " + cost + " = " + ch, paid + " − " + cost + " = " + ch],
+        html: board + "<div class='till pile'>" + cash(paid) + "</div>" + nums(mix([ch, ch + 10, ch + 30]), money) };
+    }, ["洗東西要照順序：先沖水、抹肥皂、刷一刷，最後沖乾淨！", "Try it when you wash your hands: water, soap, scrub, then rinse!"]);
+  },
+  books: function () { // shelve books by number, by first letter, and fill the gap
+    var R = function (n) { return (Math.random() * n) | 0; }, B = C2.BOOKS, AZ = C2.SHELF_AZ, cols = ["#ffc9c9", "#a5d8ff", "#b2f2bb", "#ffec99"];
+    var shelves = function (labels) { return "<div class='shelves'>" + labels.map(function (t, x) { return "<button class='shelf' data-a='" + x + "' style='background:" + cols[x] + "'><span>📚</span><b>" + t + "</b></button>"; }).join("") + "</div>"; };
+    this.job(C2.JOBS[4], 5, function (i) {
+      if (i < 2) { // number shelves 1-20, 21-40...
+        var n = 1 + R(80), s = Math.floor((n - 1) / 20), lab = [0, 1, 2, 3].map(function (x) { return (x * 20 + 1) + "–" + (x * 20 + 20); });
+        return { say: ["這本書是 " + n + " 號，要放哪一層？", "This is book number " + n + ". Which shelf?"], ans: s, why: [n + " 在 " + lab[s] + " 中間。", n + " is between " + lab[s].replace("–", " and ") + "."],
+          html: "<div class='bookc'>📕 <b>#" + n + "</b></div>" + shelves(lab) };
+      }
+      if (i < 4) { // English title, first letter A-F, G-L...
+        var t = B[R(B.length)], L = t[0], s2 = 0;
+        AZ.forEach(function (r, x) { if (L >= r[0] && L <= r[1]) s2 = x; });
+        return { say: ["這本書叫 " + t + "，第一個字母是 " + L + "。要放哪一層？", "This book is called " + t + ". It starts with " + L + ". Which shelf?"], ans: s2, why: [L + " 在 " + AZ[s2][0] + " 到 " + AZ[s2][1] + " 中間。", L + " comes between " + AZ[s2][0] + " and " + AZ[s2][1] + "."],
+          html: "<div class='bookc'>📘 <b><u>" + L + "</u>" + t.slice(1) + "</b></div>" + shelves(AZ.map(function (r) { return r[0] + "–" + r[1]; })) };
+      }
+      var st = 10 + R(80), gap = 1 + R(3), row = [0, 1, 2, 3, 4].map(function (x) { return x === gap ? "<span class='q'>❓</span>" : "<span>📗 " + (st + x) + "</span>"; }).join(""), ans = st + gap;
+      return { say: ["書要照號碼排。缺了哪一本？", "Books go in number order. Which one is missing?"], ans: ans, why: [(st + gap - 1) + " 的下一個是 " + ans + "。", "After " + (st + gap - 1) + " comes " + ans + "."],
+        html: "<div class='wsteps'>" + row + "</div><div class='quiz'><div class='ans'>" + [ans, ans + 2, ans - 2].sort(function () { return Math.random() - 0.5; }).map(function (v) { return "<button class='btn' data-a='" + v + "'>📗 " + v + "</button>"; }).join("") + "</div></div>" };
+    }, ["去圖書館時，看看書背上的號碼和字母，就知道書放在哪裡！", "Next time you're at the library, look at the numbers and letters on the book spines!"]);
   },
   /* ---------- the cup ---------- */
   cup: function () {

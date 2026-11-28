@@ -114,8 +114,111 @@ var C2 = {
       quiz: [
         { id: "c1", q: ["哪一個是「馬達」？", "Which one is the motor (馬達)?"], a: [["馬達", "馬達"], ["電池", "電池"], ["輪胎", "輪胎"]], c: 0, why: ["馬達讓車子跑。", "馬達 is the motor."] },
         { id: "c2", q: ["「輪胎」的「輪」，下面哪個詞也有？", "Which word also has 輪?"], a: [["齒輪", "齒輪"], ["電池", "電池"], ["車殼", "車殼"]], c: 0, why: ["齒輪也有「輪」。", "齒輪 has 輪 too."] },
-        { id: "c3", q: ["給馬達電的是？", "What gives the motor power?"], a: [["電池", "電池"], ["尾翼", "尾翼"], ["車殼", "車殼"]], c: 0, why: ["電池有電。", "The battery has the power."] }] }
+        { id: "c3", q: ["給馬達電的是？", "What gives the motor power?"], a: [["電池", "電池"], ["尾翼", "尾翼"], ["車殼", "車殼"]], c: 0, why: ["電池有電。", "The battery has the power."] }] },
+    // second lesson each day (v2.6)
+    { day: 0, sub: ["自然", "Science"], ic: "🔋", title: ["電池和電路", "Batteries and circuits"], tip: ["在家試試看：手電筒的開關關掉，燈為什麼不亮？", "Try at home: why does a flashlight go dark when you switch it off?"],
+      cards: [["電池裡面存著電。", "A battery stores power."],
+        ["電要繞一圈回到電池，馬達才會轉。這一圈叫電路。", "Power must go all the way around, back to the battery, to spin the motor. That loop is a circuit."],
+        ["開關關掉，電路就斷了，車子會停下來。", "Switch off and the loop breaks, so the car stops."]],
+      quiz: [
+        { id: "w1s4", q: ["電路斷掉，馬達會…", "If the circuit breaks, the motor…"], a: [["停下來", "stops"], ["轉更快", "spins faster"], ["變大", "gets bigger"]], c: 0, why: ["電過不去，馬達就不轉了。", "No power gets through, so the motor stops."] },
+        { id: "w1s5", q: ["四驅車要裝幾顆電池？", "How many batteries does a Mini 4WD car use?"], a: [["2 顆", "2"], ["1 顆", "1"], ["5 顆", "5"]], c: 0, why: ["四驅車用 2 顆三號電池。", "It uses 2 AA batteries."] },
+        { id: "w1s6", q: ["電池快沒電了，車子會…", "When the batteries are almost empty, the car…"], a: [["跑得很慢", "goes slowly"], ["跑更快", "goes faster"], ["飛起來", "flies"]], c: 0, why: ["電不夠，馬達就沒力氣。", "Less power makes a weaker motor."] }] },
+    { day: 1, sub: ["數學", "Math"], ic: "🕘", title: ["看時鐘", "Reading the clock"], tip: ["在家試試看：看看家裡的時鐘，現在是幾點？", "Try at home: look at a clock. What time is it now?"],
+      cards: [["短針告訴我們幾點，長針告訴我們幾分。", "The short hand shows the hour. The long hand shows the minutes."],
+        ["長針指著 12，就是整點。長針指著 6，就是半點。", "Long hand on 12 means o'clock. Long hand on 6 means half past."],
+        ["比賽 9 點開始，要提早 30 分鐘，8 點半就到。", "The race starts at 9:00. Come 30 minutes early, at 8:30."]],
+      quiz: [
+        { id: "w1m4", q: ["短針指著 3，長針指著 12，是幾點？", "Short hand on 3, long hand on 12. What time is it?"], a: [["3:00", "3:00"], ["12:00", "12:00"], ["3:30", "3:30"]], c: 0, why: ["長針在 12 是整點，短針在 3，就是 3 點。", "Long hand on 12 means o'clock, short hand on 3: 3:00."] },
+        { id: "w1m5", q: ["長針指著 6，是…", "The long hand on 6 means…"], a: [["半點", "half past"], ["整點", "o'clock"], ["6 點", "6 o'clock"]], c: 0, why: ["長針走到 6 是走了半圈，就是半點。", "Halfway around is half past."] },
+        { id: "w1m6", q: ["比賽 9 點開始，要提早 30 分鐘到，幾點要到？", "The race starts at 9:00. Arrive 30 minutes early. When?"], a: [["8:30", "8:30"], ["9:30", "9:30"], ["8:00", "8:00"]], c: 0, why: ["9 點往前 30 分鐘是 8 點半。", "30 minutes before 9:00 is 8:30."] }] },
+    { day: 2, sub: ["英文", "English"], ic: "🎨", title: ["隊伍的顏色", "Team colors"], tip: ["在家試試看：用英文說出你衣服的顏色！", "Try at home: say the colors of your clothes in English!"],
+      cards: [["blue 是藍色，我們隊的顏色。", "blue: our team's color."],
+        ["red 紅色，green 綠色，yellow 黃色。", "red, green, yellow."],
+        ["Rex 的車是 red，Kai 的車是 green。", "Rex's car is red. Kai's car is green."]],
+      quiz: [
+        { id: "w1e4", q: ["「藍色」的英文是？", "Which word means 藍色?"], a: [["blue", "blue"], ["black", "black"], ["brown", "brown"]], c: 0, why: ["blue 是藍色。", "blue is 藍色."] },
+        { id: "w1e5", q: ["🟩 是什麼顏色？", "What color is 🟩?"], a: [["green", "green"], ["red", "red"], ["yellow", "yellow"]], c: 0, why: ["🟩 是 green 綠色。", "🟩 is green."] },
+        { id: "w1e6", q: ["Rex's car is ___.", "Rex's car is ___."], a: [["red", "red"], ["blue", "blue"], ["green", "green"]], c: 0, why: ["Rex 的車是紅色 red。", "Rex's car is red."] }] },
+    { day: 3, sub: ["國語", "Chinese"], ic: "↔️", title: ["相反詞", "Opposites"], tip: ["在家試試看：找一個大的東西和一個小的東西！", "Try at home: find something big and something small!"],
+      cards: [["快 和 慢 是相反詞。", "快 (fast) and 慢 (slow) are opposites."],
+        ["大 和 小，長 和 短，也是相反詞。", "大 big and 小 small, 長 long and 短 short."],
+        ["上坡 和 下坡 也是相反的。", "上坡 uphill and 下坡 downhill are opposites too."]],
+      quiz: [
+        { id: "w1c4", q: ["「快」的相反是？", "What is the opposite of 快 (fast)?"], a: [["慢", "慢"], ["大", "大"], ["上", "上"]], c: 0, why: ["快的相反是慢。", "The opposite of 快 is 慢 (slow)."] },
+        { id: "w1c5", q: ["「長」的相反是？", "What is the opposite of 長 (long)?"], a: [["短", "短"], ["小", "小"], ["快", "快"]], c: 0, why: ["長的相反是短。", "The opposite of 長 is 短 (short)."] },
+        { id: "w1c6", q: ["「上坡」的相反是？", "What is the opposite of 上坡 (uphill)?"], a: [["下坡", "下坡"], ["上車", "上車"], ["快跑", "快跑"]], c: 0, why: ["上坡的相反是下坡。", "The opposite of uphill is 下坡 (downhill)."] }] }
   ],
+  // school week 2 (City Cup, Twisty Maze): two lessons a day, Mon-Thu
+  LESSONS_W: { 2: [
+    { day: 0, sub: ["自然", "Science"], ic: "🌀", title: ["為什麼會甩出彎道？", "Why cars fly off curves"], tip: ["生活小技巧：騎腳踏車轉彎前，要先慢下來！", "Try it on your bike: slow down before you turn!"],
+      cards: [["車子跑很快的時候，總是想直直往前走。", "A fast car always wants to keep going straight."],
+        ["所以過彎太快，車子會被甩出去。", "So if it takes a curve too fast, it flies off."],
+        ["慢一點，或用軟輪胎抓地，就過得了彎。", "Go a little slower, or grip with soft tires, to make the curve."]],
+      quiz: [
+        { id: "w2s1", q: ["過彎太快會怎樣？", "What happens if you take a curve too fast?"], a: [["被甩出去", "The car flies off"], ["變得更穩", "It gets steadier"], ["車子變小", "The car shrinks"]], c: 0, why: ["車子想直直走，就衝出彎道了。", "The car wants to go straight, so it flies off."] },
+        { id: "w2s2", q: ["怎樣過彎比較安全？", "How do you take a curve safely?"], a: [["慢一點", "Slow down"], ["加速", "Speed up"], ["閉上眼睛", "Close your eyes"]], c: 0, why: ["慢一點，車子才轉得過去。", "Slower cars can make the turn."] },
+        { id: "w2s3", q: ["跑很快的車子總是想…", "A fast car always wants to…"], a: [["直直往前", "go straight"], ["往後退", "go backward"], ["轉圈圈", "spin around"]], c: 0, why: ["跑得快的東西會想繼續直直走。", "Fast things want to keep going straight."] }] },
+    { day: 0, sub: ["自然", "Science"], ic: "🛞", title: ["滾輪和牆", "Rollers and walls"], tip: ["在家試試看：把球沿著牆滾，看看它怎麼走！", "Try at home: roll a ball along a wall and watch where it goes!"],
+      cards: [["滾輪裝在車子的四個角。", "Rollers sit on the car's four corners."],
+        ["滾輪碰到牆會轉，讓車子順著牆過彎。", "They roll along the wall and guide the car around curves."],
+        ["沒有滾輪，車子會撞牆，或飛出賽道。", "With no rollers, the car hits the wall or flies off the track."]],
+      quiz: [
+        { id: "w2s4", q: ["滾輪碰到牆會…", "When a roller touches the wall, it…"], a: [["轉動", "spins"], ["停住", "stops"], ["破掉", "breaks"]], c: 0, why: ["滾輪轉動，車子就順著牆走。", "It spins, so the car slides along the wall."] },
+        { id: "w2s5", q: ["彎道很多的賽道，一定要裝…", "A track with many curves needs…"], a: [["滾輪", "rollers"], ["喇叭", "a horn"], ["車燈", "lights"]], c: 0, why: ["滾輪幫車子過彎。", "Rollers guide the car through curves."] },
+        { id: "w2s6", q: ["滾輪裝在哪裡？", "Where do the rollers go?"], a: [["車子的四個角", "the 4 corners"], ["車頂", "the roof"], ["電池裡", "inside the battery"]], c: 0, why: ["四個角最先碰到牆。", "The corners touch the wall first."] }] },
+    { day: 1, sub: ["數學", "Math"], ic: "⚙️", title: ["數齒輪的齒", "Counting gear teeth"], tip: ["在家試試看：5 個 5 個數，數到 50！", "Try at home: count by 5s up to 50!"],
+      cards: [["齒輪上一個一個尖尖的叫做齒。", "The bumps on a gear are called teeth."],
+        ["齒很多，可以 2 個 2 個數：2、4、6、8。", "With lots of teeth, count by 2s: 2, 4, 6, 8."],
+        ["也可以 5 個 5 個數：5、10、15、20。", "Or count by 5s: 5, 10, 15, 20."]],
+      quiz: [
+        { id: "w2m1", q: ["5、10、15、？", "5, 10, 15, ?"], a: [["20", "20"], ["16", "16"], ["25", "25"]], c: 0, why: ["每次多 5：15 + 5 = 20。", "Add 5 each time: 15 + 5 = 20."] },
+        { id: "w2m2", q: ["2、4、6、8、？", "2, 4, 6, 8, ?"], a: [["10", "10"], ["9", "9"], ["12", "12"]], c: 0, why: ["每次多 2：8 + 2 = 10。", "Add 2 each time: 8 + 2 = 10."] },
+        { id: "w2m3", q: ["一個齒輪有 10 齒，3 個齒輪一共幾齒？", "A gear has 10 teeth. How many teeth on 3 gears?"], a: [["30", "30"], ["13", "13"], ["20", "20"]], c: 0, why: ["10 + 10 + 10 = 30。", "10 + 10 + 10 = 30."] }] },
+    { day: 1, sub: ["數學", "Math"], ic: "📏", title: ["圈數和距離", "Laps and distance"], tip: ["在家試試看：在房間走一圈，數數走了幾步？", "Try at home: walk around your room. How many steps is one lap?"],
+      cards: [["賽道一圈是 20 公尺。", "One lap of the track is 20 meters."],
+        ["跑 3 圈：20 + 20 + 20 = 60 公尺。", "3 laps: 20 + 20 + 20 = 60 meters."],
+        ["也可以寫成 20 × 3 = 60。", "You can also write 20 × 3 = 60."]],
+      quiz: [
+        { id: "w2m4", q: ["一圈 10 公尺，跑 4 圈是幾公尺？", "One lap is 10 m. How far is 4 laps?"], a: [["40 公尺", "40 m"], ["14 公尺", "14 m"], ["400 公尺", "400 m"]], c: 0, why: ["10 × 4 = 40。", "10 × 4 = 40."] },
+        { id: "w2m5", q: ["20 × 2 = ?", "20 × 2 = ?"], a: [["40", "40"], ["22", "22"], ["202", "202"]], c: 0, why: ["20 + 20 = 40。", "20 + 20 = 40."] },
+        { id: "w2m6", q: ["比賽要跑 5 圈，已經跑了 2 圈，還要跑幾圈？", "The race is 5 laps. You've done 2. How many are left?"], a: [["3 圈", "3"], ["7 圈", "7"], ["2 圈", "2"]], c: 0, why: ["5 − 2 = 3。", "5 − 2 = 3."] }] },
+    { day: 2, sub: ["英文", "English"], ic: "🧭", title: ["方向", "Directions"], tip: ["在家試試看：舉起你的 left hand，再舉 right hand！", "Try at home: raise your left hand, then your right hand!"],
+      cards: [["left 是左邊，right 是右邊。", "left and right."],
+        ["straight 是直直走，turn 是轉彎。", "straight: no turning. turn: change direction."],
+        ["The car turns left at the curve.", "The car turns left at the curve."]],
+      quiz: [
+        { id: "w2e1", q: ["「右邊」的英文是？", "Which word means 右邊?"], a: [["right", "right"], ["left", "left"], ["light", "light"]], c: 0, why: ["right 是右邊。", "right is 右邊."] },
+        { id: "w2e2", q: ["⬅️ is ___.", "⬅️ is ___."], a: [["left", "left"], ["right", "right"], ["up", "up"]], c: 0, why: ["箭頭指向左邊 left。", "The arrow points left."] },
+        { id: "w2e3", q: ["The road curves here. The car must ___.", "The road curves here. The car must ___."], a: [["turn", "turn"], ["sleep", "sleep"], ["eat", "eat"]], c: 0, why: ["彎道要轉彎 turn。", "At a curve, the car must turn."] }] },
+    { day: 2, sub: ["英文", "English"], ic: "🏁", title: ["fast, faster, fastest", "fast, faster, fastest"], tip: ["在家試試看：和家人比賽走路，誰是 the fastest？", "Try at home: race your family walking. Who is the fastest?"],
+      cards: [["fast 是快。", "fast."],
+        ["faster 是比較快：Kai is faster than Benny.", "faster: Kai is faster than Benny."],
+        ["fastest 是最快：Who is the fastest?", "fastest: Who is the fastest?"]],
+      quiz: [
+        { id: "w2e4", q: ["The ___ car wins the race.", "The ___ car wins the race."], a: [["fastest", "fastest"], ["slowest", "slowest"], ["fast", "fast"]], c: 0, why: ["最快的車贏：the fastest car。", "The fastest car wins."] },
+        { id: "w2e5", q: ["「比較快」的英文是？", "Which word means 比較快?"], a: [["faster", "faster"], ["fastest", "fastest"], ["fast", "fast"]], c: 0, why: ["faster 是比較快。", "faster means 比較快."] },
+        { id: "w2e6", q: ["The opposite of fast is ___.", "The opposite of fast is ___."], a: [["slow", "slow"], ["big", "big"], ["hot", "hot"]], c: 0, why: ["fast 的相反是 slow。", "fast ↔ slow."] }] },
+    { day: 3, sub: ["國語", "Chinese"], ic: "↕️", title: ["左右前後", "Left, right, front, back"], tip: ["在家試試看：說說看，你的左邊有什麼？", "Try at home: what is on your left right now?"],
+      cards: [["左 和 右：左手、右手。", "左 left and 右 right: 左手 left hand, 右手 right hand."],
+        ["前 和 後：前面、後面。", "前 front and 後 back: 前面, 後面."],
+        ["彎道往右邊轉，叫做右轉。", "Turning to the right is 右轉."]],
+      quiz: [
+        { id: "w2c1", q: ["「左」的相反是？", "What is the opposite of 左 (left)?"], a: [["右", "右"], ["前", "前"], ["下", "下"]], c: 0, why: ["左的相反是右。", "The opposite of 左 is 右 (right)."] },
+        { id: "w2c2", q: ["「前」的相反是？", "What is the opposite of 前 (front)?"], a: [["後", "後"], ["左", "左"], ["上", "上"]], c: 0, why: ["前的相反是後。", "The opposite of 前 is 後 (back)."] },
+        { id: "w2c3", q: ["往右邊轉彎叫做？", "Turning to the right is called?"], a: [["右轉", "右轉"], ["左轉", "左轉"], ["直走", "直走"]], c: 0, why: ["往右轉就是右轉。", "Turn right = 右轉."] }] },
+    { day: 3, sub: ["國語", "Chinese"], ic: "🚦", title: ["城市裡的字", "City words"], tip: ["生活小技巧：過馬路前，先看左右！", "Try it next time you cross a street: look left and right first!"],
+      cards: [["城市裡有很多大樓和馬路。", "A city has many tall buildings and roads."],
+        ["紅燈停，綠燈走。", "Red light: stop. Green light: go."],
+        ["過馬路前，要先看左右。", "Before you cross the road, look left and right."]],
+      quiz: [
+        { id: "w2c4", q: ["紅燈要…", "At a red light you…"], a: [["停", "stop"], ["走", "go"], ["跑", "run"]], c: 0, why: ["紅燈停。", "Red means stop."] },
+        { id: "w2c5", q: ["綠燈要…", "At a green light you…"], a: [["走", "go"], ["停", "stop"], ["睡覺", "sleep"]], c: 0, why: ["綠燈走。", "Green means go."] },
+        { id: "w2c6", q: ["過馬路前要看哪裡？", "Before crossing the road, where do you look?"], a: [["左右", "left and right"], ["天上", "up at the sky"], ["腳下", "at your feet"]], c: 0, why: ["看左右，確定沒有車。", "Look left and right to check for cars."] }] }
+  ] },
+  TEST_EXTRA_W: { 2: [
+    { id: "w2t1", q: ["城市盃彎道很多，車子最需要什麼？", "The City Cup has lots of curves. What does the car need most?"], a: [["滾輪和軟輪胎", "Rollers and soft tires"], ["只要大馬達", "Just a big motor"]], c: 0, why: ["滾輪和軟輪胎幫車子過彎。", "Rollers and soft tires help it through curves."] },
+    { id: "w2t2", q: ["10 + 10 + 10 + 10 = ?", "10 + 10 + 10 + 10 = ?"], a: [["40", "40"], ["30", "30"], ["400", "400"]], c: 0, why: ["10 × 4 = 40。", "10 × 4 = 40."] }] },
   TEST_EXTRA: [
     { id: "t1", q: ["上坡要用哪一種齒輪？", "Which gears are best for hills?"], a: [["力量齒輪", "Power gears"], ["高速齒輪", "Speed gears"]], c: 0, why: ["力量齒輪力氣大，爬得上去。", "Power gears push harder up hills."] },
     { id: "t2", q: ["200 + 160 + 140 = ?", "200 + 160 + 140 = ?"], a: [["500", "500"], ["400", "400"], ["460", "460"]], c: 0, why: ["200 + 160 = 360，360 + 140 = 500。", "200 + 160 = 360, 360 + 140 = 500."] }
@@ -147,6 +250,12 @@ var C2 = {
     ["今天天氣真好！", "What a nice day today!"], ["你長大想做什麼？", "What do you want to be when you grow up?"], ["下次我還要再來！", "I'll come back next time!"],
     ["聽說星期六有比賽，加油喔！", "I heard there's a race on Saturday. Good luck!"], ["你是小幫手嗎？好棒！", "Are you the little helper? Great job!"]],
   CASH: [500, 100, 50, 10, 5], // Taiwan bills and coins Lucas uses to collect the bill
+  // car wash job (week 2): wash steps in order + a price board
+  WASH: { steps: [["💦", "噴水", "Spray water"], ["🧼", "抹肥皂", "Add soap"], ["🧽", "刷一刷", "Scrub"], ["🚿", "沖乾淨", "Rinse"], ["🧻", "擦乾", "Dry"]],
+    price: { small: 50, big: 80, wax: 30 } },
+  // bookstore job (week 2): English titles for the A-Z shelves
+  BOOKS: ["Apples", "Bears", "Cars", "Dinosaurs", "Engines", "Frogs", "Gears", "Hills", "Ice", "Jets", "Kites", "Lions", "Moon", "Night", "Ocean", "Pizza", "Robots", "Rockets", "Stars", "Trains", "Up", "Volcano", "Wheels", "Zebra"],
+  SHELF_AZ: [["A", "F"], ["G", "L"], ["M", "R"], ["S", "Z"]],
   // rivals (boys only in Lucas's game), team colors
   KIDS: {
     kai: { col: "green" }, benny: { col: "yellow" }, rex: { col: "red" }
