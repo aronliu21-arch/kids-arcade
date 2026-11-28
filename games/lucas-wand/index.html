@@ -383,6 +383,7 @@ body[data-year="3"] #title.mag #tBg{background-image:url(art/bg-title2.webp)}
 <div class="hint port" id="rotHint">Turn your phone sideways ↻</div>
 
 <script src="../../voice.js"></script>
+<script src="../../tracker.js" data-game="lucas-wand"></script>
 <script>
 // ===== Letterforms =====
 // Units: baseline y=0, midline y=1, top line y=2, descender y=-1. y points UP.
@@ -3296,8 +3297,22 @@ Object.assign(BG_FALLBACK,{roost:'tower',arena:'courtyard',clock:'hall'});
 // battle helpers were drawn before this file loaded: redraw flying Pip with the flying picture
 Object.values(FOES).forEach(f=>(f.helpers||[]).forEach(h=>{ if(h.emoji==='🪶'&&typeof h.x==='string') Object.defineProperty(h,'x',{get:()=>PIP(512,400,.45,{expr:'happy',fly:true}),configurable:true});
  else if(typeof h.x==='string'&&h.x.length&&h.emoji==='🔥'&&/Ember hit it together/.test(h.msg||'')) Object.defineProperty(h,'x',{get:()=>D2(880,200,.4,{fly:true}),configurable:true}); }));
+/* Kids Arcade progress tracker hooks: play time comes from tracker.js; this records each written spell and each reading answer. */
+(function(){ if(!window.KA) return; try{ KA.setKid('lucas'); }catch(e){}
+ const _ps=Pad.prototype.score;
+ Pad.prototype.score=function(){ const r=_ps.apply(this,arguments);
+  try{ const st=r&&r.stars||0, mm=(typeof M!=='undefined'&&M)?M:null;
+   KA.answer({q:'Write: '+this.text, qid:'w:'+this.text, given:st+'★ '+Math.round(((r&&r.score)||0)*100)+'%', expected:this.text, correct:st>=1, tryNo:mm?mm.tries+1:1, topic:(mm&&mm.m&&mm.m.title)||'Writing'}); }catch(e){}
+  return r; };
+ const _rc=readCheck;
+ readCheck=function(){ let w=null,t=0,v='';
+  try{ if(R&&!$('#rdIn').disabled){ w=R.fix?R.items[R.i][1]:R.items[R.i]; t=R.tries; v=$('#rdIn').value; } }catch(e){}
+  const out=_rc.apply(this,arguments);
+  try{ if(w!==null&&R&&R.tries>t) KA.answer({q:'Read: '+w, qid:'r:'+w, given:v, expected:w, correct:normW(v)===normW(w), tryNo:R.tries, topic:(R.m&&R.m.title)||'Reading'}); }catch(e){}
+  return out; };
+})();
 </script>
-<div id="kaVer" data-v="1.7" data-d="2026-11-27" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.7 · 2026-11-27</div>
+<div id="kaVer" data-v="1.8" data-d="2026-11-28" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.8 · 2026-11-28</div>
 <script>(function(){var e=document.getElementById('kaVer');function go(){setTimeout(function(){if(e)e.style.display='none';},400);removeEventListener('pointerdown',go,true);}addEventListener('pointerdown',go,true);})();</script>
 </body>
 </html>

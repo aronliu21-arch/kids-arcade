@@ -34,6 +34,30 @@ svg text{font:11px -apple-system,sans-serif;fill:#6b6a66}
 .heat{display:grid;grid-template-columns:34px repeat(7,1fr);gap:3px;font-size:11px;color:var(--mut)}
 .heat div.c{height:16px;border-radius:3px}
 @media(max-width:700px){.tiles{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}.hide-s{display:none}}
+
+html,body{height:100%}
+body{padding:10px 12px}
+#app{height:calc(100vh - 20px);display:flex;flex-direction:column;gap:8px}
+#app .top{margin:0;align-items:center}
+#app h1{font-size:17px;margin:0}
+.bar2{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.goalstrip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fff;border-radius:12px;padding:7px 12px;font-size:14px}
+.goalstrip .dot{width:20px;height:20px;border-width:2px;font-size:11px}
+.tiles{margin:0;gap:8px}.tile{padding:8px 12px}.tile .v{font-size:20px}
+.main{flex:1;min-height:0;display:grid;grid-template-columns:1.15fr 1fr;grid-template-rows:minmax(170px,38%) 1fr;gap:8px}
+.main .card{margin:0;padding:10px 12px;min-height:0;display:flex;flex-direction:column}
+.main .card h2{font-size:14px;margin:0 0 6px;display:flex;justify-content:space-between;gap:6px}
+.main .card h2 span{font-weight:500;color:var(--mut);font-size:12px}
+.scroll{overflow:auto;min-height:0;flex:1}
+.chartbox{flex:1;min-height:0}
+tr.g{cursor:pointer}tr.g:hover td{background:#faf8f2}tr.g.open td{background:#f3f0ff}
+tr.mx td{background:#fbfaf6;font-size:13px;padding:6px 8px}
+.mxl{margin:0;padding:0;list-style:none}.mxl li{padding:4px 0;border-bottom:1px dashed var(--line)}.mxl li:last-child{border:0}
+.caret{display:inline-block;width:12px;color:var(--mut)}
+.heat2{display:grid;gap:3px;font-size:11px;color:var(--mut);align-items:center}
+.heat2 .c{height:100%;min-height:14px;border-radius:3px}
+.heat2 .hd{text-align:center;line-height:1.15}
+@media(max-width:820px){#app{height:auto}.main{grid-template-columns:1fr;grid-template-rows:auto}.main .card{max-height:none}.chartbox{height:170px}}
 </style></head><body><div class="wrap">
 
 <div id="gate">
@@ -47,22 +71,20 @@ svg text{font:11px -apple-system,sans-serif;fill:#6b6a66}
 <div id="app" hidden>
   <div class="top">
     <div><h1>Kids Progress</h1><div class="sub" id="asof"></div></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div class="bar2">
+      <div class="seg kidtabs" id="kids"></div>
       <div class="seg" id="range"><button data-d="7" class="on">7 days</button><button data-d="30">30 days</button><button data-d="90">90 days</button></div>
-      <a href="../" class="seg" style="text-decoration:none"><button>Arcade ↩</button></a>
+      <a href="../" class="small muted">Arcade ↩</a>
     </div>
   </div>
-  <div class="seg kidtabs" id="kids" style="margin-bottom:12px"></div>
-  <div class="card" id="goalCard"></div>
+  <div class="goalstrip" id="goalCard"></div>
   <div class="tiles" id="tiles"></div>
-  <div class="card"><h2>Minutes played per day</h2><div id="dayChart"></div></div>
-  <div class="cols">
-    <div class="card"><h2>Games</h2><div id="games"></div></div>
-    <div class="card"><h2>When they play</h2><div id="heat"></div><div class="small muted" style="margin-top:6px">Darker = more minutes. Late play (8 PM+) is in the bottom rows.</div></div>
+  <div class="main">
+    <div class="card"><h2>Minutes played per day <span id="dayRange"></span></h2><div class="chartbox" id="dayChart"></div></div>
+    <div class="card"><h2>When they play <span id="heatRange"></span></h2><div class="chartbox" id="heat"></div></div>
+    <div class="card"><h2>Games <span>tap a game to see missed questions</span></h2><div class="scroll" id="games"></div></div>
+    <div class="card"><h2>Play sessions <span>newest first</span></h2><div class="scroll" id="sessions"></div></div>
   </div>
-  <div class="card" style="margin-top:12px"><h2>Play sessions</h2><div id="sessions"></div></div>
-  <div class="card"><h2>Most missed questions</h2><div id="missed"></div></div>
-  <div class="small muted" style="text-align:center">Data from the Kids Arcade Progress Google Sheet. Answers are queued on each device and upload when it's online, so offline play shows up later.</div>
 </div>
 </div>
 <script>
@@ -104,19 +126,24 @@ function wd(s){var p=s.split("-"),x=new Date(+p[0],p[1]-1,+p[2]);return["Sun","M
 function md(s){var p=s.split("-");return["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][p[1]-1]+" "+(+p[2]);}
 function h12(h){return(h%12||12)+(h<12?" AM":" PM");}
 
+var NAMES={};
+fetch("../?n="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){var re=/en:"([^"]*)", url:"([^"]*)"/g,m;while((m=re.exec(t))){var id=m[2].replace(/\/$/,"").split("/").pop();NAMES[id]=m[1].replace(/&rsquo;|’/g,"'");}if(D)render();}).catch(function(){});
+function gname2(g){return NAMES[g]||gname(g);}
+var openGame=null;
 function render(){
   $("kids").innerHTML=Object.keys(KIDS).map(function(k){return'<button data-k="'+k+'" class="'+(k===kid?"on":"")+'" style="border-left-color:'+KIDS[k].c+'">'+KIDS[k].n+'</button>';}).join("");
-  [].forEach.call($("kids").children,function(b){b.onclick=function(){kid=b.dataset.k;render();};});
+  [].forEach.call($("kids").children,function(b){b.onclick=function(){kid=b.dataset.k;openGame=null;render();};});
   [].forEach.call($("range").children,function(b){b.classList.toggle("on",+b.dataset.d===days);b.onclick=function(){days=+b.dataset.d;render();};});
-  $("asof").textContent="Updated "+D.now.toLocaleString([], {weekday:"short",hour:"numeric",minute:"2-digit"})+" · tap a name to switch kids";
+  $("asof").textContent="Updated "+D.now.toLocaleString([], {weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
   var dl=dayList(),from=dl[0],inR=function(r){return r.kid===kid&&r.ldate>=from;};
-  var A=D.a.filter(inR),T=D.t.filter(inR),K=KIDS[kid];
+  var A=D.a.filter(inR),T=D.t.filter(inR),K=KIDS[kid],rangeTxt=md(dl[0])+" – "+md(dl[dl.length-1]);
+  $("dayRange").textContent=rangeTxt;$("heatRange").textContent=rangeTxt;
 
-  /* goal */
+  /* goal strip */
   var g=D.goals&&D.goals.list?D.goals.list.filter(function(x){return x.kid===kid;})[0]:null;
   if(g){var w=D.goals.week,dots="";for(var i=0;i<g.n;i++)dots+='<span class="dot'+(i<g.done?" on":"")+'">'+(i<g.done?"★":"")+'</span>';
-    $("goalCard").hidden=false;$("goalCard").innerHTML='<h2>🎯 Week '+w.no+' goal <span class="muted small">'+md(w.from)+' – '+md(w.to)+'</span></h2><div class="goal">'+dots+'<b>'+g.done+' / '+g.n+'</b> rounds at '+"★".repeat(g.min)+'+ · '+esc(g.label)+' '+(g.met?'<span class="pill ok">Done ✅</span>':'<span class="pill no">Not yet</span>')+'</div><div class="small muted" style="margin-top:6px">'+(g.detail.length?esc(g.detail.join(" · ")):"No rounds yet this week")+'</div>';}
-  else{$("goalCard").hidden=false;$("goalCard").innerHTML='<h2>🎯 Weekly goal</h2><div class="muted">No goal set for '+K.n+' this week.</div>';}
+    $("goalCard").innerHTML='<b>🎯 Week '+w.no+'</b><span class="muted small">'+md(w.from)+'–'+md(w.to)+'</span>'+dots+'<b>'+g.done+'/'+g.n+'</b><span>'+esc(g.label)+' at '+"★".repeat(g.min)+'+</span>'+(g.met?'<span class="pill ok">Done ✅</span>':'<span class="pill no">Not yet</span>')+'<span class="muted small">'+(g.detail.length?esc(g.detail.join(" · ")):"no rounds yet")+'</span>';}
+  else $("goalCard").innerHTML='<b>🎯 Weekly goal</b><span class="muted">None set for '+K.n+'</span>';
 
   /* tiles */
   var secs=T.reduce(function(s,r){return s+(+r.secs||0);},0),first=A.filter(function(r){return+r.tryNo===1;}),fok=first.filter(function(r){return isT(r.correct);}).length;
@@ -125,53 +152,63 @@ function render(){
   $("tiles").innerHTML=tile("Play time",fmtMin(secs/60),"avg "+fmtMin(secs/60/days)+" / day")+tile("Days played",Object.keys(playDays).length+" / "+days,"")+
     tile("First-try right",first.length?Math.round(100*fok/first.length)+"%":"—",first.length+" questions")+tile("Games played",Object.keys(games).length,"");
 
-  /* per-day stacked minutes by game */
   var gm={};T.forEach(function(r){gm[r.game]=(gm[r.game]||0)+(+r.secs||0);});
   var order=Object.keys(gm).sort(function(a,b){return gm[b]-gm[a];}),col={};order.forEach(function(x,i){col[x]=PAL[i%PAL.length];});
   $("dayChart").innerHTML=dayChart(dl,T,order,col);
+  $("heat").innerHTML=heat(dl,T,K);
 
-  /* games table */
-  var G={};function gg(x){return G[x]||(G[x]={s:0,n:0,f:0,fo:0,last:""});}
+  /* games + missed questions per game */
+  var G={};function gg(x){return G[x]||(G[x]={s:0,n:0,f:0,fo:0,last:"",miss:{}});}
   T.forEach(function(r){var o=gg(r.game);o.s+=+r.secs||0;if(r.ldate>o.last)o.last=r.ldate;});
-  A.forEach(function(r){var o=gg(r.game);o.n++;if(+r.tryNo===1){o.f++;if(isT(r.correct))o.fo++;}if(r.ldate>o.last)o.last=r.ldate;});
+  A.forEach(function(r){var o=gg(r.game);o.n++;if(+r.tryNo===1){o.f++;if(isT(r.correct))o.fo++;}if(r.ldate>o.last)o.last=r.ldate;
+    if(!isT(r.correct)){var q=String(r.q||"").replace(/^\[\d+\/\d+\]\s*/,""),k=q+"|"+r.expected,m=o.miss[k]||(o.miss[k]={q:q,e:r.expected,n:0,giv:{}});m.n++;if(r.given)m.giv[r.given]=1;}});
   var gk=Object.keys(G).sort(function(a,b){return G[b].s-G[a].s;}),maxS=Math.max.apply(null,gk.map(function(x){return G[x].s;}).concat([1]));
-  $("games").innerHTML=gk.length?'<table><tr><th>Game</th><th class="num">Time</th><th class="num">Right</th><th class="num hide-s">Last</th></tr>'+gk.map(function(x){var o=G[x],acc=o.f?Math.round(100*o.fo/o.f):null;
-    return'<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:'+(col[x]||"#ccc")+';margin-right:6px"></span>'+esc(gname(x))+'<div class="bar" style="margin-top:4px"><i style="width:'+(100*o.s/maxS)+'%;background:'+(col[x]||"#ccc")+'"></i></div></td><td class="num">'+fmtMin(o.s/60)+'</td><td class="num" style="color:'+(acc==null?"inherit":acc>=80?"var(--ok)":acc>=60?"#e8590c":"var(--bad)")+'">'+(acc==null?"—":acc+"%")+'</td><td class="num hide-s muted">'+(o.last?wd(o.last)+" "+md(o.last):"")+'</td></tr>';}).join("")+'</table>':'<div class="muted">Nothing played in this period.</div>';
-
-  /* heat: weekday x hour bands */
-  var bands=[["Morning",6,12],["Afternoon",12,17],["Evening",17,20],["8 PM+",20,24],["Night",0,6]],H={};
-  T.forEach(function(r){var p=r.ldate.split("-"),d=new Date(+p[0],p[1]-1,+p[2]).getDay();bands.forEach(function(b,bi){if(r.lhour>=b[1]&&r.lhour<b[2])H[bi+"|"+d]=(H[bi+"|"+d]||0)+(+r.secs||0);});});
-  var mx=Math.max.apply(null,Object.keys(H).map(function(k){return H[k];}).concat([1])),hh='<div class="heat"><div></div>'+["S","M","T","W","T","F","S"].map(function(x){return'<div style="text-align:center">'+x+'</div>';}).join("");
-  bands.forEach(function(b,bi){hh+='<div>'+b[0].replace("Afternoon","Aft.").replace("Morning","Morn.").replace("Evening","Eve.")+'</div>';for(var d=0;d<7;d++){var v=H[bi+"|"+d]||0;hh+='<div class="c" title="'+fmtMin(v/60)+'" style="background:'+(v?hexA(K.c,.15+.85*v/mx):"#f1efe8")+'"></div>';}});
-  $("heat").innerHTML=hh+'</div>';
+  if(!gk.length){$("games").innerHTML='<div class="muted">Nothing played in this period.</div>';}
+  else{
+    $("games").innerHTML='<table><tr><th>Game</th><th class="num">Time</th><th class="num">Right</th><th class="num">Missed</th><th class="num hide-s">Last</th></tr>'+gk.map(function(x){var o=G[x],acc=o.f?Math.round(100*o.fo/o.f):null,ml=Object.keys(o.miss).map(function(k){return o.miss[k];}).sort(function(a,b){return b.n-a.n;}),nm=ml.reduce(function(s,m){return s+m.n;},0),isOpen=openGame===x;
+      var row='<tr class="g'+(isOpen?" open":"")+'" data-g="'+esc(x)+'"><td><span class="caret">'+(ml.length?(isOpen?"▾":"▸"):"")+'</span><span style="display:inline-block;width:9px;height:9px;border-radius:3px;background:'+(col[x]||"#ccc")+';margin-right:5px"></span>'+esc(gname2(x))+'<div class="bar" style="margin:3px 0 0 17px"><i style="width:'+(100*o.s/maxS)+'%;background:'+(col[x]||"#ccc")+'"></i></div></td><td class="num">'+fmtMin(o.s/60)+'</td><td class="num" style="color:'+(acc==null?"inherit":acc>=80?"var(--ok)":acc>=60?"#e8590c":"var(--bad)")+'">'+(acc==null?"—":acc+"%")+'</td><td class="num">'+(nm||"—")+'</td><td class="num hide-s muted">'+(o.last?wd(o.last)+" "+mdShort(o.last):"")+'</td></tr>';
+      if(isOpen)row+='<tr class="mx"><td colspan="5">'+(ml.length?'<ul class="mxl">'+ml.slice(0,15).map(function(m){return'<li><b>'+m.n+'×</b> '+esc(m.q.length>90?m.q.slice(0,87)+"…":m.q)+' <span class="muted">→ right answer: <b>'+esc(m.e)+'</b>'+(Object.keys(m.giv).length?' · said '+esc(Object.keys(m.giv).slice(0,3).join(", ")):'')+'</span></li>';}).join("")+'</ul>':'<span class="muted">No misses 🎉</span>')+'</td></tr>';
+      return row;}).join("")+'</table>';
+    [].forEach.call(document.querySelectorAll("#games tr.g"),function(tr){tr.onclick=function(){var x=tr.dataset.g;openGame=openGame===x?null:x;render();};});
+  }
 
   /* sessions */
   var S={};function ss(r){var k=r.session||r.ldate+r.game;return S[k]||(S[k]={game:r.game,d:r.ldate,h:r.lhour,s:0,n:0,f:0,fo:0});}
   T.forEach(function(r){var o=ss(r);o.s+=+r.secs||0;if(r.ldate<o.d||(r.ldate===o.d&&r.lhour<o.h)){o.d=r.ldate;o.h=r.lhour;}});
   A.forEach(function(r){var o=ss(r);o.n++;if(+r.tryNo===1){o.f++;if(isT(r.correct))o.fo++;}});
-  var sl=Object.keys(S).map(function(k){return S[k];}).filter(function(o){return o.s>=20||o.n;}).sort(function(a,b){return(b.d+("0"+b.h).slice(-2)).localeCompare(a.d+("0"+a.h).slice(-2));}).slice(0,40);
-  $("sessions").innerHTML=sl.length?'<table><tr><th>When</th><th>Game</th><th class="num">Time</th><th class="num">Answers</th><th class="num">Right</th></tr>'+sl.map(function(o){var acc=o.f?Math.round(100*o.fo/o.f):null;
-    return'<tr><td>'+wd(o.d)+' '+md(o.d)+'<div class="small muted">'+h12(o.h)+(o.h>=20?' 🌙':'')+'</div></td><td>'+esc(gname(o.game))+'</td><td class="num">'+fmtMin(o.s/60)+'</td><td class="num">'+(o.n||"—")+'</td><td class="num">'+(acc==null?"—":acc+"%")+'</td></tr>';}).join("")+'</table>':'<div class="muted">No sessions in this period.</div>';
-
-  /* missed */
-  var M={};A.forEach(function(r){if(isT(r.correct))return;var q=String(r.q||"").replace(/^\[\d+\/\d+\]\s*/,""),k=r.game+"|"+q+"|"+r.expected;var o=M[k]||(M[k]={g:r.game,q:q,e:r.expected,n:0,giv:{}});o.n++;if(r.given)o.giv[r.given]=1;});
-  var ml=Object.keys(M).map(function(k){return M[k];}).sort(function(a,b){return b.n-a.n;}).slice(0,12);
-  $("missed").innerHTML=ml.length?'<table><tr><th>Question</th><th>Right answer</th><th class="num">Missed</th></tr>'+ml.map(function(o){return'<tr><td>'+esc(o.q.length>80?o.q.slice(0,77)+"…":o.q)+'<div class="small muted">'+esc(gname(o.g))+(Object.keys(o.giv).length?' · said '+esc(Object.keys(o.giv).slice(0,3).join(", ")):'')+'</div></td><td>'+esc(o.e)+'</td><td class="num">'+o.n+'×</td></tr>';}).join("")+'</table>':'<div class="muted">No misses in this period. 🎉</div>';
+  var sl=Object.keys(S).map(function(k){return S[k];}).filter(function(o){return o.s>=20||o.n;}).sort(function(a,b){return(b.d+("0"+b.h).slice(-2)).localeCompare(a.d+("0"+a.h).slice(-2));}).slice(0,60);
+  $("sessions").innerHTML=sl.length?'<table><tr><th>When</th><th>Game</th><th class="num">Time</th><th class="num">Right</th></tr>'+sl.map(function(o){var acc=o.f?Math.round(100*o.fo/o.f):null;
+    return'<tr><td style="white-space:nowrap">'+wd(o.d)+' '+mdShort(o.d)+' <span class="muted small">'+h12(o.h)+(o.h>=20?' 🌙':'')+'</span></td><td>'+esc(gname2(o.game))+'</td><td class="num">'+fmtMin(o.s/60)+'</td><td class="num">'+(acc==null?"—":acc+"%")+'</td></tr>';}).join("")+'</table>':'<div class="muted">No sessions in this period.</div>';
 }
+function mdShort(s){var p=s.split("-");return(+p[1])+"/"+(+p[2]);}
 function tile(l,v,d){return'<div class="tile"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="d">'+d+'</div></div>';}
 function hexA(h,a){var n=parseInt(h.slice(1),16);return"rgba("+(n>>16)+","+(n>>8&255)+","+(n&255)+","+a.toFixed(2)+")";}
+function heat(dl,T,K){
+  var bands=[["Morning","6–12",6,12],["Afternoon","12–5",12,17],["Evening","5–8",17,20],["Late 🌙","8 PM+",20,24],["Night","12–6 AM",0,6]];
+  var byDate=dl.length<=7,cols=byDate?dl:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],H={};
+  T.forEach(function(r){var key=byDate?r.ldate:wd(r.ldate);bands.forEach(function(b,bi){if(r.lhour>=b[2]&&r.lhour<b[3])H[bi+"|"+key]=(H[bi+"|"+key]||0)+(+r.secs||0);});});
+  var mx=Math.max.apply(null,Object.keys(H).map(function(k){return H[k];}).concat([1]));
+  var h='<div class="heat2" style="height:100%;grid-template-columns:62px repeat('+cols.length+',1fr);grid-template-rows:repeat(5,1fr) auto">';
+  bands.forEach(function(b,bi){h+='<div style="line-height:1.1">'+b[0]+'<br><span style="opacity:.7">'+b[1]+'</span></div>';cols.forEach(function(c){var v=H[bi+"|"+c]||0;h+='<div class="c" title="'+(byDate?wd(c)+" "+mdShort(c):c)+" "+b[0]+": "+fmtMin(v/60)+'" style="background:'+(v?hexA(K.c,.18+.82*v/mx):"#f1efe8")+'"></div>';});});
+  h+='<div></div>'+cols.map(function(c){return'<div class="hd">'+(byDate?wd(c)+'<br>'+mdShort(c):c)+'</div>';}).join("");
+  return h+'</div>'+(byDate?'':'<div class="small muted" style="margin-top:4px">Totals by weekday over '+dl.length+' days</div>');
+}
 function dayChart(dl,T,order,col){
-  var W=Math.max(320,$("dayChart").clientWidth||600),Hh=170,pl=34,pb=22,bw=(W-pl)/dl.length,by={};
+  var box=$("dayChart"),W=Math.max(300,box.clientWidth||600),Hh=Math.max(130,box.clientHeight||170),pl=30,pb=30,bw=(W-pl)/dl.length,by={};
   T.forEach(function(r){var o=by[r.ldate]||(by[r.ldate]={});o[r.game]=(o[r.game]||0)+(+r.secs||0)/60;});
   var mx=Math.max.apply(null,dl.map(function(d){var o=by[d]||{};return Object.keys(o).reduce(function(s,k){return s+o[k];},0);}).concat([10]));
   mx=Math.ceil(mx/10)*10;var y=function(v){return(Hh-pb)-(Hh-pb-8)*v/mx;};
   var s='<svg viewBox="0 0 '+W+' '+Hh+'" width="100%" height="'+Hh+'" role="img" aria-label="Minutes per day">';
   [0,mx/2,mx].forEach(function(v){s+='<line x1="'+pl+'" x2="'+W+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#eee"/><text x="'+(pl-4)+'" y="'+(y(v)+4)+'" text-anchor="end">'+Math.round(v)+'</text>';});
+  var every=dl.length<=7?1:dl.length<=31?Math.ceil(dl.length/8):Math.ceil(dl.length/9);
   dl.forEach(function(d,i){var o=by[d]||{},acc=0,x=pl+i*bw+bw*.15,w=bw*.7;
-    order.forEach(function(g){var v=o[g]||0;if(!v)return;s+='<rect x="'+x+'" y="'+y(acc+v)+'" width="'+w+'" height="'+(y(acc)-y(acc+v))+'" fill="'+col[g]+'" rx="2"><title>'+esc(gname(g))+': '+Math.round(v)+' min</title></rect>';acc+=v;});
-    var every=dl.length>14?Math.ceil(dl.length/10):1;if(i%every===0)s+='<text x="'+(x+w/2)+'" y="'+(Hh-6)+'" text-anchor="middle">'+(dl.length<=7?wd(d):md(d).replace(/^\w+ /,function(m){return m;}))+'</text>';});
+    order.forEach(function(g){var v=o[g]||0;if(!v)return;s+='<rect x="'+x+'" y="'+y(acc+v)+'" width="'+w+'" height="'+(y(acc)-y(acc+v))+'" fill="'+col[g]+'" rx="2"><title>'+esc(gname2(g))+': '+Math.round(v)+' min</title></rect>';acc+=v;});
+    if(acc>=1&&dl.length<=31)s+='<text x="'+(x+w/2)+'" y="'+(y(acc)-3)+'" text-anchor="middle" style="font-size:10px">'+Math.round(acc)+'</text>';
+    if(i%every===0||i===dl.length-1&&dl.length<=7){if(dl.length<=7)s+='<text x="'+(x+w/2)+'" y="'+(Hh-17)+'" text-anchor="middle">'+wd(d)+'</text>';s+='<text x="'+(x+w/2)+'" y="'+(Hh-4)+'" text-anchor="middle">'+mdShort(d)+'</text>';}});
   return s+'</svg>';
 }
+window.addEventListener("resize",function(){if(D&&!$("app").hidden)render();});
 })();
+
 </script>
 </body></html>
