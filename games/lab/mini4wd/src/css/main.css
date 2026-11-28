@@ -250,3 +250,34 @@ button{font:inherit;cursor:pointer;color:inherit}
 .trk{display:flex;gap:10px;align-items:center;text-align:left;margin:6px 0}.trk img{width:180px;max-width:45%;border:3px solid var(--ink);border-radius:12px;flex:none}
 .trk .tn{font-size:14px;font-weight:700;color:#444}.trkopt{display:block;width:100%;margin-bottom:6px}
 @media (max-height:500px){.trk img{width:120px}.c2parts.compact .opt .thumb{height:36px}.c2parts.compact .opt{font-size:12px}}
+/* noodle shop: food in dishes, Taiwan money */
+.dish{position:relative;display:inline-block;width:58px;height:46px;flex:none;vertical-align:middle}
+.dish .fd{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:30px;line-height:1;z-index:1}
+.dish::before{content:"";position:absolute;left:3px;right:3px;bottom:2px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--ink)}
+.dish.bowl .fd{bottom:14px;font-size:26px}
+.dish.bowl::after{content:"";position:absolute;left:6px;right:6px;bottom:0;height:24px;border:3px solid var(--ink);border-top:none;border-radius:0 0 26px 26px;background:linear-gradient(#e7f5ff,#a5d8ff);z-index:2}
+.dish.bowl::before{bottom:18px;height:10px;background:#d0ebff}
+.dish.cup::before{left:12px;right:12px;height:10px;background:#f1f3f5}
+.dish.cup .fd{bottom:6px;font-size:32px}
+.dish.steamer .fd{bottom:16px;font-size:24px}
+.dish.steamer::after{content:"";position:absolute;left:5px;right:5px;bottom:0;height:22px;border:3px solid var(--ink);border-radius:8px;background:repeating-linear-gradient(90deg,#e9c46a 0 6px,#d4a373 6px 9px);z-index:2}
+.dish.big{transform:scale(1.25);margin:6px 8px}
+.menu .opt{display:flex;flex-direction:column;align-items:center;padding:6px;font-size:14px;line-height:1.15}
+.menu{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}
+.tray{background:#c98a4b;border-color:#7a4a1c;min-height:78px}
+.tchip{border:none;background:none;padding:0;position:relative;cursor:pointer}
+.tchip b{position:absolute;top:-4px;right:-2px;background:#e03131;color:#fff;border-radius:50%;width:20px;height:20px;font-size:12px;line-height:20px;z-index:3}
+.bill2{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;font-size:22px;margin:4px 0}.bill2 small{font-weight:900;font-size:18px;margin-right:4px}
+.cashbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+.cashb{border:none;background:none;padding:2px;cursor:pointer;min-height:48px;min-width:48px}
+.coin{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:3px solid var(--ink);font-weight:900;box-shadow:inset 0 -4px 0 #0002}
+.coin.c50{width:56px;height:56px;background:#ffd43b;font-size:20px}.coin.c10{width:48px;height:48px;background:#dee2e6;font-size:18px}.coin.c5{width:42px;height:42px;background:#ced4da;font-size:17px}
+.bill{display:inline-flex;align-items:center;justify-content:center;width:84px;height:46px;border:3px solid var(--ink);border-radius:6px;font-weight:900;font-size:20px;color:#fff;text-shadow:0 1px 0 #000}
+.bill.b100{background:#e03131}.bill.b500{background:#a0522d}.bill.b1000{background:#1971c2}
+.till{display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:6px;border:3px dashed var(--ink);border-radius:14px;background:#fff9db;min-height:60px}
+.till .tchip .bill{width:60px;height:34px;font-size:15px}.till .tchip .coin{transform:scale(.8)}
+.till .got{margin-left:auto;font-weight:900;font-size:22px}
+@media (max-height:500px){.dish{width:46px;height:38px}.dish .fd{font-size:22px;bottom:10px}.bill{width:66px;height:38px;font-size:16px}.coin.c50{width:46px;height:46px}.coin.c10{width:42px;height:42px}.coin.c5{width:38px;height:38px}.menu{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}}
+.menu+.menu{margin-top:6px}.card>.pin.tray{margin-top:6px}
+@media (max-height:500px){.menu .opt{font-size:11px;padding:3px}.menu .opt .pr{font-size:12px}.c2say .ic{font-size:30px}.tray{min-height:52px;padding:4px}.dish.big{transform:none;margin:2px}.till{min-height:44px;padding:3px}}
+@media (max-height:500px){.cashq{display:none}.bill2{font-size:18px;margin:0}.cashbar{margin:3px 0}}

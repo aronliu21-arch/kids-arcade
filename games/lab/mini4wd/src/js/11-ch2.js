@@ -15,6 +15,8 @@ function chunks(items, n) { var out = ""; for (var i = 0; i < items.length; i +=
 function partCols() { var cd = $("#c2Card"); return Math.max(3, Math.floor(((cd && cd.clientWidth) || 600) - 40) / 128 | 0); } // one row per block
 function partImg(slot, p) { return p.art ? A("b/" + p.v + "_orig") : slot === "body" ? A("L_top_body_" + p.v) : CarArt.icon(slot, p.v); }
 function byPrice(a, b) { return a.price - b.price; }
+function dish(m, big) { return "<span class='dish " + m.d + (big ? " big" : "") + "'><span class='fd'>" + m.ic + "</span></span>"; } // food served in a bowl, plate, cup or steamer
+function cash(v) { return v >= 100 ? "<span class='bill b" + v + "'>" + v + "</span>" : "<span class='coin c" + v + "'>" + v + "</span>"; }
 /* track map picture: grey road, red curves (darker = tighter), orange hills, checkered start */
 var TRACKNOTE = {
   oval: ["直線很長，彎道很寬：最高速度最重要！", "Long straights, wide curves: top speed matters most!"],
@@ -361,18 +363,19 @@ var C2G = {
       if (n >= N) return pay();
       var k = 2 + (Math.random() < 0.5 ? 1 : 0), want = [];
       while (want.length < k) { var m = C2.MENU[Math.random() * C2.MENU.length | 0]; want.push(m); }
-      var tray = [], tries = 0, perfect = true;
+      var tray = [], tries = 0, perfect = true; self._want = want; // for automated tests
       var cnt = {}; want.forEach(function (m) { cnt[m.id] = (cnt[m.id] || 0) + 1; });
       var grp = C2.MENU.filter(function (m) { return cnt[m.id]; });
       var oz = grp.map(function (m) { return (cnt[m.id] > 1 ? cnt[m.id] + "份" : "") + m.zh; }).join("、"), oe = grp.map(function (m) { return m.en + (cnt[m.id] > 1 ? " ×" + cnt[m.id] : ""); }).join(", ");
       function draw() {
-        var cd = self.card("<div class='c2sub'>🍜 " + bi("客人", "Customer") + " " + (n + 1) + " / " + N + "</div>" +
-          "<div class='c2say'><span class='ic'>" + faces[n % faces.length] + "</span><div>" + bi("我要：" + oz, "I'd like: " + oe) + "</div></div>" +
-          "<div class='menu'>" + C2.MENU.map(function (m) { return "<button class='opt' data-m='" + m.id + "'><span class='ic'>" + m.ic + "</span>" + bi(m.zh, m.en) + "<span class='pr'>" + money(m.p) + "</span></button>"; }).join("") + "</div>" +
-          "<div class='tray'>🍽 " + (tray.length ? tray.map(function (m, i) { return "<button class='chip' data-i='" + i + "'>" + m.ic + " ✕</button>"; }).join("") : bi("點上面的菜放到托盤", "Tap the menu to fill the tray")) + "</div>" +
+        var cols = Math.max(4, ((($("#c2Card") || {}).clientWidth || 600) - 40) / 104 | 0), items = C2.MENU.map(function (m) { return "<button class='opt' data-m='" + m.id + "'>" + dish(m) + bi(m.zh, m.en) + "<span class='pr'>" + money(m.p) + "</span></button>"; }), rows = "";
+        for (var r = 0; r < items.length; r += cols) rows += "<div class='menu'>" + items.slice(r, r + cols).join("") + "</div>"; // rows so the pager can split the menu
+        var cd = self.card("<div class='pin'><div class='c2say'><span class='ic'>" + faces[n % faces.length] + "</span><div><small>🍜 " + (n + 1) + " / " + N + "</small> " + bi("我要：" + oz, "I'd like: " + oe) + "</div></div></div>" +
+          rows +
+          "<div class='pin tray'>" + (tray.length ? tray.map(function (m, i) { return "<button class='tchip' data-i='" + i + "' aria-label='remove'>" + dish(m, true) + "<b>✕</b></button>"; }).join("") : bi("點菜單，把菜放到托盤上", "Tap the menu to put food on the tray")) + "</div>" +
           "<div class='act'><button class='btn blue' id='nDone'>" + bi("送餐", "Serve") + " ▶</button></div>");
         $$(".menu .opt", cd).forEach(function (b) { b.onclick = function () { sfx("tap"); if (tray.length < 4) tray.push(C2.MENU.filter(function (m) { return m.id === b.dataset.m; })[0]); draw(); }; });
-        $$(".tray .chip", cd).forEach(function (b) { b.onclick = function () { tray.splice(+b.dataset.i, 1); draw(); }; });
+        $$(".tray .tchip", cd).forEach(function (b) { b.onclick = function () { tray.splice(+b.dataset.i, 1); draw(); }; });
         $("#nDone").onclick = function () {
           var a = want.map(function (m) { return m.id; }).sort().join(), t = tray.map(function (m) { return m.id; }).sort().join();
           if (a === t) { sfx("ding"); return bill(); }
@@ -381,17 +384,33 @@ var C2G = {
           else { Read.pair("不太對，再聽一次：" + oz, "Not quite. Listen again: " + oe); }
         };
       }
-      function bill() {
-        var sum = want.reduce(function (s, m) { return s + m.p; }, 0), opts = [sum, sum + 30, sum - 20 > 0 ? sum - 20 : sum + 50].sort(function () { return Math.random() - 0.5; }), bt = 0;
-        var cd = self.card("<div class='c2sub'>🧾 " + bi("一共多少錢？", "What's the total?") + "</div><div class='bill'>" + want.map(function (m) { return m.ic + " " + money(m.p); }).join(" + ") + " = ?</div><div class='quiz'><div class='ans'>" +
-          opts.map(function (o) { return "<button class='btn' data-v='" + o + "'>" + money(o) + "</button>"; }).join("") + "</div></div>");
-        Read.pair("一共多少錢？", "What's the total?");
-        $$(".ans .btn", cd).forEach(function (b) { b.onclick = function () {
-          if (b.disabled) return; bt++;
-          if (+b.dataset.v === sum) { b.classList.add("ok"); sfx("ding"); if (perfect && bt === 1) tips += C2.TIP; n++; setTimeout(customer, 700); return; }
-          b.classList.add("no"); b.disabled = true; sfx("buzz");
-          if (bt >= 2) { $$(".ans .btn", cd).forEach(function (x) { if (+x.dataset.v === sum) x.classList.add("ok"); }); Read.pair("答案是 " + sum + " 元。", "It's " + money(sum) + "."); n++; setTimeout(customer, 1800); }
-        }; });
+      function bill() { // collect the money: tap bills and coins until they make the total
+        var sum = want.reduce(function (s, m) { return s + m.p; }, 0), paid = [], bt = 0;
+        function draw2(msg) {
+          var got = paid.reduce(function (a, b) { return a + b; }, 0);
+          var cd = self.card("<div class='c2sub cashq'>🧾 " + bi("收錢：一共多少？用錢幣和鈔票湊出來", "Collect the money: make the total with bills and coins") + "</div>" +
+            "<div class='bill2 pin'>" + want.map(function (m) { return dish(m) + "<small>" + m.p + "</small>"; }).join("<b>+</b>") + "<b>= ?</b></div>" +
+            "<div class='cashbar pin'>" + C2.CASH.map(function (v) { return "<button class='cashb' data-v='" + v + "' aria-label='" + v + "'>" + cash(v) + "</button>"; }).join("") + "</div>" +
+            "<div class='till pin'>💰 " + (paid.length ? paid.map(function (v, i) { return "<button class='tchip' data-i='" + i + "'>" + cash(v) + "</button>"; }).join("") : bi("點上面的錢放進收銀台", "Tap the money to put it in the till")) + "<span class='got'>= " + got + "</span></div>" +
+            (msg ? "<div class='tip'>" + msg + "</div>" : "") +
+            "<div class='act'><button class='btn white' id='cClr'>↺ " + bi("清空", "Clear") + "</button><button class='btn blue' id='cOk'>" + bi("收好了", "Done") + " ▶</button></div>");
+          $$(".cashb", cd).forEach(function (b) { b.onclick = function () { if (paid.length < 14) { paid.push(+b.dataset.v); sfx("tap"); draw2(); } }; });
+          $$(".till .tchip", cd).forEach(function (b) { b.onclick = function () { paid.splice(+b.dataset.i, 1); draw2(); }; });
+          $("#cClr").onclick = function () { paid = []; draw2(); };
+          $("#cOk").onclick = function () {
+            bt++;
+            if (got === sum) { sfx("ding"); if (perfect && bt === 1) tips += C2.TIP; Read.pair("對了！一共 " + sum + " 元。", "Right! " + money(sum) + " in all."); n++; setTimeout(customer, 1200); return; }
+            sfx("buzz");
+            if (bt >= 2) { // show the answer with the fewest bills and coins
+              var left = sum, ans = []; C2.CASH.forEach(function (v) { while (left >= v) { ans.push(v); left -= v; } });
+              paid = ans; Read.pair("答案是 " + sum + " 元。", "It's " + money(sum) + "."); draw2("👉 " + bi(want.map(function (m) { return m.p; }).join(" + ") + " = " + sum, want.map(function (m) { return m.p; }).join(" + ") + " = " + sum)); n++;
+              setTimeout(customer, 2600); return;
+            }
+            var hint = got < sum ? ["還不夠，再加一點。", "Not enough yet. Add more."] : ["太多了，拿掉一些。", "Too much. Take some away."];
+            Read.pair(hint[0], hint[1]); draw2(bi(hint[0], hint[1]));
+          };
+        }
+        Read.pair("一共多少錢？", "What's the total?"); draw2();
       }
       Read.pair("我要：" + oz, "I'd like: " + oe);
       draw();

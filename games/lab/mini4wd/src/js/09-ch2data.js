@@ -128,8 +128,21 @@ var C2 = {
     { id: "bank", ic: "🏦", zh: "銀行數錢", en: "Bank helper", pay: 120, open: false },
     { id: "wash", ic: "🧽", zh: "洗車", en: "Car wash", pay: 110, open: false },
     { id: "books", ic: "📚", zh: "書店整理", en: "Bookstore", pay: 100, open: false }],
-  MENU: [{ id: "beef", ic: "🍜", zh: "牛肉麵", en: "Beef noodles", p: 120 }, { id: "dump", ic: "🥟", zh: "水餃", en: "Dumplings", p: 60 }, { id: "tea", ic: "🧋", zh: "珍珠奶茶", en: "Bubble tea", p: 50 }, { id: "side", ic: "🥒", zh: "小菜", en: "Side dish", p: 30 }],
+  MENU: [ // d = dish: bowl, plate, cup, steamer
+    { id: "beef", ic: "🍜", zh: "牛肉麵", en: "Beef noodles", p: 120, d: "bowl" },
+    { id: "rice", ic: "🍚", zh: "滷肉飯", en: "Braised pork rice", p: 40, d: "bowl" },
+    { id: "fried", ic: "🍛", zh: "炒飯", en: "Fried rice", p: 80, d: "plate" },
+    { id: "soup", ic: "🥣", zh: "酸辣湯", en: "Hot and sour soup", p: 45, d: "bowl" },
+    { id: "dump", ic: "🥟", zh: "水餃", en: "Dumplings", p: 60, d: "plate" },
+    { id: "xlb", ic: "🥟", zh: "小籠包", en: "Soup dumplings", p: 90, d: "steamer" },
+    { id: "bao", ic: "🥙", zh: "刈包", en: "Gua bao", p: 55, d: "plate" },
+    { id: "pancake", ic: "🫓", zh: "蔥油餅", en: "Scallion pancake", p: 35, d: "plate" },
+    { id: "egg", ic: "🥚", zh: "茶葉蛋", en: "Tea egg", p: 15, d: "plate" },
+    { id: "side", ic: "🥒", zh: "小菜", en: "Side dish", p: 30, d: "plate" },
+    { id: "tea", ic: "🧋", zh: "珍珠奶茶", en: "Bubble tea", p: 50, d: "cup" },
+    { id: "soy", ic: "🥛", zh: "豆漿", en: "Soy milk", p: 25, d: "cup" }],
   TIP: 10, // per perfect customer
+  CASH: [500, 100, 50, 10, 5], // Taiwan bills and coins Lucas uses to collect the bill
   // rivals (boys only in Lucas's game), team colors
   KIDS: {
     kai: { col: "green" }, benny: { col: "yellow" }, rex: { col: "red" }
