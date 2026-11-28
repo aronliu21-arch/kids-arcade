@@ -3,6 +3,7 @@
    and sends them to the family's Google Sheet (Apps Script web app) for the weekly email.
    Games call:  KA.answer({q, given, expected, correct, tryNo, qid, topic})
    Optional:    KA.setKid("nora")  when a game has its own player picker.
+   Free-play games: KA.progress({where: "Year 2 · Ch 3", pct: 42, detail: "12/30 missions"}) — sent only when it changes.
    Nothing here can break a game: every call is wrapped in try/catch. */
 (function () {
   "use strict";
@@ -98,6 +99,17 @@
   window.addEventListener("online", function () { flush(); });
   setInterval(tick, TICK_MS);
 
+  /* ---- weekly-goal tally kept on this device (the arcade menu reads it) ---- */
+  var TKEY = "ka-tally-v1";
+  var tally = safe(function (r) {
+    if (kid === "tester" || !kid) return;
+    var t = {}; try { t = JSON.parse(store(TKEY) || "{}") || {}; } catch (e) {}
+    var d = t[r.ldate] || (t[r.ldate] = {}), k = d[kid] || (d[kid] = {});
+    k[game] = (k[game] || 0) + 1;
+    var keys = Object.keys(t).sort(); while (keys.length > 60) delete t[keys.shift()];
+    store(TKEY, JSON.stringify(t));
+  });
+
   /* ---- answers ---- */
   var lastAnswerAt = Date.now(), lastShownAt = 0, lastSig = "";
   function clip(v) { if (v === undefined || v === null) return ""; v = String(v); return v.length > 160 ? v.slice(0, 157) + "…" : v; }
@@ -118,7 +130,17 @@
       r.ms = Math.max(0, Math.min(600000, now - from));
       lastAnswerAt = now; poke();
       push(r);
+      if (r.correct && r.tryNo === 1) tally(r);
       if (readQ().length >= 20) flush();
+    }),
+    progress: safe(function (o) {
+      o = o || {}; if (kid === "tester" || !kid) return;
+      var pct = Math.max(0, Math.min(100, Math.round(Number(o.pct) || 0))), where = clip(o.where), detail = clip(o.detail);
+      var lk = "ka-prog-last", last = {}; try { last = JSON.parse(store(lk) || "{}") || {}; } catch (e) {}
+      var sig = where + "|" + pct + "|" + detail, k = kid + "|" + game;
+      if (last[k] === sig) return;
+      last[k] = sig; store(lk, JSON.stringify(last));
+      var r = base("progress"); r.where = where; r.pct = pct; r.detail = detail; push(r); flush();
     }),
     flush: function () { flush(); },
     _queue: readQ

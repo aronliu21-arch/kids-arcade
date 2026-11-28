@@ -61,6 +61,30 @@ h1{
 .sub{margin:10px 0 0;color:#fff;font-weight:800;font-size:1.15rem}
 main{max-width:1200px;margin:0 auto;padding:28px 18px 40px}
 .grid.cats{display:block}
+.wgoal{background:#fff8e1;color:#35240e;border:4px solid var(--ink);border-radius:20px;padding:12px 16px;margin:0 0 22px;box-shadow:5px 5px 0 var(--ink)}
+.wgoal.met{background:#ebfbee;color:#183c25}
+.wgoal .wh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-size:1.35rem;margin-bottom:6px}
+.wgoal .wh small{font-family:system-ui,sans-serif;font-weight:800;font-size:.95rem;opacity:.75}
+.wrow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:10px;padding:7px 4px;border-top:2px dashed #e0c98f;color:inherit;text-decoration:none}
+.wrow:first-of-type{border-top:0}
+.wrow .wi svg{width:40px;height:40px;display:block}
+.wrow .wn{font-weight:800;font-size:1.05rem;line-height:1.25}
+.wrow .wn .zc{font-size:1.05rem}
+.wrow .wt{font-size:.9rem;font-weight:700;opacity:.8}
+.wbar{display:block;height:12px;border-radius:99px;background:#f1e3bd;border:2px solid #a36a00;overflow:hidden;margin-top:4px}
+.wbar i{display:block;height:100%;background:#e8890c}
+.wrow.done .wbar{border-color:#28743e}.wrow.done .wbar i{background:#2f9e44}
+.wrow .wc{font-weight:900;font-size:1.15rem;white-space:nowrap;text-align:right}
+@media (max-width:520px){.wgoal{padding:10px 12px}.wrow{grid-template-columns:34px minmax(0,1fr) auto}.wrow .wi svg{width:32px;height:32px}}
+.kidbtn.locked{opacity:.45;filter:grayscale(.6)}
+.kidbtn .lock{position:absolute;top:8px;right:10px;font-size:1.4rem}
+.kidbtn.mine{outline:6px solid #ffd43b;outline-offset:3px}
+#lockDlg{position:fixed;inset:0;background:#0008;z-index:2147483100;display:flex;align-items:center;justify-content:center;padding:16px}
+#lockDlg[hidden]{display:none}
+#lockDlg .lb{background:#fff;color:#1b1f3b;border:4px solid var(--ink);border-radius:20px;padding:18px 22px;max-width:340px;width:100%;text-align:center;box-shadow:6px 6px 0 var(--ink)}
+#lockDlg input{font:inherit;font-size:1.8rem;letter-spacing:8px;text-align:center;width:170px;padding:8px;border-radius:12px;border:3px solid #ccd;margin:10px 0}
+#lockDlg button{font:inherit;font-weight:800;font-size:1rem;border:0;border-radius:12px;padding:10px 18px;margin:4px;cursor:pointer;background:#1b1f3b;color:#fff}
+#lockDlg button.ghost{background:#e9ecef;color:#1b1f3b}
 .catsec{margin:0 0 30px}
 .cathead{display:flex;align-items:center;gap:12px;margin:0 4px 14px;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;color:var(--ink)}
 .cathead .ci{font-size:2rem;line-height:1}
@@ -183,6 +207,9 @@ footer{text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;padd
     <div class="pick" id="pick"></div>
     <div class="testerrow"><button class="testerbtn" type="button" data-kid="tester">Tester</button></div>
     <a class="babalink" href="baba/" aria-label="Baba">爸</a>
+    <div id="lockDlg" hidden><form class="lb" id="lockForm"><div style="font-size:2.2rem">🔒</div><div id="lockMsg" style="font-weight:800"></div>
+      <input id="lockPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" aria-label="Baba code"><div id="lockErr" style="color:#e03131;min-height:1.2em;font-weight:700"></div>
+      <button type="submit">Open</button><button type="button" class="ghost" id="lockNo">Back</button></form></div>
   </section>
   <section id="gameView" hidden>
     <div class="bar">
@@ -190,11 +217,13 @@ footer{text-align:center;color:var(--muted);font-weight:700;font-size:.9rem;padd
       <div class="who-now" id="whoNow"></div>
     </div>
     <p class="tip" id="tip">點 ☆ 把最愛的遊戲放在最上面 · Tap ☆ to keep a favorite on top</p>
+    <div id="wgoal"></div>
     <div class="grid" id="grid"></div>
   </section>
 </main>
 <footer>Stars and progress save inside each game, on this device.<br><span id="offline" aria-live="polite"></span></footer>
 
+<script src="goals.js"></script>
 <script>
 // To add a game: add one line to the END of this list (newest last). The menu shows newest first,
 // inside Uncategorized until added to MENU. kids = whose page it appears on.
@@ -288,8 +317,33 @@ $("pick").innerHTML = Object.keys(NAMES).filter(k => k !== "tester").map(k => `
     <div class="kname">${NAMES[k]}</div>
     <div class="kzh" lang="zh-Hant">${titleHTML(ZH[k])}</div>
   </button>`).join("");
+// Whose iPad this is (set on the Baba page). The other big kid's profile and Tester then need the Baba code; Milo stays open.
+const OWNER = (() => { try { const o = localStorage.getItem("ka-owner"); return o === "nora" || o === "lucas" ? o : ""; } catch (e) { return ""; } })();
+const unlocked = {};
+const isLocked = k => !!OWNER && k !== OWNER && k !== "milo" && !unlocked[k];
+let lockFor = "";
+function askCode(k){
+  lockFor = k; $("lockMsg").innerHTML = `這是 ${NAMES[OWNER]} 的 iPad<br>This is ${NAMES[OWNER]}’s iPad.<br><span style="font-weight:600">Baba code to open ${k === "tester" ? "Tester" : NAMES[k]}:</span>`;
+  $("lockErr").textContent = ""; $("lockPin").value = ""; $("lockDlg").hidden = false; setTimeout(() => $("lockPin").focus(), 50);
+}
+async function shaHex(t){ const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("ka-owner|" + t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
+$("lockForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  let want = ""; try { want = localStorage.getItem("ka-owner-pin") || ""; } catch (er) {}
+  let got = ""; try { got = await shaHex($("lockPin").value.trim()); } catch (er) {}
+  if (want && got === want) { unlocked[lockFor] = true; $("lockDlg").hidden = true; location.hash = lockFor; }
+  else $("lockErr").textContent = "不對 · Wrong code";
+});
+$("lockNo").addEventListener("click", () => { $("lockDlg").hidden = true; });
+if (OWNER) document.querySelectorAll(".kidbtn").forEach(b => {
+  const k = b.dataset.kid; b.style.position = "relative";
+  if (k === OWNER) b.classList.add("mine");
+  else if (isLocked(k)) { b.classList.add("locked"); b.insertAdjacentHTML("beforeend", '<span class="lock" aria-hidden="true">🔒</span>'); }
+});
+if (OWNER && !location.hash) history.replaceState(null, "", "#" + OWNER);
 $("pickView").addEventListener("click", e => {
-  const b = e.target.closest(".kidbtn,.testerbtn"); if (b) location.hash = b.dataset.kid;
+  const b = e.target.closest(".kidbtn,.testerbtn"); if (!b) return;
+  if (isLocked(b.dataset.kid)) askCode(b.dataset.kid); else location.hash = b.dataset.kid;
 });
 $("back").addEventListener("click", () => { location.hash = ""; });
 const STAR = on => `<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="${on?"#fcc419":"#fff"}" stroke="#1b1f3b" stroke-width="2" stroke-linejoin="round"/></svg>`;
@@ -312,15 +366,51 @@ function cardHTML(g){
 }
 function show(){
   const kid = location.hash.slice(1);
+  if (kid && Object.prototype.hasOwnProperty.call(NAMES, kid) && isLocked(kid)) { history.replaceState(null, "", location.pathname + location.search); askCode(kid); return show(); }
   const valid = Object.prototype.hasOwnProperty.call(NAMES, kid);
   $("pickView").hidden = valid;
   $("gameView").hidden = !valid;
   $("sub").textContent = valid ? "點一個遊戲 · Tap a game to play!" : "誰要玩？ · Who\u2019s playing?";
-  if (!valid) return;
+  if (!valid) { Object.keys(unlocked).forEach(k => delete unlocked[k]); return; }
   $("whoNow").innerHTML = `<span class="mini" aria-hidden="true">${FACES[kid]}</span><span>${NAMES[kid]}\u2019s games</span>`;
   renderGrid(kid);
+  renderGoals(kid);
   window.scrollTo(0, 0);
 }
+// Weekly goals card (config in goals.js). Progress is what was played on this device.
+function goalProgress(kid, g, w){
+  if (g.type === "rounds") {
+    try { const db = JSON.parse(localStorage.getItem("calendarQuest.v1") || "null"), p = db && db.p && db.p[kid];
+      if (!p || !p.wk || p.wk.no !== w.no) return 0;
+      return p.wk.rounds.filter(r => r.stars >= g.min).length; } catch (e) { return 0; }
+  }
+  let t = {}; try { t = JSON.parse(localStorage.getItem("ka-tally-v1") || "{}") || {}; } catch (e) {}
+  let n = 0;
+  Object.keys(t).forEach(d => { if (d >= w.from && d <= w.to) { const k = t[d][kid] || {}; g.games.forEach(id => { n += +k[id] || 0; }); } });
+  return n;
+}
+function renderGoals(kid){
+  const box = $("wgoal"), G = window.KA_GOALS, list = G && G.kids[kid];
+  if (!list || !list.length) { box.innerHTML = ""; return; }
+  const w = G.week(new Date()), md = s => { const [y, m, d] = s.split("-"); return new Date(+y, m - 1, +d).toLocaleDateString([], {month:"short", day:"numeric"}); };
+  let all = true;
+  const rows = list.map(g => {
+    const game = GAMES.find(x => x.url === g.url); if (!game) return "";
+    const done = Math.min(goalProgress(kid, g, w), g.n), ok = done >= g.n; if (!ok) all = false;
+    const href = g.url + "?kid=" + encodeURIComponent(kid);
+    const what = g.type === "rounds"
+      ? `${titleHTML([["玩","ㄨㄢˊ"]])} ${g.n} ${titleHTML([["次","ㄘˋ"]])} · Play ${g.topic} ${g.n} times, ${"★".repeat(g.min)}+`
+      : `${titleHTML([["答","ㄉㄚˊ"],["對","ㄉㄨㄟˋ"]])} ${g.n} · Get ${g.n} right on the first try`;
+    return `<a class="wrow${ok ? " done" : ""}" href="${href}" target="_blank" rel="noopener">
+      <span class="wi" aria-hidden="true">${ICONS[game.icon]}</span>
+      <span><span class="wn"><span lang="zh-Hant">${titleHTML(game.zh)}</span> · ${game.en}</span><br><span class="wt">${what}</span>
+        <span class="wbar" aria-hidden="true"><i style="width:${Math.round(100 * done / g.n)}%"></i></span></span>
+      <span class="wc">${ok ? "✅" : ""} ${done} / ${g.n}</span></a>`;
+  }).join("");
+  box.innerHTML = `<div class="wgoal${all ? " met" : ""}"><div class="wh">🎯 <span lang="zh-Hant">${titleHTML([["本","ㄅㄣˇ"],["週","ㄓㄡ"],["目","ㄇㄨˋ"],["標","ㄅㄧㄠ"]])}</span> Week ${w.no} goals <small>${md(w.from)} – ${md(w.to)}</small>${all ? ` <span>🏆 ${titleHTML([["完","ㄨㄢˊ"],["成","ㄔㄥˊ"]])} All done!</span>` : ""}</div>${rows}</div>`;
+}
+window.addEventListener("pageshow", () => { const k = location.hash.slice(1); if (k) renderGoals(k); });
+document.addEventListener("visibilitychange", () => { const k = location.hash.slice(1); if (!document.hidden && k) renderGoals(k); });
 // Profile-specific shelves in display order. New games fall into Uncategorized.
 const MENU = {
   nora: [
@@ -414,7 +504,7 @@ setTimeout(check,1500);})();
 </html>
 
 <!-- version badge: bump data-v on every update -->
-<div id="kaVer" data-v="1.19" data-d="2026-11-28" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.19 · 2026-11-28</div>
+<div id="kaVer" data-v="1.20" data-d="2026-11-28" style="position:fixed;left:8px;bottom:6px;z-index:2147483000;pointer-events:none;font:700 11px/1.2 system-ui,sans-serif;color:#000;opacity:.7;background:#fffc;padding:3px 8px;font-size:12px;border-radius:999px">v1.20 · 2026-11-28</div>
 <!-- update check: the Home Screen app has no reload button, so look for a newer menu and offer it -->
 <button id="kaRefresh" type="button" aria-label="Check for updates" style="position:fixed;right:10px;bottom:8px;z-index:2147483000;width:44px;height:44px;border-radius:50%;border:2px solid #1b1f3b;background:#fff;font-size:22px;line-height:1;box-shadow:0 2px 0 #1b1f3b;cursor:pointer">↻</button>
 <div id="kaNew" hidden style="position:fixed;left:50%;transform:translateX(-50%);bottom:12px;z-index:2147483001;background:#2b8a3e;color:#fff;font:800 15px/1.3 system-ui,sans-serif;padding:12px 18px;border-radius:999px;box-shadow:0 4px 0 #1b1f3b;cursor:pointer">新版本!點這裡更新 · New version — tap to update</div>

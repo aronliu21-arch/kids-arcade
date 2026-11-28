@@ -12,3 +12,17 @@
   try{ if(w!==null&&R&&R.tries>t) KA.answer({q:'Read: '+w, qid:'r:'+w, given:v, expected:w, correct:normW(v)===normW(w), tryNo:R.tries, topic:(R.m&&R.m.title)||'Reading'}); }catch(e){}
   return out; };
 })();
+/* Free-play progress for the Baba page: which year/chapter, and % of all years' main missions done. */
+(function(){ if(!window.KA||!KA.progress) return;
+ function frac(list,done){ let t=0,d=0; (list||[]).forEach((c,i)=>(c.missions||[]).forEach(m=>{ if(m.kind==='mini') return; t++; if(done&&done[`c${i+1}:${m.id}`]) d++; })); return {t:t,d:d}; }
+ function report(){ try{
+  const L={1:CH1,2:Y2.CH}; if(typeof Y3!=='undefined'&&Y3.CH) L[3]=Y3.CH;
+  const ys=Object.keys(L).map(Number), y=yearOf(); let sum=0, here={t:0,d:0};
+  ys.forEach(k=>{ const st=k===y?S:(S.years&&S.years[k]); if(!st) return; const f=frac(L[k],st.done); if(k===y) here=f; sum+=st.allDone?1:(f.t?f.d/f.t:0); });
+  const n=Math.max(1,Math.min(S.ch||1,CHAPTERS.length)), c=CH(n);
+  KA.progress({where:'Year '+y+' · Chapter '+n+(c&&c.title?': '+c.title:'')+(S.allDone?' (year finished)':''), pct:100*sum/ys.length, detail:here.d+'/'+here.t+' missions in Year '+y+' · '+(S.stars||0)+' stars'});
+ }catch(e){} }
+ const _md=markDone; markDone=function(){ const r=_md.apply(this,arguments); report(); return r; };
+ const _sy=setYear; setYear=function(){ const r=_sy.apply(this,arguments); report(); return r; };
+ setTimeout(report,2500);
+})();

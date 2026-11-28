@@ -3,7 +3,7 @@
 Run on every push by the GitHub Action, so new games are included automatically."""
 import json, pathlib, re
 root = pathlib.Path(__file__).resolve().parent.parent
-files = ["./", "index.html", "tracker.js", "voice.js", "bilingual.js", "house.js", "kit.js", "sw.js", "updated.json"]
+files = ["./", "index.html", "goals.js", "tracker.js", "voice.js", "bilingual.js", "house.js", "kit.js", "sw.js", "updated.json"]
 ext = set()
 for p in sorted((root / "games").rglob("*.html")):
     if "src" in p.relative_to(root).parts:

@@ -21,12 +21,23 @@ var CONFIG = {
 };
 
 /* Weekly goals. Week 1 = Sat Nov 28 – Sun Dec 6 2026, then Monday–Sunday weeks.
-   A round counts when all its questions were answered and it scored at least `min` stars
-   (2 points for a first-try answer, 1 for a second try; 3★ at 85%+, 2★ at 60%+).
+   Keep in step with goals.js in the arcade (what the kids see on the menu).
+   type "rounds":  a round counts when all its questions were answered and it scored at least `min` stars
+                   (2 points for a first-try answer, 1 for a second try; 3★ at 85%+, 2★ at 60%+).
+   type "correct": answers right on the first try in any of `games`.
    Rebuilt from the raw answers, so it doesn't trust what the iPad says. */
 var GOALS = {
-  lucas: { game: "calendar-quest", topic: "What Time Is It?", label: "時間專家 · What Time Is It?", n: 3, min: 2 },
-  nora:  { game: "calendar-quest", topic: "What Time Is It?", label: "時間專家 · What Time Is It?", n: 4, min: 2 }
+  nora: [
+    { type: "rounds", game: "calendar-quest", topic: "What Time Is It?", label: "時間專家 · What Time Is It?", n: 4, min: 2 },
+    { type: "correct", games: ["times-tables", "times-challenge"], label: "Times Tables", n: 40 },
+    { type: "correct", games: ["spelling-bees"], label: "Spelling Bees", n: 20 },
+    { type: "correct", games: ["kanga-hop"], label: "Kanga Hop", n: 10 }
+  ],
+  lucas: [
+    { type: "rounds", game: "calendar-quest", topic: "What Time Is It?", label: "時間專家 · What Time Is It?", n: 3, min: 2 },
+    { type: "correct", games: ["spelling-bees"], label: "Spelling Bees", n: 15 },
+    { type: "correct", games: ["zhuyin"], label: "注音拼拼看 Zhuyin", n: 15 }
+  ]
 };
 
 var KID_INFO = {
@@ -42,11 +53,12 @@ var GAME_NAMES = {
   "game-room": "Game Room", "family-zoo": "Family Zoo", "zhuyin": "Zhuyin Spell-It", "lumi-quest": "Lumi Quest",
   "math-quest": "Math Quest", "drawing-game-": "Doodle Dash", "doodle-dash": "Doodle Dash", "critter-grove": "Critter Grove",
   "dragon-heart-en": "Dragon Heart Quest · English", "kanga-hop": "Kanga Hop", "times-challenge": "Times Table Challenge",
-  "cursive-quest": "Nora's Cursive Quest", "life-skills": "Life Skills Club", "runway-sketch": "Runway Sketchbook"
+  "cursive-quest": "Nora's Cursive Quest", "wand-art": "Wand Academy (Nora)", "lucas-wand": "Wand Academy (Lucas)", "dino-world": "Milo's Dino World", "life-skills": "Life Skills Club", "runway-sketch": "Runway Sketchbook"
 };
 
 var ANSWER_COLS = ["id", "ts", "ldate", "lhour", "kid", "game", "device", "session", "q", "qid", "given", "expected", "correct", "tryNo", "topic", "ms"];
 var TIME_COLS = ["id", "ts", "ldate", "lhour", "kid", "game", "device", "session", "secs"];
+var PROG_COLS = ["id", "ts", "ldate", "lhour", "kid", "game", "device", "session", "where", "pct", "detail"];
 
 /* ---------------- setup ---------------- */
 
@@ -58,6 +70,7 @@ function setup() {
   ss.setSpreadsheetTimeZone(CONFIG.timeZone);
   ensureSheet_(ss, "Answers", ANSWER_COLS);
   ensureSheet_(ss, "Time", TIME_COLS);
+  ensureSheet_(ss, "Progress", PROG_COLS);
   var first = ss.getSheetByName("Sheet1");
   if (first && ss.getSheets().length > 1) ss.deleteSheet(first);
 
@@ -98,9 +111,11 @@ function doGet(e) {
       .map(function (r) { return cols.map(function (c) { return r[c]; }); }); };
     var ans = readTable_(ss.getSheetByName("Answers")), tm = readTable_(ss.getSheetByName("Time"));
     out = { ok: true, now: now.toISOString(), from: from, games: GAME_NAMES, goals: weeklyGoals_(ans, now),
-      aCols: ["ldate", "lhour", "kid", "game", "session", "correct", "tryNo", "topic", "ms", "q", "expected", "given"],
-      tCols: ["ldate", "lhour", "kid", "game", "session", "secs"] };
+      aCols: ["ldate", "lhour", "kid", "game", "session", "correct", "tryNo", "topic", "ms", "q", "expected", "given", "ts", "device"],
+      tCols: ["ldate", "lhour", "kid", "game", "session", "secs", "device"] };
     out.a = pick(ans, out.aCols); out.t = pick(tm, out.tCols);
+    var pr = ss.getSheetByName("Progress"); out.pCols = ["ldate", "lhour", "kid", "game", "where", "pct", "detail", "ts", "device"];
+    out.p = pr ? readTable_(pr).filter(function (r) { return r.kid !== "tester"; }).map(function (r) { return out.pCols.map(function (c) { return r[c]; }); }) : [];
   }
   var txt = JSON.stringify(out);
   if (p.callback && /^[A-Za-z_$][\w$]*$/.test(p.callback))
@@ -118,16 +133,18 @@ function doPost(e) {
     var cache = CacheService.getScriptCache();
     var ids = body.rows.map(function (r) { return "r" + String(r.id || "").slice(0, 200); });
     var seen = cache.getAll(ids) || {};
-    var ss = sheet_(), answers = [], times = [], fresh = {};
+    var ss = sheet_(), answers = [], times = [], progs = [], fresh = {};
     body.rows.slice(0, 500).forEach(function (r, i) {
       if (!r || !r.id || seen[ids[i]] || fresh[ids[i]]) return;
       if (r.kid === "tester") return;
       fresh[ids[i]] = "1";
       if (r.type === "answer") answers.push(ANSWER_COLS.map(function (c) { return clean_(r[c]); }));
       else if (r.type === "time") times.push(TIME_COLS.map(function (c) { return clean_(r[c]); }));
+      else if (r.type === "progress") progs.push(PROG_COLS.map(function (c) { return clean_(r[c]); }));
     });
     if (answers.length) appendRows_(ss.getSheetByName("Answers"), answers);
     if (times.length) appendRows_(ss.getSheetByName("Time"), times);
+    if (progs.length) appendRows_(ensureSheet_(ss, "Progress", PROG_COLS), progs);
     if (Object.keys(fresh).length) cache.putAll(fresh, 21600);
   } finally { lock.releaseLock(); }
   return ContentService.createTextOutput("ok");
@@ -157,6 +174,8 @@ function sendReport_(now, isTest) {
   };
   var report = buildReport(data, now);
   report.goals = weeklyGoals_(data.answers, now);
+  var pr = ss.getSheetByName("Progress");
+  report.prog = freePlay_(pr ? readTable_(pr) : [], data.time, now);
   var subject = (isTest ? "[Test] " : "") + "Kids Arcade weekly report · " + report.rangeLabel;
   MailApp.sendEmail({ to: CONFIG.email, subject: subject, htmlBody: renderHtml(report, ss.getUrl()), name: "Kids Arcade" });
 }
@@ -287,6 +306,25 @@ function busiestDay_(rows, days) {
 function esc_(s) { return String(s === undefined || s === null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 
 
+/* ---------------- free-play progress (games that call KA.progress) ---------------- */
+function freePlay_(prog, time, now) {
+  var to = ymd_(now), from = ymd_(new Date(now.getTime() - 6 * 864e5)), by = {};
+  prog.forEach(function (r) {
+    if (r.kid === "tester") return;
+    var d = String(r.ldate instanceof Date ? ymd_(r.ldate) : r.ldate).slice(0, 10), k = r.kid + "|" + r.game;
+    var o = by[k] || (by[k] = { kid: r.kid, game: r.game, last: null, before: null });
+    var t = String(r.ts);
+    if (d <= to && (!o.last || t > o.last.t)) o.last = { t: t, d: d, where: r.where, pct: +r.pct || 0, detail: r.detail };
+    if (d < from && (!o.before || t > o.before.t)) o.before = { t: t, pct: +r.pct || 0 };
+  });
+  return Object.keys(by).map(function (k) {
+    var o = by[k], secs = time.filter(function (r) { var d = String(r.ldate instanceof Date ? ymd_(r.ldate) : r.ldate).slice(0, 10); return r.kid === o.kid && r.game === o.game && d >= from && d <= to; })
+      .reduce(function (s, r) { return s + (+r.secs || 0); }, 0);
+    return { kid: o.kid, game: GAME_NAMES[o.game] || o.game, where: o.last ? o.last.where : "", pct: o.last ? o.last.pct : 0,
+      gain: o.last ? o.last.pct - (o.before ? o.before.pct : 0) : 0, detail: o.last ? o.last.detail : "", lastDay: o.last ? o.last.d : "", min: Math.round(secs / 60) };
+  }).filter(function (x) { return x.where; });
+}
+
 /* ---------------- weekly goals ---------------- */
 function goalWeek_(now) {
   var d = new Date(now.getFullYear(), now.getMonth(), now.getDate()), w2 = new Date(2026, 11, 7);
@@ -296,32 +334,46 @@ function goalWeek_(now) {
 }
 function weeklyGoals_(answers, now) {
   var w = goalWeek_(now), out = [];
+  var inW = function (r) { return r.ldate >= w.from && r.ldate <= w.to; };
   Object.keys(GOALS).forEach(function (kid) {
-    var g = GOALS[kid];
-    var rows = answers.filter(function (r) { return r.kid === kid && r.game === g.game && r.topic === g.topic && r.ldate >= w.from && r.ldate <= w.to; })
-      .sort(function (a, b) { return String(a.ts) < String(b.ts) ? -1 : 1; });
-    var rounds = [], cur = null;
-    rows.forEach(function (r) {
-      var m = /^\[(\d+)\/(\d+)\]/.exec(String(r.q || "")); if (!m) return;
-      var i = +m[1], n = +m[2];
-      if (!cur || cur.session !== r.session || i < cur.last || (i === 1 && cur.last > 1)) { cur = { session: r.session, n: n, q: {}, last: 0, day: r.ldate }; rounds.push(cur); }
-      cur.last = i;
-      var q = cur.q[i] || (cur.q[i] = { pts: 0, done: false });
-      if (q.done) return;
-      if (isTrue_(r.correct)) { q.pts = Number(r.tryNo) === 1 ? 2 : 1; q.done = true; }
-      else if (Number(r.tryNo) >= 2) q.done = true;
+    GOALS[kid].forEach(function (g) {
+      if (g.type === "correct") {
+        var per = {}, done = 0;
+        answers.forEach(function (r) {
+          if (r.kid !== kid || g.games.indexOf(r.game) < 0 || !inW(r) || !isTrue_(r.correct) || Number(r.tryNo) !== 1) return;
+          done++; per[r.ldate] = (per[r.ldate] || 0) + 1;
+        });
+        var det = Object.keys(per).sort().map(function (d) { return dayName_(d) + " " + per[d]; });
+        out.push({ kid: kid, type: "correct", label: g.label, n: g.n, done: done, met: done >= g.n, detail: det });
+        return;
+      }
+      out.push(roundsGoal_(kid, g, answers.filter(function (r) { return r.kid === kid && r.game === g.game && r.topic === g.topic && inW(r); })));
     });
-    var done = 0, detail = [];
-    rounds.forEach(function (rd) {
-      var keys = Object.keys(rd.q), complete = keys.length >= rd.n && keys.every(function (k) { return rd.q[k].done; });
-      if (!complete) { detail.push(dayName_(rd.day) + " quit"); return; }
-      var pts = keys.reduce(function (s, k) { return s + rd.q[k].pts; }, 0), pct = pts / (rd.n * 2), st = pct >= .85 ? 3 : pct >= .6 ? 2 : 1;
-      if (st >= g.min) done++;
-      detail.push(dayName_(rd.day) + " " + "★".repeat(st) + " " + Math.round(pct * 100) + "%");
-    });
-    out.push({ kid: kid, label: g.label, n: g.n, min: g.min, done: done, met: done >= g.n, detail: detail });
   });
   return { week: w, list: out };
+}
+function roundsGoal_(kid, g, rows) {
+  rows.sort(function (a, b) { return String(a.ts) < String(b.ts) ? -1 : 1; });
+  var rounds = [], cur = null;
+  rows.forEach(function (r) {
+    var m = /^\[(\d+)\/(\d+)\]/.exec(String(r.q || "")); if (!m) return;
+    var i = +m[1], n = +m[2];
+    if (!cur || cur.session !== r.session || i < cur.last || (i === 1 && cur.last > 1)) { cur = { session: r.session, n: n, q: {}, last: 0, day: r.ldate }; rounds.push(cur); }
+    cur.last = i;
+    var q = cur.q[i] || (cur.q[i] = { pts: 0, done: false });
+    if (q.done) return;
+    if (isTrue_(r.correct)) { q.pts = Number(r.tryNo) === 1 ? 2 : 1; q.done = true; }
+    else if (Number(r.tryNo) >= 2) q.done = true;
+  });
+  var done = 0, detail = [];
+  rounds.forEach(function (rd) {
+    var keys = Object.keys(rd.q), complete = keys.length >= rd.n && keys.every(function (k) { return rd.q[k].done; });
+    if (!complete) { detail.push(dayName_(rd.day) + " quit"); return; }
+    var pts = keys.reduce(function (s, k) { return s + rd.q[k].pts; }, 0), pct = pts / (rd.n * 2), st = pct >= .85 ? 3 : pct >= .6 ? 2 : 1;
+    if (st >= g.min) done++;
+    detail.push(dayName_(rd.day) + " " + "★".repeat(st) + " " + Math.round(pct * 100) + "%");
+  });
+  return { kid: kid, type: "rounds", label: g.label, n: g.n, min: g.min, done: done, met: done >= g.n, detail: detail };
 }
 function isTrue_(v) { return v === true || String(v).toLowerCase() === "true"; }
 
@@ -341,9 +393,17 @@ function renderHtml(rep, sheetUrl) {
     rep.goals.list.forEach(function (x) {
       var info = KID_INFO[x.kid] || { name: x.kid, color: "#333" };
       h.push('<div style="' + small + 'margin-top:6px"><b style="color:' + info.color + '">' + esc_(info.name) + '</b> ' + (x.met ? '✅' : '❌') + ' ' + x.done + ' / ' + x.n +
-        ' rounds at ' + "★".repeat(x.min) + '+ · ' + esc_(x.label) + '<br><span style="' + muted + '">' + (x.detail.length ? esc_(x.detail.join(" · ")) : "Not played this week") + '</span></div>');
+        (x.type === "correct" ? ' right on the first try' : ' rounds at ' + "★".repeat(x.min) + '+') + ' · ' + esc_(x.label) + '<br><span style="' + muted + '">' + (x.detail.length ? esc_(x.detail.join(" · ")) : "Not played this week") + '</span></div>');
     });
     h.push('<div style="font-size:11px;' + muted + 'margin-top:6px">Counted from the raw answers in the Sheet, not from the iPad\'s own counter.</div></div>');
+  }
+  if (rep.prog && rep.prog.length) {
+    h.push('<div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:12px"><div style="font-size:15px;font-weight:600">📖 Free play · where they are</div>');
+    rep.prog.forEach(function (x) {
+      var info = KID_INFO[x.kid] || { name: x.kid, color: "#333" };
+      h.push('<div style="' + small + 'margin-top:6px"><b style="color:' + info.color + '">' + esc_(info.name) + '</b> · ' + esc_(x.game) + ' · <b>' + x.pct + '% done</b>' + (x.gain > 0 ? ' (▲ ' + x.gain + ' pts this week)' : '') + ' · ' + x.min + ' min this week<br><span style="' + muted + '">' + esc_(x.where) + (x.detail ? ' · ' + esc_(x.detail) : '') + '</span></div>');
+    });
+    h.push('</div>');
   }
   rep.kids.forEach(function (k) {
     h.push('<div style="background:#fff;border:1px solid #e3e1d9;border-radius:12px;padding:14px 16px;margin:0 0 12px">');
